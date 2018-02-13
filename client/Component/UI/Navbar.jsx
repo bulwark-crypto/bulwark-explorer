@@ -19,6 +19,7 @@ import {
 import Component from '../../Core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Route, Switch } from 'react-router-dom';
 
 import SearchForm from './SearchForm';
 
@@ -53,12 +54,23 @@ export default class UINavbar extends Component {
                 <Navbar color="faded" expand="md">
                     <div className="navbar-border">
                         <a className="float-right" onClick={ this.handleSide }>
-                            <i class="material-icons">menu</i>
+                            <i className="material-icons">menu</i>
                         </a>
-                        <NavbarBrand href="/">Bulwark</NavbarBrand>
+                        <NavbarBrand href="/">
+                            <img src="/img/logo.jpg" title="Bulwark Block Explorer" />
+                        </NavbarBrand>
                     </div>
                     <NavbarToggler onClick={ this.handleToggle } />
                     <Collapse isOpen={ this.state.isOpen } navbar>
+                        <div className="text-white ml-3">
+                            <Switch>
+                                <Route exact path="/" component={ () => "Overview" } />
+                                <Route exact path="/api" component={ () => "API" } />
+                                <Route exact path="/block" component={ () => "Block" } />
+                                <Route exact path="/network" component={ () => "Network" } />
+                                <Route exact path="/tx" component={ () => "TX" } />
+                            </Switch>
+                        </div>
                         <Nav className="ml-auto" navbar>
                             <SearchForm onSearch={ this.handleSearch } />
                         </Nav>
