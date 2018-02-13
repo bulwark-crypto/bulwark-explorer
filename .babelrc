@@ -1,7 +1,12 @@
 {
+    "plugins": [
+        "transform-class-properties",
+        "transform-object-rest-spread"
+    ],
     "presets": [
         ["env", {
             "targets": {
+                "browser": "> 2%",
                 "node": "current"
             }
         }],

@@ -22,7 +22,7 @@ var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const webDir = _path2.default.join(__dirname, '../../../../', 'public');
+const webDir = _path2.default.join(__dirname, '../../../', 'public');
 
 const middleware = app => {
     app.use((0, _morgan2.default)('dev'));

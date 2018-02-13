@@ -1,0 +1,99 @@
+
+/* Customize */
+$danger: #ed1c24;
+$faded: #282a2f;
+$info: #313d4f;
+$primary: #00aaff;
+$success: #36af47;
+$warning: #f7981c;
+$white: #ffffff;
+
+$body-bg: #121315;
+$body-color: $faded;
+
+$enable-caret: true;
+$enable-gradients: false;
+$enable-grid-classes: true;
+$enable-print-styles: true;
+$enable-rounded: true;
+$enable-shadows: true;
+$enable-transitions: true;
+
+$spacer: 1rem;
+
+$link-color: $white;
+$link-decoration: none;
+$link-hover-color: $primary;
+$link-hover-decoration: underline;
+
+$input-bg: lighten($faded, 5%);
+$input-border-color: lighten($faded, 25%);
+$input-color: $white;
+$input-placeholder-color: lighten($faded, 25%);
+$input-focus-color: $white;
+
+/* Navbar Search Form */
+a:hover {
+    cursor: pointer;
+}
+
+i.material-icons {
+    color: $white;
+}
+
+nav.navbar {
+    background-color: $faded;
+    border-bottom: 1px solid lighten($faded, 25%);
+    padding-bottom: 0; 
+    padding-top: 0;
+    z-index: 9000;
+
+    .navbar-border {
+        border-right: 1px solid lighten($faded, 25%);
+        padding: 10px;
+        width: 220px;
+
+        a {
+            i {
+                margin-top: 7px;
+            }
+        }
+    }
+
+    .search-form {
+        input.form-control { 
+            width: 420px; 
+        }
+
+        .btn {
+            background-color: $faded;
+            border-color: lighten($faded, 25%);
+            color: $white;
+
+            &:hover {
+                background-color: $primary;
+            }
+        }
+    }
+}
+
+nav.sidenav {
+    background-color: $faded;
+    border-right: 1px solid lighten($faded, 25%);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    top: 0;
+    z-index: 8000;
+
+    &.close {
+        width: 0;
+    }
+
+    &.open {
+        padding: 10px;
+        width: 236px;
+    }
+}
+
+@import "../node_modules/bootstrap/scss/bootstrap";

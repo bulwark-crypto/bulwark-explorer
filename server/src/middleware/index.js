@@ -4,7 +4,7 @@ import express from 'express';
 import logger from 'morgan';
 import path from 'path';
 
-const webDir = path.join(__dirname, '../../../../', 'public');
+const webDir = path.join(__dirname, '../../../', 'public');
 
 const middleware = (app) => {
     app.use(logger('dev'));
