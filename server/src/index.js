@@ -1,6 +1,6 @@
 
 import 'babel-polyfill';
-import config from './config';
+import config from '../../config';
 import express from 'express';
 import mongorito from 'mongorito';
 import path from 'path';

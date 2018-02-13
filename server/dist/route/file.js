@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _config = require('../config');
-
-var _config2 = _interopRequireDefault(_config);
-
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);

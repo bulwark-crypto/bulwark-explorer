@@ -1,8 +1,3 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
 
 const config = {
     "coinMarketCap": {
@@ -24,4 +19,4 @@ const config = {
     }
 };
 
-exports.default = config;
+module.exports = config;

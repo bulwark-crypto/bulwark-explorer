@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 require('babel-polyfill');
 
-var _config = require('./config');
+var _config = require('../../config');
 
 var _config2 = _interopRequireDefault(_config);
 

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _config = require('../config');
+var _config = require('../../../config');
 
 var _config2 = _interopRequireDefault(_config);
 
@@ -94,11 +94,6 @@ router.get('/gettxoutsetinfo', (req, res) => {
 // getmasternodecount
 router.get('/getmasternodecount', (req, res) => {
     callNode(res, 'getmasternodecount', null);
-});
-
-// getmasternodecountonline
-router.get('/getmasternodecountonline', (req, res) => {
-    callNode(res, 'getmasternodecountonline', null);
 });
 
 // masternodelist
