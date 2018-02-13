@@ -1,0 +1,32 @@
+{
+  "name": "blockex",
+  "version": "0.0.1",
+  "description": "Cryptocurrency block explorer",
+  "main": "./public",
+  "repository": "git@github.com:dustinengle/blockex.git",
+  "author": "Dustin Engle <dustin@dustinengle.com>",
+  "license": "MIT",
+  "scripts": {
+    "build:api": "./script/api_build.sh",
+    "build:web": "",
+    "start:api": "./script/api_run.sh",
+    "start:web": "",
+    "test:api": "mocha --compilers js:babel-core/register --timeout 2000 --watch ./test/server"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongorito": "^3.0.4",
+    "morgan": "^1.9.0",
+    "node-bitcoin-rpc": "^1.1.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^5.0.0"
+  }
+}

@@ -1,4 +1,5 @@
-{
+
+const config = {
     "coinMarketCap": {
         "ticker": "bulwark"
     },
@@ -9,5 +10,13 @@
         "user": "blockexuser",
         "pass": "Explorer!1"
     },
-    "port": "3000"
-}
+    "port": "3000",
+    "rpc": {
+        "host": "127.0.0.1",
+        "port": "7777",
+        "user": "bwk",
+        "pass": "password"
+    }
+};
+
+export default config;
