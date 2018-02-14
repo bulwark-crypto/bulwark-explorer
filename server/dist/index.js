@@ -43,20 +43,35 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 
 // Connect to the database.
-const dsn = `${_config2.default.db.user}:${_config2.default.db.pass}@${_config2.default.db.host}:${_config2.default.db.port}/${_config2.default.db.name}`;
-const db = new _mongorito2.default.Database(`mongodb://${dsn}`);
-const res = (() => {
-    var _ref = _asyncToGenerator(function* () {
-        return yield db.connect();
-    });
+var dsn = _config2.default.db.user + ':' + _config2.default.db.pass + '@' + _config2.default.db.host + ':' + _config2.default.db.port + '/' + _config2.default.db.name;
+var db = new _mongorito2.default.Database('mongodb://' + dsn);
+var res = function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+                switch (_context.prev = _context.next) {
+                    case 0:
+                        _context.next = 2;
+                        return db.connect();
+
+                    case 2:
+                        return _context.abrupt('return', _context.sent);
+
+                    case 3:
+                    case 'end':
+                        return _context.stop();
+                }
+            }
+        }, _callee, undefined);
+    }));
 
     return function res() {
         return _ref.apply(this, arguments);
     };
-})();
+}();
 
 // Setup the application.
-const app = (0, _express2.default)();
+var app = (0, _express2.default)();
 
 // Setup middleware for app.
 (0, _middleware2.default)(app);
@@ -66,8 +81,8 @@ app.get('/', _file2.default);
 app.use('/api', _api2.default);
 
 // Start the server.
-app.listen(_config2.default.port, () => {
-    console.log(`BlocEx running on port ${_config2.default.port}`);
+app.listen(_config2.default.port, function () {
+    console.log('BlocEx running on port ' + _config2.default.port);
 });
 
 exports.default = app;

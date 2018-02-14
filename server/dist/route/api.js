@@ -18,14 +18,18 @@ var _nodeBitcoinRpc2 = _interopRequireDefault(_nodeBitcoinRpc);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const router = _express2.default.Router();
+var router = _express2.default.Router();
 
 _nodeBitcoinRpc2.default.init(_config2.default.rpc.host, _config2.default.rpc.port, _config2.default.rpc.user, _config2.default.rpc.pass);
 
-const callNode = (res, fn = 'getinfo', params = [], timeout = 500) => {
+var callNode = function callNode(res) {
+    var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'getinfo';
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var timeout = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 500;
+
     _nodeBitcoinRpc2.default.setTimeout(timeout);
 
-    _nodeBitcoinRpc2.default.call(fn, params, (err, data) => {
+    _nodeBitcoinRpc2.default.call(fn, params, function (err, data) {
         if (res.headersSent) {
             console.log(err);
             return;
@@ -36,68 +40,68 @@ const callNode = (res, fn = 'getinfo', params = [], timeout = 500) => {
 };
 
 // getinfo
-router.get('/getinfo', (req, res) => {
+router.get('/getinfo', function (req, res) {
     callNode(res, 'getinfo', null);
 });
 
 // getnetworkhashps
-router.get('/getnetworkhashps', (req, res) => {
+router.get('/getnetworkhashps', function (req, res) {
     callNode(res, 'getnetworkhashps', null);
 });
 
 // getmininginfo
-router.get('/getmininginfo', (req, res) => {
+router.get('/getmininginfo', function (req, res) {
     callNode(res, 'getmininginfo', null);
 });
 
 // getdifficulty
-router.get('/getdifficulty', (req, res) => {
+router.get('/getdifficulty', function (req, res) {
     callNode(res, 'getdifficulty', null);
 });
 
 // getconnectioncount
-router.get('/getconnectioncount', (req, res) => {
+router.get('/getconnectioncount', function (req, res) {
     callNode(res, 'getconnectioncount', null);
 });
 
 // getblockcount
-router.get('/getblockcount', (req, res) => {
+router.get('/getblockcount', function (req, res) {
     callNode(res, 'getblockcount', null);
 });
 
 // getblockhash
-router.get('/getblockhash', (req, res) => {
-    const idx = parseInt(req.param('index'), 10);
+router.get('/getblockhash', function (req, res) {
+    var idx = parseInt(req.param('index'), 10);
     callNode(res, 'getblockhash', [idx]);
 });
 
 // getblock
-router.get('/getblock', (req, res) => {
+router.get('/getblock', function (req, res) {
     callNode(res, 'getblock', [req.param('hash')]);
 });
 
 // getrawtransaction
-router.get('/getrawtransaction', (req, res) => {
+router.get('/getrawtransaction', function (req, res) {
     callNode(res, 'getrawtransaction', [req.param('txid')]);
 });
 
 // getpeerinfo
-router.get('/getpeerinfo', (req, res) => {
+router.get('/getpeerinfo', function (req, res) {
     callNode(res, 'getpeerinfo', null);
 });
 
 // gettxoutsetinfo
-router.get('/gettxoutsetinfo', (req, res) => {
+router.get('/gettxoutsetinfo', function (req, res) {
     callNode(res, 'gettxoutsetinfo', null, 2000);
 });
 
 // getmasternodecount
-router.get('/getmasternodecount', (req, res) => {
+router.get('/getmasternodecount', function (req, res) {
     callNode(res, 'getmasternodecount', null);
 });
 
 // masternodelist
-router.get('/masternodelist', (req, res) => {
+router.get('/masternodelist', function (req, res) {
     callNode(res, 'masternode', ['list']);
 });
 
