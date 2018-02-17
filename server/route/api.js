@@ -1,5 +1,5 @@
 
-import config from '../../../config';
+import config from '../../config';
 import express from 'express';
 import rpc from 'node-bitcoin-rpc';
 

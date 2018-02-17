@@ -1,3 +1,0 @@
-
-// tx details
-"use strict";

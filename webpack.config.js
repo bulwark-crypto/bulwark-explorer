@@ -9,7 +9,7 @@ const htmlPlugin = new htmlWebpackPlugin({
     template: './client/template.html'
 });
 
-module.exports = {
+export default {
     devServer: {
         contentBase: path.resolve('public'),
         publicPath: '/'

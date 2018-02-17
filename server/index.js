@@ -1,8 +1,8 @@
 
 import 'babel-polyfill';
-import config from '../../config';
+import config from '../config';
 import express from 'express';
-import mongorito from 'mongorito';
+import mongoose from 'mongoose';
 import path from 'path';
 // Middleware
 import middleware from './middleware';
@@ -12,8 +12,7 @@ import fileRoute from './route/file';
 
 // Connect to the database.
 const dsn = `${ config.db.user }:${ config.db.pass }@${ config.db.host }:${ config.db.port }/${ config.db.name }`;
-const db = new mongorito.Database(`mongodb://${ dsn }`);
-const res = async () => await db.connect();
+mongoose.connect(`mongodb://${ dsn }`);
 
 // Setup the application.
 const app = express();
