@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build:api": "./script/api_build.sh",
+    "build:cron": "./script/cron_build.sh",
     "build:web": "webpack",
     "start:api": "./script/api_run.sh",
     "start:web": "webpack-dev-server",
