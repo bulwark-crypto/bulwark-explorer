@@ -9,12 +9,12 @@ const htmlPlugin = new htmlWebpackPlugin({
     template: './client/template.html'
 });
 
-export default {
+module.exports = {
     devServer: {
         contentBase: path.resolve('public'),
         publicPath: '/'
     },
-    entry: './client/index.js',
+    entry: ['babel-polyfill', './client/index.js'],
     module: {
         rules: [
             {

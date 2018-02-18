@@ -1,8 +1,23 @@
 
 import mongoose from 'mongoose';
 
+/**
+ * Block is the system representation of a block
+ * that closely reflects that used on the network.
+ */
 const Block = mongoose.model('Block', {
-    hash: String
+    bits: String, 
+    confirmations: Number, 
+    createdAt: Date,
+    diff: String, 
+    hash: String, 
+    height: Number, 
+    merkle: String, 
+    nonce: Number, 
+    prev: String, 
+    size: Number, 
+    txs: [String], 
+    ver: Number 
 });
 
 export default Block;

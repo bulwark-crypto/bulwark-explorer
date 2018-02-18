@@ -1,12 +1,4 @@
 
-import React, { Component } from 'react';
+import React from 'react';
 
-export default class CoreComponent extends Component {
-    focusInputByName = (name) => {
-        document.querySelector(`input[name="${ name }"]`).focus();
-    };
-
-    render() {
-        return null;
-    };
-}
+export default class Component extends React.Component {}
