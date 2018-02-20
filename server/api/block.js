@@ -4,7 +4,7 @@ import TX from '../../model/tx';
 
 const getTXLatest = (req, res) => {
   TX.find()
-    .limit(50)
+    .limit(req.params.limit || 50)
     .sort({ height: -1 })
     .then((docs) => {
       res.json(docs);
