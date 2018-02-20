@@ -1,7 +1,7 @@
 
-import Component from '../Core/Component';
+import Component from '../core/Component';
 import React from 'react';
-import Table from '../Component/Table';
+import Table from '../component/Table';
 
 export default class Overview extends Component {
   state = {

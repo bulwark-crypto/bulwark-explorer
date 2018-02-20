@@ -1,5 +1,5 @@
 
-import Component from '../Core/Component';
+import Component from '../core/Component';
 import React from 'react';
 
 export default class Movement extends Component {

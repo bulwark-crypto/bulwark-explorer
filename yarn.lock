@@ -2476,10 +2476,6 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.4:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
-gridlex@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/gridlex/-/gridlex-2.6.1.tgz#16b7a93a4764ad068075461f2ffb847e6ded818f"
-
 growl@1.10.3:
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.3.tgz#1926ba90cf3edfe2adb4927f5880bc22c66c790f"
