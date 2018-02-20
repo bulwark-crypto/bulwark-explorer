@@ -42,3 +42,5 @@ For now the following command can be ran to sync the database with blocks and tr
 Later it will put in the `crontab` to run at an interval.
 
 `yarn run cron:block` - will sync blocks and transactions by storing them in the database.
+
+`yarn run cron:coin` - will coin related information like price and supply from coinmarketcap.com.
