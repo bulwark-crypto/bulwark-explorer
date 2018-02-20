@@ -21,6 +21,7 @@
     "body-parser": "^1.18.2",
     "bootstrap": "^4.0.0",
     "express": "^4.16.2",
+    "gridlex": "^2.6.1",
     "lodash": "^4.17.5",
     "mongoose": "^5.0.6",
     "morgan": "^1.9.0",
