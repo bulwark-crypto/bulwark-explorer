@@ -1,6 +1,5 @@
 
 import chai from 'chai';
-import config from '../../config';
 import RPC from '../../lib/rpc';
 
 const rpc = new RPC();

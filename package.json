@@ -13,7 +13,7 @@
     "cron:peer": "babel-node ./cron/peer.js",
     "start:api": "babel-node ./server/index.js",
     "start:web": "webpack-dev-server --progress --colors",
-    "test:server": "mocha --compilers js:babel-core/register --timeout 2000 --watch ./test/server/rpc"
+    "test:server": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

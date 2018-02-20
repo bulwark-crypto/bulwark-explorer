@@ -7,13 +7,14 @@ import api from '../api';
 const router = (app) => {
   const webDir = path.join(__dirname, '../../', 'public');
 
-  app.use(express.static(webDir));
-  app.use('/api', api);
-
   // Load the generated web file.
+  app.use(express.static(webDir));
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../', 'public', 'index.html'));
   });
+
+  // Setup the api routes.
+  app.use('/api', api);
 };
 
 export default router;
