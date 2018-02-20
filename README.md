@@ -28,14 +28,15 @@ This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be in
 
 `db.createUser( { user: "blockexuser", pwd: "Explorer!1", roles: [ "readWrite" ] } )` - create a user with the values stored in the `config.js` file from above.
 
+## Build
+At this time only the client web interface needs to be built using webpack and this can be done by running `yarn run build:web`.  This will bundle the application and put it in the `/public` folder for delivery.
+
 ## Run
 `sudo mongod` - start mongodb if not already running.
 
 `yarn run start:api` - will start the api.
 
-`yarn run start:web` - will start.
-
-`webpack-dev-server`, open browser [http://localhost:8080](http://localhost:8080).
+`yarn run start:web` - will start the web, open browser [http://localhost:8080](http://localhost:8080).
 
 ## Sync
 For now the following command can be ran to sync the database with blocks and transactions.
@@ -47,8 +48,14 @@ Later it will put in the `crontab` to run at an interval.
 
 `yarn run cron:peer` - gather the list of peers and their IP information.
 
+## Test
+`yarn run test:client` - will run the client side tests.
+
+`yarn run test:server` - will test the rpc connection, database connection, and api endpoints.
+
 ## TODO
-- Tests!!!
-- API endpoints
-- FE services
-- FE UI
+- Tests!!! - write those tests!
+- API endpoints - complete endpoints and add compatibility with `https://github.com/iquidus/explorer` endpoints.
+- FE services - connect with api.
+- FE UI - complete components and style.
+- Install script that will setup `config.js`.
