@@ -59,3 +59,5 @@ Later it will put in the `crontab` to run at an interval.
 - FE services - connect with api.
 - FE UI - complete components and style.
 - Install script that will setup `config.js`.
+- Cluster support for api.
+- Cron locking with `/tmp` folder.
