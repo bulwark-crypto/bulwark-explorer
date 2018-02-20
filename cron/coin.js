@@ -18,7 +18,7 @@ async function update() {
   try {
     const info = await rpc.call('getinfo');
     const market = await fetch(url);
-    const masternodes = await rpc.call('masternode', ['list']);
+    const masternodes = await rpc.call('getmasternodecount');
     const nethashps = await rpc.call('getnetworkhashps');
 
     const coin = new Coin({
@@ -27,8 +27,8 @@ async function update() {
       blocks: info.blocks,
       btc: market.price_btc,
       diff: info.difficulty,
-      mnsOff: masternodes.find(mn => !mn.activetime || mn.status !== 'ENABLED').length,
-      mnsOn: masternodes.find(mn => !!mn.activetime || mn.status === 'ENABLED').length,
+      mnsOff: masternodes.total - masternodes.stable,
+      mnsOn: masternodes.stable,
       netHash: nethashps,
       peers: info.connections,
       status: 'Online',
