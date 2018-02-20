@@ -13,6 +13,7 @@
     "cron:peer": "babel-node ./cron/peer.js",
     "start:api": "babel-node ./server/index.js",
     "start:web": "webpack-dev-server --progress --colors",
+    "test:client": "mocha --compilers js:babel-core/register ./test/client",
     "test:server": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server"
   },
   "dependencies": {
