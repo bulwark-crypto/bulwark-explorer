@@ -2,10 +2,10 @@
 import mongoose from 'mongoose';
 
 const Coin = mongoose.model('Coin', {
-  cap: Number,
-  createdAt: Date,
   blocks: Number,
   btc: Number,
+  cap: Number,
+  createdAt: Date,
   diff: Number,
   mnsOff: Number,
   mnsOn: Number,
@@ -14,6 +14,6 @@ const Coin = mongoose.model('Coin', {
   status: String,
   supply: Number,
   usd: Number
-});
+}, 'coins');
 
 export default Coin;

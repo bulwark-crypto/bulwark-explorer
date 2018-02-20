@@ -15,6 +15,6 @@ const Masternode = mongoose.model('Masternode', {
   txHash: String,
   txOutIdx: Number,
   ver: String
-});
+}, 'masternodes');
 
 export default Masternode;

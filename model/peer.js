@@ -12,6 +12,6 @@ const Peer = mongoose.model('Peer', {
   subver: String,
   timeZone: String,
   ver: String
-});
+}, 'peers');
 
 export default Peer;

@@ -7,6 +7,7 @@ import block from './block';
 const router = express.Router();
 
 // Connect the routes with the handlers.
+router.get('/coin', block.getCoin);
 router.get('/tx/latest', block.getTXLatest);
 
 export default router;

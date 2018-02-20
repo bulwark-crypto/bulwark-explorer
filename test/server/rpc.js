@@ -2,6 +2,7 @@
 import chai from 'chai';
 import RPC from '../../lib/rpc';
 
+const expect = chai.expect;
 const rpc = new RPC();
 const should = chai.should();
 

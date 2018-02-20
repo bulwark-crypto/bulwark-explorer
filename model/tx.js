@@ -15,6 +15,6 @@ const TX = mongoose.model('TX', {
   recipients: Number,
   ver: Number,
   vout: Number
-});
+}, 'txs');
 
 export default TX;

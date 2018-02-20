@@ -18,6 +18,6 @@ const Block = mongoose.model('Block', {
   size: Number,
   txs: [String],
   ver: Number
-});
+}, 'blocks');
 
 export default Block;
