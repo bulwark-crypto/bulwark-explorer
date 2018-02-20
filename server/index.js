@@ -21,7 +21,7 @@ middleware(app);
 router(app);
 // Start the server.
 app.listen(config.port, () => {
-    console.log(`BlocEx running on port ${ config.port }`);
+  console.log(`BlocEx running on port ${ config.port }`);
 });
 
 // Export for testing.

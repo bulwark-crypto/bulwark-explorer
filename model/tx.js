@@ -8,13 +8,13 @@ import mongoose from 'mongoose';
  * implemented if needed for recent txs.
  */
 const TX = mongoose.model('TX', {
-    block: String,
-    createdAt: Date,
-    hash: String,
-    height: Number,
-    recipients: Number,
-    ver: Number,
-    vout: Number
+  block: String,
+  createdAt: Date,
+  hash: String,
+  height: Number,
+  recipients: Number,
+  ver: Number,
+  vout: Number
 });
 
 export default TX;

@@ -79,8 +79,8 @@ export default class Table extends Component {
 
     return (
       <table>
-        {this.getHeader()}
-        {this.getBody()}
+        { this.getHeader() }
+        { this.getBody() }
       </table>
     );
   };

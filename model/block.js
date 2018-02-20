@@ -6,18 +6,18 @@ import mongoose from 'mongoose';
  * that closely reflects that used on the network.
  */
 const Block = mongoose.model('Block', {
-    bits: String, 
-    confirmations: Number, 
-    createdAt: Date,
-    diff: String, 
-    hash: String, 
-    height: Number, 
-    merkle: String, 
-    nonce: Number, 
-    prev: String, 
-    size: Number, 
-    txs: [String], 
-    ver: Number 
+  bits: String,
+  confirmations: Number,
+  createdAt: Date,
+  diff: String,
+  hash: String,
+  height: Number,
+  merkle: String,
+  nonce: Number,
+  prev: String,
+  size: Number,
+  txs: [String],
+  ver: Number
 });
 
 export default Block;
