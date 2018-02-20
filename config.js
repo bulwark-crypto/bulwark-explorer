@@ -4,6 +4,7 @@
  */
 const config = {
   'coinMarketCap': {
+    'api': 'https://api.coinmarketcap.com/v1/ticker/',
     'ticker': 'bulwark'
   },
   'db': {

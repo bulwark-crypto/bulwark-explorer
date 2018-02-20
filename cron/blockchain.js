@@ -2,7 +2,6 @@
 import 'babel-polyfill';
 import db from '../lib/db';
 import { forEach } from 'p-iteration';
-import promise from 'bluebird';
 import mongoose from 'mongoose';
 import RPC from '../lib/rpc';
 // Models.
@@ -88,11 +87,16 @@ async function syncBlocks(current, stop) {
  * update the database with the node.
  */
 async function update() {
-  const info = await rpc.call('getinfo');
-  const block = await Block.findOne().sort({ height: - 1});
-  const height = block && block.height ? block.height : 0;
+  try {
+    const info = await rpc.call('getinfo');
+    const block = await Block.findOne().sort({ height: - 1});
+    const height = block && block.height ? block.height : 0;
 
-  await syncBlocks(height, info.blocks);
+    await syncBlocks(height, info.blocks);
+  } catch(err) {
+    console.log(err);
+    exit(1);
+  }
 
   exit();
 }
