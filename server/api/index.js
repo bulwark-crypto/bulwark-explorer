@@ -1,7 +1,7 @@
 
 import express from 'express';
 // Handlers.
-import block from './blockchain';
+import block from './block';
 
 // Setup subrouter for /api routes.
 const router = express.Router();

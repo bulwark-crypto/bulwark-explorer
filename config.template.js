@@ -4,6 +4,7 @@
  */
 const config = {
   'coinMarketCap': {
+    'api': 'https://api.coinmarketcap.com/v1/ticker/',
     'ticker': 'bulwark'
   },
   'db': {
@@ -12,6 +13,9 @@ const config = {
     'name': 'blockex',
     'user': 'blockexuser',
     'pass': 'Explorer!1'
+  },
+  'freegeoip': {
+    'api': 'http://freegeoip.net/json/'
   },
   'port': '3000',
   'rpc': {

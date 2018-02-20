@@ -45,9 +45,10 @@ Later it will put in the `crontab` to run at an interval.
 
 `yarn run cron:coin` - will coin related information like price and supply from coinmarketcap.com.
 
+`yarn run cron:peer` - gather the list of peers and their IP information.
+
 ## TODO
 - Tests!!!
-- Network cron
 - API endpoints
 - FE services
 - FE UI

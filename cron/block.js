@@ -1,29 +1,9 @@
 
-import 'babel-polyfill';
-import db from '../lib/db';
+import { exit, rpc } from '../lib/cron';
 import { forEach } from 'p-iteration';
-import mongoose from 'mongoose';
-import RPC from '../lib/rpc';
 // Models.
 import Block from '../model/block';
 import TX from '../model/tx';
-
-// Handle missed promises.
-process.on('unhandledRejection', (err) => {
-  console.log(JSON.stringify(err));
-});
-
-// Connect to the database.
-mongoose.connect(db.getDSN(), db.getOptions());
-
-// Setup RPC node connection.
-const rpc = new RPC();
-
-// Setup the error handler.
-const exit = (code = 0) => {
-  mongoose.disconnect();
-  process.exit(code);
-};
 
 /**
  * Process the blocks and transactions.

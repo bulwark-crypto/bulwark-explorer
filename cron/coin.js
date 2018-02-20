@@ -1,58 +1,10 @@
 
-import 'babel-polyfill';
 import config from '../config';
-import db from '../lib/db';
-import fetch from 'isomorphic-fetch';
-import { forEach } from 'p-iteration';
+import { exit, rpc } from '../lib/cron';
+import fetch from '../lib/fetch';
 import moment from 'moment';
-import mongoose from 'mongoose';
-import promise from 'bluebird';
-import RPC from '../lib/rpc';
 // Models.
-import Coin from '../model/Coin';
-import TX from '../model/tx';
-
-// Handle missed promises.
-process.on('unhandledRejection', (err) => {
-  console.log(JSON.stringify(err));
-});
-
-// Connect to the database.
-mongoose.connect(db.getDSN(), db.getOptions());
-
-// Setup RPC node connection.
-const rpc = new RPC();
-
-// Setup the error handler.
-const exit = (code = 0) => {
-  mongoose.disconnect();
-  process.exit(code);
-};
-
-// Setup the coinmarketcap.com api url.
-const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
-
-/**
- * Get coinmarketcap.com data for price and etc.
- */
-async function getCoinMarketCapData() {
-  return new promise((resolve, reject) => {
-    fetch(url)
-      .then((res) => {
-        if (!res.ok || res.status >= 400) {
-          throw new Error(`Bad request to coin market cap: ${ url }`);
-        }
-        return res.json();
-      })
-      .then((json) => {
-        if (Array.isArray(json) && json.length) {
-          json = json[0];
-        }
-        resolve(json);
-      })
-      .catch(reject);
-  });
-}
+import Coin from '../model/coin';
 
 /**
  * Get the coin related information including things
@@ -60,10 +12,12 @@ async function getCoinMarketCapData() {
  */
 async function update() {
   const date = moment().startOf('minute').toDate();
+  // Setup the coinmarketcap.com api url.
+  const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
 
   try {
     const info = await rpc.call('getinfo');
-    const market = await getCoinMarketCapData();
+    const market = await fetch(url);
     const masternodes = await rpc.call('masternode', ['list']);
     const nethashps = await rpc.call('getnetworkhashps');
 

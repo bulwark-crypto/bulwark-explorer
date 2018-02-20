@@ -14,6 +14,9 @@ const config = {
     'user': 'blockexuser',
     'pass': 'Explorer!1'
   },
+  'freegeoip': {
+    'api': 'http://freegeoip.net/json/'
+  },
   'port': '3000',
   'rpc': {
     'host': '127.0.0.1',
