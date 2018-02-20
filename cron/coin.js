@@ -4,6 +4,7 @@ import config from '../config';
 import db from '../lib/db';
 import fetch from 'isomorphic-fetch';
 import { forEach } from 'p-iteration';
+import moment from 'moment';
 import mongoose from 'mongoose';
 import promise from 'bluebird';
 import RPC from '../lib/rpc';
@@ -58,6 +59,8 @@ async function getCoinMarketCapData() {
  * like price coinmarketcap.com data.
  */
 async function update() {
+  const date = moment().startOf('minute').toDate();
+
   try {
     const info = await rpc.call('getinfo');
     const market = await getCoinMarketCapData();
@@ -66,7 +69,7 @@ async function update() {
 
     const coin = new Coin({
       cap: market.market_cap_usd,
-      createdAt: new Date(),
+      createdAt: date,
       blocks: info.blocks,
       btc: market.price_btc,
       diff: info.difficulty,
