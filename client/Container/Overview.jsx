@@ -23,7 +23,10 @@ class Overview extends Component {
   };
 
   componentDidMount() {
-    this.props.getLatest({ limit: this.state.limit }).then(this.getLatest);
+    this.props
+      .getLatest({ limit: this.state.limit })
+      .then(this.getLatest)
+      .catch(this.getLatest);
   };
 
   componentWillUnmount() {
@@ -39,7 +42,10 @@ class Overview extends Component {
     }
 
     this.timeout = setTimeout(() => {
-      this.props.getLatest({ limit: this.state.limit }).then(this.getLatest);
+      this.props
+        .getLatest({ limit: this.state.limit })
+        .then(this.getLatest)
+        .catch(this.getLatest);
     }, 30000); // 30 seconds
   };
 
