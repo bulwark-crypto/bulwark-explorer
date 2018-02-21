@@ -28,6 +28,19 @@ This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be in
 
 `db.createUser( { user: "blockexuser", pwd: "Explorer!1", roles: [ "readWrite" ] } )` - create a user with the values stored in the `config.js` file from above.
 
+#### Crontab
+`crontab -e` - edit the crontab.
+
+Paste the following lines:
+```
+*/1 * * * * cd /path/to/blockex && /usr/bin/nodejs cron/block.js > /dev/null 2>&1
+*/5 * * * * cd /path/to/blockex && /usr/bin/nodejs cron/coin.js > /dev/null 2>&1
+0 * * * * cd /path/to/blockex && /usr/bin/nodejs cron/peer.js > /dev/null 2>&1
+```
+- `cron/block.js` - run every minute.
+- `cron/coin.js` - update coin price info every 5 minutes.
+- `cron/peer.js` - update peer information every hour.
+
 ## Build
 At this time only the client web interface needs to be built using webpack and this can be done by running `yarn run build:web`.  This will bundle the application and put it in the `/public` folder for delivery.
 
