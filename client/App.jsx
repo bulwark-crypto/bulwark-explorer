@@ -3,15 +3,16 @@ import Component from './core/Component';
 import { Link, Route, Switch } from 'react-router-dom';
 import React from 'react';
 
-import API from './Container/API';
-import Block from './Container/Block';
-import CoinInfo from './Container/CoinInfo';
-import FAQ from './Container/FAQ';
-import Masternode from './Container/Masternode';
-import Movement from './Container/Movement';
-import Overview from './Container/Overview';
-import Top100 from './Container/Top100';
-import TX from './Container/Tx';
+import API from './container/API';
+import Block from './container/Block';
+import CoinInfo from './container/CoinInfo';
+import FAQ from './container/FAQ';
+import Icon from './component/Icon';
+import Masternode from './container/Masternode';
+import Movement from './container/Movement';
+import Overview from './container/Overview';
+import Top100 from './container/Top100';
+import TX from './container/Tx';
 
 export default class App extends Component {
   constructor(props) {
@@ -33,25 +34,25 @@ export default class App extends Component {
             <div>{ this.state.isOpen ? 'Logo' : 'Icon' }</div>
             <ul>
               <li>
-                (Icon) <Link className="label" to="/">Overview</Link>
+                <Icon name="home" /> <Link className="label" to="/">Overview</Link>
               </li>
               <li>
-                (Icon) <Link className="label" to="/movement">Movement</Link>
+                <Icon name="home" /> <Link className="label" to="/movement">Movement</Link>
               </li>
               <li>
-                (Icon) <Link className="label" to="/top">Top 100</Link>
+                <Icon name="home" /> <Link className="label" to="/top">Top 100</Link>
               </li>
               <li>
-                (Icon) <Link className="label" to="/masternode">Masternodes</Link>
+                <Icon name="home" /> <Link className="label" to="/masternode">Masternodes</Link>
               </li>
               <li>
-                (Icon) <Link className="label" to="/coin">Coin Info</Link>
+                <Icon name="home" /> <Link className="label" to="/coin">Coin Info</Link>
               </li>
               <li>
-                (Icon) <Link className="label" to="/faq">FAQ</Link>
+                <Icon name="home" /> <Link className="label" to="/faq">FAQ</Link>
               </li>
               <li>
-                (Icon) <Link className="label" to="/api">API</Link>
+                <Icon name="home" /> <Link className="label" to="/api">API</Link>
               </li>
             </ul>
           </div>
