@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
  * implemented if needed for recent txs.
  */
 const TX = mongoose.model('TX', {
+  addrs: [String],
   block: String,
   createdAt: Date,
   hash: String,

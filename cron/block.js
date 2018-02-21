@@ -40,14 +40,23 @@ async function syncBlocks(current, stop) {
         hex = await rpc.call('getrawtransaction', [txhash]);
         rpctx = await rpc.call('decoderawtransaction', [hex]);
 
+        // Setup the vout addresses.
+        const addrs = new Set();
+
         // Build the total for the output of this tx.
         let vout = 0.0;
         if (rpctx.vout) {
-          rpctx.vout.forEach(vo => vout += vo.value);
+          rpctx.vout.forEach((vo) => {
+            vout += vo.value;
+            if (vo.scriptPubKey.addresses && vo.scriptPubKey.addresses.length) {
+              vo.scriptPubKey.addresses.forEach(voa => addrs.add(voa));
+            }
+          });
         }
 
         tx = new TX({
           vout,
+          addrs: Array.from(addrs),
           block: hash,
           createdAt: block.createdAt,
           hash: rpctx.txid,
