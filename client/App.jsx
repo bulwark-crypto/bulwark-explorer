@@ -1,5 +1,5 @@
 
-import Component from './Core/Component';
+import Component from './core/Component';
 import { Link, Route, Switch } from 'react-router-dom';
 import React from 'react';
 

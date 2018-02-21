@@ -20,8 +20,8 @@ middleware(app);
 // Setup the routes.
 router(app);
 // Start the server.
-app.listen(config.port, () => {
-  console.log(`BlocEx running on port ${ config.port }`);
+app.listen(config.api.port, () => {
+  console.log(`BlocEx running on port ${ config.api.port }`);
 });
 
 // Export for testing.

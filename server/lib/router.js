@@ -4,6 +4,10 @@ import path from 'path';
 // Routes.
 import api from '../api';
 
+/**
+ * Add routes for the application.
+ * @param {Object} app The express app object.
+ */
 const router = (app) => {
   const webDir = path.join(__dirname, '../../', 'public');
 

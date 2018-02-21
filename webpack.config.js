@@ -11,7 +11,10 @@ const htmlPlugin = new htmlWebpackPlugin({
 
 module.exports = {
   devServer: {
+    compress: true,
     contentBase: path.resolve('public'),
+    hot: true,
+    port: 8080,
     publicPath: '/'
   },
   entry: ['babel-polyfill', './client/index.js'],
@@ -46,7 +49,9 @@ module.exports = {
     path: path.resolve('public')
   },
   plugins: [
-    htmlPlugin
+    htmlPlugin,
+		new webpack.HotModuleReplacementPlugin(),
+		new webpack.NamedModulesPlugin()
   ],
   resolve: {
     extensions: ['.js', '.jsx']

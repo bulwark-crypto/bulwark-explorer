@@ -1,37 +1,70 @@
 
+import Actions from '../core/Actions';
 import Component from '../core/Component';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import PropTypes from 'prop-types';
 import React from 'react';
 import Table from '../component/Table';
 
-export default class Overview extends Component {
-  state = {
-    cols: ['height', 'hash', 'age', 'amount', 'recipients', 'time'],
-    data: [
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-    ]
-  }
+class Overview extends Component {
+  static propTypes = {
+    getLatest: PropTypes.func.isRequired,
+    txs: PropTypes.array.isRequired
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      cols: ['height', 'hash', 'age', 'vout', 'recipients', 'createdAt'],
+      limit: 10
+    };
+  };
+
+  componentDidMount() {
+    this.props.getLatest({ limit: this.state.limit }).then(this.getLatest);
+  };
+
+  componentWillUnmount() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+  };
+
+  getLatest = () => {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      this.props.getLatest({ limit: this.state.limit }).then(this.getLatest);
+    }, 30000); // 30 seconds
+  };
 
   render() {
-    const { cols, data } = this.state;
+    // Setup the list of transactions with age since created.
+    const txs = this.props.txs.map(tx => ({
+      ...tx,
+      age: moment(tx.createdAt).fromNow()
+    }));
 
     return (
       <div>
         <h1>Overview</h1>
-        <Table cols={ cols } data={ data } />
+        <Table cols={ this.state.cols } data={ txs } />
       </div>
     );
   };
 }
+
+const mapDispatch = dispatch => ({
+  getLatest: query => Actions.getTXLatest(dispatch, query)
+});
+
+const mapState = state => ({
+  txs: state.txs
+});
+
+export default connect(mapState, mapDispatch)(Overview);

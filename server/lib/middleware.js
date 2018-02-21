@@ -6,6 +6,10 @@ import logger from 'morgan';
 import rateLimit from 'express-rate-limit';
 import timeout from 'connect-timeout';
 
+/**
+ * Will add middleware to the express app.
+ * @param {Object} app The express app object.
+ */
 const middleware = (app) => {
   app.use(logger('dev'));
   app.use(timeout(config.api.timeout));

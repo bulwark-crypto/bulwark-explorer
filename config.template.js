@@ -3,6 +3,12 @@
  * Global configuration object.
  */
 const config = {
+  'api': {
+    'host': 'http://localhost',
+    'port': '3000',
+    'prefix': '/api',
+    'timeout': '5s'
+  },
   'coinMarketCap': {
     'api': 'https://api.coinmarketcap.com/v1/ticker/',
     'ticker': 'bulwark'
@@ -17,7 +23,6 @@ const config = {
   'freegeoip': {
     'api': 'http://freegeoip.net/json/'
   },
-  'port': '3000',
   'rpc': {
     'host': '127.0.0.1',
     'port': '7777',
