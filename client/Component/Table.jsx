@@ -3,7 +3,9 @@ import Component from '../core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class Table extends Component {
+import { Table } from 'reactstrap';
+
+export default class TableWrapper extends Component {
   static defaultProps = {
     cols: [],
     data: [],
@@ -78,10 +80,10 @@ export default class Table extends Component {
     const { cols, data } = this.props;
 
     return (
-      <table>
+      <Table>
         { this.getHeader() }
         { this.getBody() }
-      </table>
+      </Table>
     );
   };
 }

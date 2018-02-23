@@ -1,6 +1,4 @@
-
-@import "./sass/font";
-@import "./sass/table";
+@import "~bootstrap/dist/css/bootstrap.css";
 
 /* Variables */
 $black: #222222;
@@ -8,6 +6,9 @@ $blue: #0000ff;
 $light-blue: #aaaaff;
 $gray: #777777;
 $white: #ffffff;
+
+$menu-gradient-main: #295af5;
+$menu-gradient-secondary: #595ff5;
 
 /* Reset */
 html, body {
@@ -42,39 +43,8 @@ html, body {
         }
     }
 
-    /* Menu */
-    .menu {
-        float: left;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        position: fixed;
-        width: 240px;
-
-        .links {
-            background-color: $blue;
-            height: 100vh;
-            padding: 10px 20px;
-
-            &.close {
-                width: 90px;
-
-                .label {
-                    display: none;
-                }
-            }
-
-            &.open {
-                width: 200px;
-
-                .label {
-                    display: inline-block;
-                }
-            }
-        }
-    }
 }
 
-/* Label */
-
-/* Table */
+@import "./sass/font";
+@import "./sass/table";
+@import "./sass/menu";

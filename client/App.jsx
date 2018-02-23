@@ -28,34 +28,37 @@ export default class App extends Component {
   render() {
     return (
       <div className="wrapper">
-        <div className="menu">
-          <div className={ `links ${ this.state.isOpen ? 'open' : 'close' }` }>
-            <a onClick={ this.handleToggle }>Menu</a>
-            <div>{ this.state.isOpen ? 'Logo' : 'Icon' }</div>
-            <ul>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/">Overview</Link>
-              </li>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/movement">Movement</Link>
-              </li>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/top">Top 100</Link>
-              </li>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/masternode">Masternodes</Link>
-              </li>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/coin">Coin Info</Link>
-              </li>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/faq">FAQ</Link>
-              </li>
-              <li>
-                <Icon name="home" /> <Link className="label" to="/api">API</Link>
-              </li>
-            </ul>
-          </div>
+        <div className={ `menu ${ this.state.isOpen ? 'menu--open' : 'menu--close' }` }>
+          <div className="menu__wrapper">
+            <div className="menu__header">
+              <img src="/img/logo.jpg" className="menu__logo" />
+              <a onClick={ this.handleToggle } >
+                <Icon name="menu" className="menu__toggle" onClick={ this.handleToggle } />
+              </a>
+            </div>
+            <p className="menu__title">MENU</p>
+              <Link className="menu__item" to="/">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Overview</span>
+              </Link>
+              <Link className="menu__item" to="/movement">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Movement</span>
+              </Link>
+              <Link className="menu__item" to="/top">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">Top 100</span>
+              </Link>
+              <Link className="menu__item" to="/masternode">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">Masternode</span>
+              </Link>
+              <Link className="menu__item" to="/coin">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Coin Info</span>
+              </Link>
+              <Link className="menu__item" to="/faq">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">FAQ</span>
+              </Link>
+              <Link className="menu__item" to="/api">
+                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">API</span>
+              </Link>
+            </div>
         </div>
         <div className="body">
           <Switch>

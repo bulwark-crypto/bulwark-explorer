@@ -1,0 +1,85 @@
+.menu {
+
+	background: $menu-gradient-main;
+	background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 69%, $menu-gradient-secondary 96%);
+	background: -webkit-linear-gradient(-45deg, $menu-gradient-main 1%,$menu-gradient-main 69%,$menu-gradient-secondary 96%);
+	background: linear-gradient(135deg, $menu-gradient-main 1%,$menu-gradient-main 69%,$menu-gradient-secondary 96%);
+
+	box-shadow: #7d7d7d 0px 0px 16px;
+	color: $white;
+    float: left;
+    height: 100vh;
+    margin: 0;
+	padding: 1.5em;
+    position: fixed;
+    width: 256px;
+
+
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 3em;
+	}
+
+	&__toggle {
+		cursor: pointer;
+		font-size: 2em;
+	}
+
+	&__logo {
+		margin-right: 1.5em;
+	}
+
+	&__title {
+		margin: 0;
+		text-align: center;
+	}
+
+	&__wrapper {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		justify-content: space-between;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		color: $white;
+
+		&:hover {
+			color: $white;
+			text-decoration: none;
+		}
+
+	}
+
+	&__item-label {
+		opacity: 1;
+	}
+
+	&__icon {
+		font-size: 2em;
+		margin-right: 1em;
+	}
+
+	/*Closed modifier*/
+	&--close {
+		width: 110px;
+	}
+
+	&--close &__logo {
+		display: none;
+	}
+
+	&--close &__icon {
+		margin: 0 auto;
+	}
+
+	&--close &__item-label {
+		display: none;
+	}
+
+}
+
