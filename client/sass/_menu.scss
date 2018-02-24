@@ -1,18 +1,19 @@
 .menu {
 
 	background: $menu-gradient-main;
-	background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 69%, $menu-gradient-secondary 96%);
-	background: -webkit-linear-gradient(-45deg, $menu-gradient-main 1%,$menu-gradient-main 69%,$menu-gradient-secondary 96%);
-	background: linear-gradient(135deg, $menu-gradient-main 1%,$menu-gradient-main 69%,$menu-gradient-secondary 96%);
+	background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 50%, $menu-gradient-secondary 80%);
+	background: -webkit-linear-gradient(-45deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
+	background: linear-gradient(135deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
 
 	box-shadow: #7d7d7d 0px 0px 16px;
 	color: $white;
     float: left;
     height: 100vh;
     margin: 0;
-	padding: 1.5em;
+	padding: 2em;
     position: fixed;
-    width: 256px;
+    transition: all .25s;
+    width: $menu-width-open;
 
 
 	&__header {
@@ -28,7 +29,7 @@
 	}
 
 	&__logo {
-		margin-right: 1.5em;
+		margin-right: 2em;
 	}
 
 	&__title {
@@ -39,7 +40,7 @@
 	&__wrapper {
 		display: flex;
 		flex-direction: column;
-		height: 100%;
+		height: 75%;
 		justify-content: space-between;
 	}
 
@@ -56,7 +57,10 @@
 	}
 
 	&__item-label {
-		opacity: 1;
+		/*opacity: 1;
+		transition: opacity .5s;*/
+		/*Prevent text wrapping when width is changed*/
+		white-space: nowrap;
 	}
 
 	&__icon {
@@ -66,7 +70,7 @@
 
 	/*Closed modifier*/
 	&--close {
-		width: 110px;
+		width: $menu-width-close;
 	}
 
 	&--close &__logo {

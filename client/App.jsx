@@ -27,7 +27,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <div className="wrapper">
+      <div>
         <div className={ `menu ${ this.state.isOpen ? 'menu--open' : 'menu--close' }` }>
           <div className="menu__wrapper">
             <div className="menu__header">
@@ -60,18 +60,20 @@ export default class App extends Component {
               </Link>
             </div>
         </div>
-        <div className="body">
-          <Switch>
-            <Route exact path="/" component={ Overview } />
-            <Route exact path="/api" component={ API } />
-            <Route exact path="/block" component={ Block } />
-            <Route exact path="/coin" component={ CoinInfo } />
-            <Route exact path="/faq" component={ FAQ } />
-            <Route exact path="/masternode" component={ Masternode } />
-            <Route exact path="/movement" component={ Movement } />
-            <Route exact path="/top" component={ Top100 } />
-            <Route exact path="/tx" component={ TX } />
-          </Switch>
+        <div className="content">
+          <div className="content__wrapper">
+            <Switch>
+              <Route exact path="/" component={ Overview } />
+              <Route exact path="/api" component={ API } />
+              <Route exact path="/block" component={ Block } />
+              <Route exact path="/coin" component={ CoinInfo } />
+              <Route exact path="/faq" component={ FAQ } />
+              <Route exact path="/masternode" component={ Masternode } />
+              <Route exact path="/movement" component={ Movement } />
+              <Route exact path="/top" component={ Top100 } />
+              <Route exact path="/tx" component={ TX } />
+            </Switch>
+          </div>
         </div>
       </div>
     );

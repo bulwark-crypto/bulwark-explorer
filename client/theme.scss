@@ -9,6 +9,8 @@ $white: #ffffff;
 
 $menu-gradient-main: #295af5;
 $menu-gradient-secondary: #595ff5;
+$menu-width-open: 256px;
+$menu-width-close: 110px;
 
 /* Reset */
 html, body {
@@ -19,30 +21,25 @@ html, body {
     width: 100vw;
 }
 
-/* Graph */
+h1, h2, h3, h4, h5, h6 {
+    display: inline-block;
+}
 
-/* Grid */
-.wrapper {
-    margin: 0 auto;
-    max-width: 1675px;
-    min-width: 1675px;
-    overflow: hidden;
-    position: relative;
-    width: 1675px;
 
-    /* Body */
-    .body {
-        float: left;
-        height: 200vh;
-        margin: 0 0 0 240px;
-        padding: 20px 40px;
-        width: 1675px - 240px;
+.content {
+    margin-left: $menu-width-open;
+    padding: 20px 40px;
+    transition: all .25s;
 
-        h1, h2, h3, h4, h5, h6 {
-            display: inline-block;
-        }
+    &__wrapper {
+	    margin: 0 auto;
+	    position: relative;
     }
 
+    /*Set content margin for closed menu*/
+	.menu--close + & {
+	    margin-left: $menu-width-close;
+	}
 }
 
 @import "./sass/font";
