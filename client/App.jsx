@@ -2,6 +2,7 @@
 import Component from './core/Component';
 import { Link, Route, Switch } from 'react-router-dom';
 import React from 'react';
+import Menu from './component/Menu';
 
 import API from './container/API';
 import Block from './container/Block';
@@ -19,47 +20,20 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      isOpen: true
+      isOpen: false
     };
   };
 
   handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
 
   render() {
+    const { state } = this;
+
     return (
       <div>
-        <div className={ `menu ${ this.state.isOpen ? 'menu--open' : 'menu--close' }` }>
-          <div className="menu__wrapper">
-            <div className="menu__header">
-              <img src="/img/logo.jpg" className="menu__logo" />
-              <a onClick={ this.handleToggle } >
-                <Icon name="menu" className="menu__toggle" onClick={ this.handleToggle } />
-              </a>
-            </div>
-            <p className="menu__title">MENU</p>
-              <Link className="menu__item" to="/">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Overview</span>
-              </Link>
-              <Link className="menu__item" to="/movement">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Movement</span>
-              </Link>
-              <Link className="menu__item" to="/top">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">Top 100</span>
-              </Link>
-              <Link className="menu__item" to="/masternode">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">Masternode</span>
-              </Link>
-              <Link className="menu__item" to="/coin">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Coin Info</span>
-              </Link>
-              <Link className="menu__item" to="/faq">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">FAQ</span>
-              </Link>
-              <Link className="menu__item" to="/api">
-                <Icon name="home" className="menu__icon" /> <span className="menu__item-label">API</span>
-              </Link>
-            </div>
-        </div>
+        <Menu
+          isOpen={ state.isOpen }
+          handleToggle={ this.handleToggle } />
         <div className="content">
           <div className="content__wrapper">
             <Switch>
