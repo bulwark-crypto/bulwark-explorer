@@ -14,7 +14,7 @@ const SearchBar = (props) => (
     <Icon name="search" className="search__icon" />
     <input
       className="search__input"
-      placeholder="You may enter a block height, block hash, tx has or address and hit enter." />
+      placeholder="You may enter a block height, block hash, tx hash or address and hit enter." />
   </div>
 );
 

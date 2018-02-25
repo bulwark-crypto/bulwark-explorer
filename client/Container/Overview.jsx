@@ -7,10 +7,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 //  HEADER SECTION
-import SearchBar from 'component/SearchBar';
 import CardGraph from 'component/Card/CardGraph';
 import CardMarket from 'component/Card/CardMarket';
 import CardStatus from 'component/Card/CardStatus';
+import SearchBar from 'component/SearchBar';
+import WatchList from 'component/WatchList';
 
 import HorizontalRule from 'component/HorizontalRule';
 import Table from 'component/Table';
@@ -94,6 +95,7 @@ class Overview extends Component {
               </div>
             </div>
             <div className="col-12 col-md-3">
+              <WatchList items={[1, 2, 3]} />
             </div>
           </div>
         </div>
