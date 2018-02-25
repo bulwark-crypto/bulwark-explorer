@@ -53,11 +53,11 @@ export default class TableWrapper extends Component {
   getKeys() {
     const { cols } = this.props;
 
-    if (typeof col === 'object') {
-      // TODO allow for different titles than the object key
-    }
+    const keys = cols.map(col => {
+      return (typeof col === 'object') ? col.key : col;
+    })
 
-    return [ ...cols ];
+    return keys;
   }
 
   render() {

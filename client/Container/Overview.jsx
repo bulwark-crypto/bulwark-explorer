@@ -17,7 +17,13 @@ class Overview extends Component {
     super(props);
 
     this.state = {
-      cols: ['height', 'hash', 'age', 'vout', 'recipients', 'createdAt'],
+      cols: [
+        'height',
+        {title: 'Transaction Hash', key: 'hash'},
+        'age',
+        'amount',
+        'recipients',
+        'time'],
       limit: 10
     };
   };
@@ -59,7 +65,9 @@ class Overview extends Component {
     return (
       <div>
         <h1>Overview</h1>
-        <Table cols={ this.state.cols } data={ txs } />
+        <Table
+          cols={ this.state.cols }
+          data={ txs } />
       </div>
     );
   };

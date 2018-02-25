@@ -1,5 +1,3 @@
-@import "~bootstrap/dist/css/bootstrap.css";
-
 /* Variables */
 $black: #222222;
 $blue: #0000ff;
@@ -11,6 +9,16 @@ $menu-gradient-main: #295af5;
 $menu-gradient-secondary: #595ff5;
 $menu-width-open: 256px;
 $menu-width-close: 110px;
+
+/* Bootstrap override */
+$table-border-width: 0;
+$table-cell-padding: 0;
+
+
+@import "~bootstrap/scss/bootstrap.scss";
+@import "./sass/font";
+@import "./sass/table";
+@import "./sass/menu";
 
 /* Reset */
 html, body {
@@ -42,6 +50,3 @@ h1, h2, h3, h4, h5, h6 {
 	}
 }
 
-@import "./sass/font";
-@import "./sass/table";
-@import "./sass/menu";

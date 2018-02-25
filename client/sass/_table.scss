@@ -1,12 +1,26 @@
 
-table {
+.table {
+	;
 	width: 100%;
 
+	tr:nth-child(even) {
+		color: $gray;
+	}
+
 	th {
-		text-align: left;
+		padding-bottom: 1em;
+		text-transform: capitalize;
 	}
 
 	td {
+		min-width: 7em;
+		padding-right: 2em;
 		text-align: left;
+		/*white-space: nowrap;*/
 	}
+
+	tbody {
+		font-size: .8em
+	}
+
 }
