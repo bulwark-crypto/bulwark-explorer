@@ -4,7 +4,11 @@
         "transform-object-rest-spread"
     ],
     "presets": [
-        "env", 
+        ["env", {
+            "targets": {
+                "node": "current"
+            }
+        }],
         "react"
     ]
 }
