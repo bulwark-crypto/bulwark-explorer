@@ -33,9 +33,9 @@ This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be in
 
 Paste the following lines:
 ```
-*/1 * * * * cd /path/to/blockex && /usr/bin/nodejs cron/block.js > /dev/null 2>&1
-*/5 * * * * cd /path/to/blockex && /usr/bin/nodejs cron/coin.js > /dev/null 2>&1
-0 * * * * cd /path/to/blockex && /usr/bin/nodejs cron/peer.js > /dev/null 2>&1
+*/1 * * * * cd /path/to/blockex && yarn run cron:block > /dev/null 2>&1
+*/5 * * * * cd /path/to/blockex && yarn run cron:coin > /dev/null 2>&1
+0 * * * * cd /path/to/blockex && yarn run cron:peer > /dev/null 2>&1
 ```
 - `cron/block.js` - run every minute.
 - `cron/coin.js` - update coin price info every 5 minutes.
