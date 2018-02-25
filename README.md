@@ -29,17 +29,20 @@ This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be in
 `db.createUser( { user: "blockexuser", pwd: "Explorer!1", roles: [ "readWrite" ] } )` - create a user with the values stored in the `config.js` file from above.
 
 #### Crontab
-`crontab -e` - edit the crontab.
+The following automated tasks are currently setup for BlockEx.  
 
-Paste the following lines:
+`yarn run cron:block` - will sync blocks and transactions by storing them in the database.
+
+`yarn run cron:coin` - will coin related information like price and supply from coinmarketcap.com.
+
+`yarn run cron:peer` - gather the list of peers and their IP information.
+
+To setup the crontab please see run `crontab -e` to edit the crontab and paste the following lines:
 ```
 */1 * * * * cd /path/to/blockex && yarn run cron:block > /dev/null 2>&1
 */5 * * * * cd /path/to/blockex && yarn run cron:coin > /dev/null 2>&1
 0 * * * * cd /path/to/blockex && yarn run cron:peer > /dev/null 2>&1
 ```
-- `yarn run cron:block` - run every minute.
-- `yarn run cron:coin` - update coin price info every 5 minutes.
-- `yarn run cron:peer` - update peer information every hour.
 
 ## Build
 At this time only the client web interface needs to be built using webpack and this can be done by running `yarn run build:web`.  This will bundle the application and put it in the `/public` folder for delivery.
@@ -50,16 +53,6 @@ At this time only the client web interface needs to be built using webpack and t
 `yarn run start:api` - will start the api.
 
 `yarn run start:web` - will start the web, open browser [http://localhost:8080](http://localhost:8080).
-
-## Sync
-For now the following command can be ran to sync the database with blocks and transactions.
-Later it will put in the `crontab` to run at an interval.
-
-`yarn run cron:block` - will sync blocks and transactions by storing them in the database.
-
-`yarn run cron:coin` - will coin related information like price and supply from coinmarketcap.com.
-
-`yarn run cron:peer` - gather the list of peers and their IP information.
 
 ## Test
 `yarn run test:client` - will run the client side tests.
