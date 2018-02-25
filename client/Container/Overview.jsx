@@ -6,6 +6,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import CardText from 'component/Card/CardText';
 import HorizontalRule from 'component/HorizontalRule';
 import Table from 'component/Table';
 
@@ -59,31 +60,15 @@ class Overview extends Component {
 
   render() {
     // Setup the list of transactions with age since created.
-    // const txs = this.props.txs.map(tx => ({
-    //   ...tx,
-    //   age: moment(tx.createdAt).fromNow()
-    // }));
-
-    const txs = [
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-      {height: 70500, hash: '5891564sdaf456sdf5621dfs3sd5afd89a76asd2f1a3ew8597sdfa564sa1fsa3', age: 1, amount: 1, recipients: 1, time: Date.now()},
-    ]
+    const txs = this.props.txs.map(tx => ({
+      ...tx,
+      age: moment(tx.createdAt).fromNow()
+    }));
 
     return (
       <div>
         <h1>Overview</h1>
+        <CardText title="LALALA" />
         <HorizontalRule title="Latest Blocks" />
         <Table
           cols={ this.state.cols }
