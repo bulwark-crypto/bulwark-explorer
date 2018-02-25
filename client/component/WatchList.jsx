@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Card from 'component/Card';
+import Icon from './Icon';
 
 export default class WatchList extends Component {
   static defaultProps = {
@@ -16,21 +17,35 @@ export default class WatchList extends Component {
     title: PropTypes.string
   };
 
-  // const WatchList = (props) => (
-  //   <div className={ `watch-list ${ props.className }` }>
-  //     <p className="watch-list__title">
-  //       { props.title }
-  //     </p>
-  //     {}
-  //   </div>
-  // );
+  getWatchItems() {
+    const { items } = this.props;
+
+    const watchItems = items.map((item, idx) => {
+      return (
+        <div className="watch-list__item">
+          <Icon name="add_circle_outline"
+                className="watch-list__item-close"
+                onClick={ this.removeWatchItem(idx) }/>
+          <span className="watch-list__item-text">
+            { item }
+          </span>
+        </div>
+      )
+    });
+
+    return watchItems
+  }
+
+  removeWatchItem(idx) {
+    debugger;
+  }
 
   render() {
     const { props } = this;
 
     return (
       <Card title={ props.title } className="watch-list" >
-        { props.items }
+        { this.getWatchItems() }
       </Card>
     );
   };

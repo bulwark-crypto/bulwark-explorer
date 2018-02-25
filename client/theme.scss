@@ -1,7 +1,8 @@
 /* Variables */
 $black: #222222;
 $blue: #0000ff;
-$light-blue: #aaaaff;
+$blue-dark: #595ff5;
+$blue-light: #2ba2f8;
 $gray: #777777;
 $green: #61d85d;
 $white: #ffffff;
@@ -27,6 +28,7 @@ $table-cell-padding: 0;
 @import "./sass/menu";
 @import "./sass/table";
 @import "./sass/utility";
+@import "./sass/watch-list";
 
 /* Reset */
 html, body {
