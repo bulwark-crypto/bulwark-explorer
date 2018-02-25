@@ -37,9 +37,9 @@ Paste the following lines:
 */5 * * * * cd /path/to/blockex && yarn run cron:coin > /dev/null 2>&1
 0 * * * * cd /path/to/blockex && yarn run cron:peer > /dev/null 2>&1
 ```
-- `cron/block.js` - run every minute.
-- `cron/coin.js` - update coin price info every 5 minutes.
-- `cron/peer.js` - update peer information every hour.
+- `yarn run cron:block` - run every minute.
+- `yarn run cron:coin` - update coin price info every 5 minutes.
+- `yarn run cron:peer` - update peer information every hour.
 
 ## Build
 At this time only the client web interface needs to be built using webpack and this can be done by running `yarn run build:web`.  This will bundle the application and put it in the `/public` folder for delivery.
