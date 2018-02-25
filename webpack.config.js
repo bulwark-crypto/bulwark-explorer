@@ -55,6 +55,10 @@ module.exports = {
 		new webpack.NamedModulesPlugin()
   ],
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    modules: [
+      path.resolve(__dirname, "client"),
+      "node_modules"
+    ]
   }
 };

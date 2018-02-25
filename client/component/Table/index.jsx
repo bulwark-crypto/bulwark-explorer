@@ -1,5 +1,5 @@
 
-import Component from '../../core/Component';
+import Component from 'core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -62,6 +62,10 @@ export default class TableWrapper extends Component {
 
   render() {
     const { props } = this;
+
+    if (!props.data.length) {
+      return false;
+    }
 
     return (
       <Table>

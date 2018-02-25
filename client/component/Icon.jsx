@@ -1,5 +1,5 @@
 
-import Component from '../core/Component';
+import Component from 'core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -8,7 +8,7 @@ import React from 'react';
  * @param {Object} props The props with the name.
  */
 const Icon = (props) => (
-  <i className={ `material-icons ${ props.className }` }>{ props.name }</i>
+  <span className={ `material-icons ${ props.className }` }>{ props.name }</span>
 );
 
 Icon.propTypes = {

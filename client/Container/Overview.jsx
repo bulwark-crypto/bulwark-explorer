@@ -1,11 +1,11 @@
 
-import Actions from '../core/Actions';
-import Component from '../core/Component';
+import Actions from 'core/Actions';
+import Component from 'core/Component';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Table from '../component/Table';
+import Table from 'component/Table';
 
 class Overview extends Component {
   static propTypes = {
@@ -65,6 +65,7 @@ class Overview extends Component {
     return (
       <div>
         <h1>Overview</h1>
+
         <Table
           cols={ this.state.cols }
           data={ txs } />
