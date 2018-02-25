@@ -1,9 +1,11 @@
 
-import Component from '../core/Component';
+import Component from '../../core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Table } from 'reactstrap';
+
+import TableHeader from './TableHeader';
 
 export default class TableWrapper extends Component {
   static defaultProps = {
@@ -22,24 +24,6 @@ export default class TableWrapper extends Component {
 
   componentWillUnmount() {
   };
-
-  getHeader() {
-    const keys = this.getKeys();
-
-    const cells = keys.map((col, idx) => {
-      return (
-        <th key={ idx }>{ col }</th>
-      )
-    });
-
-    return (
-      <thead>
-        <tr>
-          { cells }
-        </tr>
-      </thead>
-    );
-  }
 
   getBody() {
     const { data } = this.props;
@@ -77,11 +61,11 @@ export default class TableWrapper extends Component {
   }
 
   render() {
-    const { cols, data } = this.props;
+    const { props } = this;
 
     return (
       <Table>
-        { this.getHeader() }
+        <TableHeader cols={ props.cols } />
         { this.getBody() }
       </Table>
     );

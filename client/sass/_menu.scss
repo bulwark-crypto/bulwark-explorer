@@ -8,6 +8,7 @@
 	box-shadow: #7d7d7d 0px 0px 16px;
 	color: $white;
     float: left;
+	font-weight: lighter;
     height: 100vh;
     margin: 0;
 	padding: 2em;
@@ -20,7 +21,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 3em;
+		min-height: 3.5em;
 	}
 
 	&__toggle {
