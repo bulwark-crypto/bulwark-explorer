@@ -68,6 +68,8 @@ async function syncBlocks(current, stop) {
         await tx.save();
       });
     }
+
+    console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
   }
 }
 
