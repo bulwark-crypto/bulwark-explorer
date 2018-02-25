@@ -1,13 +1,13 @@
 
-import 'babel-polyfill';
-import '../lib/cron';
-import config from '../config';
-import { exit, rpc } from '../lib/cron';
-import fetch from '../lib/fetch';
-import { forEach } from 'p-iteration';
-import moment from 'moment';
+require('babel-polyfill');
+require('../lib/cron');
+const config = require('../config');
+const { exit, rpc } = require('../lib/cron');
+const fetch = require('../lib/fetch');
+const { forEach } = require('p-iteration');
+const moment = require('moment');
 // Models.
-import Peer from '../model/peer';
+const Peer = require('../model/peer');
 
 /**
  * Get a list of the peers and request IP information

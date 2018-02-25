@@ -1,10 +1,10 @@
 
-import bodyParser from 'body-parser';
-import config from '../../config';
-import cors from 'cors';
-import logger from 'morgan';
-import rateLimit from 'express-rate-limit';
-import timeout from 'connect-timeout';
+const bodyParser = require('body-parser');
+const config = require('../../config');
+const cors = require('cors');
+const logger = require('morgan');
+const rateLimit = require('express-rate-limit');
+const timeout = require('connect-timeout');
 
 /**
  * Will add middleware to the express app.

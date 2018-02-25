@@ -1,11 +1,11 @@
 
-import 'babel-polyfill';
-import config from '../config';
-import { exit, rpc } from '../lib/cron';
-import fetch from '../lib/fetch';
-import moment from 'moment';
+require('babel-polyfill');
+const config = require('../config');
+const { exit, rpc } = require('../lib/cron');
+const fetch = require('../lib/fetch');
+const moment = require('moment');
 // Models.
-import Coin from '../model/coin';
+const Coin = require('../model/coin');
 
 /**
  * Get the coin related information including things

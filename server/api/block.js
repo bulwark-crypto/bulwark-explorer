@@ -1,8 +1,8 @@
 
-import Block from '../../model/block';
-import Coin from '../../model/coin';
-import Peer from '../../model/peer';
-import TX from '../../model/tx';
+const Block = require('../../model/block');
+const Coin = require('../../model/coin');
+const Peer = require('../../model/peer');
+const TX = require('../../model/tx');
 
 /**
  * Get transactions by address.

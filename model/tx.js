@@ -1,5 +1,5 @@
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 /**
  * The transaction object.  Very basic as

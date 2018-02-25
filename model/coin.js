@@ -1,5 +1,5 @@
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const Coin = mongoose.model('Coin', {
   blocks: Number,

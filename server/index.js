@@ -1,12 +1,12 @@
 
-import 'babel-polyfill';
-import config from '../config';
-import db from '../lib/db';
-import express from 'express';
-import mongoose from 'mongoose';
+require('babel-polyfill');
+const config = require('../config');
+const db = require('../lib/db');
+const express = require('express');
+const mongoose = require('mongoose');
 // Application.
-import middleware from './lib/middleware';
-import router from './lib/router';
+const middleware = require('./lib/middleware');
+const router = require('./lib/router');
 
 /* Database */
 // Connect to the database.

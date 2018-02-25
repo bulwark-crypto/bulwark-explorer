@@ -1,10 +1,10 @@
 
-import 'babel-polyfill';
-import { exit, rpc } from '../lib/cron';
-import { forEach } from 'p-iteration';
+require('babel-polyfill');
+const { exit, rpc } = require('../lib/cron');
+const { forEach } = require('p-iteration');
 // Models.
-import Block from '../model/block';
-import TX from '../model/tx';
+const Block = require('../model/block');
+const TX = require('../model/tx');
 
 /**
  * Process the blocks and transactions.

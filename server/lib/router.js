@@ -1,8 +1,8 @@
 
-import express from 'express';
-import path from 'path';
+const express = require('express');
+const path = require('path');
 // Routes.
-import api from '../api';
+const api = require('../api');
 
 /**
  * Add routes for the application.

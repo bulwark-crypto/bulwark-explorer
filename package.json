@@ -7,12 +7,11 @@
   "author": "Dustin Engle <dustin@dustinengle.com>",
   "license": "MIT",
   "scripts": {
-    "build:cron": "babel ./cron --out-dir ./dist_cron",
     "build:web": "webpack --progress --colors",
-    "cron:block": "babel-node ./cron/block.js",
-    "cron:coin": "babel-node ./cron/coin.js",
-    "cron:peer": "babel-node ./cron/peer.js",
-    "start:api": "babel-node ./server/index.js",
+    "cron:block": "node ./cron/block.js",
+    "cron:coin": "node ./cron/coin.js",
+    "cron:peer": "node ./cron/peer.js",
+    "start:api": "node ./server/index.js",
     "start:web": "webpack-dev-server --progress --colors",
     "test:client": "mocha --compilers js:babel-core/register ./test/client",
     "test:server": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server"

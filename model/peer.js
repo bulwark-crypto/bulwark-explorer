@@ -1,5 +1,5 @@
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const Peer = mongoose.model('Peer', {
   _id: String,

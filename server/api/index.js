@@ -1,7 +1,7 @@
 
-import express from 'express';
+const express = require('express');
 // Handlers.
-import block from './block';
+const block = require('./block');
 
 // Setup subrouter for /api routes.
 const router = express.Router();
