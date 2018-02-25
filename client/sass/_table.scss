@@ -1,4 +1,5 @@
 
+/* Overrides bootstrap table class */
 .table {
 	;
 	width: 100%;
@@ -8,6 +9,7 @@
 	}
 
 	th {
+		font-size: 1.1em;
 		padding-bottom: 1em;
 		text-transform: capitalize;
 	}
@@ -17,6 +19,11 @@
 		padding-right: 2em;
 		text-align: left;
 		/*white-space: nowrap;*/
+	}
+
+	td:last-child {
+		padding-right: 0;
+		min-width: 0;
 	}
 
 	tbody {

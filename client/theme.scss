@@ -14,11 +14,15 @@ $menu-width-close: 110px;
 $table-border-width: 0;
 $table-cell-padding: 0;
 
+$hr-margin-y: 0;
+
 
 @import "~bootstrap/scss/bootstrap.scss";
+@import "./sass/card";
 @import "./sass/font";
-@import "./sass/table";
+@import "./sass/hr";
 @import "./sass/menu";
+@import "./sass/table";
 
 /* Reset */
 html, body {

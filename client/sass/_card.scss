@@ -1,0 +1,13 @@
+.card {
+	display: flex;
+	align-items: center;
+	margin: 2em 0;
+
+	&__title {
+		font-size: .9em;
+		font-weight: bold;
+		margin-right: 1em;
+		text-transform: uppercase;
+	}
+
+}

@@ -11,11 +11,11 @@
 	font-weight: lighter;
     height: 100vh;
     margin: 0;
+    min-height: 550px;
 	padding: 2em;
     position: fixed;
     transition: all .25s;
     width: $menu-width-open;
-
 
 	&__header {
 		display: flex;

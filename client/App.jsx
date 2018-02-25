@@ -1,19 +1,19 @@
 
-import Component from './core/Component';
+import Component from 'core/Component';
 import { Link, Route, Switch } from 'react-router-dom';
 import React from 'react';
-import Menu from './component/Menu';
+import Menu from 'component/Menu';
 
-import API from './container/API';
-import Block from './container/Block';
-import CoinInfo from './container/CoinInfo';
-import FAQ from './container/FAQ';
-import Icon from './component/Icon';
-import Masternode from './container/Masternode';
-import Movement from './container/Movement';
-import Overview from './container/Overview';
-import Top100 from './container/Top100';
-import TX from './container/Tx';
+import API from 'container/API';
+import Block from 'container/Block';
+import CoinInfo from 'container/CoinInfo';
+import FAQ from 'container/FAQ';
+import Icon from 'component/Icon';
+import Masternode from 'container/Masternode';
+import Movement from 'container/Movement';
+import Overview from 'container/Overview';
+import Top100 from 'container/Top100';
+import TX from 'container/Tx';
 
 export default class App extends Component {
   constructor(props) {
