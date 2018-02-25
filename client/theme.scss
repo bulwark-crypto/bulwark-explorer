@@ -3,6 +3,7 @@ $black: #222222;
 $blue: #0000ff;
 $light-blue: #aaaaff;
 $gray: #777777;
+$green: #61d85d;
 $white: #ffffff;
 
 $menu-gradient-main: #295af5;
@@ -11,10 +12,12 @@ $menu-width-open: 256px;
 $menu-width-close: 110px;
 
 /* Bootstrap override */
+$card-border-width: 0;
+$hr-margin-y: 0;
+$paragraph-margin-bottom: 0;
+
 $table-border-width: 0;
 $table-cell-padding: 0;
-
-$hr-margin-y: 0;
 
 
 @import "~bootstrap/scss/bootstrap.scss";
@@ -23,6 +26,7 @@ $hr-margin-y: 0;
 @import "./sass/hr";
 @import "./sass/menu";
 @import "./sass/table";
+@import "./sass/utility";
 
 /* Reset */
 html, body {
@@ -40,7 +44,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .content {
     margin-left: $menu-width-open;
-    padding: 20px 40px;
+    padding: 1em 2em 2em;
     transition: all .25s;
 
     &__wrapper {
@@ -52,5 +56,24 @@ h1, h2, h3, h4, h5, h6 {
 	.menu--close + & {
 	    margin-left: $menu-width-close;
 	}
+}
+
+.search {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1em;
+	/* Used to align with menu logo */
+	min-height: 4em;
+
+	&__icon {
+		margin-right: 1em;
+	}
+
+	&__input {
+		border: 0;
+		flex: 1;
+		outline: none;
+	}
+
 }
 

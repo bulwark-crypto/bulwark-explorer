@@ -6,7 +6,12 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import CardText from 'component/Card/CardText';
+//  HEADER SECTION
+import SearchBar from 'component/SearchBar';
+import CardGraph from 'component/Card/CardGraph';
+import CardMarket from 'component/Card/CardMarket';
+import CardStatus from 'component/Card/CardStatus';
+
 import HorizontalRule from 'component/HorizontalRule';
 import Table from 'component/Table';
 
@@ -67,8 +72,31 @@ class Overview extends Component {
 
     return (
       <div>
-        <h1>Overview</h1>
-        <CardText title="LALALA" />
+        <SearchBar />
+        <div>
+          <div className="row">
+            <div className="col-12 col-md-9">
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <CardStatus />
+                </div>
+                <div className="col-12 col-md-6">
+                  <CardGraph title="Network" />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <CardMarket />
+                </div>
+                <div className="col-12 col-md-6">
+                  <CardGraph title="Masternodes" />
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-md-3">
+            </div>
+          </div>
+        </div>
         <HorizontalRule title="Latest Blocks" />
         <Table
           cols={ this.state.cols }

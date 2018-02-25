@@ -68,7 +68,7 @@ export default class TableWrapper extends Component {
     }
 
     return (
-      <Table>
+      <Table responsive>
         <TableHeader cols={ props.cols } />
         { this.getBody() }
       </Table>

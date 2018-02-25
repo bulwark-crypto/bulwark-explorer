@@ -1,13 +1,71 @@
 .card {
-	display: flex;
-	align-items: center;
-	margin: 2em 0;
+	line-height: 1.25;
+	margin-bottom: 1em;
 
 	&__title {
-		font-size: .9em;
+		font-size: 1.25rem;
+		margin-bottom: .8em;
+		text-transform: capitalize;
+	}
+
+	&__body {
+		height: 100%;
+	}
+
+	&__row {
+		display: flex;
+	}
+
+	&--status &__row {
+		justify-content: flex-start;
+	}
+
+	&--status &__label {
+		min-width: 60%;
+	}
+
+	&--market {
+		font-size: .8em;
+	}
+
+	&--market &__info {
+		display: flex;
+		margin-top: .5em;
+	}
+
+	&--market &__icon--arrow {
+		font-size: .8rem;
 		font-weight: bold;
-		margin-right: 1em;
-		text-transform: uppercase;
+	}
+
+	&--market &__data-main {
+		font-size: 3em;
+		font-weight: bold;
+		line-height: .75;
+	}
+
+	&--market &__data-sub {
+		font-weight: bold;
+	}
+
+	&--market &__info-source {
+		color: $gray;
+		white-space: nowrap;
+	}
+
+	&--status &__result--status {
+		color: $green;
+	}
+
+	&--graph &__data-main {
+		font-size: 1.25em;
+		font-weight: bold;
+		line-height: .75;
+	}
+
+	&--graph &__data-sub {
+		font-size: .8em;
+		color: $gray;
 	}
 
 }

@@ -13,11 +13,13 @@ export default class Card extends Component {
     const { props } = this;
 
     return (
-      <div className="card">
+      <div className={ `card ${ props.className }` }>
         <p className="card__title">
           { props.title }
         </p>
-        {props.children}
+        <div className="card__body">
+          { props.children }
+        </div>
       </div>
     );
   };
