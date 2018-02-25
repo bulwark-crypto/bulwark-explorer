@@ -1,4 +1,5 @@
 
+import 'babel-polyfill';
 import '../lib/cron';
 import config from '../config';
 import { exit, rpc } from '../lib/cron';

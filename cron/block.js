@@ -1,4 +1,5 @@
 
+import 'babel-polyfill';
 import { exit, rpc } from '../lib/cron';
 import { forEach } from 'p-iteration';
 // Models.

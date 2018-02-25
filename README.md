@@ -43,9 +43,9 @@ Before setting up the crontab please build the cron tasks by running `yarn run b
 
 To setup the crontab please see run `crontab -e` to edit the crontab and paste the following lines:
 ```
-*/1 * * * * cd /path/to/blockex && node ./cron/block.js >> ./tmp/block.log
-*/5 * * * * cd /path/to/blockex && node ./cron/coin.js >> ./tmp/coin.log
-0 * * * * cd /path/to/blockex && node ./cron/peer.js >> ./tmp/peer.log
+*/1 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/block.js >> ./tmp/block.log
+*/5 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/coin.js >> ./tmp/coin.log
+0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/peer.js >> ./tmp/peer.log
 ```
 
 ## Build

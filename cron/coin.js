@@ -1,4 +1,5 @@
 
+import 'babel-polyfill';
 import config from '../config';
 import { exit, rpc } from '../lib/cron';
 import fetch from '../lib/fetch';
