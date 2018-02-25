@@ -4,7 +4,7 @@ Simple block explorer system.
 __Under active development and subject to rapid sudden change.__
 
 ## Reqiured
-This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be installed before continuing.
+This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be installed globally before continuing or changed will be needed below using your best judgement.
 
 ## Install
 `git clone https://github.com/dustinengle/blockex.git` - copy repo to local folder.
@@ -37,11 +37,15 @@ The following automated tasks are currently setup for BlockEx.
 
 `yarn run cron:peer` - gather the list of peers and their IP information.
 
+__Note:__ it is recommended to run `yarn run cron:block >> ./tmp/block.log` the first time manually.  The initial run will download the whole blockchain and put it into the database.  This can possibly take anywhere from minutes to hours depending on the size of the blockchain and other factors like hardware, bandwidth, etc.
+
+Before setting up the crontab please build the cron tasks by running `yarn run build:cron`.
+
 To setup the crontab please see run `crontab -e` to edit the crontab and paste the following lines:
 ```
-*/1 * * * * cd /path/to/blockex && yarn run cron:block > /dev/null 2>&1
-*/5 * * * * cd /path/to/blockex && yarn run cron:coin > /dev/null 2>&1
-0 * * * * cd /path/to/blockex && yarn run cron:peer > /dev/null 2>&1
+*/1 * * * * cd /path/to/blockex && node ./cron/block.js >> ./tmp/block.log
+*/5 * * * * cd /path/to/blockex && node ./cron/coin.js >> ./tmp/coin.log
+0 * * * * cd /path/to/blockex && node ./cron/peer.js >> ./tmp/peer.log
 ```
 
 ## Build

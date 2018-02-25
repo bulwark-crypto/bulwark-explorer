@@ -7,6 +7,7 @@
   "author": "Dustin Engle <dustin@dustinengle.com>",
   "license": "MIT",
   "scripts": {
+    "build:cron": "babel ./cron --out-dir ./dist/cron",
     "build:web": "webpack --progress --colors",
     "cron:block": "babel-node ./cron/block.js",
     "cron:coin": "babel-node ./cron/coin.js",
