@@ -71,6 +71,12 @@ class Overview extends Component {
       age: moment(tx.createdAt).fromNow()
     }));
 
+    const watchListItems = [
+      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
+      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
+      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
+    ];
+
     return (
       <div>
         <SearchBar />
@@ -95,7 +101,7 @@ class Overview extends Component {
               </div>
             </div>
             <div className="col-12 col-md-3">
-              <WatchList items={[1, 2, 3]} />
+              <WatchList items={ watchListItems } />
             </div>
           </div>
         </div>

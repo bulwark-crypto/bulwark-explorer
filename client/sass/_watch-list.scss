@@ -1,0 +1,33 @@
+.watch-list {
+
+	&__item {
+		display: flex;
+		cursor: pointer;
+		align-items: center;
+		background-color: $blue-light;
+  		border-radius: 9px;
+		color: $white;
+		font-size: .5em;
+		margin: 1em 0;
+		padding: .25em;
+		text-transform: uppercase;
+	}
+
+	&__item:nth-child(odd) {
+		background-color: $blue-dark;
+	}
+
+	&__item-close {
+		color: $white;
+		font-size: 2em;
+		margin-right: 1em;
+		transform: rotate(45deg);
+	}
+
+	&__item-text {
+		overflow: hidden;
+		white-space: nowrap;
+		width: 75%;
+	}
+
+}
