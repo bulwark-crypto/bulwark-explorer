@@ -25,7 +25,7 @@ export default class Menu extends Component {
           <div className="menu__header">
             <img src="/img/logo.jpg" className="menu__logo" />
             <a onClick={ props.handleToggle } >
-              <Icon name="menu" className="menu__toggle" onClick={ props.handleToggle } />
+              <Icon name="bars" className="menu__toggle" onClick={ props.handleToggle } />
             </a>
           </div>
           <p className="menu__title">MENU</p>
@@ -33,22 +33,22 @@ export default class Menu extends Component {
               <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Overview</span>
             </Link>
             <Link className="menu__item" to="/movement">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Movement</span>
+              <Icon name="chart-bar" className="menu__icon" /> <span className="menu__item-label" >Movement</span>
             </Link>
             <Link className="menu__item" to="/top">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label">Top 100</span>
+              <Icon name="star" className="menu__icon" /> <span className="menu__item-label">Top 100</span>
             </Link>
             <Link className="menu__item" to="/masternode">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label">Masternode</span>
+              <Icon name="users" className="menu__icon" /> <span className="menu__item-label">Masternode</span>
             </Link>
             <Link className="menu__item" to="/coin">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Coin Info</span>
+              <Icon name="info" className="menu__icon" /> <span className="menu__item-label" >Coin Info</span>
             </Link>
             <Link className="menu__item" to="/faq">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label">FAQ</span>
+              <Icon name="question" className="menu__icon" /> <span className="menu__item-label">FAQ</span>
             </Link>
             <Link className="menu__item" to="/api">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label">API</span>
+              <Icon name="database" className="menu__icon" /> <span className="menu__item-label">API</span>
             </Link>
           </div>
       </div>

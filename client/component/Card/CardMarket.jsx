@@ -25,7 +25,7 @@ export default class CardStatus extends Component {
           <div>
             <p>
               <span className="u--text-green">
-                <Icon name="arrow_upward" className="card__icon--arrow" />
+                <Icon name="arrow-up" className="card__icon--arrow" />
                 <span>4.2% &nbsp;</span>
               </span>
               <span>In the last Day</span>

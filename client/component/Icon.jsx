@@ -8,7 +8,7 @@ import React from 'react';
  * @param {Object} props The props with the name.
  */
 const Icon = (props) => (
-  <span className={ `material-icons ${ props.className }` }>{ props.name }</span>
+  <i className={ `fas fa-${ props.name } ${ props.className }` } />
 );
 
 Icon.propTypes = {

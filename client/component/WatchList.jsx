@@ -23,7 +23,7 @@ export default class WatchList extends Component {
     const watchItems = items.map((item, idx) => {
       return (
         <div className="watch-list__item">
-          <Icon name="add_circle_outline"
+          <Icon name="times-circle"
                 className="watch-list__item-close"
                 onClick={ this.removeWatchItem(idx) }/>
           <span className="watch-list__item-text">
