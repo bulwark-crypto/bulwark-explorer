@@ -73,6 +73,25 @@ const getCoin = (req, res) => {
 };
 
 /**
+ * Get history of coin information.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getCoinHistory = (req, res) => {
+  Coin.find()
+    .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
+    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
+    .sort({ createdAt: -1 })
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message || err);
+    });
+};
+
+/**
  * Get the list of peers from the database.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -82,6 +101,25 @@ const getPeer = (req, res) => {
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
     .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
     .sort({ ip: 1 })
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message || err);
+    });
+};
+
+/**
+ * Get the historical list of peers.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getPeerHistory = (req, res) => {
+  Peer.find()
+    .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
+    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
+    .sort({ createdAt: -1, ip: 1 })
     .then((docs) => {
       res.json(docs);
     })
@@ -131,7 +169,9 @@ module.exports =  {
   getBlockByHash,
   getBlockByHeight,
   getCoin,
+  getCoinHistory,
   getPeer,
+  getPeerHistory,
   getTXLatest,
   getTX
 };

@@ -63,9 +63,29 @@ describe('API', () => {
       });
   });
 
+  it('/api/coin/history', (done) => {
+    chai.request(server)
+      .get('/api/coin/history')
+      .end((err, res) => {
+        expect(err).to.be.null;
+        res.should.have.status(200);
+        done();
+      });
+  });
+
   it('/api/peer', (done) => {
     chai.request(server)
       .get('/api/peer')
+      .end((err, res) => {
+        expect(err).to.be.null;
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it('/api/peer/history', (done) => {
+    chai.request(server)
+      .get('/api/peer/history')
       .end((err, res) => {
         expect(err).to.be.null;
         res.should.have.status(200);

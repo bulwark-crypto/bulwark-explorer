@@ -11,7 +11,9 @@ router.get('/address/:hash', block.getAddress);
 router.get('/block/hash/:hash', block.getBlockByHash);
 router.get('/block/height/:height', block.getBlockByHeight);
 router.get('/coin', block.getCoin);
+router.get('/coin/history', block.getCoinHistory);
 router.get('/peer', block.getPeer);
+router.get('/peer/history', block.getPeerHistory);
 router.get('/tx/latest', block.getTXLatest);
 router.get('/tx/:hash', block.getTX);
 
