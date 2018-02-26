@@ -14,8 +14,11 @@
     "cron:peer": "node ./cron/peer.js >> ./tmp/peer.log",
     "start:api": "node ./server/index.js",
     "start:web": "webpack-dev-server --progress --colors",
-    "test:client": "mocha --compilers js:babel-core/register ./test/client",
-    "test:server": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server"
+    "test:api": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/api",
+    "test:file": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/file",
+    "test:rpc": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/rpc",
+    "test:server": "yarn run test:api && yarn run test:file && yarn run test:rpc",
+    "test:web": "mocha --compilers js:babel-core/register ./test/client"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
