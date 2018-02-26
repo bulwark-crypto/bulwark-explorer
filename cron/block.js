@@ -5,6 +5,7 @@ const { forEach } = require('p-iteration');
 // Models.
 const Block = require('../model/block');
 const TX = require('../model/tx');
+const TXOut = require('../model/txout');
 
 /**
  * Process the blocks and transactions.
@@ -36,28 +37,46 @@ async function syncBlocks(current, stop) {
 
     // Ignore the genesis block.
     if (block.height) {
-      let hex, rpctx, tx;
+      let hex, outs, rpctx, tx, vout;
       await forEach(block.txs, async (txhash) => {
         hex = await rpc.call('getrawtransaction', [txhash]);
         rpctx = await rpc.call('decoderawtransaction', [hex]);
 
-        // Setup the vout addresses.
-        const addrs = new Set();
+        // Setup the vin transactions by updating the
+        // txsout table marking as spent.
+        if (rpctx.vin) {
+          await forEach(rpctx.vin, async (vi) => {
+            await TXOut.update(
+              { txid: vi.txid, vout: vi.vout },
+              { $set: { spendTx: txhash } }
+            );
+          });
+        }
 
-        // Build the total for the output of this tx.
-        let vout = 0.0;
+        // Setup the vout transactions and build total.
+        outs = [];
+        vout = 0.0;
         if (rpctx.vout) {
           rpctx.vout.forEach((vo) => {
             vout += vo.value;
-            if (vo.scriptPubKey.addresses && vo.scriptPubKey.addresses.length) {
-              vo.scriptPubKey.addresses.forEach(voa => addrs.add(voa));
+
+            if (vo.addresses && vo.addresses.length) {
+              outs.push(new TXOut({
+                addresses: vo.addresses,
+                txid: rpctx.txid,
+                value: vo.value,
+                vout: vo.n
+              }));
             }
           });
+
+          if (outs.length) {
+            await TXOut.insertMany(outs);
+          }
         }
 
         tx = new TX({
           vout,
-          addrs: Array.from(addrs),
           block: hash,
           createdAt: block.createdAt,
           hash: rpctx.txid,
