@@ -37,7 +37,7 @@ export default class WatchList extends Component {
   }
 
   removeWatchItem(idx) {
-    debugger;
+    //debugger;
   }
 
   render() {
