@@ -21,4 +21,4 @@ const router = (app) => {
   app.use('/api', api);
 };
 
-export default router;
+module.exports =  router;

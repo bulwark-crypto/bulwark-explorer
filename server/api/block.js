@@ -126,7 +126,7 @@ const getTX = (req, res) => {
     });
 };
 
-export default {
+module.exports =  {
   getAddress,
   getBlockByHash,
   getBlockByHeight,

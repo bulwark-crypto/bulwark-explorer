@@ -14,4 +14,4 @@ const Peer = mongoose.model('Peer', {
   ver: String
 }, 'peers');
 
-export default Peer;
+module.exports =  Peer;

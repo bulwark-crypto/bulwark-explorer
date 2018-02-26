@@ -16,4 +16,4 @@ const Coin = mongoose.model('Coin', {
   usd: Number
 }, 'coins');
 
-export default Coin;
+module.exports =  Coin;

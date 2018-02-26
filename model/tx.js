@@ -18,4 +18,4 @@ const TX = mongoose.model('TX', {
   vout: Number
 }, 'txs');
 
-export default TX;
+module.exports =  TX;

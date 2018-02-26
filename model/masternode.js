@@ -17,4 +17,4 @@ const Masternode = mongoose.model('Masternode', {
   ver: String
 }, 'masternodes');
 
-export default Masternode;
+module.exports =  Masternode;

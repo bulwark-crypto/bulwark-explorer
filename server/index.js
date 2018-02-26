@@ -25,4 +25,4 @@ app.listen(config.api.port, () => {
 });
 
 // Export for testing.
-export default app;
+module.exports =  app;

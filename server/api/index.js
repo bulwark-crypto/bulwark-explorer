@@ -15,4 +15,4 @@ router.get('/peer', block.getPeer);
 router.get('/tx/latest', block.getTXLatest);
 router.get('/tx/:hash', block.getTX);
 
-export default router;
+module.exports =  router;

@@ -20,4 +20,4 @@ const Block = mongoose.model('Block', {
   ver: Number
 }, 'blocks');
 
-export default Block;
+module.exports =  Block;

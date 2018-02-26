@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6971c5557d00ffbdd0e3"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "d1b740a2110a58aaf282"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -2828,10 +2828,6 @@ exports.default = config;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var isofetch = __webpack_require__("./node_modules/isomorphic-fetch/fetch-npm-browserify.js");
@@ -2892,7 +2888,7 @@ var fetch = function fetch(url) {
   });
 };
 
-exports.default = fetch;
+module.exports = fetch;
 
 /***/ }),
 

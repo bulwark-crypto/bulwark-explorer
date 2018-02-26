@@ -24,4 +24,4 @@ const middleware = (app) => {
   }));
 };
 
-export default middleware;
+module.exports =  middleware;
