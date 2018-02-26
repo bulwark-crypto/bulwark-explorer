@@ -30,9 +30,9 @@ class Overview extends Component {
         'height',
         {title: 'Transaction Hash', key: 'hash'},
         'age',
-        'amount',
+        'vout',
         'recipients',
-        'time'],
+        'createdAt'],
       limit: 10
     };
   };
@@ -68,7 +68,9 @@ class Overview extends Component {
     // Setup the list of transactions with age since created.
     const txs = this.props.txs.map(tx => ({
       ...tx,
-      age: moment(tx.createdAt).fromNow()
+      age: moment(tx.createdAt).fromNow(),
+      createdAt: moment(tx.createdAt).format('MM/DD/YYYY hh:mm A'),
+      vout: tx.vout.toFixed(8)
     }));
 
     const watchListItems = [
@@ -105,7 +107,7 @@ class Overview extends Component {
             </div>
           </div>
         </div>
-        <HorizontalRule title="Latest Blocks" />
+        <HorizontalRule title="Latest Transactions" />
         <Table
           cols={ this.state.cols }
           data={ txs } />
