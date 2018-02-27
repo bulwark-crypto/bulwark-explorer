@@ -6,14 +6,9 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-//  HEADER SECTION
-import CardGraph from 'component/Card/CardGraph';
-import CardMarket from 'component/Card/CardMarket';
-import CardStatus from 'component/Card/CardStatus';
-import SearchBar from 'component/SearchBar';
-import WatchList from 'component/WatchList';
-
+import CoinSummary from 'component/CoinSummary';
 import HorizontalRule from 'component/HorizontalRule';
+import SearchBar from 'component/SearchBar';
 import Table from 'component/Table';
 
 class Overview extends Component {
@@ -35,6 +30,7 @@ class Overview extends Component {
         'createdAt'],
       limit: 10
     };
+    this.timeout = null;
   };
 
   componentDidMount() {
@@ -73,40 +69,10 @@ class Overview extends Component {
       vout: tx.vout.toFixed(8)
     }));
 
-    const watchListItems = [
-      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
-      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
-      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
-    ];
-
     return (
       <div>
         <SearchBar />
-        <div>
-          <div className="row">
-            <div className="col-12 col-md-9">
-              <div className="row">
-                <div className="col-12 col-md-6">
-                  <CardStatus />
-                </div>
-                <div className="col-12 col-md-6">
-                  <CardGraph title="Network" />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-12 col-md-6">
-                  <CardMarket />
-                </div>
-                <div className="col-12 col-md-6">
-                  <CardGraph title="Masternodes" />
-                </div>
-              </div>
-            </div>
-            <div className="col-12 col-md-3">
-              <WatchList items={ watchListItems } />
-            </div>
-          </div>
-        </div>
+        <CoinSummary />
         <HorizontalRule title="Latest Transactions" />
         <Table
           cols={ this.state.cols }

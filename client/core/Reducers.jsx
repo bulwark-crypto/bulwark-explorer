@@ -1,5 +1,5 @@
 
-import { COIN, TXS } from '../constants';
+import { COIN, COINS, TXS } from '../constants';
 import { combineReducers } from 'redux';
 
 // The initial state of the coin object.
@@ -21,6 +21,19 @@ const coin = (state = coinInit, action) => {
 };
 
 /**
+ * Will handle the coins key state used to build the
+ * summary graphs in the header section.
+ * @param {Object} state The current or default state.
+ * @param {Object} action The flux compatible action.
+ */
+const coins = (state = [], action) => {
+  if (action.type === COINS) {
+    return [ ...action.payload ];
+  }
+  return state;
+};
+
+/**
  * Will handle the updating of the state.
  * @param {Array} state The current or default list of transactions.
  * @param {Object} action The flux compatible action.
@@ -35,5 +48,6 @@ const txs = (state = [], action) => {
 // Export and combine our reducers.
 export default combineReducers({
   coin,
+  coins,
   txs
 });

@@ -9,7 +9,9 @@ export default class CardGraph extends Component {
   static defaultProps = {
     title: 'Graph',
   };
+
   static propTypes = {
+    children: PropTypes.node.isRequired,
     title: PropTypes.string
   };
 
@@ -20,7 +22,7 @@ export default class CardGraph extends Component {
       <Card title={ props.title } className="card--graph">
         <p className="card__data-main">1417.2417 GHs</p>
         <p className="card__data-sub">Difficulty: 23947.84191275</p>
-        <div style={{width: '100%', height: 50, background: '#ccc'}}></div>
+        { this.props.children }
       </Card>
     );
   };
