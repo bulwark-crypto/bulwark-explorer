@@ -22,12 +22,17 @@ export default class CardNetworkSummary extends Component {
   };
 
   render() {
-    const hash = this.props.hashps;
-    let lbl = 'GH/s';
-    console.log(this.props);
+    const labels = ['H', 'kH', 'MH', 'GH', 'TH'];
+    let hash = this.props.hashps;
+    let idx = 0;
+    while (hash > 1000) {
+      hash = hash / 1000;
+      idx++;
+    }
+
     return (
       <Card title="Network" className="card--graph">
-        <p className="card__data-main">{ hash } { lbl }</p>
+        <p className="card__data-main">{ hash } { labels[idx] }/s</p>
         <p className="card__data-sub">Difficulty: { this.props.difficulty }</p>
         <GraphLine
           color="blue"
