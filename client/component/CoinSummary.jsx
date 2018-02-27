@@ -81,7 +81,7 @@ class CoinSummary extends Component {
                     difficulty={ coin.diff }
                     hashps={ coin.netHash }
                     xAxis={ this.props.coins.map(c => c.createdAt) }
-                    yAxis={ this.props.coins.map(c => c.netHash) } />
+                    yAxis={ this.props.coins.map(c => c.diff) } />
                 }
               </div>
             </div>
