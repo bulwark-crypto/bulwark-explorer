@@ -7,32 +7,37 @@ import Card from 'component/Card';
 
 export default class CardStatus extends Component {
   static defaultProps = {
-    title: 'Status',
+    avgBlockTime: '2 Minutes',
+    blocks: 0,
+    peers: 0,
+    status: 'Offline'
   };
+
   static propTypes = {
-    title: PropTypes.string
+    avgBlockTime: PropTypes.string.isRequired,
+    blocks: PropTypes.number.isRequired,
+    peers: PropTypes.number.isRequired,
+    status: PropTypes.string.isRequired
   };
 
   render() {
-    const { props } = this;
-
     return (
-      <Card title={ props.title } className="card--status">
+      <Card title="Status" className="card--status">
         <div className="card__row">
           <span className="card__label">Status:</span>
-          <span className="card__result card__result--status">Online</span>
+          <span className="card__result card__result--status">{ this.props.status }</span>
         </div>
         <div className="card__row">
           <span className="card__label">Blocks:</span>
-          <span className="card__result"><b>321021</b></span>
+          <span className="card__result"><b>{ this.props.blocks }</b></span>
         </div>
         <div className="card__row">
           <span className="card__label">Peers:</span>
-          <span className="card__result">342</span>
+          <span className="card__result">{ this.props.peers }</span>
         </div>
         <div className="card__row">
           <span className="card__label">Avg. Block Time:</span>
-          <span className="card__result">2 Minutes</span>
+          <span className="card__result">{ this.props.avgBlockTime }</span>
         </div>
       </Card>
     );

@@ -73,7 +73,10 @@ class CoinSummary extends Component {
           <div className="col-12 col-md-9">
             <div className="row">
               <div className="col-12 col-md-6">
-                <CardStatus />
+                <CardStatus
+                  blocks={ coin.blocks }
+                  peers={ coin.peers }
+                  status={ coin.status } />
               </div>
               <div className="col-12 col-md-6">
                 { !this.state.init &&
