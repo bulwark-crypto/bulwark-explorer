@@ -18,9 +18,13 @@ async function update() {
 
   try {
     const info = await rpc.call('getinfo');
-    const market = await fetch(url);
     const masternodes = await rpc.call('getmasternodecount');
     const nethashps = await rpc.call('getnetworkhashps');
+
+    let market = await fetch(url);
+    if (Array.isArray(market)) {
+      market = market.length ? market[0] : {};
+    }
 
     const coin = new Coin({
       cap: market.market_cap_usd,
