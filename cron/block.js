@@ -13,12 +13,11 @@ const TXOut = require('../model/txout');
  * @param {Number} stop The current block height at the tip of the chain.
  */
 async function syncBlocks(current, stop) {
-  let block, hash, rpcblock;
   for(let height = current; height < stop; height++) {
-    hash = await rpc.call('getblockhash', [height]);
-    rpcblock = await rpc.call('getblock', [hash]);
+    const hash = await rpc.call('getblockhash', [height]);
+    const rpcblock = await rpc.call('getblock', [hash]);
 
-    block = new Block({
+    const block = new Block({
       hash,
       height,
       bits: rpcblock.bits,
@@ -37,10 +36,10 @@ async function syncBlocks(current, stop) {
 
     // Ignore the genesis block.
     if (block.height) {
-      let hex, outs, rpctx, tx, vout;
+      const txs = [];
       await forEach(block.txs, async (txhash) => {
-        hex = await rpc.call('getrawtransaction', [txhash]);
-        rpctx = await rpc.call('decoderawtransaction', [hex]);
+        const hex = await rpc.call('getrawtransaction', [txhash]);
+        const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
         // Setup the vin transactions by updating the
         // txsout table marking as spent.
@@ -54,8 +53,8 @@ async function syncBlocks(current, stop) {
         }
 
         // Setup the vout transactions and build total.
-        outs = [];
-        vout = 0.0;
+        const outs = [];
+        let vout = 0.0;
         if (rpctx.vout) {
           rpctx.vout.forEach((vo) => {
             vout += vo.value;
@@ -75,7 +74,7 @@ async function syncBlocks(current, stop) {
           }
         }
 
-        tx = new TX({
+        txs.push(new TX({
           vout,
           block: hash,
           createdAt: block.createdAt,
@@ -83,10 +82,12 @@ async function syncBlocks(current, stop) {
           height: block.height,
           recipients: rpctx.vout.length,
           ver: rpctx.version
-        });
-
-        await tx.save();
+        }));
       });
+
+      if (txs.length) {
+        await TX.insertMany(txs);
+      }
     }
 
     console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
