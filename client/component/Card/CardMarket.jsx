@@ -24,10 +24,10 @@ export default class CardStatus extends Component {
 
   render() {
     const len = this.props.yAxis.length;
+    const yAxis = this.props.yAxis;
     let growth = len > 0
-      ? (this.props.yAxis[0] - this.props.yAxis[len - 1]) / this.props.yAxis[len - 1]
+      ? (yAxis[0] - yAxis[len - 1]) / yAxis[len - 1]
       : 0;
-
     if (!isFinite(growth)) {
       growth = 0.0;
     }
@@ -41,14 +41,14 @@ export default class CardStatus extends Component {
             <p>
               <span className="u--text-green">
                 <Icon name="arrow-up" className="card__icon--arrow" />
-                <span>{ growth }% &nbsp;</span>
+                <span>{ growth.toFixed(2) }% &nbsp;</span>
               </span>
               <span>In { this.props.xAxis.length * 5 } minutes</span>
             </p>
             <p className="card__info-source">Data from CoinMarketCap</p>
           </div>
           <GraphLine
-            color="green"
+            color="rgba(0,255,0,1)"
             data={ this.props.yAxis }
             height="30px"
             hideLines={ true }

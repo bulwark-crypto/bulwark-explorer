@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { TXS } from '../constants';
 
 import CoinSummary from 'component/CoinSummary';
 import HorizontalRule from 'component/HorizontalRule';
@@ -41,6 +42,8 @@ class Overview extends Component {
   };
 
   componentWillUnmount() {
+    this.props.clear();
+
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
@@ -83,6 +86,7 @@ class Overview extends Component {
 }
 
 const mapDispatch = dispatch => ({
+  clear: () => dispatch({ payload: [], type: TXS }),
   getLatest: query => Actions.getTXLatest(dispatch, query)
 });
 
