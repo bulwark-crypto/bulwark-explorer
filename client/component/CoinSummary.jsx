@@ -14,7 +14,8 @@ import WatchList from 'component/WatchList';
 class CoinSummary extends Component {
   static propTypes = {
     coins: PropTypes.array.isRequired,
-    getHistory: PropTypes.func.isRequired
+    getHistory: PropTypes.func.isRequired,
+    txs: PropTypes.array.isRequired
   };
 
   constructor(props) {
@@ -73,10 +74,15 @@ class CoinSummary extends Component {
           <div className="col-12 col-md-9">
             <div className="row">
               <div className="col-12 col-md-6">
-                <CardStatus
-                  blocks={ coin.blocks }
-                  peers={ coin.peers }
-                  status={ coin.status } />
+                { !this.state.init &&
+                  <CardStatus
+                    blocks={ this.props.txs.length
+                      ? this.props.txs[0].height
+                      : coin.blocks
+                    }
+                    peers={ coin.peers }
+                    status={ coin.status } />
+                }
               </div>
               <div className="col-12 col-md-6">
                 { !this.state.init &&
@@ -84,13 +90,19 @@ class CoinSummary extends Component {
                     difficulty={ coin.diff }
                     hashps={ coin.netHash }
                     xAxis={ this.props.coins.map(c => c.createdAt) }
-                    yAxis={ this.props.coins.map(c => c.diff) } />
+                    yAxis={ this.props.coins.map(c => c.diff ? c.diff : 0.0) } />
                 }
               </div>
             </div>
             <div className="row">
               <div className="col-12 col-md-6">
-                <CardMarket />
+                { !this.state.init &&
+                  <CardMarket
+                    btc={ coin.btc }
+                    usd={ coin.usd }
+                    xAxis={ this.props.coins.map(c => c.createdAt) }
+                    yAxis={ this.props.coins.map(c => c.usd ? c.usd : 0.0) } />
+                }
               </div>
               <div className="col-12 col-md-6">
                 { !this.state.init &&
@@ -98,7 +110,7 @@ class CoinSummary extends Component {
                     offline={ coin.mnsOff }
                     online={ coin.mnsOn }
                     xAxis={ this.props.coins.map(c => c.createdAt) }
-                    yAxis={ this.props.coins.map(c => c.mnsOn) } />
+                    yAxis={ this.props.coins.map(c => c.mnsOn ? c.mnsOn : 0.0) } />
                 }
               </div>
             </div>
@@ -117,7 +129,8 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  coins: state.coins
+  coins: state.coins,
+  txs: state.txs
 });
 
 export default connect(mapState, mapDispatch)(CoinSummary);

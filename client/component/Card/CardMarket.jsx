@@ -4,35 +4,56 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Card from 'component/Card';
+import GraphLine from '../Graph/GraphLine';
 import Icon from 'component/Icon';
 
 export default class CardStatus extends Component {
   static defaultProps = {
-    title: 'Market',
+    btc: 0.0,
+    usd: 0.0,
+    xAxis: [],
+    yAxis: []
   };
+
   static propTypes = {
-    title: PropTypes.string
+    btc: PropTypes.number.isRequired,
+    usd: PropTypes.number.isRequired,
+    xAxis: PropTypes.array.isRequired,
+    yAxis: PropTypes.array.isRequired
   };
 
   render() {
-    const { props } = this;
+    const len = this.props.yAxis.length;
+    let growth = len > 0
+      ? (this.props.yAxis[0] - this.props.yAxis[len - 1]) / this.props.yAxis[len - 1]
+      : 0;
+
+    if (!isFinite(growth)) {
+      growth = 0.0;
+    }
 
     return (
-      <Card title={ props.title } className="card--market">
-        <p className="card__data-main">BWK $4.21</p>
-        <p className="card__data-sub">0.0003896 BTC</p>
+      <Card title="Market" className="card--market">
+        <p className="card__data-main">BWK ${ this.props.usd }</p>
+        <p className="card__data-sub">{ this.props.btc } BTC</p>
         <div className="card__info">
           <div>
             <p>
               <span className="u--text-green">
                 <Icon name="arrow-up" className="card__icon--arrow" />
-                <span>4.2% &nbsp;</span>
+                <span>{ growth }% &nbsp;</span>
               </span>
-              <span>In the last Day</span>
+              <span>In { this.props.xAxis.length * 5 } minutes</span>
             </p>
             <p className="card__info-source">Data from CoinMarketCap</p>
           </div>
-          <div style={{flex: 1, height: 30, background: '#ccc'}}></div>
+          <GraphLine
+            color="green"
+            data={ this.props.yAxis }
+            height="30px"
+            hideLines={ true }
+            labels={ this.props.xAxis }
+            width="200px" />
         </div>
       </Card>
     );
