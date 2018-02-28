@@ -1,0 +1,41 @@
+
+/* Overrides bootstrap table class */
+.footer {
+	;
+	border-top: 1px solid $gray;
+	bottom: 0;
+	font-size: .9em;
+	width: 100%;
+
+	&__wrapper {
+		display: flex;
+		justify-content: space-between;
+    	padding: 2em;
+	}
+
+	&__logo {
+		display: inline-block;
+		height: 3em;
+		margin-right: 2em;
+		width: 2.5em;
+	}
+
+	&__block {
+		display: flex;
+		flex-direction: column;
+
+	}
+
+	&__legal {
+		display: inline-block;
+		font-size: .7rem;
+		line-height: 2;
+		vertical-align: middle;
+	}
+
+	&__title {
+		margin-bottom: 1.5em;
+		text-transform: uppercase;
+	}
+
+}

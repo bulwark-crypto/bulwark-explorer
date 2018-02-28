@@ -24,6 +24,7 @@ $table-cell-padding: 0;
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./sass/card";
 @import "./sass/font";
+@import "./sass/footer";
 @import "./sass/hr";
 @import "./sass/menu";
 @import "./sass/table";
@@ -46,15 +47,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .content {
     margin-left: $menu-width-open;
-    padding: 1em 2em 2em;
     transition: all .25s;
 
     &__wrapper {
 	    margin: 0 auto;
+    	padding: 1em 2em 2em;
 	    position: relative;
     }
 
-    /*Set margin for content*/
+    /*Set margin for content offset*/
 	.menu--close + & {
 	    margin-left: $menu-width-close;
 	}

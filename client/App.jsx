@@ -2,7 +2,9 @@
 import Component from 'core/Component';
 import { Link, Route, Switch } from 'react-router-dom';
 import React from 'react';
+
 import Menu from 'component/Menu';
+import Footer from 'component/Footer';
 
 import API from 'container/API';
 import Block from 'container/Block';
@@ -48,6 +50,7 @@ export default class App extends Component {
               <Route exact path="/tx" component={ TX } />
             </Switch>
           </div>
+          <Footer />
         </div>
       </div>
     );
