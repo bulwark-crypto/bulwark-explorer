@@ -21,11 +21,17 @@ export default class CardStatus extends Component {
   };
 
   render() {
+    const isOn = this.props.status === 'Online';
+
     return (
       <Card title="Status" className="card--status">
         <div className="card__row">
           <span className="card__label">Status:</span>
-          <span className="card__result card__result--status">{ this.props.status }</span>
+          <span className="card__result card__result--status">
+            <span className={ `u--text-${ isOn ? 'green' : 'red' }`}>
+              { this.props.status }
+            </span>
+          </span>
         </div>
         <div className="card__row">
           <span className="card__label">Blocks:</span>
