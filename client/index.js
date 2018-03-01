@@ -2,7 +2,6 @@
 import 'babel-polyfill';
 import './theme.scss';
 import { createStore } from 'redux';
-import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { render } from 'react-dom';
@@ -15,9 +14,7 @@ const store = createStore(Reducers);
 
 render(
   (<Provider store={ store }>
-    <HashRouter>
-        <App />
-    </HashRouter>
+    <App />
   </Provider>),
   document.getElementById('react-app')
 );

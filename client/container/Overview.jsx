@@ -1,20 +1,16 @@
 
-import Actions from 'core/Actions';
-import Component from 'core/Component';
+import Actions from '../core/Actions';
+import Component from '../core/Component';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TXS } from '../constants';
 
-import CoinSummary from 'component/CoinSummary';
-import HorizontalRule from 'component/HorizontalRule';
-import SearchBar from 'component/SearchBar';
-import Table from 'component/Table';
+import HorizontalRule from '../component/HorizontalRule';
+import Table from '../component/Table';
 
 class Overview extends Component {
   static propTypes = {
-    getLatest: PropTypes.func.isRequired,
     txs: PropTypes.array.isRequired
   };
 
@@ -28,39 +24,8 @@ class Overview extends Component {
         'age',
         'vout',
         'recipients',
-        'createdAt'],
-      limit: 10
+        'createdAt']
     };
-    this.timeout = null;
-  };
-
-  componentDidMount() {
-    this.props
-      .getLatest({ limit: this.state.limit })
-      .then(this.getLatest)
-      .catch(this.getLatest);
-  };
-
-  componentWillUnmount() {
-    this.props.clear();
-
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.timeout = null;
-    }
-  };
-
-  getLatest = () => {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-
-    this.timeout = setTimeout(() => {
-      this.props
-        .getLatest({ limit: this.state.limit })
-        .then(this.getLatest)
-        .catch(this.getLatest);
-    }, 30000); // 30 seconds
   };
 
   render() {
@@ -74,8 +39,6 @@ class Overview extends Component {
 
     return (
       <div>
-        <SearchBar />
-        <CoinSummary />
         <HorizontalRule title="Latest Transactions" />
         <Table
           cols={ this.state.cols }
@@ -86,8 +49,7 @@ class Overview extends Component {
 }
 
 const mapDispatch = dispatch => ({
-  clear: () => dispatch({ payload: [], type: TXS }),
-  getLatest: query => Actions.getTXLatest(dispatch, query)
+
 });
 
 const mapState = state => ({

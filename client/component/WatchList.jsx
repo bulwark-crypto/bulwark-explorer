@@ -1,9 +1,9 @@
 
-import Component from 'core/Component';
+import Component from '../core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Card from 'component/Card';
+import Card from './Card';
 import Icon from './Icon';
 
 export default class WatchList extends Component {

@@ -21,6 +21,16 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.worker\.js$/,
+        use: {
+          loader: 'worker-loader',
+          options: {
+            fallback: false,
+            inline: true
+          }
+        }
+      },
+      {
         exclude: /node_modules/,
         test: /\.jsx?$/,
         use: {
