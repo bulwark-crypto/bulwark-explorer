@@ -31,6 +31,7 @@ export default class CardStatus extends Component {
     if (!isFinite(growth)) {
       growth = 0.0;
     }
+    const isPos = growth >= 0;
 
     return (
       <Card title="Market" className="card--market">
@@ -39,8 +40,10 @@ export default class CardStatus extends Component {
         <div className="card__info">
           <div>
             <p>
-              <span className="u--text-green">
-                <Icon name="arrow-up" className="card__icon--arrow" />
+              <span className={ `u--text-${ isPos ? 'green' : 'red' }` }>
+                <Icon
+                  className="card__icon--arrow"
+                  name={ isPos ? 'arrow-up' : 'arrow-down' } />
                 <span>{ growth.toFixed(2) }% &nbsp;</span>
               </span>
               <span>In { this.props.xAxis.length * 5 } minutes</span>
@@ -48,7 +51,7 @@ export default class CardStatus extends Component {
             <p className="card__info-source">Data from CoinMarketCap</p>
           </div>
           <GraphLine
-            color="rgba(0,255,0,1)"
+            color={ isPos ? 'rgba(0,255,0,1)' : 'red' }
             data={ this.props.yAxis }
             height="30px"
             hideLines={ true }

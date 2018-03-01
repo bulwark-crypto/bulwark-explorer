@@ -48,6 +48,9 @@ export default class GraphLine extends Component {
       options: {
         layout: {
           padding: {
+            bottom: 10,
+            left: 10,
+            right: 10,
             top: 10
           }
         },
