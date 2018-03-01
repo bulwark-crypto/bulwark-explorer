@@ -2,7 +2,7 @@
 /* Overrides bootstrap table class */
 .footer {
 	;
-	border-top: 1px solid $gray;
+	border-top: 1px solid $gray-light;
 	bottom: 0;
 	font-size: .9em;
 	width: 100%;
@@ -15,9 +15,9 @@
 
 	&__logo {
 		display: inline-block;
-		height: 3em;
+		height: 5em;
 		margin-right: 2em;
-		width: 2.5em;
+		width: 4em;
 	}
 
 	&__block {
@@ -27,15 +27,36 @@
 	}
 
 	&__legal {
-		display: inline-block;
 		font-size: .7rem;
 		line-height: 2;
-		vertical-align: middle;
+	}
+
+	&__data-wrapper {
+		display: flex;
+		flex-direction: row;
+	}
+
+	&__data-block {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		margin: 0 1em;
 	}
 
 	&__title {
-		margin-bottom: 1.5em;
 		text-transform: uppercase;
+	}
+
+	&__social-media-icon {
+		color: $gray;
+		font-size: 2em;
+		margin-right: 1em;
+
+		&:hover,
+		&:focus {
+			color: initial;
+		}
+
 	}
 
 }
