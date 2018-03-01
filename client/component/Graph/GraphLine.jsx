@@ -37,10 +37,11 @@ export default class GraphLine extends Component {
         labels: this.props.labels,
         datasets: [{
           borderColor: [this.props.color],
-          cubicInterpolationMode: 'default', // monotone
+          //borderWidth: 4,
+          //cubicInterpolationMode: 'default', // monotone
           data: this.props.data,
           fill: false,
-          //lineTension: 1,
+          //lineTension: 0,
           pointRadius: 0,
           steppedLine: false
         }]
