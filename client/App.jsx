@@ -50,10 +50,8 @@ class App extends Component {
         this.props.getTXs({ limit: this.state.limit })
       ])
       .then(() => {
-        console.log('fetched coins and txs on init');
         this.getCoins();
         this.getTXs();
-        console.log('removing init');
         this.setState({ init: false });
       })
       .catch(error => this.setState({ error }, () => {
@@ -73,13 +71,11 @@ class App extends Component {
   };
 
   getCoins = () => {
-    console.log('getCoins');
     if (this.timer.coins) {
       clearTimeout(this.timer.coins);
     }
 
     this.timer.coins = setTimeout(() => {
-      console.log('coins timer fired');
       this.props
         .getCoins({ limit: this.state.limit })
         .then(this.getCoins)
@@ -88,13 +84,11 @@ class App extends Component {
   };
 
   getTXs = () => {
-    console.log('getTXs');
     if (this.timer.txs) {
       clearTimeout(this.timer.txs);
     }
 
     this.timer.txs = setTimeout(() => {
-      console.log('txs timer fired');
       this.props
         .getTXs({ limit: this.state.limit })
         .then(this.getTXs)
