@@ -2,6 +2,7 @@
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -34,6 +35,7 @@ class Overview extends Component {
       ...tx,
       age: moment(tx.createdAt).fromNow(),
       createdAt: moment(tx.createdAt).format('MM/DD/YYYY hh:mm A'),
+      hash: (<Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>),
       vout: tx.vout.toFixed(8)
     }));
 

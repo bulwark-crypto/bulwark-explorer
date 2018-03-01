@@ -12,6 +12,7 @@ import React from 'react';
 import API from './container/API';
 import Block from './container/Block';
 import CoinInfo from './container/CoinInfo';
+import Error404 from './container/Error404';
 import FAQ from './container/FAQ';
 import Masternode from './container/Masternode';
 import Movement from './container/Movement';
@@ -125,6 +126,7 @@ class App extends Component {
                 <Route exact path="/movement" component={ Movement } />
                 <Route exact path="/top" component={ Top100 } />
                 <Route exact path="/tx" component={ TX } />
+                <Route component={ Error404 } />
               </Switch>
             </div>
             <Footer />
