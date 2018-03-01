@@ -37,7 +37,6 @@ export default class GraphLine extends Component {
         labels: this.props.labels,
         datasets: [{
           borderColor: [this.props.color],
-          borderWidth: 2,
           cubicInterpolationMode: 'default', // monotone
           data: this.props.data,
           fill: false,
@@ -48,7 +47,9 @@ export default class GraphLine extends Component {
       },
       options: {
         layout: {
-          padding: 10
+          padding: {
+            top: 10
+          }
         },
         legend: {
           display: !this.props.hideLines
