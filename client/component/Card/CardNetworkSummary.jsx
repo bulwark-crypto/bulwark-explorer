@@ -35,7 +35,7 @@ export default class CardNetworkSummary extends Component {
         <p className="card__data-main">{ hash } { labels[idx] }/s</p>
         <p className="card__data-sub">Difficulty: { this.props.difficulty }</p>
         <GraphLine
-          color="blue"
+          color="rgba(0,0,255,0.5)"
           data={ this.props.yAxis }
           height="50px"
           hideLines={ true }

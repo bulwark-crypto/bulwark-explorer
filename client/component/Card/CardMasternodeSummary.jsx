@@ -29,7 +29,7 @@ export default class CardMasternodeSummary extends Component {
         <p className="card__data-main">{ total }</p>
         <p className="card__data-sub">Online: { this.props.online }</p>
         <GraphLine
-          color="blue"
+          color="rgba(0,0,255,0.5)"
           data={ this.props.yAxis }
           height="50px"
           hideLines={ true }

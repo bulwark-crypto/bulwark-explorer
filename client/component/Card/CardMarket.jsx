@@ -51,7 +51,7 @@ export default class CardStatus extends Component {
             <p className="card__info-source">Data from CoinMarketCap</p>
           </div>
           <GraphLine
-            color={ isPos ? 'rgba(0,255,0,1)' : 'red' }
+            color={ isPos ? 'rgba(0,255,0,0.5)' : 'rgba(255,0,0,0.5)' }
             data={ this.props.yAxis }
             height="30px"
             hideLines={ true }
