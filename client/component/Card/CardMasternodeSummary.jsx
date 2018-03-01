@@ -31,7 +31,7 @@ export default class CardMasternodeSummary extends Component {
         <GraphLine
           color="rgba(0,0,255,0.5)"
           data={ this.props.yAxis }
-          height="50px"
+          height="60px"
           hideLines={ true }
           labels={ this.props.xAxis }
           width="300px" />

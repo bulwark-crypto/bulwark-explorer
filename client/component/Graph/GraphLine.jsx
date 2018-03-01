@@ -8,7 +8,7 @@ export default class GraphLine extends Component {
   static defaultProps = {
     color: 'rgba(0,255,0,1)',
     data: [],
-    height: '50px',
+    height: '60px',
     hideLines: false,
     labels: [],
     width: '300px'
