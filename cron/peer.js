@@ -28,7 +28,7 @@ async function update() {
       peer = new Peer({
         _id: geoip.ip,
         country: geoip.country_name,
-        countryCode: geoip.country_code.toLowerCase(),
+        countryCode: geoip.country_code,
         createdAt: date,
         ip: geoip.ip,
         lat: geoip.latitude,
