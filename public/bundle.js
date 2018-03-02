@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f7276dcc2733dbb58964"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "ba146037405a83374633"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -3307,6 +3307,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Actions = __webpack_require__("./client/core/Actions.jsx");
@@ -3376,7 +3378,20 @@ var Peer = function (_Component) {
         _react2.default.createElement(_HorizontalRule2.default, { title: 'Connections' }),
         _react2.default.createElement(_Table2.default, {
           cols: this.state.cols,
-          data: this.state.peers })
+          data: this.state.peers.map(function (peer) {
+            return _extends({}, peer, {
+              ip: _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement('img', {
+                  className: 'flag',
+                  src: '/img/flag/' + (peer.countryCode ? peer.countryCode.toLowerCase() : 'xx') + '.gif',
+                  title: peer.country }),
+                ' ',
+                peer.ip
+              )
+            });
+          }) })
       );
     }
   }]);
