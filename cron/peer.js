@@ -17,6 +17,11 @@ async function update() {
   const date = moment().startOf('minute').toDate();
 
   try {
+    // Clear existing peer connections from database
+    // on each run to keep it recent and accurate to
+    // the live connections with the node.
+    await Peer.remove({});
+
     const peers = await rpc.call('getpeerinfo');
     let geoip, peer, url;
     await forEach(peers, async (peer) => {
