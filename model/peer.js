@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Peer = mongoose.model('Peer', {
   _id: String,
   country: String,
+  countryCode: String,
   createdAt: Date,
   ip: String,
   lat: String,
