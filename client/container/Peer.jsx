@@ -36,7 +36,17 @@ class Peer extends Component {
         <HorizontalRule title="Connections" />
         <Table
           cols={ this.state.cols }
-          data={ this.state.peers } />
+          data={ this.state.peers.map(peer => ({
+            ...peer,
+            ip: (
+              <div>
+                <img
+                  className="flag"
+                  src={ `/img/flag/${ peer.countryCode ? peer.countryCode.toLowerCase() : 'xx' }.gif` }
+                  title={ peer.country } /> { peer.ip }
+              </div>
+            )
+          })) } />
       </div>
     );
   };
