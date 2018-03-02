@@ -23,32 +23,39 @@ export default class Menu extends Component {
       <div className={ `menu ${ props.isOpen ? 'menu--open' : 'menu--close' }` }>
         <div className="menu__wrapper">
           <div className="menu__header">
-            <img src="/img/logo.jpg" className="menu__logo" />
+            <img src="/img/Badge-White.png" className="menu__logo" />
             <a onClick={ props.handleToggle } >
               <Icon name="bars" className="menu__toggle" onClick={ props.handleToggle } />
             </a>
           </div>
           <p className="menu__title">MENU</p>
             <Link className="menu__item" to="/">
-              <Icon name="home" className="menu__icon" /> <span className="menu__item-label" >Overview</span>
+              <img className="menu__icon" src="/img/Home-icon@2x.png" />
+              <span className="menu__item-label" >Overview</span>
             </Link>
             <Link className="menu__item" to="/movement">
-              <Icon name="chart-bar" className="menu__icon" /> <span className="menu__item-label" >Movement</span>
+              <img className="menu__icon" src="/img/Analytics-icon@2x.png" />
+              <span className="menu__item-label" >Movement</span>
             </Link>
             <Link className="menu__item" to="/top">
-              <Icon name="star" className="menu__icon" /> <span className="menu__item-label">Top 100</span>
+              <img className="menu__icon" src="/img/Ratings-icon@2x.png" />
+              <span className="menu__item-label">Top 100</span>
             </Link>
             <Link className="menu__item" to="/masternode">
-              <Icon name="users" className="menu__icon" /> <span className="menu__item-label">Masternode</span>
+              <img className="menu__icon" src="/img/Customers-icon@2x.png" />
+              <span className="menu__item-label">Masternode</span>
             </Link>
             <Link className="menu__item" to="/coin">
-              <Icon name="info" className="menu__icon" /> <span className="menu__item-label" >Coin Info</span>
+              <img className="menu__icon" src="/img/Market-icon@2x.png" />
+              <span className="menu__item-label" >Coin Info</span>
             </Link>
             <Link className="menu__item" to="/faq">
-              <Icon name="question" className="menu__icon" /> <span className="menu__item-label">FAQ</span>
+              <img className="menu__icon" src="/img/Jobs-icon@2x.png" />
+              <span className="menu__item-label">FAQ</span>
             </Link>
             <Link className="menu__item" to="/api">
-              <Icon name="database" className="menu__icon" /> <span className="menu__item-label">API</span>
+              <img className="menu__icon" src="/img/Support-icon@2x.png" />
+              <span className="menu__item-label">API</span>
             </Link>
           </div>
       </div>

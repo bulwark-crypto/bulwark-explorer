@@ -10,7 +10,7 @@ $white: #ffffff;
 
 $menu-gradient-main: #295af5;
 $menu-gradient-secondary: #595ff5;
-$menu-width-open: 256px;
+$menu-width-open: 240px;
 $menu-width-close: 110px;
 
 /* Bootstrap override */
@@ -21,6 +21,7 @@ $paragraph-margin-bottom: 0;
 $table-border-width: 0;
 $table-cell-padding: 0;
 
+$container-large-desktop: 1170px;
 
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./sass/card";

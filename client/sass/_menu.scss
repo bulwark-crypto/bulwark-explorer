@@ -30,9 +30,10 @@
 	}
 
 	&__logo {
+		height: auto;
 		margin-right: 2em;
 		/* Used to align with searchbar */
-		min-height: 4em;
+		width: 140px;
 		transition: all .25s;
 	}
 
@@ -74,9 +75,8 @@
 	}
 
 	&__icon {
-		font-size: 1.25em;
-		height: 36px;
-		width: 36px;
+		height: 24px;
+		width: 24px;
 	}
 
 	/*Closed modifier*/
