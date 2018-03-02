@@ -29,9 +29,15 @@ const getAddress = (req, res) => {
  * @param {Object} res The response object.
  */
 const getBlockByHash = (req, res) => {
+  let block = {};
   Block.findOne({ hash: req.params.hash })
     .then((doc) => {
-      res.json(doc);
+      block = doc;
+      return TX.find({ hash: { $in: block.txs } });
+    })
+    .then((docs) => {
+      block.txs = docs;
+      res.json(block);
     })
     .catch((err) => {
       console.log(err);
@@ -45,9 +51,15 @@ const getBlockByHash = (req, res) => {
  * @param {Object} res The response object.
  */
 const getBlockByHeight = (req, res) => {
+  let block = {};
   Block.findOne({ height: req.params.height })
     .then((doc) => {
-      res.json(doc);
+      block = doc;
+      return TX.find({ hash: { $in: block.txs } });
+    })
+    .then((docs) => {
+      block.txs = docs;
+      res.json(block);
     })
     .catch((err) => {
       console.log(err);
