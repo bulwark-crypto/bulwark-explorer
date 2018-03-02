@@ -1,5 +1,6 @@
 
 import Component from '../../core/Component';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -39,7 +40,9 @@ export default class CardStatus extends Component {
         </div>
         <div className="card__row">
           <span className="card__label">Peers:</span>
-          <span className="card__result">{ this.props.peers }</span>
+          <span className="card__result">
+            <Link to="/peer">{ this.props.peers }</Link>
+          </span>
         </div>
         <div className="card__row">
           <span className="card__label">Avg. Block Time:</span>
