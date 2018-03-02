@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "0eff381573443e441fbd"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "1e70105de2008f8efe5c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1715,28 +1715,28 @@ var Footer = function (_Component) {
               { className: 'footer__social-media-wrapper' },
               _react2.default.createElement(
                 'a',
-                { href: '#' },
+                { href: 'https://bitcointalk.org/index.php?topic=2499481.0', target: '_blank' },
                 _react2.default.createElement(_Icon2.default, { name: 'envelope-square', className: 'footer__social-media-icon' })
               ),
               _react2.default.createElement(
                 'a',
-                { href: '#' },
-                _react2.default.createElement(_Icon2.default, { name: 'reddit', className: ' fab footer__social-media-icon' })
+                { href: 'https://www.reddit.com/r/BulwarkCoin/', target: '_blank' },
+                _react2.default.createElement(_Icon2.default, { name: 'reddit', className: 'fab footer__social-media-icon' })
               ),
               _react2.default.createElement(
                 'a',
-                { href: '#' },
-                _react2.default.createElement(_Icon2.default, { name: 'github', className: ' fab footer__social-media-icon' })
+                { href: 'https://github.com/bulwark-crypto', target: '_blank' },
+                _react2.default.createElement(_Icon2.default, { name: 'github', className: 'fab footer__social-media-icon' })
               ),
               _react2.default.createElement(
                 'a',
-                { href: '#' },
-                _react2.default.createElement(_Icon2.default, { name: 'twitter', className: ' fab footer__social-media-icon' })
+                { href: 'https://twitter.com/BulwarkCoin', target: '_blank' },
+                _react2.default.createElement(_Icon2.default, { name: 'twitter', className: 'fab footer__social-media-icon' })
               ),
               _react2.default.createElement(
                 'a',
-                { href: '#' },
-                _react2.default.createElement(_Icon2.default, { name: 'facebook', className: ' fab footer__social-media-icon' })
+                { href: 'http://facebook.com/bulwark.coin.IO/', target: '_blank' },
+                _react2.default.createElement(_Icon2.default, { name: 'facebook', className: 'fab footer__social-media-icon' })
               )
             )
           )
