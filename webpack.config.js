@@ -14,7 +14,7 @@ module.exports = {
     compress: true,
     contentBase: path.resolve('public'),
     hot: true,
-    port: 8080,
+    port: 8081,
     publicPath: '/'
   },
   entry: ['babel-polyfill', './client/index.js'],

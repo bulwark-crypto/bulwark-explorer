@@ -12,14 +12,13 @@ import Icon from './Icon';
  */
 class Footer extends Component {
   static propTypes = {
-    coins: PropTypes.array,
+    coins: PropTypes.array.isRequired,
+    txs: PropTypes.array.isRequired,
   };
 
   render() {
-    const coin = this.props.coins && this.props.coins.length
-    ? this.props.coins[0]
-    : { status: 'offline', blocks: 0 };
-
+    const coin = this.props.coins && this.props.coins.length ? this.props.coins[0] : { status: 'offline', blocks: 0 };
+    const blocks = this.props.txs && this.props.txs.length ? this.props.txs[0].height : coin.blocks;
     const statusColor = (coin.status && coin.status.toLowerCase() === 'online') ? 'green' : 'red';
 
     return (
@@ -43,7 +42,7 @@ class Footer extends Component {
                 </div>
                 <div className="footer__data-block">
                   <p className="footer__title">Blocks</p>
-                  <p><b>{ coin.blocks }</b></p>
+                  <p><b>{ blocks }</b></p>
                 </div>
             </div>
             <div className="footer__data-block">
