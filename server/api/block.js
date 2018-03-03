@@ -13,7 +13,7 @@ const getAddress = (req, res) => {
   TX.find({ addrs: req.params.hash })
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
     .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
-    .sort({ height: 0 })
+    .sort({ height: -1 })
     .then((docs) => {
       res.json(docs);
     })
@@ -74,7 +74,7 @@ const getBlockByHeight = (req, res) => {
  */
 const getCoin = (req, res) => {
   Coin.findOne()
-    .sort({ createdAt: 0 })
+    .sort({ createdAt: -1 })
     .then((doc) => {
       res.json(doc);
     })
@@ -93,7 +93,7 @@ const getCoinHistory = (req, res) => {
   Coin.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
     .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
-    .sort({ createdAt: 0 })
+    .sort({ createdAt: -1 })
     .then((docs) => {
       res.json(docs);
     })
@@ -131,7 +131,7 @@ const getPeerHistory = (req, res) => {
   Peer.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
     .limit(req.query.limit ? parseInt(req.query.limit, 10) : 500)
-    .sort({ createdAt: 0, ip: 1 })
+    .sort({ createdAt: -1, ip: 1 })
     .then((docs) => {
       res.json(docs);
     })
@@ -150,7 +150,7 @@ const getTXLatest = (req, res) => {
   TX.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
     .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
-    .sort({ height: 0 })
+    .sort({ height: -1 })
     .then((docs) => {
       res.json(docs);
     })
