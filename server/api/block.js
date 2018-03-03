@@ -32,7 +32,7 @@ const getBlock = async (req, res) => {
   try {
     const query = isNaN(req.params.hash) 
       ? { hash: req.params.hash } 
-      : { height: req.params.height };
+      : { height: req.params.hash };
     const block = await Block.findOne(query);
     const txs = await TX.find({ hash: { $in: block.txs }}).select('createdAt hash recipients');
 
