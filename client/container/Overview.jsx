@@ -36,6 +36,7 @@ class Overview extends Component {
       age: moment(tx.createdAt).fromNow(),
       createdAt: moment(tx.createdAt).format('MM/DD/YYYY hh:mm A'),
       hash: (<Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>),
+      height: (<Link to={ `/block/${ tx.height }` }>{ tx.height }</Link>),
       vout: tx.vout.toFixed(8)
     }));
 

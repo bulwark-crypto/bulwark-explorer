@@ -120,7 +120,7 @@ class App extends Component {
               <Switch>
                 <Route exact path="/" component={ Overview } />
                 <Route exact path="/api" component={ API } />
-                <Route exact path="/block" component={ Block } />
+                <Route exact path="/block/:hash" component={ Block } />
                 <Route exact path="/coin" component={ CoinInfo } />
                 <Route exact path="/faq" component={ FAQ } />
                 <Route exact path="/masternode" component={ Masternode } />

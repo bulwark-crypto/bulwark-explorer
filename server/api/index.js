@@ -8,8 +8,7 @@ const router = express.Router();
 
 // Connect the routes with the handlers.
 router.get('/address/:hash', block.getAddress);
-router.get('/block/hash/:hash', block.getBlockByHash);
-router.get('/block/height/:height', block.getBlockByHeight);
+router.get('/block/:hash', block.getBlockByHash);
 router.get('/coin', block.getCoin);
 router.get('/coin/history', block.getCoinHistory);
 router.get('/peer', block.getPeer);

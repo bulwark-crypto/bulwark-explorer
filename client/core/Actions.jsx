@@ -30,6 +30,12 @@ const getFromWorker = (type, resolve, reject, query = null) => {
   worker.postMessage({ query, type });
 };
 
+export const getBlock = (query) => {
+  return new promise((resolve, reject) => {
+    getFromWorker('block', resolve, reject, query);
+  });
+};
+
 export const getCoinHistory = (dispatch, query) => {
   return new promise((resolve, reject) => {
     getFromWorker(
@@ -82,6 +88,7 @@ export const getTXLatest = (dispatch, query) => {
 };
 
 export default {
+  getBlock,
   getCoinHistory,
   getPeers,
   getTXLatest

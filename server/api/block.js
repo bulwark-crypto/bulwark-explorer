@@ -24,31 +24,15 @@ const getAddress = (req, res) => {
 };
 
 /**
- * Get block by hash.
+ * Get block by hash or height.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getBlockByHash = async (req, res) => {
+const getBlock = async (req, res) => {
   try {
-    const block = await Block.findOne({ hash: req.params.hash });
-    const txs = await TX.find({ hash: { $in: block.txs }});
-
-    res.json({ block, txs });
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
-};
-
-/**
- * Get block by height.
- * @param {Object} req The request object.
- * @param {Object} res The response object.
- */
-const getBlockByHeight = async (req, res) => {
-  try {
-    const block = await Block.findOne({ height: req.params.height });
-    const txs = await TX.find({ hash: { $in: block.txs }});
+    const query = { $or: [{ hash: req.params.hash }, { height: req.params.hash }] };
+    const block = await Block.findOne(query);
+    const txs = await TX.find({ hash: { $in: block.txs }}).select('createdAt hash recipients');
 
     res.json({ block, txs });
   } catch(err) {
