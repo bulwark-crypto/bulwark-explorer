@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "31bb35ee6ce41362b680"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "7f5a1614087c1cc8310e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1756,9 +1756,13 @@ var CardStatus = function (_Component) {
             'span',
             { className: 'card__result' },
             _react2.default.createElement(
-              'b',
-              null,
-              this.props.blocks
+              _reactRouterDom.Link,
+              { to: '/block/' + this.props.blocks },
+              _react2.default.createElement(
+                'b',
+                null,
+                this.props.blocks
+              )
             )
           )
         ),
@@ -2140,6 +2144,100 @@ CardTXOut.propTypes = {
   txs: _propTypes2.default.array.isRequired
 };
 exports.default = CardTXOut;
+
+/***/ }),
+
+/***/ "./client/component/Card/CardTXs.jsx":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Component2 = __webpack_require__("./client/core/Component.jsx");
+
+var _Component3 = _interopRequireDefault(_Component2);
+
+var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
+
+var _moment = __webpack_require__("./node_modules/moment/moment.js");
+
+var _moment2 = _interopRequireDefault(_moment);
+
+var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _react = __webpack_require__("./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Table = __webpack_require__("./client/component/Table/index.jsx");
+
+var _Table2 = _interopRequireDefault(_Table);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CardTXs = function (_Component) {
+  _inherits(CardTXs, _Component);
+
+  function CardTXs(props) {
+    _classCallCheck(this, CardTXs);
+
+    var _this = _possibleConstructorReturn(this, (CardTXs.__proto__ || Object.getPrototypeOf(CardTXs)).call(this, props));
+
+    _this.state = {
+      cols: [{ key: 'hash', title: 'Transaction Hash' }, { key: 'vout', title: 'Amount' }, { key: 'createdAt', title: 'Time' }]
+    };
+    return _this;
+  }
+
+  _createClass(CardTXs, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(_Table2.default, {
+        cols: this.state.cols,
+        data: this.props.txs.map(function (tx) {
+          return _extends({}, tx, {
+            createdAt: (0, _moment2.default)(tx.createdAt).format('YYYY-MM-DD hh:mm:ss A'),
+            hash: _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/tx/' + tx.hash },
+              tx.hash
+            ),
+            vout: _react2.default.createElement(
+              'span',
+              { className: 'badge badge-success' },
+              tx.vout.toFixed(8)
+            )
+          });
+        }) });
+    }
+  }]);
+
+  return CardTXs;
+}(_Component3.default);
+
+CardTXs.defaultProps = {
+  txs: []
+};
+CardTXs.propTypes = {
+  txs: _propTypes2.default.array.isRequired
+};
+exports.default = CardTXs;
 
 /***/ }),
 
@@ -3779,13 +3877,31 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Actions = __webpack_require__("./client/core/Actions.jsx");
+
+var _Actions2 = _interopRequireDefault(_Actions);
+
 var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
 
+var _reactRedux = __webpack_require__("./node_modules/react-redux/es/index.js");
+
+var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
+
+var _CardTXs = __webpack_require__("./client/component/Card/CardTXs.jsx");
+
+var _CardTXs2 = _interopRequireDefault(_CardTXs);
+
+var _HorizontalRule = __webpack_require__("./client/component/HorizontalRule.jsx");
+
+var _HorizontalRule2 = _interopRequireDefault(_HorizontalRule);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3798,19 +3914,39 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Movement = function (_Component) {
   _inherits(Movement, _Component);
 
-  function Movement() {
+  function Movement(props) {
     _classCallCheck(this, Movement);
 
-    return _possibleConstructorReturn(this, (Movement.__proto__ || Object.getPrototypeOf(Movement)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Movement.__proto__ || Object.getPrototypeOf(Movement)).call(this, props));
+
+    _this.state = {
+      page: 1,
+      size: 10,
+      txs: []
+    };
+    return _this;
   }
 
   _createClass(Movement, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.props.getTXs({
+        limit: this.state.size,
+        skip: (this.state.page - 1) * this.state.size
+      }).then(function (txs) {
+        return _this2.setState({ txs: txs });
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'h1',
+        'div',
         null,
-        'Movement'
+        _react2.default.createElement(_HorizontalRule2.default, { title: 'Movement' }),
+        _react2.default.createElement(_CardTXs2.default, { txs: this.state.txs })
       );
     }
   }]);
@@ -3818,7 +3954,20 @@ var Movement = function (_Component) {
   return Movement;
 }(_Component3.default);
 
-exports.default = Movement;
+Movement.propTypes = {
+  getTXs: _propTypes2.default.func.isRequired
+};
+
+
+var mapDispatch = function mapDispatch(dispatch) {
+  return {
+    getTXs: function getTXs(query) {
+      return _Actions2.default.getTXLatest(null, query);
+    }
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(null, mapDispatch)(Movement);
 
 /***/ }),
 
@@ -4345,10 +4494,14 @@ var getTX = exports.getTX = function getTX(query) {
 var getTXLatest = exports.getTXLatest = function getTXLatest(dispatch, query) {
   return new _bluebird2.default(function (resolve, reject) {
     getFromWorker('txs', function (payload) {
-      dispatch({ payload: payload, type: _constants.TXS });
+      if (dispatch) {
+        dispatch({ payload: payload, type: _constants.TXS });
+      }
       resolve(payload);
     }, function (payload) {
-      dispatch({ payload: payload, type: _constants.ERROR });
+      if (dispatch) {
+        dispatch({ payload: payload, type: _constants.ERROR });
+      }
       reject(payload);
     }, query);
   });
