@@ -13,7 +13,7 @@ const TX = mongoose.model('TX', new mongoose.Schema({
   block: { required: true, type: String },
   createdAt: { required: true, type: Date },
   hash: { required: true, type: String },
-  height: { required: true, type: Number },
+  height: { index: -1, required: true, type: Number },
   recipients: { required: true, type: Number },
   ver: { required: true, type: Number },
   vout: { required: true, type: Number }

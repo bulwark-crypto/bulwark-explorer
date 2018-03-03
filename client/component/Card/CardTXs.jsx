@@ -20,6 +20,7 @@ export default class CardTXs extends Component {
     super(props);
     this.state = {
       cols: [
+        { key: 'height', title: 'Block Height' },
         { key: 'hash', title: 'Transaction Hash' },
         { key: 'vout', title: 'Amount' },
         { key: 'createdAt', title: 'Time' },
@@ -39,8 +40,13 @@ export default class CardTXs extends Component {
               { tx.hash }
             </Link>
           ),
+          height: (
+            <Link to={ `/block/${ tx.height }` }>
+              { tx.height }
+            </Link>
+          ),
           vout: (
-            <span className="badge badge-success">
+            <span className={ `badge badge-${ tx.vout < 0 ? 'danger' : 'success' }` }>
               { tx.vout.toFixed(8) }
             </span>
           )

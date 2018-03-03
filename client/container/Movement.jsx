@@ -7,6 +7,7 @@ import React from 'react';
 
 import CardTXs from '../component/Card/CardTXs';
 import HorizontalRule from '../component/HorizontalRule';
+import Pagination from '../component/Pagination';
 
 class Movement extends Component {
   static propTypes = {
@@ -15,7 +16,9 @@ class Movement extends Component {
 
   constructor(props) {
     super(props);
+    this.debounce = null;
     this.state = { 
+      pages: 0,
       page: 1,
       size: 10, 
       txs: [] 
@@ -26,13 +29,31 @@ class Movement extends Component {
     this.getTXs();
   };
 
+  componentWillUnmount() {
+    if (this.debounce) {
+      clearTimeout(this.debounce);
+      this.debounce = null;
+    }
+  };
+
   getTXs = () => {
-    this.props
-      .getTXs({ 
-        limit: this.state.size, 
-        skip: (this.state.page - 1) * this.state.size 
-      })
-      .then(({ pages, txs }) => this.setState({ pages, txs }));
+    if (this.debounce) {
+      clearTimeout(this.debounce);
+    }
+
+    this.debounce = setTimeout(() => {
+      console.log(this.state.size, this.state.page);
+      this.props
+        .getTXs({ 
+          limit: this.state.size, 
+          skip: (this.state.page - 1) * this.state.size 
+        })
+        .then(({ pages, txs }) => {
+          if (this.debounce) {
+            this.setState({ pages, txs });
+          }
+        });
+    }, 800);
   };
 
   handlePage = page => this.setState({ page }, this.getTXs);
@@ -56,6 +77,12 @@ class Movement extends Component {
           select={ select }
           title="Movement" />
         <CardTXs txs={ this.state.txs } /> 
+        <Pagination 
+          current={ this.state.page } 
+          className="float-right"
+          onPage={ this.handlePage }
+          total={ this.state.pages } />
+        <div className="clearfix" />
       </div>
     );
   };

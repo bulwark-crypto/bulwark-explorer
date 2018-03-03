@@ -4,6 +4,7 @@ $blue: #0000ff;
 $blue-dark: #595ff5;
 $blue-light: #2ba2f8;
 $gray: #777777;
+$gray-dark: #333333;
 $gray-light: #cccccc;
 $green: #61d85d;
 $white: #ffffff;
@@ -22,6 +23,32 @@ $table-border-width: 0;
 $table-cell-padding: 0;
 
 $container-large-desktop: 1170px;
+
+// Pagination
+$pagination-padding-y:              10px;
+$pagination-padding-x:              10px;
+$pagination-padding-y-sm:           10px;
+$pagination-padding-x-sm:           10px;
+$pagination-padding-y-lg:           10px;
+$pagination-padding-x-lg:           10px;
+$pagination-line-height:            1;
+
+$pagination-color:                  $gray-light;
+$pagination-bg:                     $white;
+$pagination-border-width:           1px;
+$pagination-border-color:           $gray-light;
+
+$pagination-hover-color:            $gray-dark;
+$pagination-hover-bg:            	$white;
+$pagination-hover-border-color:    	$gray-light;
+
+$pagination-active-color:           $gray-dark;
+$pagination-active-bg:           	$white;
+$pagination-active-border-color:    $gray-dark;
+
+$pagination-disabled-color:         $gray-light;
+$pagination-disabled-bg:            $white;
+$pagination-disabled-border-color:  $gray-light;
 
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./sass/card";

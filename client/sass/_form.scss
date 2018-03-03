@@ -1,5 +1,12 @@
 
+::-moz-placeholder,
+::-webkit-input-placeholder {
+	color: $gray-dark;
+	padding: 10px;
+}
+
 select {
 	background: $white;
-	color: $gray;
+	border: 1px solid $gray-light;
+	color: $gray-dark;
 }
