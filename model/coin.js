@@ -6,7 +6,7 @@ const Coin = mongoose.model('Coin', new mongoose.Schema({
   blocks: { required: true, type: Number },
   btc: { required: true, type: Number },
   cap: { required: true, type: Number },
-  createdAt: { required: true, type: Date },
+  createdAt: { index: 1, required: true, type: Date },
   diff: { required: true, type: Number },
   mnsOff: { required: true, type: Number },
   mnsOn: { required: true, type: Number },
