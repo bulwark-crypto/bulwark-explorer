@@ -36,7 +36,11 @@ export default class CardStatus extends Component {
         </div>
         <div className="card__row">
           <span className="card__label">Blocks:</span>
-          <span className="card__result"><b>{ this.props.blocks }</b></span>
+          <span className="card__result">
+            <Link to={ `/block/${ this.props.blocks }` }>
+              <b>{ this.props.blocks }</b>
+            </Link>
+          </span>
         </div>
         <div className="card__row">
           <span className="card__label">Peers:</span>
