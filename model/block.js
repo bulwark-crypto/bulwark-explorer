@@ -12,7 +12,7 @@ const Block = mongoose.model('Block', new mongoose.Schema({
   confirmations: { required: true, type: Number },
   createdAt: { required: true, type: Date },
   diff: { required: true, type: String },
-  hash: { index: true, required: true, type: String },
+  hash: { index: true, required: true, type: String, unique: true },
   height: { index: true, required: true, type: Number },
   merkle: { required: true, type: String },
   nonce: { required: true, type: Number },
