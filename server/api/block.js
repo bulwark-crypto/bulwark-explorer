@@ -28,7 +28,7 @@ const getAddress = (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getBlockByHash = (req, res) => {
+const getBlockByHash = async (req, res) => {
   try {
     const block = await Block.findOne({ hash: req.params.hash });
     const txs = await TX.find({ hash: { $in: block.txs }});
