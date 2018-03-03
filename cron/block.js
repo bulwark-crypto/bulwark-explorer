@@ -24,14 +24,14 @@ async function syncBlocks(current, stop) {
     const block = new Block({
       hash,
       height,
-      _id: hash,
+      _id: hash ? hash : '0',
       bits: rpcblock.bits,
       confirmations: rpcblock.confirmations,
       createdAt: new Date(rpcblock.time * 1000),
       diff: rpcblock.difficulty,
       merkle: rpcblock.merkleroot,
       nonce: rpcblock.nonce,
-      prev: rpcblock.prevblockhash,
+      prev: rpcblock.prevblockhash ? rpcblock.prevblockhash : '',
       size: rpcblock.size,
       txs: rpcblock.tx ? rpcblock.tx : [],
       ver: rpcblock.version
