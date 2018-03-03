@@ -152,8 +152,7 @@ const getTX = (req, res) => {
 
 module.exports =  {
   getAddress,
-  getBlockByHash,
-  getBlockByHeight,
+  getBlock,
   getCoin,
   getCoinHistory,
   getPeer,
