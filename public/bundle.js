@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "7ae6d1625fd921c9a1e4"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "31bb35ee6ce41362b680"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1833,6 +1833,8 @@ var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
 
+var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
+
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
@@ -1865,7 +1867,6 @@ var CardTX = function (_Component) {
   _createClass(CardTX, [{
     key: 'render',
     value: function render() {
-      console.log(this.props.height, this.props.tx);
       return _react2.default.createElement(
         'div',
         { className: 'card--block' },
@@ -1926,7 +1927,11 @@ var CardTX = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: 'card__result' },
-            this.props.tx.block
+            _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/block/' + this.props.tx.block },
+              this.props.tx.block
+            )
           )
         ),
         _react2.default.createElement(
