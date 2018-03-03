@@ -68,7 +68,7 @@ const getCoin = (req, res) => {
 const getCoinHistory = (req, res) => {
   Coin.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
+    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
     .sort({ createdAt: -1 })
     .then((docs) => {
       res.json(docs);
@@ -87,7 +87,7 @@ const getCoinHistory = (req, res) => {
 const getPeer = (req, res) => {
   Peer.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 100)
+    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 500)
     .sort({ ip: 1 })
     .then((docs) => {
       res.json(docs);
@@ -124,7 +124,7 @@ const getPeerHistory = (req, res) => {
  */
 const getTXLatest = (req, res) => {
   TX.find()
-    .limit(50)
+    .limit(10)
     .sort({ height: -1 })
     .then((docs) => {
       res.json(docs);
@@ -160,7 +160,7 @@ const getTX = async (req, res) => {
  */
 const getTXs = async (req, res) => {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const total = await TX.find().skip(skip).limit(limit).sort({ height: -1 }).size();
     const txs = await TX.find().skip(skip).limit(limit).sort({ height: -1 });
