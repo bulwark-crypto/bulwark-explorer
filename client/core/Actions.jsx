@@ -81,11 +81,15 @@ export const getTXLatest = (dispatch, query) => {
     getFromWorker(
       'txs',
       (payload) => {
-        dispatch({ payload, type: TXS });
+        if (dispatch) {
+          dispatch({ payload, type: TXS });
+        }
         resolve(payload);
       },
       (payload) => {
-        dispatch({ payload, type: ERROR });
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
         reject(payload);
       },
       query
