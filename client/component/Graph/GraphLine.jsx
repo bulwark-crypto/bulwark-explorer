@@ -1,6 +1,7 @@
 
 import Chart from 'chart.js';
 import Component from '../../core/Component';
+import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -26,12 +27,29 @@ export default class GraphLine extends Component {
   constructor(props) {
     super(props);
 
+    this.chart = null;
     this.id = this.randomString();
   };
 
   componentDidMount() {
     const el = document.getElementById(this.id);
-    const chart = new Chart(el, {
+    this.chart = new Chart(el, this.getConfig());
+  };
+
+  componentDidUpdate(prevProps) {
+    if (!isEqual(this.props.data, prevProps.data)) {
+      const config = this.getConfig();
+      this.chart.config.data = config.data;
+      this.chart.update();
+    }
+  };
+
+  componentWillUnmount() {
+    this.chart.destroy();
+  };
+
+  getConfig = () => {
+    return {
       type: 'line',
       data: {
         labels: this.props.labels,
@@ -96,7 +114,7 @@ export default class GraphLine extends Component {
           display: !this.props.hideLines
         }
       }
-    });
+    };
   };
 
   render() {

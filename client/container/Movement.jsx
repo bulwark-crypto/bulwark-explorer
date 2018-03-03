@@ -42,7 +42,6 @@ class Movement extends Component {
     }
 
     this.debounce = setTimeout(() => {
-      console.log(this.state.size, this.state.page);
       this.props
         .getTXs({ 
           limit: this.state.size, 
