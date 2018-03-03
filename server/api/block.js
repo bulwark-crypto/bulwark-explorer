@@ -53,9 +53,9 @@ const getBlockByHash = (req, res) => {
 const getBlockByHeight = async (req, res) => {
   try {
     const block = await Block.findOne({ height: req.params.height });
-    block.txs = await TX.find({ hash: { $in: block.txs }});
+    const txs = await TX.find({ hash: { $in: block.txs }});
 
-    res.json(block);
+    res.json({ block, txs });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
