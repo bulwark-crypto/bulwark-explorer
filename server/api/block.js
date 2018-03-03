@@ -162,7 +162,7 @@ const getTXs = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-    const total = await TX.find().skip(skip).limit(limit).sort({ height: -1 }).size();
+    const total = await TX.find().sort({ height: -1 }).size();
     const txs = await TX.find().skip(skip).limit(limit).sort({ height: -1 });
     
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
