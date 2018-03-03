@@ -29,20 +29,15 @@ const getAddress = (req, res) => {
  * @param {Object} res The response object.
  */
 const getBlockByHash = (req, res) => {
-  let block = {};
-  Block.findOne({ hash: req.params.hash })
-    .then((doc) => {
-      block = doc;
-      return TX.find({ hash: { $in: block.txs } });
-    })
-    .then((docs) => {
-      block.txs = docs;
-      res.json(block);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
-    });
+  try {
+    const block = await Block.findOne({ hash: req.params.hash });
+    const txs = await TX.find({ hash: { $in: block.txs }});
+
+    res.json({ block, txs });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**
