@@ -139,7 +139,7 @@ const getTXLatest = (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTX = (req, res) => {
+const getTX = async (req, res) => {
   try {
     const tx = await TX.findOne({ hash: req.params.hash });
     const vin = [];
