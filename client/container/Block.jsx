@@ -5,12 +5,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import CardBlock from '../component/Card/CardBlock';
+import CardBlockTXs from '../component/Card/CardBlockTXs';
 import HorizontalRule from '../component/HorizontalRule';
 
 class Block extends Component {
   static propTypes = {
     getBlock: PropTypes.func.isRequired,
-    match: PropTypes.object.isRequired
+    match: PropTypes.object.isRequired,
+    tx: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -28,15 +31,9 @@ class Block extends Component {
     return (
       <div>
         <HorizontalRule title="Block Info" />
-        <div className="card__row">
-          <span className="card__label">Height:</span>
-          <span className="card__result card__result--status">
-            { this.state.block.height }
-          </span>
-        </div>
-        
+        <CardBlock block={ this.state.block } height={ this.props.tx.height } />        
         <HorizontalRule title="Block Transactions" />
-          
+        <CardBlockTXs txs={ this.state.txs } />
       </div>
     );
   };
@@ -46,4 +43,10 @@ const mapDispatch = dispatch => ({
   getBlock: query => Actions.getBlock(query)
 });
 
-export default connect(null, mapDispatch)(Block);
+const mapState = state => ({
+  tx: state.txs.length 
+    ? state.txs[0] 
+    : { height: state.coin.blocks }
+});
+
+export default connect(mapState, mapDispatch)(Block);

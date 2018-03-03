@@ -16,6 +16,14 @@
 		display: flex;
 	}
 
+	&--block &__row {
+		justify-content: flex-start;
+	}
+
+	&--block &__label {
+		min-width: 20%;
+	}
+
 	&--status &__row {
 		justify-content: flex-start;
 	}
