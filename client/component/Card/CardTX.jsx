@@ -1,5 +1,6 @@
 
 import Component from '../../core/Component';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -16,7 +17,6 @@ export default class CardTX extends Component {
   };
 
   render() {
-    console.log(this.props.height, this.props.tx);
     return (
       <div className="card--block">
         <div className="card__row">
@@ -37,7 +37,9 @@ export default class CardTX extends Component {
         </div>
         <div className="card__row">
           <span className="card__label">Block Hash:</span>
-          <span className="card__result">{ this.props.tx.block }</span>
+          <span className="card__result">
+            <Link to={ `/block/${ this.props.tx.block }` }>{ this.props.tx.block }</Link>
+          </span>
         </div>
         <div className="card__row">
           <span className="card__label">Timestamp:</span>
