@@ -16,7 +16,7 @@ async function syncBlocks(current, stop) {
   if (current > 0) {
     current++;
   }
-  
+
   for(let height = current; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
@@ -24,6 +24,7 @@ async function syncBlocks(current, stop) {
     const block = new Block({
       hash,
       height,
+      _id: hash,
       bits: rpcblock.bits,
       confirmations: rpcblock.confirmations,
       createdAt: new Date(rpcblock.time * 1000),
@@ -80,6 +81,7 @@ async function syncBlocks(current, stop) {
 
         txs.push(new TX({
           vout,
+          _id: rpctx.txid,
           block: hash,
           createdAt: block.createdAt,
           hash: rpctx.txid,
