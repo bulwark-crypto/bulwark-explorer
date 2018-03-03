@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 
 const Masternode = mongoose.model('Masternode', new mongoose.Schema({
+  __v: { select: false, type: Number },
   _id: { required: true, select: false, type: String },
   active: { required: true, type: Number },
   addr: { required: true, type: String },

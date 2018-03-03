@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
  * the rich list, etc.
  */
 const TXOut = mongoose.model('TXOut', new mongoose.Schema({
+  __v: { select: false, type: Number },
   addresses: { required: true, type: [String] },
   spendTx: { type: String },
   txid: { required: true, type: String },

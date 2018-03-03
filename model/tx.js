@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
  * implemented if needed for recent txs.
  */
 const TX = mongoose.model('TX', new mongoose.Schema({
+  __v: { select: false, type: Number },
   _id: { required: true, select: false, type: String },
   block: { required: true, type: String },
   createdAt: { required: true, type: Date },

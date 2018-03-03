@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
  * that closely reflects that used on the network.
  */
 const Block = mongoose.model('Block', new mongoose.Schema({
+  __v: { select: false, type: Number },
   _id: { required: true, select: false, type: String },
   bits: { required: true, type: String },
   confirmations: { required: true, type: Number },

@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 
 const Coin = mongoose.model('Coin', new mongoose.Schema({
+  __v: { select: false, type: Number },
   blocks: { required: true, type: Number },
   btc: { required: true, type: Number },
   cap: { required: true, type: Number },
