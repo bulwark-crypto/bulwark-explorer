@@ -1,19 +1,19 @@
 
 const mongoose = require('mongoose');
 
-const Coin = mongoose.model('Coin', {
-  blocks: Number,
-  btc: Number,
-  cap: Number,
-  createdAt: Date,
-  diff: Number,
-  mnsOff: Number,
-  mnsOn: Number,
-  netHash: Number,
-  peers: Number,
-  status: String,
-  supply: Number,
-  usd: Number
-}, 'coins');
+const Coin = mongoose.model('Coin', new mongoose.Schema({
+  blocks: { required: true, type: Number },
+  btc: { required: true, type: Number },
+  cap: { required: true, type: Number },
+  createdAt: { required: true, type: Date },
+  diff: { required: true, type: Number },
+  mnsOff: { required: true, type: Number },
+  mnsOn: { required: true, type: Number },
+  netHash: { required: true, type: Number },
+  peers: { required: true, type: Number },
+  status: { required: true, type: String },
+  supply: { required: true, type: Number },
+  usd: { required: true, type: Number }
+}, { versionKey: false }), 'coins');
 
 module.exports =  Coin;

@@ -6,12 +6,12 @@ const mongoose = require('mongoose');
  * on the chain.  This will be used for building
  * the rich list, etc.
  */
-const TXOut = mongoose.model('TXOut', {
-  addresses: [String],
-  spendTx: String,
-  txid: String,
-  value: Number,
-  vout: Number
-}, 'txsout');
+const TXOut = mongoose.model('TXOut', new mongoose.Schema({
+  addresses: { required: true, type: [String] },
+  spendTx: { type: String },
+  txid: { required: true, type: String },
+  value: { required: true, type: Number },
+  vout: { required: true, type: Number }
+}, { versionKey: false }), 'txsout');
 
 module.exports =  TXOut;

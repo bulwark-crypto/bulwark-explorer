@@ -7,14 +7,15 @@ const mongoose = require('mongoose');
  * from the node on demand.  A cache can be
  * implemented if needed for recent txs.
  */
-const TX = mongoose.model('TX', {
-  block: String,
-  createdAt: Date,
-  hash: String,
-  height: Number,
-  recipients: Number,
-  ver: Number,
-  vout: Number
-}, 'txs');
+const TX = mongoose.model('TX', new mongoose.Schema({
+  _id: { required: true, select: false, type: String },
+  block: { required: true, type: String },
+  createdAt: { required: true, type: Date },
+  hash: { required: true, type: String },
+  height: { required: true, type: Number },
+  recipients: { required: true, type: Number },
+  ver: { required: true, type: Number },
+  vout: { required: true, type: Number }
+}, { versionKey: false }), 'txs');
 
 module.exports =  TX;
