@@ -34,9 +34,6 @@ const getBlock = async (req, res) => {
       ? { hash: req.params.hash } 
       : { height: req.params.hash };
     const block = await Block.findOne(query);
-    if (!block.txs) {
-      block.txs = [];
-    }
     const txs = await TX.find({ hash: { $in: block.txs }}).select('createdAt hash recipients');
 
     res.json({ block, txs });

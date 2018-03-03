@@ -13,7 +13,11 @@ const TXOut = require('../model/txout');
  * @param {Number} stop The current block height at the tip of the chain.
  */
 async function syncBlocks(current, stop) {
-  for(let height = current + 1; height <= stop; height++) {
+  if (current > 0) {
+    current++;
+  }
+  
+  for(let height = current; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
