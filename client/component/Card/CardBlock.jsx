@@ -19,6 +19,10 @@ export default class CardBlock extends Component {
     return (
       <div className="card--block">
         <div className="card__row">
+          <span className="card__label">Hash:</span>
+          <span className="card__result">{ this.props.block.hash }</span>
+        </div>
+        <div className="card__row">
           <span className="card__label">Height:</span>
           <span className="card__result">{ this.props.block.height }</span>
         </div>
