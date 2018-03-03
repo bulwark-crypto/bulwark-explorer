@@ -13,6 +13,11 @@ const HorizontalRule = (props) => (
     <div className="hr__wrapper">
       <hr />
     </div>
+    { !!props.select && 
+      <div className="hr__select">
+        { props.select }
+      </div>
+    }
   </div>
 );
 

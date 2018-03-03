@@ -124,8 +124,7 @@ const getPeerHistory = (req, res) => {
  */
 const getTXLatest = (req, res) => {
   TX.find()
-    .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 50)
+    .limit(50)
     .sort({ height: -1 })
     .then((docs) => {
       res.json(docs);
@@ -154,6 +153,25 @@ const getTX = async (req, res) => {
   }
 };
 
+/**
+ * Return a paginated list of transactions.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getTXs = async (req, res) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const total = await TX.find().skip(skip).limit(limit).sort({ height: -1 }).size();
+    const txs = await TX.find().skip(skip).limit(limit).sort({ height: -1 });
+    
+    res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
 module.exports =  {
   getAddress,
   getBlock,
@@ -162,5 +180,6 @@ module.exports =  {
   getPeer,
   getPeerHistory,
   getTXLatest,
-  getTX
+  getTX,
+  getTXs
 };

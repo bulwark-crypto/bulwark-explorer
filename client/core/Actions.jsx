@@ -76,7 +76,7 @@ export const getTX = (query) => {
   });
 };
 
-export const getTXLatest = (dispatch, query) => {
+export const getTXs = (dispatch, query) => {
   return new promise((resolve, reject) => {
     getFromWorker(
       'txs',
@@ -94,7 +94,28 @@ export const getTXLatest = (dispatch, query) => {
       },
       query
     );
-});
+  });
+};
+
+export const getTXLatest = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    getFromWorker(
+      'txs-latest',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: TXS });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
 };
 
 export default {
@@ -102,5 +123,6 @@ export default {
   getCoinHistory,
   getPeers,
   getTX,
+  getTXs,
   getTXLatest
 };

@@ -37,10 +37,12 @@ export default class Menu extends Component {
               <img className="menu__icon" src="/img/Analytics-icon@2x.png" />
               <span className="menu__item-label" >Movement</span>
             </Link>
+            {/*
             <Link className="menu__item" to="/top">
               <img className="menu__icon" src="/img/Ratings-icon@2x.png" />
               <span className="menu__item-label">Top 100</span>
             </Link>
+            */}
             <Link className="menu__item" to="/masternode">
               <img className="menu__icon" src="/img/Customers-icon@2x.png" />
               <span className="menu__item-label">Masternode</span>
@@ -49,10 +51,12 @@ export default class Menu extends Component {
               <img className="menu__icon" src="/img/Market-icon@2x.png" />
               <span className="menu__item-label" >Coin Info</span>
             </Link>
+            {/*
             <Link className="menu__item" to="/faq">
               <img className="menu__icon" src="/img/Jobs-icon@2x.png" />
               <span className="menu__item-label">FAQ</span>
             </Link>
+            */}
             <Link className="menu__item" to="/api">
               <img className="menu__icon" src="/img/Support-icon@2x.png" />
               <span className="menu__item-label">API</span>

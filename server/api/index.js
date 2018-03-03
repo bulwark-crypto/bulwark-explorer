@@ -13,6 +13,7 @@ router.get('/coin', block.getCoin);
 router.get('/coin/history', block.getCoinHistory);
 router.get('/peer', block.getPeer);
 router.get('/peer/history', block.getPeerHistory);
+router.get('/tx', block.getTXs);
 router.get('/tx/latest', block.getTXLatest);
 router.get('/tx/:hash', block.getTX);
 
