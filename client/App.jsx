@@ -19,7 +19,7 @@ import Movement from './container/Movement';
 import Overview from './container/Overview';
 import Peer from './container/Peer';
 import Top100 from './container/Top100';
-import TX from './container/Tx';
+import TX from './container/TX';
 
 // Layout
 import CoinSummary from './container/CoinSummary';
@@ -127,7 +127,7 @@ class App extends Component {
                 <Route exact path="/movement" component={ Movement } />
                 <Route exact path="/peer" component={ Peer } />
                 <Route exact path="/top" component={ Top100 } />
-                <Route exact path="/tx" component={ TX } />
+                <Route exact path="/tx/:hash" component={ TX } />
                 <Route component={ Error404 } />
               </Switch>
             </div>

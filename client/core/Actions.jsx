@@ -70,6 +70,12 @@ export const getPeers = () => {
   });
 };
 
+export const getTX = (query) => {
+  return new promise((resolve, reject) => {
+    getFromWorker('tx', resolve, reject, query);
+  });
+};
+
 export const getTXLatest = (dispatch, query) => {
   return new promise((resolve, reject) => {
     getFromWorker(
@@ -91,5 +97,6 @@ export default {
   getBlock,
   getCoinHistory,
   getPeers,
+  getTX,
   getTXLatest
 };

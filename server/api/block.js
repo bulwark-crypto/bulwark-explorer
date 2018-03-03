@@ -140,14 +140,17 @@ const getTXLatest = (req, res) => {
  * @param {Object} res The response object.
  */
 const getTX = (req, res) => {
-  TX.findOne({ hash: req.params.hash })
-    .then((doc) => {
-      res.json(doc);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
-    });
+  try {
+    const query = { $or: [{ hash: req.params.hash }, { height: req.params.hash }] };
+    const tx = await TX.findOne(query);
+    const vin = [];
+    const vout = [];
+
+    res.json({ tx, vin, vout });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 module.exports =  {
