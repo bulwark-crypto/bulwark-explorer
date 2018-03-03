@@ -141,8 +141,7 @@ const getTXLatest = (req, res) => {
  */
 const getTX = (req, res) => {
   try {
-    const query = { $or: [{ hash: req.params.hash }, { height: req.params.hash }] };
-    const tx = await TX.findOne(query);
+    const tx = await TX.findOne({ hash: req.params.hash });
     const vin = [];
     const vout = [];
 
