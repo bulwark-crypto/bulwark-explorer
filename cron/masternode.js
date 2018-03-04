@@ -17,19 +17,15 @@ async function update() {
   const date = moment().startOf('minute').toDate();
 
   try {
-    // Clear existing masternodes from database
-    // on each run to keep it recent and accurate to
-    // the live connections with the node.
     await Masternode.remove({});
 
     const mns = await rpc.call('masternode', ['list']);
     const inserts = [];
     await forEach(mns, async (mn) => {
       const masternode = new Masternode({
-        _id: mn.txhash,
         active: mn.activetime,
         addr: mn.addr,
-        createdAt: new Date(),
+        createdAt: date,
         lastAt: new Date(mn.lastseen * 1000),
         lastPaidAt: new Date(mn.lastpaid * 1000),
         network: mn.network,
