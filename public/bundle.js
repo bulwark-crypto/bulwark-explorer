@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "0a05d80a6f9dfe6771b6"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "cefc9f380f540fbff23f"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1223,7 +1223,7 @@ var CardBlock = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: 'card__result' },
-            (0, _moment2.default)(this.props.block.createdAt).format('YYYY-MM-DD hh:mm:ss A')
+            (0, _moment2.default)(this.props.block.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A')
           )
         )
       );
@@ -1310,7 +1310,7 @@ var CardBlockTXs = function (_Component) {
         cols: this.state.cols,
         data: this.props.txs.map(function (tx) {
           return _extends({}, tx, {
-            createdAt: (0, _moment2.default)(tx.createdAt).format('YYYY-MM-DD hh:mm:ss A'),
+            createdAt: (0, _moment2.default)(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
             hash: _react2.default.createElement(
               _reactRouterDom.Link,
               { to: '/tx/' + tx.hash },
@@ -2344,7 +2344,7 @@ var CardTX = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: 'card__result' },
-            (0, _moment2.default)(this.props.tx.createdAt).format('YYYY-MM-DD hh:mm:ss A')
+            (0, _moment2.default)(this.props.tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A')
           )
         )
       );
@@ -2607,7 +2607,7 @@ var CardTXs = function (_Component) {
         cols: this.state.cols,
         data: this.props.txs.map(function (tx) {
           return _extends({}, tx, {
-            createdAt: (0, _moment2.default)(tx.createdAt).format('YYYY-MM-DD hh:mm:ss A'),
+            createdAt: (0, _moment2.default)(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
             hash: _react2.default.createElement(
               _reactRouterDom.Link,
               { to: '/tx/' + tx.hash },
@@ -4458,6 +4458,12 @@ var _Component3 = _interopRequireDefault(_Component2);
 
 var _reactRedux = __webpack_require__("./node_modules/react-redux/es/index.js");
 
+var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
+
+var _moment = __webpack_require__("./node_modules/moment/moment.js");
+
+var _moment2 = _interopRequireDefault(_moment);
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -4491,7 +4497,7 @@ var Masternode = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Masternode.__proto__ || Object.getPrototypeOf(Masternode)).call(this, props));
 
     _this.state = {
-      cols: [{ key: 'addr', title: 'Address' }, { key: 'txhash', title: 'Transaction' }, { key: 'txOutIdx', title: 'Index' }, { key: 'version', title: 'Version' }, { key: 'status', title: 'Status' }],
+      cols: [{ key: 'lastPaidAt', title: 'Last Paid' }, { key: 'active', title: 'Active Duration' }, { key: 'addr', title: 'Address' }, { key: 'txOutIdx', title: 'Index' }, { key: 'ver', title: 'Version' }, { key: 'status', title: 'Status' }],
       mns: []
     };
     return _this;
@@ -4516,7 +4522,15 @@ var Masternode = function (_Component) {
         _react2.default.createElement(_Table2.default, {
           cols: this.state.cols,
           data: this.state.mns.map(function (mn) {
-            return _extends({}, mn);
+            return _extends({}, mn, {
+              active: (0, _moment2.default)().subtract(mn.active, 'seconds').utc().fromNow(),
+              lastPaidAt: (0, _moment2.default)(mn.lastPaidAt).utc().format('YYYY-MM-DD HH:MM A'),
+              txHash: _react2.default.createElement(
+                _reactRouterDom.Link,
+                { to: '/tx/' + mn.txHash },
+                mn.txHash
+              )
+            });
           }) })
       );
     }
@@ -4791,8 +4805,8 @@ var Overview = function (_Component) {
       // Setup the list of transactions with age since created.
       var txs = this.props.txs.map(function (tx) {
         return _extends({}, tx, {
-          age: (0, _moment2.default)(tx.createdAt).fromNow(),
-          createdAt: (0, _moment2.default)(tx.createdAt).format('MM/DD/YYYY hh:mm A'),
+          age: (0, _moment2.default)(tx.createdAt).utc().fromNow(),
+          createdAt: (0, _moment2.default)(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
           hash: _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/tx/' + tx.hash },
