@@ -37,7 +37,7 @@ const getblockcount = async (req, res) => {
 
 const getblockhash = async (req, res) => {
   try {
-    const hash = await rpc.call('getblockhash'. [req.query.index]);
+    const hash = await rpc.call('getblockhash', [req.query.index]);
     res.json(hash);
   } catch(err) {
     console.log(err);
@@ -47,7 +47,7 @@ const getblockhash = async (req, res) => {
 
 const getblock = async (req, res) => {
   try {
-    const block = await rpc.call('getblock'. [req.query.hash]);
+    const block = await rpc.call('getblock', [req.query.hash]);
     res.json(block);
   } catch(err) {
     console.log(err);
@@ -57,7 +57,7 @@ const getblock = async (req, res) => {
 
 const getrawtransaction = async (req, res) => {
   try {
-    const tx = await rpc.call('getrawtransaction'. [req.query.hash]);
+    const tx = await rpc.call('getrawtransaction', [req.query.hash]);
     res.json(tx);
   } catch(err) {
     console.log(err);
