@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "9200993acccabfe8828d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "3c21e0433d9f1baf9922"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -861,6 +861,11 @@ var getCoins = function getCoins(query) {
   return fetch(api + '/coin/history', query);
 };
 
+// Request the list of masternodes.
+var getMNs = function getMNs() {
+  return fetch(api + '/masternode');
+};
+
 // Request the list of connected peers.
 var getPeers = function getPeers() {
   return fetch(api + '/peer');
@@ -893,6 +898,9 @@ self.addEventListener('message', function (ev) {
       break;
     case 'peers':
       action = getPeers;
+      break;
+    case 'mns':
+      action = getMNs;
       break;
     case 'tx':
       action = getTX;
