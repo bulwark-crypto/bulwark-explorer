@@ -86,15 +86,17 @@ const getCoinHistory = (req, res) => {
  * @param {Object} res The response object.
  */
 const getMasternodes = async (req, res) => {
-  Masternode.find()
-    .sort({ lastPaidAt: -1, active: -1 })
-    .then((docs) => {
-      res.json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
-    });
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const total = await Masternode.find().sort({ height: -1 }).count();
+    const mns = await Masternode.find().skip(skip).limit(limit).sort({ height: -1 });
+    
+    res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**

@@ -53,9 +53,9 @@ export const getCoinHistory = (dispatch, query) => {
   });
 };
 
-export const getMNs = () => {
+export const getMNs = (query) => {
   return new promise((resolve, reject) => {
-    getFromWorker('mns', resolve, reject);
+    getFromWorker('mns', resolve, reject, query);
   });
 };
 
