@@ -20,6 +20,7 @@ async function update() {
     await Peer.remove({});
 
     const peers = await rpc.call('getpeerinfo');
+    const inserts = [];
     await forEach(peers, async (peer) => {
       const parts = peer.addr.split(':');
 
