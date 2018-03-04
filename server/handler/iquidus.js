@@ -1,5 +1,5 @@
 
-const block = require('./block');
+const block = require('./blockex');
 const Coin = require('../../model/coin');
 const { rpc } = require('../lib/cron');
 
