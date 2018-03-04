@@ -2,7 +2,8 @@
 const express = require('express');
 const path = require('path');
 // Routes.
-const api = require('../api');
+const api = require('../route/api');
+const ext = require('../route/ext');
 
 /**
  * Add routes for the application.
@@ -19,6 +20,7 @@ const router = (app) => {
 
   // Setup the api routes.
   app.use('/api', api);
+  app.use('/ext', ext);
 };
 
 module.exports =  router;
