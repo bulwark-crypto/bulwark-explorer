@@ -3,7 +3,7 @@ const block = require('./blockex');
 const Coin = require('../../model/coin');
 const { rpc } = require('../../lib/cron');
 
-const getCoin = Coin.findOne().sort({ createdAt: -1 });
+const getCoin = async () => Coin.findOne().sort({ createdAt: -1 });
 
 const getdifficulty = async (req, res) => {
   try {
