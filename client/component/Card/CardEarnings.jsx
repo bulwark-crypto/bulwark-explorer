@@ -7,13 +7,12 @@ import React from 'react';
 import Card from './Card';
 
 const CardEarnings = ({ coin }) => {
-  const mncoins = 5000.0;
   const mns = coin.mnsOff + coin.mnsOn;
   const subsidy = blockchain.getMNSubsidy(coin.blocks, mns, coin.supply);
-  const roiDay = subsidy * (((blockchain.blocksPerDay * subsidy) - mncoins) / mncoins);
-  const roiWeek = subsidy * (((blockchain.blocksPerWeek * subsidy) - mncoins) / mncoins);
-  const roiMonth = subsidy * (((blockchain.blocksPerMonth * subsidy) - mncoins) / mncoins);
-  const roiYear = subsidy * (((blockchain.blocksPerYear * subsidy) - mncoins) / mncoins);
+  const roiDay = subsidy * blockchain.getROIDay(subsidy);
+  const roiWeek = subsidy * blockchain.getROIWeek(subsidy);
+  const roiMonth = subsidy * blockchain.getROIMonth(subsidy);
+  const roiYear = subsidy * blockchain.getROIYear(subsidy);
 
   const nbtc = v => numeral(v).format('0,0.0000');
   const nusd = v => numeral(v).format('$0,0.00');

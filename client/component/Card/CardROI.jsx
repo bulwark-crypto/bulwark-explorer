@@ -10,7 +10,7 @@ const CardROI = ({ coin }) => {
   const mncoins = 5000.0;
   const mns = coin.mnsOff + coin.mnsOn;
   const subsidy = blockchain.getMNSubsidy(coin.blocks, mns, coin.supply);
-  const roi = ((blockchain.blocksPerDay * subsidy) - mncoins) / mncoins;
+  const roi = blockchain.getROIDay(subsidy);
 
   return (
     <Card>
