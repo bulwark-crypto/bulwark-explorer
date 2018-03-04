@@ -28,6 +28,7 @@ async function update() {
       const masternode = new Masternode({
         _id: mn.txhash,
         active: mn.activetime,
+        addr: mn.addr,
         createdAt: new Date(),
         lastAt: new Date(mn.lastseen * 1000),
         lastPaidAt: new Date(mn.lastpaid * 1000),
