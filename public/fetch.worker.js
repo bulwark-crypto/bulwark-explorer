@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3c21e0433d9f1baf9922"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "23ae94d4d2d9eb15e12f"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -862,8 +862,8 @@ var getCoins = function getCoins(query) {
 };
 
 // Request the list of masternodes.
-var getMNs = function getMNs() {
-  return fetch(api + '/masternode');
+var getMNs = function getMNs(query) {
+  return fetch(api + '/masternode', query);
 };
 
 // Request the list of connected peers.
