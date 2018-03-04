@@ -86,13 +86,15 @@ const getCoinHistory = (req, res) => {
  * @param {Object} res The response object.
  */
 const getMasternodes = async (req, res) => {
-  try {
-    const mns = Masternode.find().sort({ ip: 1 });
-    res.json(mns);
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
+  Masternode.find()
+    .sort({ txhash: 1 })
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message || err);
+    });
 };
 
 /**
