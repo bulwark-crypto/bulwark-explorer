@@ -37,8 +37,8 @@ export default class CardStatus extends Component {
       <Card title="Market" className="card--market">
         <p className="card__data-main">BWK ${ this.props.usd }</p>
         <p className="card__data-sub">{ this.props.btc } BTC</p>
-        <div className="card__info">
-          <div>
+        <div className="card__info row">
+          <div className="col-sm-12 col-md-6">
             <p>
               <span className={ `u--text-${ isPos ? 'green' : 'red' }` }>
                 <Icon
@@ -50,13 +50,15 @@ export default class CardStatus extends Component {
             </p>
             <p className="card__info-source">Data from CoinMarketCap</p>
           </div>
-          <GraphLine
-            color={ isPos ? 'rgba(0,255,0,0.5)' : 'rgba(255,0,0,0.5)' }
-            data={ this.props.yAxis }
-            height="30px"
-            hideLines={ true }
-            labels={ this.props.xAxis }
-            width="200px" />
+          <div className="col-sm-12 col-md-6">
+            <GraphLine
+              color={ isPos ? 'rgba(0,255,0,0.5)' : 'rgba(255,0,0,0.5)' }
+              data={ this.props.yAxis }
+              height="30px"
+              hideLines={ true }
+              labels={ this.props.xAxis }
+              width="200px" />
+          </div>
         </div>
       </Card>
     );

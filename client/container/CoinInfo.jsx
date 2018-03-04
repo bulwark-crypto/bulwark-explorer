@@ -4,14 +4,38 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import CardEarnings from '../component/Card/CardEarnings';
+import CardLinks from '../component/Card/CardLinks';
+import CardROI from '../component/Card/CardROI';
 import HorizontalRule from '../component/HorizontalRule';
 
 class CoinInfo extends Component {
+  static propTypes = {
+    coin: PropTypes.object.isRequired
+  };
+
   render() {
     return (
       <div>
         <HorizontalRule title="Coin Info" />
-        <img src="https://bulwarkcrypto.com/wp-content/uploads/2018/01/Badge-Asset-9.png" />
+        <div className="row">
+          <div className="col-md-12 col-lg-8">
+            <div className="text-center">
+              <img className="img-fluid" src="/img/Badge-Full-Color.png" />
+            </div>
+            <div className="row">
+              <div className="col-sm-12 col-md-6">
+                <CardLinks />
+              </div>
+              <div className="col-sm-12 col-md-6">
+                <CardEarnings coin={ this.props.coin } />
+              </div>
+            </div>
+          </div>
+          <div className="col-md-12 col-lg-4">
+            <CardROI coin={ this.props.coin } />
+          </div>
+        </div>
       </div>
     );
   };
@@ -22,6 +46,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
+  coin: state.coins.length ? state.coins[0] : {},
   txs: state.txs
 });
 
