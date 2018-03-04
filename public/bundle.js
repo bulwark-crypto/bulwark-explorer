@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "cefc9f380f540fbff23f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f463bee4ac6ec7ff7882"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -4476,6 +4476,10 @@ var _HorizontalRule = __webpack_require__("./client/component/HorizontalRule.jsx
 
 var _HorizontalRule2 = _interopRequireDefault(_HorizontalRule);
 
+var _Pagination = __webpack_require__("./client/component/Pagination.jsx");
+
+var _Pagination2 = _interopRequireDefault(_Pagination);
+
 var _Table = __webpack_require__("./client/component/Table/index.jsx");
 
 var _Table2 = _interopRequireDefault(_Table);
@@ -4496,9 +4500,41 @@ var Masternode = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Masternode.__proto__ || Object.getPrototypeOf(Masternode)).call(this, props));
 
+    _this.getMNs = function () {
+      if (_this.debounce) {
+        clearTimeout(_this.debounce);
+      }
+
+      _this.debounce = setTimeout(function () {
+        _this.props.getMNs({
+          limit: _this.state.size,
+          skip: (_this.state.page - 1) * _this.state.size
+        }).then(function (_ref) {
+          var mns = _ref.mns,
+              pages = _ref.pages;
+
+          if (_this.debounce) {
+            _this.setState({ mns: mns, pages: pages });
+          }
+        });
+      }, 800);
+    };
+
+    _this.handlePage = function (page) {
+      return _this.setState({ page: page }, _this.getMNs);
+    };
+
+    _this.handleSize = function (size) {
+      return _this.setState({ size: size }, _this.getMNs);
+    };
+
+    _this.debounce = null;
     _this.state = {
       cols: [{ key: 'lastPaidAt', title: 'Last Paid' }, { key: 'active', title: 'Active Duration' }, { key: 'addr', title: 'Address' }, { key: 'txOutIdx', title: 'Index' }, { key: 'ver', title: 'Version' }, { key: 'status', title: 'Status' }],
-      mns: []
+      mns: [],
+      pages: 0,
+      page: 1,
+      size: 10
     };
     return _this;
   }
@@ -4506,24 +4542,67 @@ var Masternode = function (_Component) {
   _createClass(Masternode, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this2 = this;
-
-      this.props.getMNs().then(function (mns) {
-        return _this2.setState({ mns: mns });
-      });
+      this.getMNs();
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      if (this.debounce) {
+        clearTimeout(this.debounce);
+        this.debounce = null;
+      }
     }
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
+      var select = _react2.default.createElement(
+        'select',
+        {
+          onChange: function onChange(ev) {
+            return _this2.handleSize(ev.target.value);
+          },
+          value: this.state.size },
+        _react2.default.createElement(
+          'option',
+          { value: 10 },
+          '10'
+        ),
+        _react2.default.createElement(
+          'option',
+          { value: 25 },
+          '25'
+        ),
+        _react2.default.createElement(
+          'option',
+          { value: 50 },
+          '50'
+        )
+      );
+
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_HorizontalRule2.default, { title: 'Masternodes' }),
+        _react2.default.createElement(_HorizontalRule2.default, {
+          select: select,
+          title: 'Masternodes' }),
         _react2.default.createElement(_Table2.default, {
           cols: this.state.cols,
           data: this.state.mns.map(function (mn) {
             return _extends({}, mn, {
               active: (0, _moment2.default)().subtract(mn.active, 'seconds').utc().fromNow(),
+              addr: _react2.default.createElement(
+                'div',
+                null,
+                mn.addr,
+                _react2.default.createElement('br', null),
+                _react2.default.createElement(
+                  _reactRouterDom.Link,
+                  { to: '/tx/' + mn.txHash },
+                  mn.txHash
+                )
+              ),
               lastPaidAt: (0, _moment2.default)(mn.lastPaidAt).utc().format('YYYY-MM-DD HH:MM A'),
               txHash: _react2.default.createElement(
                 _reactRouterDom.Link,
@@ -4531,7 +4610,13 @@ var Masternode = function (_Component) {
                 mn.txHash
               )
             });
-          }) })
+          }) }),
+        _react2.default.createElement(_Pagination2.default, {
+          current: this.state.page,
+          className: 'float-right',
+          onPage: this.handlePage,
+          total: this.state.pages }),
+        _react2.default.createElement('div', { className: 'clearfix' })
       );
     }
   }]);
@@ -4546,8 +4631,8 @@ Masternode.propTypes = {
 
 var mapDispatch = function mapDispatch(dispatch) {
   return {
-    getMNs: function getMNs() {
-      return _Actions2.default.getMNs();
+    getMNs: function getMNs(query) {
+      return _Actions2.default.getMNs(query);
     }
   };
 };
@@ -5232,9 +5317,9 @@ var getCoinHistory = exports.getCoinHistory = function getCoinHistory(dispatch, 
   });
 };
 
-var getMNs = exports.getMNs = function getMNs() {
+var getMNs = exports.getMNs = function getMNs(query) {
   return new _bluebird2.default(function (resolve, reject) {
-    getFromWorker('mns', resolve, reject);
+    getFromWorker('mns', resolve, reject, query);
   });
 };
 

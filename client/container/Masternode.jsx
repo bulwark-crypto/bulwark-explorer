@@ -27,16 +27,16 @@ class Masternode extends Component {
         { key: 'txOutIdx', title: 'Index' },
         { key: 'ver', title: 'Version' },
         { key: 'status', title: 'Status' },
-      ],
+      ], 
+      mns: [] ,
       pages: 0,
       page: 1,
-      size: 10, 
-      txs: [] 
+      size: 10
     };
   };
 
   componentDidMount() {
-    this.props.getMNs().then(mns => this.setState({ mns }));
+    this.getMNs();
   };
 
   componentWillUnmount() {
@@ -57,9 +57,9 @@ class Masternode extends Component {
           limit: this.state.size, 
           skip: (this.state.page - 1) * this.state.size 
         })
-        .then(({ pages, txs }) => {
+        .then(({ mns, pages }) => {
           if (this.debounce) {
-            this.setState({ pages, txs });
+            this.setState({ mns, pages });
           }
         });
     }, 800);
