@@ -33,8 +33,8 @@ class Overview extends Component {
     // Setup the list of transactions with age since created.
     const txs = this.props.txs.map(tx => ({
       ...tx,
-      age: moment(tx.createdAt).fromNow(),
-      createdAt: moment(tx.createdAt).format('MM/DD/YYYY hh:mm A'),
+      age: moment(tx.createdAt).utc().fromNow(),
+      createdAt: moment(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
       hash: (<Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>),
       height: (<Link to={ `/block/${ tx.height }` }>{ tx.height }</Link>),
       vout: tx.vout.toFixed(8)

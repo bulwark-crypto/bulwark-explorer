@@ -33,7 +33,7 @@ export default class CardBlockTXs extends Component {
         cols={ this.state.cols } 
         data={ this.props.txs.map(tx => ({
           ...tx,
-          createdAt: moment(tx.createdAt).format('YYYY-MM-DD hh:mm:ss A'),
+          createdAt: moment(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
           hash: (
             <Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>
           )

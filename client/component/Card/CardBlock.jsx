@@ -49,7 +49,7 @@ export default class CardBlock extends Component {
         <div className="card__row">
           <span className="card__label">Timestamp:</span>
           <span className="card__result">
-            { moment(this.props.block.createdAt).format('YYYY-MM-DD hh:mm:ss A') }
+            { moment(this.props.block.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A') }
           </span>
         </div>
       </div>

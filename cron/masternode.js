@@ -14,7 +14,7 @@ const Masternode = require('../model/masternode');
  * from freegeopip.net.
  */
 async function update() {
-  const date = moment().startOf('minute').toDate();
+  const date = moment().utc().startOf('minute').toDate();
 
   try {
     await Masternode.remove({});

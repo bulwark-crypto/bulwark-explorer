@@ -87,7 +87,7 @@ const getCoinHistory = (req, res) => {
  */
 const getMasternodes = async (req, res) => {
   Masternode.find()
-    .sort({ txhash: 1 })
+    .sort({ lastPaidAt: -1, active: -1 })
     .then((docs) => {
       res.json(docs);
     })

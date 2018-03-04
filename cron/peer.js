@@ -14,7 +14,7 @@ const Peer = require('../model/peer');
  * from freegeopip.net.
  */
 async function update() {
-  const date = moment().startOf('minute').toDate();
+  const date = moment().utc().startOf('minute').toDate();
 
   try {
     await Peer.remove({});

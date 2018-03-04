@@ -12,7 +12,7 @@ const Coin = require('../model/coin');
  * like price coinmarketcap.com data.
  */
 async function update() {
-  const date = moment().startOf('minute').toDate();
+  const date = moment().utc().startOf('minute').toDate();
   // Setup the coinmarketcap.com api url.
   const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
 
