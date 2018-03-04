@@ -25,7 +25,7 @@ async function update() {
     const mns = await rpc.call('masternode', ['list']);
     const inserts = [];
     await forEach(mns, async (mn) => {
-      const mn = new Masternode({
+      const masternode = new Masternode({
         _id: mn.txhash,
         active: mn.activetime,
         createdAt: new Date(),
@@ -39,7 +39,7 @@ async function update() {
         ver: mn.version
       });
 
-      inserts.push(mn);
+      inserts.push(masternode);
     });
 
     if (inserts.length) {
