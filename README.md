@@ -35,6 +35,8 @@ The following automated tasks are currently setup for BlockEx.
 
 `yarn run cron:coin` - will coin related information like price and supply from coinmarketcap.com.
 
+`yarn run cron:masternode` - will update the masternodes list in the database.
+
 `yarn run cron:peer` - gather the list of peers and their IP information.
 
 __Note:__ it is recommended to run `yarn run cron:block >> ./tmp/block.log` the first time manually.  The initial run will download the whole blockchain and put it into the database.  This can possibly take anywhere from minutes to hours depending on the size of the blockchain and other factors like hardware, bandwidth, etc.
@@ -46,6 +48,7 @@ To setup the crontab please see run `crontab -e` to edit the crontab and paste t
 */1 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/block.js >> ./tmp/block.log
 */5 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/coin.js >> ./tmp/coin.log
 0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/peer.js >> ./tmp/peer.log
+0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/masternode.js >> ./tmp/masternode.log
 ```
 
 ## Build

@@ -1,6 +1,7 @@
 
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
+const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const TX = require('../../model/tx');
 
@@ -77,6 +78,21 @@ const getCoinHistory = (req, res) => {
       console.log(err);
       res.status(500).send(err.message || err);
     });
+};
+
+/**
+ * Get list of masternodes from the server.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getMasternodes = async (req, res) => {
+  try {
+    const mns = Masternode.find().sort({ ip: 1 });
+    res.json(mns);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**
@@ -177,6 +193,7 @@ module.exports =  {
   getBlock,
   getCoin,
   getCoinHistory,
+  getMasternodes,
   getPeer,
   getPeerHistory,
   getTXLatest,

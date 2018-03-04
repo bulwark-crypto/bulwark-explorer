@@ -11,6 +11,7 @@
     "build:web": "webpack --progress --colors",
     "cron:block": "node ./cron/block.js >> ./tmp/block.log",
     "cron:coin": "node ./cron/coin.js >> ./tmp/coin.log",
+    "cron:masternode": "node ./cron/masternode.js >> ./tmp/masternode.log",
     "cron:peer": "node ./cron/peer.js >> ./tmp/peer.log",
     "start:api": "node ./server/index.js",
     "start:web": "webpack-dev-server --progress --colors",

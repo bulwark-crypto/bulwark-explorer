@@ -53,6 +53,12 @@ export const getCoinHistory = (dispatch, query) => {
   });
 };
 
+export const getMNs = () => {
+  return new promise((resolve, reject) => {
+    getFromWorker('mns', resolve, reject);
+  });
+};
+
 export const getPeers = () => {
   return new promise((resolve, reject) => {
     getFromWorker(
@@ -121,6 +127,7 @@ export const getTXLatest = (dispatch, query) => {
 export default {
   getBlock,
   getCoinHistory,
+  getMNs,
   getPeers,
   getTX,
   getTXs,
