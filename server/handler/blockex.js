@@ -1,4 +1,6 @@
 
+const { rpc } = require('../lib/cron');
+
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
@@ -31,8 +33,8 @@ const getAddress = (req, res) => {
  */
 const getBlock = async (req, res) => {
   try {
-    const query = isNaN(req.params.hash) 
-      ? { hash: req.params.hash } 
+    const query = isNaN(req.params.hash)
+      ? { hash: req.params.hash }
       : { height: req.params.hash };
     const block = await Block.findOne(query);
     const txs = await TX.find({ hash: { $in: block.txs }}).select('createdAt hash recipients');
@@ -91,7 +93,7 @@ const getMasternodes = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const total = await Masternode.find().sort({ height: -1 }).count();
     const mns = await Masternode.find().skip(skip).limit(limit).sort({ height: -1 });
-    
+
     res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch(err) {
     console.log(err);
@@ -162,11 +164,10 @@ const getTXLatest = (req, res) => {
  */
 const getTX = async (req, res) => {
   try {
-    const tx = await TX.findOne({ hash: req.params.hash });
-    const vin = [];
-    const vout = [];
+    const hex = await rpc.call('getrawtransaction', [req.params.hash]);
+    const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
-    res.json({ tx, vin, vout });
+    res.json(rpctx);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -184,7 +185,7 @@ const getTXs = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const total = await TX.find().sort({ height: -1 }).count();
     const txs = await TX.find().skip(skip).limit(limit).sort({ height: -1 });
-    
+
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch(err) {
     console.log(err);
