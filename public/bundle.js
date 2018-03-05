@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "d10d00e150ec8e405a60"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "bf2b980991d4d525e982"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1576,6 +1576,10 @@ var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
 
+var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
+
+var _numeral2 = _interopRequireDefault(_numeral);
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -1657,7 +1661,7 @@ var CardStatus = function (_Component) {
                 _react2.default.createElement(
                   'span',
                   null,
-                  growth.toFixed(2),
+                  (0, _numeral2.default)(growth).format('0,0.00'),
                   '% \xA0'
                 )
               ),
@@ -2232,6 +2236,10 @@ var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
+
+var _numeral2 = _interopRequireDefault(_numeral);
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -2301,12 +2309,13 @@ var CardTX = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: 'card__label' },
-            'Block Index:'
+            'Block Value:'
           ),
           _react2.default.createElement(
             'span',
             { className: 'card__result' },
-            this.props.tx.vout
+            (0, _numeral2.default)(this.props.tx.vout).format('0,0.0000'),
+            ' BWK'
           )
         ),
         _react2.default.createElement(
@@ -2384,6 +2393,10 @@ var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
+
+var _numeral2 = _interopRequireDefault(_numeral);
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -2425,10 +2438,22 @@ var CardTXIn = function (_Component) {
         cols: this.state.cols,
         data: this.props.txs.map(function (tx) {
           return _extends({}, tx, {
-            vout: _react2.default.createElement(
+            hash: _react2.default.createElement(
               'div',
+              null,
+              tx.addresses.map(function (a) {
+                return _react2.default.createElement(
+                  'div',
+                  { key: a },
+                  a
+                );
+              })
+            ),
+            vout: _react2.default.createElement(
+              'span',
               { className: 'bade badge-info' },
-              tx.vout.toFixed(8)
+              (0, _numeral2.default)(tx.value).format('0,0.0000'),
+              ' BWK'
             )
           });
         }) });
@@ -2472,6 +2497,10 @@ var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
+
+var _numeral2 = _interopRequireDefault(_numeral);
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -2513,10 +2542,22 @@ var CardTXOut = function (_Component) {
         cols: this.state.cols,
         data: this.props.txs.map(function (tx) {
           return _extends({}, tx, {
-            vout: _react2.default.createElement(
+            hash: _react2.default.createElement(
               'div',
+              null,
+              tx.scriptPubKey.addresses.map(function (a) {
+                return _react2.default.createElement(
+                  'div',
+                  { key: a },
+                  a
+                );
+              })
+            ),
+            vout: _react2.default.createElement(
+              'span',
               { className: 'bade badge-success' },
-              tx.vout.toFixed(8)
+              (0, _numeral2.default)(tx.value).format('0,0.0000'),
+              ' BWK'
             )
           });
         }) });
@@ -2559,6 +2600,10 @@ var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/in
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
+
+var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
+
+var _numeral2 = _interopRequireDefault(_numeral);
 
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
@@ -2615,7 +2660,7 @@ var CardTXs = function (_Component) {
             vout: _react2.default.createElement(
               'span',
               { className: 'badge badge-' + (tx.vout < 0 ? 'danger' : 'success') },
-              tx.vout.toFixed(8)
+              (0, _numeral2.default)(tx.vout).format('0,0.0000')
             )
           });
         }) });
@@ -4901,6 +4946,10 @@ var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _numeral = __webpack_require__("./node_modules/numeral/numeral.js");
+
+var _numeral2 = _interopRequireDefault(_numeral);
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -4957,7 +5006,7 @@ var Overview = function (_Component) {
             { to: '/block/' + tx.height },
             tx.height
           ),
-          vout: tx.vout.toFixed(8)
+          vout: (0, _numeral2.default)(tx.vout).format('0,0.0000')
         });
       });
 
@@ -5220,13 +5269,13 @@ var TX = function (_Component) {
             'div',
             { className: 'col' },
             _react2.default.createElement(_HorizontalRule2.default, { title: 'Sending Addresses' }),
-            _react2.default.createElement(_CardTXIn2.default, { txs: this.state.txs })
+            _react2.default.createElement(_CardTXIn2.default, { txs: this.state.vin })
           ),
           _react2.default.createElement(
             'div',
             { className: 'col' },
             _react2.default.createElement(_HorizontalRule2.default, { title: 'Recipients' }),
-            _react2.default.createElement(_CardTXOut2.default, { txs: this.state.txs })
+            _react2.default.createElement(_CardTXOut2.default, { txs: this.state.vout })
           )
         )
       );
@@ -5253,7 +5302,7 @@ var mapDispatch = function mapDispatch(dispatch) {
 
 var mapState = function mapState(state) {
   return {
-    tx: state.txs.length ? state.txs[0] : { height: state.coin.blocks }
+    tx: state.txs.length ? state.txs[0] : { height: state.coin.blocks, vin: [], vout: [] }
   };
 };
 
