@@ -30,11 +30,6 @@ import Menu from './component/Menu';
 import SearchBar from './component/SearchBar';
 
 class App extends Component {
-  static propTypes = {
-    getCoins: PropTypes.func.isRequired,
-    getTXs: PropTypes.func.isRequired
-  };
-
   constructor(props) {
     super(props);
 

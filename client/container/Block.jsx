@@ -22,6 +22,19 @@ class Block extends Component {
   };
 
   componentDidMount() {
+    this.getBlock();
+  };
+
+  componentDidUpdate() {
+    const { params: { hash } } = this.props.match;
+    if (!!this.state.block.hash
+      && hash !== this.state.block.hash
+      && hash !== this.state.block.height.toString()) {
+      this.getBlock();
+    }
+  };
+
+  getBlock = () => {
     this.props
       .getBlock(this.props.match.params.hash)
       .then(({ block, txs }) => this.setState({ block, txs }));
@@ -31,7 +44,7 @@ class Block extends Component {
     return (
       <div>
         <HorizontalRule title="Block Info" />
-        <CardBlock block={ this.state.block } height={ this.props.tx.height } />        
+        <CardBlock block={ this.state.block } height={ this.props.tx.height } />
         <HorizontalRule title="Block Transactions" />
         <CardBlockTXs txs={ this.state.txs } />
       </div>
@@ -44,8 +57,8 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  tx: state.txs.length 
-    ? state.txs[0] 
+  tx: state.txs.length
+    ? state.txs[0]
     : { height: state.coin.blocks }
 });
 

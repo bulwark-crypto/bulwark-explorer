@@ -3,6 +3,7 @@
  * Global configuration object.
  */
 const config = {
+  'addressPrefix': 'b',
   'api': {
     'host': 'http://localhost',
     'port': '3000',

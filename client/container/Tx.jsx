@@ -23,6 +23,19 @@ class TX extends Component {
   };
 
   componentDidMount() {
+    this.getTX();
+  };
+
+  componentDidUpdate() {
+    const { params: { hash } } = this.props.match;
+    if (!!this.state.tx.hash
+      && hash !== this.state.tx.hash
+      && hash !== this.state.tx.height.toString()) {
+      this.getTX();
+    }
+  };
+
+  getTX() {
     this.props
       .getTX(this.props.match.params.hash)
       .then(({ tx, vin, vout }) => this.setState({ tx, vin, vout }));
@@ -32,12 +45,12 @@ class TX extends Component {
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
-        <CardTX height={ this.props.tx.height } tx={ this.state.tx } />  
-        <div className="row">      
+        <CardTX height={ this.props.tx.height } tx={ this.state.tx } />
+        <div className="row">
           <div className="col">
             <HorizontalRule title="Sending Addresses" />
             <CardTXIn txs={ this.state.txs } />
-          </div>   
+          </div>
           <div className="col">
             <HorizontalRule title="Recipients" />
             <CardTXOut txs={ this.state.txs } />
@@ -53,8 +66,8 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  tx: state.txs.length 
-    ? state.txs[0] 
+  tx: state.txs.length
+    ? state.txs[0]
     : { height: state.coin.blocks }
 });
 
