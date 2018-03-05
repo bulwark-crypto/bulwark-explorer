@@ -164,10 +164,14 @@ const getTXLatest = (req, res) => {
  */
 const getTX = async (req, res) => {
   try {
-    const hex = await rpc.call('getrawtransaction', [req.params.hash]);
+    const query = isNaN(req.params.hash)
+      ? { hash: req.params.hash }
+      : { height: req.params.hash };
+    const tx = await TX.findOne(query);
+    const hex = await rpc.call('getrawtransaction', [tx.hash]);
     const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
-    res.json(rpctx);
+    res.json({ tx, vin: rpctx.vin, vout: rpctx.vout });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
