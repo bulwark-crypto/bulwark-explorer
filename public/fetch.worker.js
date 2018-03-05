@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "23ae94d4d2d9eb15e12f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8a9b81ddef70d773258b"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -732,6 +732,7 @@
  * Global configuration object.
  */
 var config = {
+  'addressPrefix': 'b',
   'api': {
     'host': 'http://blockex.dustinengle.com',
     'port': '3000',
