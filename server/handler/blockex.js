@@ -171,7 +171,10 @@ const getTX = async (req, res) => {
     const hex = await rpc.call('getrawtransaction', [tx.hash]);
     const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
-    res.json({ tx, vin: rpctx.vin, vout: rpctx.vout });
+    const vinIds = new Set(rpctx.vin.forEach(vi => vi.txid));
+    const vin = await TX.find({ hash: { $in: Array.from(vinIds) } });
+
+    res.json({ tx, vin, vout: rpctx.vout });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
