@@ -6,6 +6,7 @@ const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const TX = require('../../model/tx');
+const TXOut = require('../../model/txout');
 
 /**
  * Get transactions by address.
@@ -172,9 +173,9 @@ const getTX = async (req, res) => {
     const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
     const vinIds = new Set(rpctx.vin.map(vi => vi.txid));
-    const vin = await TX.find({ hash: { $in: Array.from(vinIds) } });
+    const vin = await TXOut.find({ txid: { $in: Array.from(vinIds) } });
 
-    res.json({ tx, vin: rpctx.vin, vout: rpctx.vout });
+    res.json({ tx, vin, vout: rpctx.vout });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
