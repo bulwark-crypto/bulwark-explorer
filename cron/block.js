@@ -64,9 +64,9 @@ async function syncBlocks(current, stop) {
           rpctx.vout.forEach((vo) => {
             vout += vo.value;
 
-            if (vo.addresses && vo.addresses.length) {
+            if (vo.scriptPubKey.addresses && vo.scriptPubKey.addresses.length) {
               outs.push(new TXOut({
-                addresses: vo.addresses,
+                addresses: vo.scriptPubKey.addresses,
                 txid: rpctx.txid,
                 value: vo.value,
                 vout: vo.n
