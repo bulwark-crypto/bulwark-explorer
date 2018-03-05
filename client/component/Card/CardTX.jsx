@@ -2,6 +2,7 @@
 import Component from '../../core/Component';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -32,8 +33,8 @@ export default class CardTX extends Component {
           </span>
         </div>
         <div className="card__row">
-          <span className="card__label">Block Index:</span>
-          <span className="card__result">{ this.props.tx.vout }</span>
+          <span className="card__label">Block Value:</span>
+          <span className="card__result">{ numeral(this.props.tx.vout).format('0,0.0000') } BWK</span>
         </div>
         <div className="card__row">
           <span className="card__label">Block Hash:</span>

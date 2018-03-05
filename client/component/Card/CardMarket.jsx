@@ -1,5 +1,6 @@
 
 import Component from '../../core/Component';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -44,7 +45,7 @@ export default class CardStatus extends Component {
                 <Icon
                   className="card__icon--arrow"
                   name={ isPos ? 'arrow-up' : 'arrow-down' } />
-                <span>{ growth.toFixed(2) }% &nbsp;</span>
+                <span>{ numeral(growth).format('0,0.00') }% &nbsp;</span>
               </span>
               <span>In { this.props.xAxis.length * 5 } minutes</span>
             </p>

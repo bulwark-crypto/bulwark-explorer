@@ -2,6 +2,7 @@
 import Component from '../../core/Component';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -28,12 +29,21 @@ export default class CardTXIn extends Component {
 
   render() {
     return (
-      <Table 
-        cols={ this.state.cols } 
+      <Table
+        cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
+          hash: (
+            <div>
+              { tx.addresses.map(a => (
+                <div key={ a }>{ a }</div>
+              )) }
+            </div>
+          ),
           vout: (
-            <div className="bade badge-info">{ tx.vout.toFixed(8) }</div>
+            <span className="bade badge-info">
+              { numeral(tx.value).format('0,0.0000') } BWK
+            </span>
           )
         })) } />
     );

@@ -4,6 +4,7 @@ import Component from '../core/Component';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -37,7 +38,7 @@ class Overview extends Component {
       createdAt: moment(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
       hash: (<Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>),
       height: (<Link to={ `/block/${ tx.height }` }>{ tx.height }</Link>),
-      vout: tx.vout.toFixed(8)
+      vout: numeral(tx.vout).format('0,0.0000')
     }));
 
     return (

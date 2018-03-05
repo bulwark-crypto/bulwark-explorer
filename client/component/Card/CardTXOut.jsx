@@ -2,6 +2,7 @@
 import Component from '../../core/Component';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -41,7 +42,7 @@ export default class CardTXOut extends Component {
           ),
           vout: (
             <span className="bade badge-success">
-              { tx.value.toFixed(8) }
+              { numeral(tx.value).format('0,0.0000') } BWK
             </span>
           )
         })) } />

@@ -2,6 +2,7 @@
 import Component from '../../core/Component';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -30,8 +31,8 @@ export default class CardTXs extends Component {
 
   render() {
     return (
-      <Table 
-        cols={ this.state.cols } 
+      <Table
+        cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
           createdAt: moment(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
@@ -47,7 +48,7 @@ export default class CardTXs extends Component {
           ),
           vout: (
             <span className={ `badge badge-${ tx.vout < 0 ? 'danger' : 'success' }` }>
-              { tx.vout.toFixed(8) }
+              { numeral(tx.vout).format('0,0.0000') }
             </span>
           )
         })) } />
