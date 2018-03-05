@@ -28,12 +28,21 @@ export default class CardTXOut extends Component {
 
   render() {
     return (
-      <Table 
-        cols={ this.state.cols } 
+      <Table
+        cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
+          hash: (
+            <div>
+              { tx.scriptPubKey.addresses.map(a => (
+                <div key={ a }>{ a }</div>
+              )) }
+            </div>
+          ),
           vout: (
-            <div className="bade badge-success">{ tx.vout.toFixed(8) }</div>
+            <span className="bade badge-success">
+              { tx.value.toFixed(8) }
+            </span>
           )
         })) } />
     );

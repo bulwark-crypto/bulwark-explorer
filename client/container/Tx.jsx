@@ -49,11 +49,11 @@ class TX extends Component {
         <div className="row">
           <div className="col">
             <HorizontalRule title="Sending Addresses" />
-            <CardTXIn txs={ this.state.txs } />
+            <CardTXIn txs={ this.state.vin } />
           </div>
           <div className="col">
             <HorizontalRule title="Recipients" />
-            <CardTXOut txs={ this.state.txs } />
+            <CardTXOut txs={ this.state.vout } />
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@ const mapDispatch = dispatch => ({
 const mapState = state => ({
   tx: state.txs.length
     ? state.txs[0]
-    : { height: state.coin.blocks }
+    : { height: state.coin.blocks, vin: [], vout: [] }
 });
 
 export default connect(mapState, mapDispatch)(TX);
