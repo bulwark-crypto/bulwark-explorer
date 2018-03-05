@@ -174,7 +174,7 @@ const getTX = async (req, res) => {
     const vinIds = new Set(rpctx.vin.map(vi => vi.txid));
     const vin = await TX.find({ hash: { $in: Array.from(vinIds) } });
 
-    res.json({ tx, vin, vout: rpctx.vout });
+    res.json({ tx, vin: rpctx.vin, vout: rpctx.vout });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
