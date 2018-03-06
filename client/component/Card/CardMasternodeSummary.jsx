@@ -33,8 +33,7 @@ export default class CardMasternodeSummary extends Component {
           data={ this.props.yAxis }
           height="60px"
           hideLines={ true }
-          labels={ this.props.xAxis }
-          width="300px" />
+          labels={ this.props.xAxis } />
       </Card>
     );
   };

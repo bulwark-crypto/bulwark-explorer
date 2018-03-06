@@ -9,19 +9,17 @@ export default class GraphLine extends Component {
   static defaultProps = {
     color: 'rgba(0,255,0,1)',
     data: [],
-    height: '60px',
     hideLines: false,
-    labels: [],
-    width: '300px'
+    labels: []
   };
 
   static propTypes = {
     color: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,
-    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     hideLines: PropTypes.bool.isRequired,
     labels: PropTypes.array.isRequired,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   };
 
   constructor(props) {

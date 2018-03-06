@@ -57,8 +57,7 @@ export default class CardStatus extends Component {
               data={ this.props.yAxis }
               height="30px"
               hideLines={ true }
-              labels={ this.props.xAxis }
-              width="200px" />
+              labels={ this.props.xAxis } />
           </div>
         </div>
       </Card>
