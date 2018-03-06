@@ -41,7 +41,7 @@ export default class CardTXOut extends Component {
             </div>
           ),
           vout: (
-            <span className="bade badge-success">
+            <span className="badge badge-success">
               { numeral(tx.value).format('0,0.0000') } BWK
             </span>
           )

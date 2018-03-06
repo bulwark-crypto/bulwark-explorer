@@ -17,11 +17,11 @@ class Movement extends Component {
   constructor(props) {
     super(props);
     this.debounce = null;
-    this.state = { 
+    this.state = {
       pages: 0,
       page: 1,
-      size: 10, 
-      txs: [] 
+      size: 10,
+      txs: []
     };
   };
 
@@ -43,9 +43,9 @@ class Movement extends Component {
 
     this.debounce = setTimeout(() => {
       this.props
-        .getTXs({ 
-          limit: this.state.size, 
-          skip: (this.state.page - 1) * this.state.size 
+        .getTXs({
+          limit: this.state.size,
+          skip: (this.state.page - 1) * this.state.size
         })
         .then(({ pages, txs }) => {
           if (this.debounce) {
@@ -57,11 +57,11 @@ class Movement extends Component {
 
   handlePage = page => this.setState({ page }, this.getTXs);
 
-  handleSize = size => this.setState({ size }, this.getTXs);
+  handleSize = size => this.setState({ size, page: 1 }, this.getTXs);
 
   render() {
     const select = (
-      <select 
+      <select
         onChange={ ev => this.handleSize(ev.target.value) }
         value={ this.state.size }>
         <option value={ 10 }>10</option>
@@ -72,12 +72,12 @@ class Movement extends Component {
 
     return (
       <div>
-        <HorizontalRule 
+        <HorizontalRule
           select={ select }
           title="Movement" />
-        <CardTXs txs={ this.state.txs } /> 
-        <Pagination 
-          current={ this.state.page } 
+        <CardTXs txs={ this.state.txs } />
+        <Pagination
+          current={ this.state.page }
           className="float-right"
           onPage={ this.handlePage }
           total={ this.state.pages } />

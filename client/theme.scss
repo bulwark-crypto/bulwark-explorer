@@ -24,6 +24,17 @@ $table-cell-padding: 0;
 
 $container-large-desktop: 1170px;
 
+// Badges
+$badge-font-size:                   1em;
+$badge-font-weight:                 bold;
+$badge-padding-y:                   .25em;
+$badge-padding-x:                   1em;
+$badge-border-radius:               10px;
+$badge-pill-padding-x:              .6em;
+// Use a higher than normal value to ensure completely rounded edges when
+// customizing padding or font-size on labels.
+$badge-pill-border-radius:          10rem;
+
 // Pagination
 $pagination-padding-y:              10px;
 $pagination-padding-x:              10px;
@@ -70,10 +81,34 @@ html, body {
     width: 100vw;
 }
 
+a, a:visited {
+	color: $gray-dark;
+}
+
+a:hover {
+	color: $gray;
+	transition: all 1s ease;
+}
+
 h1, h2, h3, h4, h5, h6 {
     display: inline-block;
 }
 
+.badge {
+	font-family: 'Source Sans Pro', sans-serif;
+
+	&-danger {
+		color: $black !important;
+	}
+
+	&-info {
+		color: $white !important;
+	}
+
+	&-success {
+		color: $white !important;
+	}
+}
 
 .content {
     margin-left: $menu-width-open;

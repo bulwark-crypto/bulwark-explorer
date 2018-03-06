@@ -25,13 +25,16 @@ export default class CardMasternodeSummary extends Component {
     const total = this.props.online + this.props.offline;
 
     return (
-      <Card title="Masternode" className="card--graph">
+      <Card
+        className="card--graph"
+        style={{ marginBottom: 0 }}
+        title="Masternode">
         <p className="card__data-main">{ total }</p>
         <p className="card__data-sub">Online: { this.props.online }</p>
         <GraphLine
           color="rgba(0,0,255,0.5)"
           data={ this.props.yAxis }
-          height="60px"
+          height="100px"
           hideLines={ true }
           labels={ this.props.xAxis } />
       </Card>

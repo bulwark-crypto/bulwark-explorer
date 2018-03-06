@@ -32,11 +32,11 @@ export default class CardStatus extends Component {
     if (!isFinite(growth)) {
       growth = 0.0;
     }
-    const isPos = growth >= 0;
+    const isPos = growth > 0;
 
     return (
-      <Card title="Market" className="card--market">
-        <p className="card__data-main">BWK ${ this.props.usd }</p>
+      <Card className="card--market" title="Market">
+        <p className="card__data-main bariol">BWK ${ this.props.usd }</p>
         <p className="card__data-sub">{ this.props.btc } BTC</p>
         <div className="card__info row">
           <div className="col-sm-12 col-md-6">
@@ -55,7 +55,7 @@ export default class CardStatus extends Component {
             <GraphLine
               color={ isPos ? 'rgba(0,255,0,0.5)' : 'rgba(255,0,0,0.5)' }
               data={ this.props.yAxis }
-              height="30px"
+              height="100px"
               hideLines={ true }
               labels={ this.props.xAxis } />
           </div>

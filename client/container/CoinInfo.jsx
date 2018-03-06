@@ -24,10 +24,10 @@ class CoinInfo extends Component {
               <img className="img-fluid" src="/img/Badge-Full-Color.png" />
             </div>
             <div className="row">
-              <div className="col-sm-12 col-md-6">
+              <div className="col-sm-12 col-md-4">
                 <CardLinks />
               </div>
-              <div className="col-sm-12 col-md-6">
+              <div className="col-sm-12 col-md-8">
                 <CardEarnings coin={ this.props.coin } />
               </div>
             </div>

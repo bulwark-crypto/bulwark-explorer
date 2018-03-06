@@ -1,11 +1,27 @@
 
 /* Overrides bootstrap table class */
 .table {
-	;
 	width: 100%;
+
+	tr {
+		padding: 20px;
+		transition: all 1s ease-in;
+	}
 
 	tr:nth-child(even) {
 		color: $gray;
+
+		td, a, a:visited {
+			color: $gray;
+		}
+	}
+
+	tr:nth-child(odd) {
+		color: $gray-dark;
+
+		td, a, a:visited {
+			color: $gray-dark;
+		}
 	}
 
 	th {
@@ -16,7 +32,8 @@
 
 	td {
 		min-width: 7em;
-		padding-right: 2em;
+		padding: .25em;
+		padding-right: .25em;
 		text-align: left;
 		/*white-space: nowrap;*/
 	}
@@ -29,5 +46,4 @@
 	tbody {
 		font-size: .8em
 	}
-
 }

@@ -31,13 +31,16 @@ export default class CardNetworkSummary extends Component {
     }
 
     return (
-      <Card title="Network" className="card--graph">
+      <Card
+        className="card--graph"
+        style={{ marginBottom: 0 }}
+        title="Network">
         <p className="card__data-main">{ hash } { labels[idx] }/s</p>
         <p className="card__data-sub">Difficulty: { this.props.difficulty }</p>
         <GraphLine
           color="rgba(0,0,255,0.5)"
           data={ this.props.yAxis }
-          height="60px"
+          height="100px"
           hideLines={ true }
           labels={ this.props.xAxis } />
       </Card>

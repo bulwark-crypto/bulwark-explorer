@@ -1,4 +1,4 @@
-# BlockEx by Dustin Engle
+# BlockEx
 Simple block explorer system.
 
 __Under active development and subject to rapid sudden change.__
