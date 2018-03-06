@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "bf2b980991d4d525e982"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e7bd1b186981c6dbb5fb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1687,8 +1687,7 @@ var CardStatus = function (_Component) {
               data: this.props.yAxis,
               height: '30px',
               hideLines: true,
-              labels: this.props.xAxis,
-              width: '200px' })
+              labels: this.props.xAxis })
           )
         )
       );
@@ -1787,8 +1786,7 @@ var CardMasternodeSummary = function (_Component) {
           data: this.props.yAxis,
           height: '60px',
           hideLines: true,
-          labels: this.props.xAxis,
-          width: '300px' })
+          labels: this.props.xAxis })
       );
     }
   }]);
@@ -1894,8 +1892,7 @@ var CardNetworkSummary = function (_Component) {
           data: this.props.yAxis,
           height: '60px',
           hideLines: true,
-          labels: this.props.xAxis,
-          width: '300px' })
+          labels: this.props.xAxis })
       );
     }
   }]);
@@ -3059,18 +3056,16 @@ var GraphLine = function (_Component) {
 GraphLine.defaultProps = {
   color: 'rgba(0,255,0,1)',
   data: [],
-  height: '60px',
   hideLines: false,
-  labels: [],
-  width: '300px'
+  labels: []
 };
 GraphLine.propTypes = {
   color: _propTypes2.default.string.isRequired,
   data: _propTypes2.default.array.isRequired,
-  height: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]).isRequired,
+  height: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
   hideLines: _propTypes2.default.bool.isRequired,
   labels: _propTypes2.default.array.isRequired,
-  width: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]).isRequired
+  width: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string])
 };
 exports.default = GraphLine;
 
