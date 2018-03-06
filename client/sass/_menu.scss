@@ -1,14 +1,4 @@
 
-@keyframes logo-animation {
-	from { transform: scale(1, 1); }
-	to { transform: scale(0, 0); }
-}
-
-@keyframes menu-animation {
-	from { width: $menu-width-open; }
-	to { width: $menu-width-close; }
-}
-
 .menu {
 
 	background: $menu-gradient-main;
@@ -26,12 +16,6 @@
 	padding: 1em 2em 2em;
 	position: fixed;
 
-	animation-direction: reverse;
-	animation-duration: 2s;
-	animation-name: menu-animation;
-	animation-timing-function: cubic-bezier(0, 1, .5, 1);
-	width: $menu-width-open;
-
 	&__header {
 		display: flex;
 		align-items: center;
@@ -47,6 +31,7 @@
 	&__logo {
 		height: auto;
 		margin-right: 2em;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		/* Used to align with searchbar */
 		width: 140px;
 	}
@@ -71,6 +56,7 @@
 		margin: 0;
 		padding: 0;
 		position: relative;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 
 		&:hover {
 			color: $white;
@@ -84,21 +70,36 @@
 		transition: opacity .5s;*/
 		position: absolute;
 		left: 40px;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		/*Prevent text wrapping when width is changed*/
 		white-space: nowrap;
 	}
 
 	&__icon {
 		height: 24px;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		width: 24px;
+	}
+
+	/*Opened modifier*/
+	&--open {
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		width: $menu-width-open;
+
+		.menu__toggle {
+			transform: rotate(-90deg);
+			transition: all 1s cubic-bezier(0, 1, .5, 1);
+		}
 	}
 
 	/*Closed modifier*/
 	&--close {
-		animation-duration: 2s;
-		animation-name: menu-animation;
-		animation-timing-function: cubic-bezier(0, 1, .5, 1);
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		width: $menu-width-close;
+
+		.menu__toggle {
+			transition: all 1s cubic-bezier(0, 1, .5, 1);
+		}
 	}
 
 	&--close &__logo {
@@ -106,20 +107,24 @@
 		width: 0;
 		margin: 0;
 		transform: scale(0);
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__icon {
 		margin: 0 auto;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__item-label {
 		display: none;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	a, a:visited {
 		color: $white;
 		font-family: 'bariol';
 		font-size: 18px;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	a:hover {
