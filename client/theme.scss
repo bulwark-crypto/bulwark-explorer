@@ -112,18 +112,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .content {
     margin-left: $menu-width-open;
-    transition: all .25s;
+	transition: all 1s cubic-bezier(0, 1, .5, 1);
 
     &__wrapper {
 	    margin: 0 auto;
 	    min-height: 80vh;
     	padding: 1em 2em 2em;
 	    position: relative;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
     }
 
     /*Set margin for content offset*/
 	.menu--close + & {
 	    margin-left: $menu-width-close;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 }
 
