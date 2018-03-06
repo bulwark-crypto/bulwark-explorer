@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
 @font-face {
     font-family: 'bariol';
     src: url('/font/bariol_bold_italic-webfont.eot');
@@ -76,4 +78,8 @@
 
 html, body {
 	font-family: 'bariol';
+}
+
+.code {
+	font-family: 'Source Sans Pro', sans-serif;
 }
