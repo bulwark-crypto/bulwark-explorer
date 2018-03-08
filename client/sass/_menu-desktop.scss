@@ -122,14 +122,14 @@
 
 	a, a:visited {
 		color: $white;
-		font-family: 'bariol';
+		font-family: $fontLarge;
 		font-size: 18px;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	a:hover {
 		color: $gray-light;
-		transition: all 1s ease;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 }
 

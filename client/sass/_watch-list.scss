@@ -24,7 +24,15 @@
 	}
 
 	&__item-text {
+		font-family: $fontLarge;
+		font-size: 1.25em;
+		font-weight: normal;
+		font-style: normal;
+		font-stretch: normal;
+		letter-spacing: normal;
+		mix-blend-mode: undefined;
 		overflow: hidden;
+		text-align: left;
 		white-space: nowrap;
 		width: 75%;
 	}

@@ -91,10 +91,7 @@ class Masternode extends Component {
             ...mn,
             active: moment().subtract(mn.active, 'seconds').utc().fromNow(),
             addr: (
-              <div>
-                { mn.addr }<br />
-                <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
-              </div>
+              <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
             ),
             lastPaidAt: moment(mn.lastPaidAt).utc().format('YYYY-MM-DD HH:MM A'),
             txHash: (

@@ -1,12 +1,17 @@
+
+@import "./sass/font";
+
 /* Variables */
 $black: #222222;
-$blue: #0000ff;
+$blue: #1991eb;
 $blue-dark: #595ff5;
 $blue-light: #2ba2f8;
-$gray: #777777;
-$gray-dark: #333333;
-$gray-light: #cccccc;
-$green: #61d85d;
+$gray: #adadad;
+$gray-dark: #354052;
+$gray-light: #fefefe;
+$green: #61d75e;
+$red: #ed1c24;
+$orange: #f7981c;
 $white: #ffffff;
 
 $menu-gradient-main: #295af5;
@@ -31,39 +36,36 @@ $badge-padding-y:                   .25em;
 $badge-padding-x:                   1em;
 $badge-border-radius:               10px;
 $badge-pill-padding-x:              .6em;
-// Use a higher than normal value to ensure completely rounded edges when
-// customizing padding or font-size on labels.
 $badge-pill-border-radius:          10rem;
 
 // Pagination
-$pagination-padding-y:              10px;
+$pagination-padding-y:              5px;
 $pagination-padding-x:              10px;
-$pagination-padding-y-sm:           10px;
+$pagination-padding-y-sm:           5px;
 $pagination-padding-x-sm:           10px;
-$pagination-padding-y-lg:           10px;
+$pagination-padding-y-lg:           5px;
 $pagination-padding-x-lg:           10px;
 $pagination-line-height:            1;
 
-$pagination-color:                  $gray-light;
+$pagination-color:                  $gray;
 $pagination-bg:                     $white;
 $pagination-border-width:           1px;
-$pagination-border-color:           $gray-light;
+$pagination-border-color:           $gray;
 
-$pagination-hover-color:            $gray-dark;
+$pagination-hover-color:            $blue;
 $pagination-hover-bg:            	$white;
-$pagination-hover-border-color:    	$gray-light;
+$pagination-hover-border-color:    	$blue;
 
 $pagination-active-color:           $gray-dark;
 $pagination-active-bg:           	$white;
 $pagination-active-border-color:    $gray-dark;
 
-$pagination-disabled-color:         $gray-light;
-$pagination-disabled-bg:            $white;
-$pagination-disabled-border-color:  $gray-light;
+$pagination-disabled-color:         $gray;
+$pagination-disabled-bg:            $gray-light;
+$pagination-disabled-border-color:  $gray;
 
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./sass/card";
-@import "./sass/font";
 @import "./sass/footer";
 @import "./sass/form";
 @import "./sass/hr";
@@ -84,19 +86,34 @@ html, body {
 
 a, a:visited {
 	color: $gray-dark;
+	text-decoration: none;
 }
 
 a:hover {
-	color: $gray;
-	transition: all 1s ease;
+	color: $blue;
+	text-decoration: none;
+	transition: all 1s cubic-bezier(0, 1, .5, 1);
 }
 
 h1, h2, h3, h4, h5, h6 {
-    display: inline-block;
+	display: inline-block;
+	font-weight: bolder;
 }
 
+// Badge
 .badge {
-	font-family: 'Source Sans Pro', sans-serif;
+	border-radius: 2.5px;
+	font-family: $fontSmall;
+	font-size: 0.85em;
+	font-weight: normal;
+	font-style: normal;
+	font-stretch: normal;
+	line-height: normal;
+	letter-spacing: normal;
+	mix-blend-mode: undefined;
+	padding: .2em .6em;
+	text-align: center;
+	text-transform: uppercase;
 
 	&-danger {
 		color: $black !important;
@@ -111,8 +128,9 @@ h1, h2, h3, h4, h5, h6 {
 	}
 }
 
+// Content Wrapper
 .content {
-	margin-left: $menu-width-close;
+	margin-left: $menu-width-open;
 	transition: all 1s cubic-bezier(0, 1, .5, 1);
 
 	@media (min-width: 1400px) {
@@ -135,6 +153,17 @@ h1, h2, h3, h4, h5, h6 {
 	}
 }
 
+// Pagination
+.page-link, .page-link:visited {
+	color: $gray;
+	font-size: 1em;
+
+	&:hover {
+		color: $blue;
+	}
+}
+
+// Search
 .search {
 	display: flex;
 	align-items: center;

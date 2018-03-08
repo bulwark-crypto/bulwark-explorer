@@ -32,7 +32,7 @@ export default class CardStatus extends Component {
     if (!isFinite(growth)) {
       growth = 0.0;
     }
-    const isPos = growth > 0;
+    const isPos = growth >= 0;
 
     return (
       <Card className="card--market" title="Market">
@@ -53,7 +53,7 @@ export default class CardStatus extends Component {
           </div>
           <div className="col-sm-12 col-md-6 col-lg-8">
             <GraphLine
-              color={ isPos ? 'rgba(0,255,0,0.5)' : 'rgba(255,0,0,0.5)' }
+              color={ isPos ? '#61d75e' : '#ed1c24' }
               data={ this.props.yAxis }
               height="100px"
               hideLines={ true }

@@ -3,14 +3,14 @@
 	margin-bottom: 1em;
 
 	&__title {
-		font-family: 'bariol';
+		font-family: $fontLarge;
 		font-size: 1.25rem;
 		margin-bottom: .8em;
 		text-transform: capitalize;
 	}
 
 	&__body {
-		font-family: 'bariol';
+		font-family: $fontLarge;
 		height: 100%;
 	}
 

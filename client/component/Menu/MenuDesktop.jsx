@@ -32,7 +32,7 @@ export default class MenuDesktop extends Component {
             <p className="menu-desktop__title">MENU</p>
               <Link className="menu-desktop__item" to="/">
                 <img className="menu-desktop__icon" src="/img/Home-icon@2x.png" />
-                <span className="menu-desktop__item-label" >Overview</span>
+                <span className="menu-desktop__item-label active" >Overview</span>
               </Link>
               <Link className="menu-desktop__item" to="/movement">
                 <img className="menu-desktop__icon" src="/img/Analytics-icon@2x.png" />

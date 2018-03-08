@@ -7,8 +7,8 @@ import React from 'react';
  * Will use material icons to render.
  * @param {Object} props The props with the name.
  */
-const Icon = (props) => (
-  <i className={ `fas fa-${ props.name } ${ props.className }` } />
+const Icon = ({ name, className, ...props }) => (
+  <i { ...props } className={ `fas fa-${ name } ${ className }` } />
 );
 
 Icon.propTypes = {

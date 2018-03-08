@@ -32,7 +32,7 @@ export default class MenuMobile extends Component {
             <p className="menu-mobile__title">MENU</p>
               <Link className="menu-mobile__item" to="/">
                 <img className="menu-mobile__icon" src="/img/Home-icon@2x.png" />
-                <span className="menu-mobile__item-label" >Overview</span>
+                <span className="menu-mobile__item-label active" >Overview</span>
               </Link>
               <Link className="menu-mobile__item" to="/movement">
                 <img className="menu-mobile__icon" src="/img/Analytics-icon@2x.png" />
