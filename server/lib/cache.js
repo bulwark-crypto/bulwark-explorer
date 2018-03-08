@@ -1,6 +1,6 @@
 
 const moment = require('moment');
-const TXOut = require('../model/txout');
+const TXOut = require('../../model/txout');
 
 /**
  * Cache
