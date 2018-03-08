@@ -2,22 +2,24 @@
 import Component from 'core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import { Link } from 'react-router-dom';
 
 import Icon from '../Icon';
 
 export default class MenuDesktop extends Component {
-  static defaultProps = {
-    isOpen: true,
-  };
+  constructor(props) {
+    super(props);
 
-  static propTypes = {
-    isOpen: PropTypes.bool,
-    handleToggle: PropTypes.func,
-  };
+    this.state = {
+      isOpen: true
+    }
+  }
+
+  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
 
   render() {
-    const { props } = this;
+    const { state } = this;
 
     return (
       <div>

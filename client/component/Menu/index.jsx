@@ -19,9 +19,9 @@ export default class Menu extends Component {
     const { props } = this;
 
     return (
-      <div>
+      <div className="menu-wrapper">
+        <MenuMobile { ...props } />
         <MenuDesktop { ...props } />
-        {/*<MenuMobile { ...props } />*/}
       </div>
     )
   }
