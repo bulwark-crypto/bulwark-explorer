@@ -8,8 +8,13 @@ import { withRouter } from 'react-router';
 import Icon from './Icon';
 
 class SearchBar extends Component {
+  static defaultProps = {
+    placeholder: 'You may enter a block height, block hash, tx hash or address and hit enter.',
+  }
+
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    placeholder: PropTypes.string.isRequired
   };
 
   handleKeyPress = (ev) => {
@@ -32,13 +37,15 @@ class SearchBar extends Component {
   };
 
   render() {
+    const { props } = this;
+
     return (
-      <div className="search">
+      <div className={ `search ${ props.className ? props.className : '' }` } >
         <Icon name="search" className="search__icon" />
         <input
           className="search__input"
           onKeyPress={ this.handleKeyPress }
-          placeholder="You may enter a block height, block hash, tx hash or address and hit enter." />
+          placeholder={ props.placeholder } />
       </div>
     );
   };

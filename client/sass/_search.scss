@@ -1,0 +1,35 @@
+.search {
+	display: flex;
+	align-items: center;
+	/* Used to align with menu logo */
+	min-height: 4em;
+
+	&__icon {
+		margin-right: 1em;
+	}
+
+	&__input {
+		border: 0;
+		flex: 1;
+		outline: none;
+	}
+
+	&--mobile {
+	  border: 1px solid $white-light;
+	  border-radius: 2px;
+	  flex: 1;
+	  font-size: .8em;
+	  min-height: initial;
+	  padding: 0 .5em;
+	}
+
+	&--mobile &__input {
+		background: transparent;
+		color: $white;
+	}
+
+	&--mobile input.search__input::placeholder {
+		color: $white;
+	}
+
+}

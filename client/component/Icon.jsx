@@ -8,7 +8,7 @@ import React from 'react';
  * @param {Object} props The props with the name.
  */
 const Icon = ({ name, className, ...props }) => (
-  <i { ...props } className={ `fas fa-${ name } ${ className }` } />
+  <i { ...props } className={ `fas fa-${ name } ${ className ? className : '' }` } />
 );
 
 Icon.propTypes = {

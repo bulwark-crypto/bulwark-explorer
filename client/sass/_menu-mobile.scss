@@ -1,24 +1,89 @@
 
 .menu-mobile {
 
-	display: block;
-	background: $menu-gradient-main;
-	background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 50%, $menu-gradient-secondary 80%);
-	background: -webkit-linear-gradient(-45deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
-	background: linear-gradient(135deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
+	display: flex;
+	flex-direction: column;
 
 	box-shadow: #7d7d7d 0px 0px 16px;
 	color: $white;
-	font-weight: lighter;
-    height: $menu-mobile-height;
-    margin: 0;
-	padding: 1em 2em 2em;
 	flex: 1;
+	font-weight: lighter;
+    margin: 0;
 	/*position: fixed;*/
 	width: 100%;
 
 	@include media-breakpoint-up(md) {
 		display: none;
 	}
+
+	&__toggle {
+		cursor: pointer;
+		font-size: 2em;
+	}
+
+	&__search-wrapper {
+		background: $menu-gradient-main;
+		background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 50%, $menu-gradient-secondary 80%);
+		background: -webkit-linear-gradient(-45deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
+		background: linear-gradient(135deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+		/*height: $menu-mobile-height;*/
+		padding: 1em;
+	}
+
+	&__item-wrapper {
+		background-color: $white;
+		/*height: 0;*/
+  		/*overflow: hidden;*/
+  		display: none;
+		transition: all .1s cubic-bezier(0, 1, .5, 1);
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid $gray;
+		color: $white;
+		line-height: 1;
+		margin: 0 auto;
+		padding: 1em;
+		position: relative;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		width: 95%;
+
+		&:hover {
+			color: $white;
+			text-decoration: none;
+		}
+
+	}
+
+	a.menu-mobile__item:last-child {
+		border-bottom: none;
+	}
+
+	&__icon {
+		color: $black;
+		height: 24px;
+		margin-right: 2em;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		width: 24px;
+	}
+
+	&--open &__item-wrapper {
+		margin-top: 1em;
+		/*height: 100%;*/
+		display: block;
+	}
+
+	/*Opened modifier*/
+	&--open &__toggle {
+		transform: rotate(-90deg);
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
+	}
+
+
 }
 

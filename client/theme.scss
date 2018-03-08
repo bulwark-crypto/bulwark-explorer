@@ -13,12 +13,13 @@ $green: #61d75e;
 $red: #ed1c24;
 $orange: #f7981c;
 $white: #ffffff;
+$white-light: rgba(255,255,255,.5);
 
 $menu-gradient-main: #295af5;
 $menu-gradient-secondary: #595ff5;
 $menu-width-open: 240px;
 $menu-width-close: 110px;
-$menu-mobile-height: 60px;
+$menu-mobile-height: 70px;
 
 /* Bootstrap override */
 $card-border-width: 0;
@@ -72,6 +73,7 @@ $pagination-disabled-border-color:  $gray;
 @import "./sass/hr";
 @import "./sass/menu-desktop";
 @import "./sass/menu-mobile";
+@import "./sass/search";
 @import "./sass/table";
 @import "./sass/utility";
 @import "./sass/watch-list";
@@ -202,25 +204,5 @@ h1, h2, h3, h4, h5, h6 {
 	&:hover {
 		color: $blue;
 	}
-}
-
-// Search
-.search {
-	display: flex;
-	align-items: center;
-	margin-bottom: 1em;
-	/* Used to align with menu logo */
-	min-height: 4em;
-
-	&__icon {
-		margin-right: 1em;
-	}
-
-	&__input {
-		border: 0;
-		flex: 1;
-		outline: none;
-	}
-
 }
 
