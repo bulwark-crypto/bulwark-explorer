@@ -38,12 +38,10 @@ export default class MenuMobile extends Component {
                 <img className="menu-mobile__icon" src="/img/Analytics-icon@2x.png" />
                 <span className="menu-mobile__item-label" >Movement</span>
               </Link>
-              {/*
               <Link className="menu-mobile__item" to="/top">
                 <img className="menu-mobile__icon" src="/img/Ratings-icon@2x.png" />
                 <span className="menu-mobile__item-label">Top 100</span>
               </Link>
-              */}
               <Link className="menu-mobile__item" to="/masternode">
                 <img className="menu-mobile__icon" src="/img/Customers-icon@2x.png" />
                 <span className="menu-mobile__item-label">Masternode</span>

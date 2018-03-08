@@ -38,12 +38,10 @@ export default class MenuDesktop extends Component {
                 <img className="menu-desktop__icon" src="/img/Analytics-icon@2x.png" />
                 <span className="menu-desktop__item-label" >Movement</span>
               </Link>
-              {/*
               <Link className="menu-desktop__item" to="/top">
                 <img className="menu-desktop__icon" src="/img/Ratings-icon@2x.png" />
                 <span className="menu-desktop__item-label">Top 100</span>
               </Link>
-              */}
               <Link className="menu-desktop__item" to="/masternode">
                 <img className="menu-desktop__icon" src="/img/Customers-icon@2x.png" />
                 <span className="menu-desktop__item-label">Masternode</span>
