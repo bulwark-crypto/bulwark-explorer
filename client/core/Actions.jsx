@@ -76,6 +76,12 @@ export const getPeers = () => {
   });
 };
 
+export const getTop100 = () => {
+  return new promise((resolve, reject) => {
+    getFromWorker('top100', resolve, reject, query);
+  });
+};
+
 export const getTX = (query) => {
   return new promise((resolve, reject) => {
     getFromWorker('tx', resolve, reject, query);
@@ -129,6 +135,7 @@ export default {
   getCoinHistory,
   getMNs,
   getPeers,
+  getTop100,
   getTX,
   getTXs,
   getTXLatest

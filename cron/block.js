@@ -65,12 +65,14 @@ async function syncBlocks(current, stop) {
             vout += vo.value;
 
             if (vo.scriptPubKey.addresses && vo.scriptPubKey.addresses.length) {
-              outs.push(new TXOut({
-                addresses: vo.scriptPubKey.addresses,
-                txid: rpctx.txid,
-                value: vo.value,
-                vout: vo.n
-              }));
+              vo.scriptPubKey.addresses.forEach((addr) => {
+                outs.push(new TXOut({
+                  address: addr,
+                  txid: rpctx.txid,
+                  value: vo.value,
+                  vout: vo.n
+                }));
+              });
             }
           });
 

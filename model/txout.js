@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
  */
 const TXOut = mongoose.model('TXOut', new mongoose.Schema({
   __v: { select: false, type: Number },
-  addresses: { required: true, type: [String] },
+  address: { required: true, type: String },
   spendTx: { index: 1, type: String },
   txid: { index: 1, required: true, type: String },
   value: { required: true, type: Number },

@@ -1,12 +1,18 @@
 
+const Cache = require('../../lib/Cache');
+const moment = require('moment');
 const { rpc } = require('../../lib/cron');
 
+// System models for query and etc.
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const TX = require('../../model/tx');
-const TXOut = require('../../model/txout');
+
+// Setup the top 100 cache cache is set to last
+// for 1 hour at this time.
+const cache = new Cache();
 
 /**
  * Get transactions by address.
@@ -138,6 +144,15 @@ const getPeerHistory = (req, res) => {
       console.log(err);
       res.status(500).send(err.message || err);
     });
+};
+
+/**
+ * Get the top 100 addresses from the database.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getTop100 = (req, res) => {
+  res.json(cache.get());
 };
 
 /**
