@@ -10,7 +10,7 @@ const TXOut = require('../../model/txout');
 class Cache {
   constructor() {
     this.items = [];
-    this.loading = null;
+    this.loading = false;
     this.timeout = moment().add(1, 'hour');
   }
 
@@ -26,6 +26,7 @@ class Cache {
         ])
         .then((items) => {
           this.items = items;
+          this.loading = false;
           this.timeout = moment().add(1, 'hour');
         });
     }

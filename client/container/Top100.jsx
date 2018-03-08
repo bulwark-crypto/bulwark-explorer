@@ -9,6 +9,10 @@ import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
 
 class Top100 extends Component {
+  static defaultProps = {
+    coin: {}
+  };
+
   static propTypes = {
     coin: PropTypes.object.isRequired,
     getTop100: PropTypes.func.isRequired
