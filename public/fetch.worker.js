@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "8a9b81ddef70d773258b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "137667fbd320b642a17e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -722,50 +722,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./config.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Global configuration object.
- */
-var config = {
-  'addressPrefix': 'b',
-  'api': {
-    'host': 'http://blockex.dustinengle.com',
-    'port': '3000',
-    'prefix': '/api',
-    'timeout': '5s'
-  },
-  'coinMarketCap': {
-    'api': 'http://api.coinmarketcap.com/v1/ticker/',
-    'ticker': 'bulwark'
-  },
-  'db': {
-    'host': '127.0.0.1',
-    'port': '27017',
-    'name': 'blockex',
-    'user': 'blockexuser',
-    'pass': 'Explorer!1'
-  },
-  'freegeoip': {
-    'api': 'http://freegeoip.net/json/'
-  },
-  'rpc': {
-    'host': '127.0.0.1',
-    'port': '7777',
-    'user': 'bwk',
-    'pass': 'password',
-    'timeout': 3000 // 3 seconds
-  }
-};
-
-module.exports = config;
-
-/***/ }),
-
 /***/ "./lib/fetch.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -847,7 +803,39 @@ module.exports = fetch;
  * Handles the requesting of data in a separate thread
  * to prevent UI pausing.
  */
-var config = __webpack_require__("./config.js");
+
+/**
+ * Global configuration object.
+ */
+var config = {
+  'api': {
+    'host': 'http://blockex.dustinengle.com',
+    'port': '3000',
+    'prefix': '/api',
+    'timeout': '5s'
+  },
+  'coinMarketCap': {
+    'api': 'https://api.coinmarketcap.com/v1/ticker/',
+    'ticker': 'bulwark'
+  },
+  'db': {
+    'host': '127.0.0.1',
+    'port': '27017',
+    'name': 'blockex',
+    'user': 'blockexuser',
+    'pass': 'Explorer!1'
+  },
+  'freegeoip': {
+    'api': 'http://freegeoip.net/json/'
+  },
+  'rpc': {
+    'host': '127.0.0.1',
+    'port': '7777',
+    'user': 'bwk',
+    'pass': 'password',
+    'timeout': 3000 // 3 seconds
+  }
+};
 var fetch = __webpack_require__("./lib/fetch.js");
 
 var api = config.api.host + ':' + config.api.port + config.api.prefix;
