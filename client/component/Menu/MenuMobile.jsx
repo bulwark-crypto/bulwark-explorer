@@ -23,12 +23,12 @@ export default class MenuDesktop extends Component {
 
     return (
       <div>
-        <div className={ `menu-mobile ${ props.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
+        <div className={ `menu-mobile ${ state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
           <div className="menu-mobile__wrapper">
             <div className="menu-mobile__header">
               <img src="/img/Badge-White.png" className="menu-mobile__logo" />
-              <a onClick={ props.handleToggle } >
-                <Icon name="bars" className="menu-mobile__toggle" onClick={ props.handleToggle } />
+              <a onClick={ this.handleToggle } >
+                <Icon name="bars" className="menu-mobile__toggle" onClick={ this.handleToggle } />
               </a>
             </div>
             <p className="menu-mobile__title">MENU</p>
