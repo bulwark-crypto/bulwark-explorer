@@ -121,6 +121,26 @@ h1, h2, h3, h4, h5, h6 {
 	z-index: $zindex-fixed;
 }
 
+#react-app {
+	height: 100%;
+}
+
+.page-wrapper {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+
+	@include media-breakpoint-down(sm) {
+		flex-direction: column;
+	}
+
+}
+
+.menu-wrapper {
+	display: flex;
+	z-index: $zindex-fixed;
+}
+
 .badge {
 	border-radius: 2.5px;
 	font-family: $fontSmall;
@@ -152,11 +172,6 @@ h1, h2, h3, h4, h5, h6 {
 .content {
 	flex: 1;
 	overflow-y: scroll;
-
-	@media (min-width: 768px) {
-		padding-left: $menu-width-open;
-		padding-top: 0;
-	}
 
 	@media (min-width: 1400px) {
 		padding-left: $menu-width-open;
