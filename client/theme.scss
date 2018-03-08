@@ -18,6 +18,7 @@ $menu-gradient-main: #295af5;
 $menu-gradient-secondary: #595ff5;
 $menu-width-open: 240px;
 $menu-width-close: 110px;
+$menu-mobile-height: 60px;
 
 /* Bootstrap override */
 $card-border-width: 0;
@@ -100,7 +101,26 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: bolder;
 }
 
-// Badge
+#react-app {
+	height: 100%;
+}
+
+.page-wrapper {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+
+	@include media-breakpoint-down(sm) {
+		flex-direction: column;
+	}
+
+}
+
+.menu-wrapper {
+	display: flex;
+	z-index: $zindex-fixed;
+}
+
 .badge {
 	border-radius: 2.5px;
 	font-family: $fontSmall;
@@ -130,8 +150,8 @@ h1, h2, h3, h4, h5, h6 {
 
 // Content Wrapper
 .content {
-	margin-left: $menu-width-open;
-	transition: all 1s cubic-bezier(0, 1, .5, 1);
+	flex: 1;
+	overflow-y: scroll;
 
 	@media (min-width: 1400px) {
 		margin-left: $menu-width-open;
@@ -139,6 +159,7 @@ h1, h2, h3, h4, h5, h6 {
 	}
 
     &__wrapper {
+		background-color: white;
 	    margin: 0 auto;
 	    min-height: 80vh;
     	padding: 1em 2em 2em;
@@ -147,7 +168,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     /*Set margin for content offset*/
-	.menu--close + & {
+	& + div .menu-desktop--close + & {
 	    margin-left: $menu-width-close;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}

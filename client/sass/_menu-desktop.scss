@@ -10,11 +10,22 @@
 	color: $white;
     float: left;
 	font-weight: lighter;
-    height: 100vh;
+    height: 100%;
     margin: 0;
     min-height: 550px;
 	padding: 1em 2em 2em;
-	position: fixed;
+
+	@include media-breakpoint-down(sm) {
+		display: none;
+	}
+
+	&__content-wrapper {
+		display: flex;
+		flex-direction: column;
+		height: 75%;
+		max-height: 600px;
+		justify-content: space-between;
+	}
 
 	&__header {
 		display: flex;
@@ -39,13 +50,6 @@
 	&__title {
 		margin: 0;
 		text-align: center;
-	}
-
-	&__wrapper {
-		display: flex;
-		flex-direction: column;
-		height: 75%;
-		justify-content: space-between;
 	}
 
 	&__item {

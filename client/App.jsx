@@ -35,7 +35,6 @@ class App extends Component {
 
     this.state = {
       init: true,
-      isOpen: true,
       limit: 10
     };
     this.timer = { coins: null, txs: null };
@@ -93,8 +92,6 @@ class App extends Component {
     }, 30000); // 30 seconds
   };
 
-  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
-
   render() {
     if (this.state.init) {
       return (
@@ -104,10 +101,8 @@ class App extends Component {
 
     return (
       <HashRouter>
-        <div>
-          <Menu
-            isOpen={ this.state.isOpen }
-            handleToggle={ this.handleToggle } />
+        <div className="page-wrapper">
+          <Menu />
           <div className="content">
             <div className="content__wrapper">
               <SearchBar />
