@@ -20,7 +20,7 @@ class Cache {
 
       TXOut.aggregate([
           { $match: { spendTx: { $exists: false } } },
-          { $group: { _id: '$address', sum: '$value' } },
+          { $group: { _id: '$address', sum: { $sum: '$value' } } },
           { $sort: { sum: -1 } },
           { $limit: 100 }
         ])
