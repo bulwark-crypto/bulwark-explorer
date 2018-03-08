@@ -1,5 +1,5 @@
 
-.menu {
+.menu-desktop {
 
 	background: $menu-gradient-main;
 	background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 50%, $menu-gradient-secondary 80%);
@@ -85,21 +85,21 @@
 	&--open {
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		width: $menu-width-open;
+	}
 
-		.menu__toggle {
-			transform: rotate(-90deg);
-			transition: all 1s cubic-bezier(0, 1, .5, 1);
-		}
+	&--open &__toggle {
+		transform: rotate(-90deg);
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	/*Closed modifier*/
 	&--close {
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		width: $menu-width-close;
+	}
 
-		.menu__toggle {
-			transition: all 1s cubic-bezier(0, 1, .5, 1);
-		}
+	&--close &__toggle {
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__logo {
