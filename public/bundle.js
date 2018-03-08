@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "54571fd0d84dd34b8c1c"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f43623f14780ecc85aba"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -2950,32 +2950,41 @@ var GraphLine = function (_Component) {
     var _this = _possibleConstructorReturn(this, (GraphLine.__proto__ || Object.getPrototypeOf(GraphLine)).call(this, props));
 
     _this.getConfig = function () {
+      var max = Math.max(_this.props.data);
+      var min = Math.min(_this.props.data);
+      max = max + max * 0.1;
+      min = min - min * 0.1;
+
       return {
         type: 'line',
         data: {
           labels: _this.props.labels,
           datasets: [{
-            borderColor: [_this.props.color],
+            borderColor: _this.props.color,
             borderWidth: 4,
-            //cubicInterpolationMode: 'default', // monotone
+            cubicInterpolationMode: 'monotone', // default
+            capBezierPoints: true,
             data: _this.props.data,
             fill: false,
-            lineTension: 0.1,
+            lineTension: 0.55,
             pointRadius: 0,
+            showLine: true,
+            spanGaps: true,
             steppedLine: false
           }]
         },
         options: {
           layout: {
             padding: {
-              bottom: 10,
-              left: 10,
-              right: 10,
-              top: 10
+              bottom: 5,
+              left: 0,
+              right: 0,
+              top: 5
             }
           },
           legend: {
-            display: !_this.props.hideLines
+            display: !_this.props.hideLines,
+            position: 'bottom'
           },
           maintainAspectRatio: false,
           responsive: true,
@@ -2994,7 +3003,10 @@ var GraphLine = function (_Component) {
               ticks: {
                 callback: function callback() {
                   return null;
-                }
+                },
+                stepSize: _this.props.stepSize,
+                suggestedMax: _this.props.max || max,
+                suggestedMin: _this.props.min || min
               }
             }],
             yAxes: [{
@@ -3031,6 +3043,16 @@ var GraphLine = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       var el = document.getElementById(this.id);
+
+      // Change the clip area for the graph to avoid
+      // peak and valley cutoff.
+      _chart2.default.canvasHelpers.clipArea = function (ctx, clipArea) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(clipArea.left, clipArea.top - 5, clipArea.right - clipArea.left, clipArea.bottom + 5);
+        ctx.clip();
+      };
+
       this.chart = new _chart2.default(el, this.getConfig());
     }
   }, {
@@ -3073,6 +3095,9 @@ GraphLine.propTypes = {
   height: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
   hideLines: _propTypes2.default.bool.isRequired,
   labels: _propTypes2.default.array.isRequired,
+  max: _propTypes2.default.number,
+  min: _propTypes2.default.number,
+  stepSize: _propTypes2.default.number,
   width: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string])
 };
 exports.default = GraphLine;

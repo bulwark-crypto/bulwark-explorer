@@ -19,6 +19,9 @@ export default class GraphLine extends Component {
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     hideLines: PropTypes.bool.isRequired,
     labels: PropTypes.array.isRequired,
+    max: PropTypes.number,
+    min: PropTypes.number,
+    stepSize: PropTypes.number,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   };
 
@@ -31,6 +34,21 @@ export default class GraphLine extends Component {
 
   componentDidMount() {
     const el = document.getElementById(this.id);
+
+    // Change the clip area for the graph to avoid
+    // peak and valley cutoff.
+    Chart.canvasHelpers.clipArea = (ctx, clipArea) => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(
+        clipArea.left,
+        clipArea.top - 5,
+        clipArea.right - clipArea.left,
+        clipArea.bottom + 5
+      );
+      ctx.clip();
+    };
+
     this.chart = new Chart(el, this.getConfig());
   };
 
@@ -47,32 +65,41 @@ export default class GraphLine extends Component {
   };
 
   getConfig = () => {
+    let max = Math.max(this.props.data);
+    let min = Math.min(this.props.data);
+    max = max + (max * 0.1);
+    min = min - (min * 0.1);
+
     return {
       type: 'line',
       data: {
         labels: this.props.labels,
         datasets: [{
-          borderColor: [this.props.color],
+          borderColor: this.props.color,
           borderWidth: 4,
-          //cubicInterpolationMode: 'default', // monotone
+          cubicInterpolationMode: 'monotone', // default
+          capBezierPoints: true,
           data: this.props.data,
           fill: false,
-          lineTension: 0.1,
+          lineTension: 0.55,
           pointRadius: 0,
+          showLine: true,
+          spanGaps: true,
           steppedLine: false
         }]
       },
       options: {
         layout: {
           padding: {
-            bottom: 10,
-            left: 10,
-            right: 10,
-            top: 10
+            bottom: 5,
+            left: 0,
+            right: 0,
+            top: 5
           }
         },
         legend: {
-          display: !this.props.hideLines
+          display: !this.props.hideLines,
+          position: 'bottom'
         },
         maintainAspectRatio: false,
         responsive: true,
@@ -89,7 +116,10 @@ export default class GraphLine extends Component {
               display: !this.props.hideLines
             },
             ticks: {
-              callback: () => null
+              callback: () => null,
+              stepSize: this.props.stepSize,
+              suggestedMax: this.props.max || max,
+              suggestedMin: this.props.min || min
             }
           }],
           yAxes: [{
