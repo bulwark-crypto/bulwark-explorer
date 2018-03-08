@@ -1,5 +1,5 @@
 
-const Cache = require('../lib/Cache');
+const Cache = require('../lib/cache');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
 
