@@ -130,12 +130,17 @@ h1, h2, h3, h4, h5, h6 {
 
 // Content Wrapper
 .content {
-	margin-left: $menu-width-open;
+	padding-top: 60px;
 	transition: all 1s cubic-bezier(0, 1, .5, 1);
 
+	@media (min-width: 768px) {
+		padding-left: $menu-width-open;
+		padding-top: 0;
+	}
+
 	@media (min-width: 1400px) {
-		margin-left: $menu-width-open;
-		margin-right: $menu-width-open;
+		padding-left: $menu-width-open;
+		padding-right: $menu-width-open;
 	}
 
     &__wrapper {
@@ -148,7 +153,7 @@ h1, h2, h3, h4, h5, h6 {
 
     /*Set margin for content offset*/
 	.menu--close + & {
-	    margin-left: $menu-width-close;
+	    padding-left: $menu-width-close;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 }
