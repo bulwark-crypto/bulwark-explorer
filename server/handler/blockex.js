@@ -224,6 +224,7 @@ module.exports =  {
   getMasternodes,
   getPeer,
   getPeerHistory,
+  getTop100,
   getTXLatest,
   getTX,
   getTXs
