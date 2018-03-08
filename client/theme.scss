@@ -112,8 +112,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .content {
-    margin-left: $menu-width-open;
+	margin-left: $menu-width-close;
 	transition: all 1s cubic-bezier(0, 1, .5, 1);
+
+	@media (min-width: 1400px) {
+		margin-left: $menu-width-open;
+		margin-right: $menu-width-open;
+	}
 
     &__wrapper {
 	    margin: 0 auto;
