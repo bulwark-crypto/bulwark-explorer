@@ -20,7 +20,7 @@ class CoinInfo extends Component {
         <HorizontalRule title="Coin Info" />
         <div className="row">
           <div className="col-md-12 col-lg-8">
-            <div className="text-center">
+            <div>
               <img className="img-fluid" src="/img/Badge-Full-Color.png" />
             </div>
             <div className="row">
