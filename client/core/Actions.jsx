@@ -78,7 +78,7 @@ export const getPeers = () => {
 
 export const getTop100 = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('top100', resolve, reject, query);
+    getFromWorker('top100', resolve, reject);
   });
 };
 
