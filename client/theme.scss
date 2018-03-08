@@ -153,9 +153,14 @@ h1, h2, h3, h4, h5, h6 {
 	flex: 1;
 	overflow-y: scroll;
 
+	@media (min-width: 768px) {
+		padding-left: $menu-width-open;
+		padding-top: 0;
+	}
+
 	@media (min-width: 1400px) {
-		margin-left: $menu-width-open;
-		margin-right: $menu-width-open;
+		padding-left: $menu-width-open;
+		padding-right: $menu-width-open;
 	}
 
     &__wrapper {
