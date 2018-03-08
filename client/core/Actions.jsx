@@ -1,5 +1,5 @@
 
-import { COINS, ERROR, TXS } from '../constants';
+import { COIN, COINS, ERROR, TXS } from '../constants';
 import fetchWorker from '../../lib/fetch.worker';
 import promise from 'bluebird';
 
@@ -41,6 +41,9 @@ export const getCoinHistory = (dispatch, query) => {
     getFromWorker(
       'coins',
       (payload) => {
+        if (payload && payload.length) {
+          dispatch({ payload: payload[0], type: COIN });
+        }
         dispatch({ payload, type: COINS });
         resolve(payload);
       },

@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "137667fbd320b642a17e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "07bf938ea8efe0608b23"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -860,6 +860,11 @@ var getPeers = function getPeers() {
   return fetch(api + '/peer');
 };
 
+// Get the top 100 wallets.
+var getTop100 = function getTop100() {
+  return fetch(api + '/top100');
+};
+
 // Get transaction by its hash.
 var getTX = function getTX(query) {
   return fetch(api + '/tx/' + query);
@@ -890,6 +895,9 @@ self.addEventListener('message', function (ev) {
       break;
     case 'mns':
       action = getMNs;
+      break;
+    case 'top100':
+      action = getTop100;
       break;
     case 'tx':
       action = getTX;

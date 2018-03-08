@@ -2,6 +2,7 @@
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -23,7 +24,7 @@ class Top100 extends Component {
     this.state = {
       cols: [
         { key: '_id', title: 'Address' },
-        { key: 'total', title: 'Total' },
+        { key: 'sum', title: 'Total' },
         { key: 'percent', title: '%' },
       ],
       wallets: []
@@ -42,7 +43,7 @@ class Top100 extends Component {
           cols={ this.state.cols }
           data={ this.state.wallets.map(wallet => ({
             ...wallet,
-            percent: numeral(wallet.value / this.props.coin.supply).format('0,0.00')
+            percent: numeral((wallet.sum / this.props.coin.supply) * 100.0).format('0,0.00')
           })) } />
       </div>
     );
@@ -54,7 +55,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  coin: state.coins.length ? state.coins[0] : {}
+  coin: state.coin
 });
 
-export default connect(null, mapDispatch)(Top100);
+export default connect(mapState, mapDispatch)(Top100);
