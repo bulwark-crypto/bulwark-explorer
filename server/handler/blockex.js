@@ -20,10 +20,10 @@ const cache = new Cache();
  * @param {Object} res The response object.
  */
 const getAddress = (req, res) => {
-  TX.find({ addrs: req.params.hash })
+  TX.find({ 'vout.addresses': req.params.hash })
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
     .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
-    .sort({ height: -1 })
+    .sort({ blockHeight: -1 })
     .then((docs) => {
       res.json(docs);
     })
@@ -44,7 +44,7 @@ const getBlock = async (req, res) => {
       ? { hash: req.params.hash }
       : { height: req.params.hash };
     const block = await Block.findOne(query);
-    const txs = await TX.find({ hash: { $in: block.txs }}).select('createdAt hash recipients');
+    const txs = await TX.find({ blockHash: { $in: block.txs }});
 
     res.json({ block, txs });
   } catch(err) {
@@ -163,7 +163,7 @@ const getTop100 = (req, res) => {
 const getTXLatest = (req, res) => {
   TX.find()
     .limit(10)
-    .sort({ height: -1 })
+    .sort({ blockHeight: -1 })
     .then((docs) => {
       res.json(docs);
     })
@@ -181,16 +181,11 @@ const getTXLatest = (req, res) => {
 const getTX = async (req, res) => {
   try {
     const query = isNaN(req.params.hash)
-      ? { hash: req.params.hash }
+      ? { txId: req.params.hash }
       : { height: req.params.hash };
     const tx = await TX.findOne(query);
-    const hex = await rpc.call('getrawtransaction', [tx.hash]);
-    const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
-    const vinIds = new Set(rpctx.vin.map(vi => vi.txid));
-    const vin = await TXOut.find({ spendTx: tx.hash });
-
-    res.json({ tx, vin, vout: rpctx.vout });
+    res.json(tx);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -206,8 +201,8 @@ const getTXs = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-    const total = await TX.find().sort({ height: -1 }).count();
-    const txs = await TX.find().skip(skip).limit(limit).sort({ height: -1 });
+    const total = await TX.find().sort({ blockHeight: -1 }).count();
+    const txs = await TX.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch(err) {
