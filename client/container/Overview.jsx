@@ -21,8 +21,8 @@ class Overview extends Component {
 
     this.state = {
       cols: [
-        'height',
-        {title: 'Transaction Hash', key: 'hash'},
+        'blockHeight',
+        {title: 'Transaction Hash', key: 'txId'},
         'age',
         'vout',
         'recipients',
@@ -32,14 +32,22 @@ class Overview extends Component {
 
   render() {
     // Setup the list of transactions with age since created.
-    const txs = this.props.txs.map(tx => ({
-      ...tx,
-      age: moment(tx.createdAt).utc().fromNow(),
-      createdAt: moment(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
-      hash: (<Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>),
-      height: (<Link to={ `/block/${ tx.height }` }>{ tx.height }</Link>),
-      vout: numeral(tx.vout).format('0,0.0000')
-    }));
+    const txs = this.props.txs.map(tx => {
+      let blockValue = 0.0;
+      if (tx.vout && tx.vout.length) {
+        tx.vout.forEach(vout => blockValue += vout.value);
+      }
+
+      return ({
+        ...tx,
+        age: moment(tx.createdAt).utc().fromNow(),
+        blockHeight: (<Link to={ `/block/${ tx.blockHeight }` }>{ tx.blockHeight }</Link>),
+        createdAt: moment(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
+        recipients: tx.vout.length,
+        txId: (<Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>),
+        vout: numeral(blockValue).format('0,0.0000')
+      });
+    });
 
     return (
       <div>

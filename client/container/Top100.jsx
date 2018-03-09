@@ -2,6 +2,7 @@
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -23,8 +24,8 @@ class Top100 extends Component {
     super(props);
     this.state = {
       cols: [
-        { key: '_id', title: 'Address' },
-        { key: 'sum', title: 'Total' },
+        { key: 'address', title: 'Address' },
+        { key: 'value', title: 'Total' },
         { key: 'percent', title: '%' },
       ],
       wallets: []
@@ -43,7 +44,10 @@ class Top100 extends Component {
           cols={ this.state.cols }
           data={ this.state.wallets.map(wallet => ({
             ...wallet,
-            percent: numeral((wallet.sum / this.props.coin.supply) * 100.0).format('0,0.00')
+            address: (
+              <Link to={ `/address/${ wallet.address }` }>{ wallet.address }</Link>
+            ),
+            percent: numeral((wallet.value / this.props.coin.supply) * 100.0).format('0,0.00')
           })) } />
       </div>
     );

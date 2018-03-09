@@ -39,6 +39,8 @@ The following automated tasks are currently setup for BlockEx.
 
 `yarn run cron:peer` - gather the list of peers and their IP information.
 
+`yarn run cron:rich` - generate the rich list or top 100.
+
 __Note:__ it is recommended to run `yarn run cron:block >> ./tmp/block.log` the first time manually.  The initial run will download the whole blockchain and put it into the database.  This can possibly take anywhere from minutes to hours depending on the size of the blockchain and other factors like hardware, bandwidth, etc.
 
 Before setting up the crontab please build the cron tasks by running `yarn run build:cron`.
@@ -47,6 +49,7 @@ To setup the crontab please see run `crontab -e` to edit the crontab and paste t
 ```
 */1 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/block.js >> ./tmp/block.log
 */5 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/coin.js >> ./tmp/coin.log
+*/15 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/rich.js >> ./tmp/rich.log
 0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/peer.js >> ./tmp/peer.log
 0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/masternode.js >> ./tmp/masternode.log
 ```
@@ -68,9 +71,5 @@ At this time only the client web interface needs to be built using webpack and t
 
 ## TODO
 - Tests!!! - write those tests!
-- API endpoints - complete endpoints and add compatibility with `https://github.com/iquidus/explorer` endpoints.
-- FE services - connect with api.
-- FE UI - complete components and style.
-- Install script that will setup `config.js`.
 - Cluster support for api.
 - Cron locking with `/tmp` folder.

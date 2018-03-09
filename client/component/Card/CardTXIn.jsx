@@ -21,8 +21,8 @@ export default class CardTXIn extends Component {
     super(props);
     this.state = {
       cols: [
-        { key: 'hash', title: 'Address' },
-        { key: 'vout', title: 'Amount' }
+        { key: 'txId', title: 'Transaction ID' },
+        { key: 'vout', title: 'VOut' }
       ]
     };
   };
@@ -33,18 +33,10 @@ export default class CardTXIn extends Component {
         cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
-          hash: (
-            <div>
-              { tx.addresses.map(a => (
-                <div key={ a }>{ a }</div>
-              )) }
-            </div>
-          ),
-          vout: (
-            <span className="badge badge-primary">
-              { numeral(tx.value).format('0,0.0000') } BWK
-            </span>
-          )
+          txId: tx.txId
+            ? (<Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>)
+            : tx.coinbase ? 'COINBASE' : '',
+          vout: tx.vout ? tx.vout : ''
         })) } />
     );
   };

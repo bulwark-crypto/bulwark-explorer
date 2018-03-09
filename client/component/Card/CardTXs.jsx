@@ -21,8 +21,8 @@ export default class CardTXs extends Component {
     super(props);
     this.state = {
       cols: [
-        { key: 'height', title: 'Block Height' },
-        { key: 'hash', title: 'Transaction Hash' },
+        { key: 'blockHeight', title: 'Block Height' },
+        { key: 'txId', title: 'Transaction Hash' },
         { key: 'vout', title: 'Amount' },
         { key: 'createdAt', title: 'Time' },
       ]
@@ -33,25 +33,32 @@ export default class CardTXs extends Component {
     return (
       <Table
         cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
-          ...tx,
-          createdAt: moment(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
-          hash: (
-            <Link to={ `/tx/${ tx.hash }` }>
-              { tx.hash }
-            </Link>
-          ),
-          height: (
-            <Link to={ `/block/${ tx.height }` }>
-              { tx.height }
-            </Link>
-          ),
-          vout: (
-            <span className={ `badge badge-${ tx.vout < 0 ? 'danger' : 'success' }` }>
-              { numeral(tx.vout).format('0,0.0000') }
-            </span>
-          )
-        })) } />
+        data={ this.props.txs.map(tx => {
+          let blockValue = 0.0;
+          if (tx.vout && tx.vout.length) {
+            tx.vout.forEach(vout => blockValue += vout.value);
+          }
+
+          return ({
+            ...tx,
+            blockHeight: (
+              <Link to={ `/block/${ tx.blockHeight }` }>
+                { tx.blockHeight }
+              </Link>
+            ),
+            createdAt: moment(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
+            txId: (
+              <Link to={ `/tx/${ tx.txId }` }>
+                { tx.txId }
+              </Link>
+            ),
+            vout: (
+              <span className={ `badge badge-${ blockValue < 0 ? 'danger' : 'success' }` }>
+                { numeral(blockValue).format('0,0.0000') }
+              </span>
+            )
+          });
+        }) } />
     );
   };
 }

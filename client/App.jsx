@@ -105,8 +105,7 @@ class App extends Component {
           <Menu />
           <div className="content">
             <div className="content__wrapper">
-              <SearchBar className="d-none d-md-flex
- mb-3" />
+              <SearchBar className="d-none d-md-flex mb-3" />
               <CoinSummary />
               <Switch>
                 <Route exact path="/" component={ Overview } />

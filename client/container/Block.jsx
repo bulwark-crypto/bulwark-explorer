@@ -44,7 +44,7 @@ class Block extends Component {
     return (
       <div>
         <HorizontalRule title="Block Info" />
-        <CardBlock block={ this.state.block } height={ this.props.tx.height } />
+        <CardBlock block={ this.state.block } height={ this.props.tx.blockHeight } />
         <HorizontalRule title="Block Transactions" />
         <CardBlockTXs txs={ this.state.txs } />
       </div>
@@ -59,7 +59,7 @@ const mapDispatch = dispatch => ({
 const mapState = state => ({
   tx: state.txs.length
     ? state.txs[0]
-    : { height: state.coin.blocks }
+    : { blockHeight: state.coin.blocks }
 });
 
 export default connect(mapState, mapDispatch)(Block);

@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 // Models.
 const Block = require('../model/block');
 const TX = require('../model/tx');
+const UTXO = require('../model/utxo');
 
 /**
  * Process the blocks and transactions.
@@ -24,7 +25,6 @@ async function syncBlocks(current, stop) {
     const block = new Block({
       hash,
       height,
-      _id: hash ? hash : '0',
       bits: rpcblock.bits,
       confirmations: rpcblock.confirmations,
       createdAt: new Date(rpcblock.time * 1000),
@@ -42,21 +42,28 @@ async function syncBlocks(current, stop) {
     // Ignore the genesis block.
     if (block.height) {
       const txs = [];
+
       await forEach(block.txs, async (txhash) => {
         const hex = await rpc.call('getrawtransaction', [txhash]);
         const rpctx = await rpc.call('decoderawtransaction', [hex]);
+        const utxo = [];
 
         // Setup the input list for the transaction.
         const txin = [];
         if (rpctx.vin) {
-          rpctx.vin.forEach((vin) => {
+          await forEach(rpctx.vin, async (vin) => {
             txin.push({
-              _id: mongoose.Types.ObjectId(),
               coinbase: vin.coinbase,
               sequence: vin.sequence,
               txId: vin.txid,
               vout: vin.vout
             });
+
+            // Remove unspent transaction if txid is
+            // supplied.
+            if (vin.txid && vin.vout) {
+              await UTXO.remove({ txId: vin.txid, n: vin.vout });
+            }
           });
         }
 
@@ -64,17 +71,23 @@ async function syncBlocks(current, stop) {
         const txout = [];
         if (rpctx.vout) {
           rpctx.vout.forEach((vout) => {
-            txout.push({
-              _id: mongoose.Types.ObjectId(),
-              addresses: vout.scriptPubKey.addresses,
+            const to = {
+              address: vout.scriptPubKey.addresses[0], // TODO - revisit
               n: vout.n,
               value: vout.value
-            });
+            };
+
+            txout.push(to);
+            utxo.push(new UTXO({ ...to, txId: rpctx.txid }));
           });
         }
 
+        // Save the unspent transactions to the database.
+        if (utxo.length) {
+          await UTXO.insertMany(utxo);
+        }
+
         txs.push(new TX({
-          _id: mongoose.Types.ObjectId(),
           blockHash: hash,
           blockHeight: block.height,
           createdAt: block.createdAt,
@@ -92,6 +105,8 @@ async function syncBlocks(current, stop) {
 
     console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
   }
+
+  exit();
 }
 
 /**

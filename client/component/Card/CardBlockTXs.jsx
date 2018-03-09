@@ -20,7 +20,7 @@ export default class CardBlockTXs extends Component {
     super(props);
     this.state = {
       cols: [
-        { key: 'hash', title: 'Transaction ID' },
+        { key: 'txId', title: 'Transaction ID' },
         { key: 'recipients', title: 'Recipients' },
         { key: 'createdAt', title: 'Time' },
       ]
@@ -29,13 +29,14 @@ export default class CardBlockTXs extends Component {
 
   render() {
     return (
-      <Table 
-        cols={ this.state.cols } 
+      <Table
+        cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
           createdAt: moment(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
-          hash: (
-            <Link to={ `/tx/${ tx.hash }` }>{ tx.hash }</Link>
+          recipients: tx.vout.length,
+          txId: (
+            <Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>
           )
         })) } />
     );

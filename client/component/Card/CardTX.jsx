@@ -7,39 +7,39 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 export default class CardTX extends Component {
-  static defaultProps = {
-    height: 0,
-    tx: {}
-  };
-
   static propTypes = {
     height: PropTypes.number.isRequired,
     tx: PropTypes.object.isRequired
   };
 
   render() {
+    let blockValue = 0.0;
+    if (this.props.tx.vout && this.props.tx.vout.length) {
+      this.props.tx.vout.forEach(vout => blockValue += vout.value);
+    }
+
     return (
       <div className="card--block">
         <div className="card__row">
           <span className="card__label">TXID:</span>
-          <span className="card__result">{ this.props.tx.hash }</span>
+          <span className="card__result">{ this.props.tx.txId }</span>
         </div>
         <div className="card__row">
           <span className="card__label">Confirmations:</span>
           <span className="card__result">
             <span className="badge badge-success">
-              { this.props.height - this.props.tx.height }
+              { this.props.height - this.props.tx.blockHeight }
             </span>
           </span>
         </div>
         <div className="card__row">
           <span className="card__label">Block Value:</span>
-          <span className="card__result">{ numeral(this.props.tx.vout).format('0,0.0000') } BWK</span>
+          <span className="card__result">{ numeral(blockValue).format('0,0.0000') } BWK</span>
         </div>
         <div className="card__row">
           <span className="card__label">Block Hash:</span>
           <span className="card__result">
-            <Link to={ `/block/${ this.props.tx.block }` }>{ this.props.tx.block }</Link>
+            <Link to={ `/block/${ this.props.tx.blockHash }` }>{ this.props.tx.blockHash }</Link>
           </span>
         </div>
         <div className="card__row">

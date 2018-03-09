@@ -1,5 +1,4 @@
 
-const Cache = require('../lib/cache');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
 
@@ -8,11 +7,8 @@ const Block = require('../../model/block');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
+const Rich = require('../../model/rich');
 const TX = require('../../model/tx');
-
-// Setup the top 100 cache cache is set to last
-// for 1 hour at this time.
-const cache = new Cache();
 
 /**
  * Get transactions by address.
@@ -44,7 +40,7 @@ const getBlock = async (req, res) => {
       ? { hash: req.params.hash }
       : { height: req.params.hash };
     const block = await Block.findOne(query);
-    const txs = await TX.find({ blockHash: { $in: block.txs }});
+    const txs = await TX.find({ txId: { $in: block.txs }});
 
     res.json({ block, txs });
   } catch(err) {
@@ -152,7 +148,15 @@ const getPeerHistory = (req, res) => {
  * @param {Object} res The response object.
  */
 const getTop100 = (req, res) => {
-  res.json(cache.get());
+  Rich.find()
+    .sort({ value: -1 })
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message || err);
+    });
 };
 
 /**

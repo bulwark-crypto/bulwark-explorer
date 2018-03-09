@@ -37,7 +37,7 @@ class CoinSummary extends Component {
               <div className="col-sm-12 col-md-6">
                 <CardStatus
                   blocks={ this.props.txs.length
-                    ? this.props.txs[0].height
+                    ? this.props.txs[0].blockHeight
                     : coin.blocks
                   }
                   peers={ coin.peers }

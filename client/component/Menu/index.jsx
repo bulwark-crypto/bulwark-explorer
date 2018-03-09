@@ -11,17 +11,15 @@ export default class Menu extends Component {
   };
 
   static propTypes = {
-    isOpen: PropTypes.bool,
     handleToggle: PropTypes.func,
+    isOpen: PropTypes.bool,
   };
 
   render() {
-    const { props } = this;
-
     return (
       <div className="menu-wrapper">
-        <MenuMobile { ...props } />
-        <MenuDesktop { ...props } />
+        <MenuMobile { ...this.props } />
+        <MenuDesktop { ...this.props } />
       </div>
     )
   }

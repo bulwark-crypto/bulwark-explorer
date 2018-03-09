@@ -14,12 +14,20 @@ class TX extends Component {
   static propTypes = {
     getTX: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
+    // We get this from the store to force confirmation
+    // updates when the system updates.
     tx: PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
-    this.state = { tx: {}, vin: [], vout: [] };
+    this.state = {
+      tx: {
+        blockHeight: 0,
+        vin: [],
+        vout: []
+      }
+    };
   };
 
   componentDidMount() {
@@ -28,9 +36,7 @@ class TX extends Component {
 
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
-    if (!!this.state.tx.hash
-      && hash !== this.state.tx.hash
-      && hash !== this.state.tx.height.toString()) {
+    if (!!this.state.tx.txId && hash !== this.state.tx.txId) {
       this.getTX();
     }
   };
@@ -38,22 +44,22 @@ class TX extends Component {
   getTX() {
     this.props
       .getTX(this.props.match.params.hash)
-      .then(({ tx, vin, vout }) => this.setState({ tx, vin, vout }));
+      .then(tx => this.setState({ tx }));
   };
 
   render() {
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
-        <CardTX height={ this.props.tx.height } tx={ this.state.tx } />
+        <CardTX height={ this.props.tx.blockHeight } tx={ this.state.tx } />
         <div className="row">
           <div className="col">
             <HorizontalRule title="Sending Addresses" />
-            <CardTXIn txs={ this.state.vin } />
+            <CardTXIn txs={ this.state.tx.vin } />
           </div>
           <div className="col">
             <HorizontalRule title="Recipients" />
-            <CardTXOut txs={ this.state.vout } />
+            <CardTXOut txs={ this.state.tx.vout } />
           </div>
         </div>
       </div>
@@ -68,7 +74,7 @@ const mapDispatch = dispatch => ({
 const mapState = state => ({
   tx: state.txs.length
     ? state.txs[0]
-    : { height: state.coin.blocks, vin: [], vout: [] }
+    : { blockHeight: state.coin.blocks }
 });
 
 export default connect(mapState, mapDispatch)(TX);

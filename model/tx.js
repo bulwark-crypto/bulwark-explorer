@@ -6,10 +6,9 @@ const mongoose = require('mongoose');
  */
 const TXIn = new mongoose.Schema({
   __v: { select: false, type: Number },
-  _id: { required: true, select: false, type: String },
   coinbase: { type: String },
   sequence: { type: Number },
-  txId: { index: 1, type: String },
+  txId: { type: String },
   vout: { type: Number }
 });
 
@@ -18,8 +17,7 @@ const TXIn = new mongoose.Schema({
  */
 const TXOut = new mongoose.Schema({
   __v: { select: false, type: Number },
-  _id: { required: true, select: false, type: String },
-  addresses: { default: [], required: true, type: [String] },
+  address: { required: true, type: String },
   n: { required: true, type: Number },
   value: { required: true, type: Number }
 });
@@ -32,9 +30,8 @@ const TXOut = new mongoose.Schema({
  */
 const TX = mongoose.model('TX', new mongoose.Schema({
   __v: { select: false, type: Number },
-  _id: { required: true, select: false, type: String },
-  blockHash: { index: 1, required: true, type: String },
-  blockHeight: { index: 1, required: true, type: Number },
+  blockHash: { required: true, type: String },
+  blockHeight: { required: true, type: Number },
   createdAt: { required: true, type: Date },
   txId: { index: 1, required: true, type: String },
   version: { required: true, type: Number },
