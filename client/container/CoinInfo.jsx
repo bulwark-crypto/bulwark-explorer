@@ -28,7 +28,7 @@ class CoinInfo extends Component {
                 <CardLinks />
               </div>
               <div className="col-sm-12 col-md-8">
-                <CardEarnings coin={ this.props.coin } />
+                {/* <CardEarnings coin={ this.props.coin } /> */}
               </div>
             </div>
           </div>

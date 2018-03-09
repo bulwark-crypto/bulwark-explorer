@@ -45,7 +45,7 @@ export default class CardStatus extends Component {
                 <Icon
                   className="card__icon--arrow"
                   name={ isPos ? 'arrow-up' : 'arrow-down' } />
-                <span>{ numeral(growth).format('0,0.00') }% &nbsp;</span>
+                <span>{ numeral(growth * 100.0).format('0,0.00') }% &nbsp;</span>
               </span>
               <span>In { this.props.xAxis.length * 5 } minutes</span>
             </p>

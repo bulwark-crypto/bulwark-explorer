@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b6b51375fbd30e95bd64"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "2226d752ef8d092581ba"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1657,7 +1657,7 @@ var CardStatus = function (_Component) {
                 _react2.default.createElement(
                   'span',
                   null,
-                  (0, _numeral2.default)(growth).format('0,0.00'),
+                  (0, _numeral2.default)(growth * 100.0).format('0,0.00'),
                   '% \xA0'
                 )
               ),
@@ -4443,11 +4443,7 @@ var CoinInfo = function (_Component) {
                 { className: 'col-sm-12 col-md-4' },
                 _react2.default.createElement(_CardLinks2.default, null)
               ),
-              _react2.default.createElement(
-                'div',
-                { className: 'col-sm-12 col-md-8' },
-                _react2.default.createElement(_CardEarnings2.default, { coin: this.props.coin })
-              )
+              _react2.default.createElement('div', { className: 'col-sm-12 col-md-8' })
             )
           ),
           _react2.default.createElement(
