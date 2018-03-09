@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "72ffa8f63c4b29aec8ae"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b6b51375fbd30e95bd64"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -3354,16 +3354,6 @@ var MenuDesktop = function (_Component) {
               { className: 'menu-desktop__item-label' },
               'Coin Info'
             )
-          ),
-          _react2.default.createElement(
-            _reactRouterDom.Link,
-            { className: 'menu-desktop__item', to: '/api' },
-            _react2.default.createElement('img', { className: 'menu-desktop__icon', src: '/img/Support-icon@2x.png' }),
-            _react2.default.createElement(
-              'span',
-              { className: 'menu-desktop__item-label' },
-              'API'
-            )
           )
         )
       );
@@ -3499,16 +3489,6 @@ var MenuDesktop = function (_Component) {
               'span',
               { className: 'menu-mobile__item-label' },
               'Coin Info'
-            )
-          ),
-          _react2.default.createElement(
-            _reactRouterDom.Link,
-            { className: 'menu-mobile__item', to: '/api' },
-            _react2.default.createElement('img', { className: 'menu-mobile__icon', src: '/img/Support-icon@2x.png' }),
-            _react2.default.createElement(
-              'span',
-              { className: 'menu-mobile__item-label' },
-              'API'
             )
           )
         )

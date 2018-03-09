@@ -58,11 +58,11 @@ export default class MenuDesktop extends Component {
             <img className="menu-mobile__icon" src="/img/Jobs-icon@2x.png" />
             <span className="menu-mobile__item-label">FAQ</span>
           </Link>
-          */}
           <Link className="menu-mobile__item" to="/api">
             <img className="menu-mobile__icon" src="/img/Support-icon@2x.png" />
             <span className="menu-mobile__item-label">API</span>
           </Link>
+          */}
         </div>
       </div>
     )
