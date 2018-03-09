@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "11c1eeb47078e766bd0c"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "19d49a1389168e43b021"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -809,7 +809,7 @@ module.exports = fetch;
  */
 var config = {
   api: {
-    host: 'http://localhost', //'http://blockex.dustinengle.com',
+    host: 'http://blockex.dustinengle.com',
     port: '3000',
     prefix: '/api'
   }
