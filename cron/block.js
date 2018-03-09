@@ -2,10 +2,10 @@
 require('babel-polyfill');
 const { exit, rpc } = require('../lib/cron');
 const { forEach } = require('p-iteration');
+const mongoose = require('mongoose');
 // Models.
 const Block = require('../model/block');
 const TX = require('../model/tx');
-const TXOut = require('../model/txout');
 
 /**
  * Process the blocks and transactions.
@@ -46,50 +46,42 @@ async function syncBlocks(current, stop) {
         const hex = await rpc.call('getrawtransaction', [txhash]);
         const rpctx = await rpc.call('decoderawtransaction', [hex]);
 
-        // Setup the vin transactions by updating the
-        // txsout table marking as spent.
+        // Setup the input list for the transaction.
+        const txin = [];
         if (rpctx.vin) {
-          await forEach(rpctx.vin, async (vi) => {
-            await TXOut.update(
-              { txid: vi.txid, vout: vi.vout },
-              { $set: { spendTx: txhash } }
-            );
+          rpctx.vin.forEach((vin) => {
+            txin.push({
+              _id: mongoose.Types.ObjectId(),
+              coinbase: vin.coinbase,
+              sequence: vin.sequence,
+              txId: vin.txid,
+              vout: vin.vout
+            });
           });
         }
 
-        // Setup the vout transactions and build total.
-        const outs = [];
-        let vout = 0.0;
+        // Setup the outputs for the transaction.
+        const txout = [];
         if (rpctx.vout) {
-          rpctx.vout.forEach((vo) => {
-            vout += vo.value;
-
-            if (vo.scriptPubKey.addresses && vo.scriptPubKey.addresses.length) {
-              vo.scriptPubKey.addresses.forEach((addr) => {
-                outs.push(new TXOut({
-                  address: addr,
-                  txid: rpctx.txid,
-                  value: vo.value,
-                  vout: vo.n
-                }));
-              });
-            }
+          rpctx.vout.forEach((vout) => {
+            txout.push({
+              _id: mongoose.Types.ObjectId(),
+              addresses: vout.scriptPubKey.addresses,
+              n: vout.n,
+              value: vout.value
+            });
           });
-
-          if (outs.length) {
-            await TXOut.insertMany(outs);
-          }
         }
 
         txs.push(new TX({
-          vout,
-          _id: rpctx.txid,
-          block: hash,
+          _id: mongoose.Types.ObjectId(),
+          blockHash: hash,
+          blockHeight: block.height,
           createdAt: block.createdAt,
-          hash: rpctx.txid,
-          height: block.height,
-          recipients: rpctx.vout.length,
-          ver: rpctx.version
+          txId: rpctx.txid,
+          version: rpctx.version,
+          vin: txin,
+          vout: txout
         }));
       });
 

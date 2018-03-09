@@ -37,7 +37,7 @@ async function update() {
       netHash: nethashps,
       peers: info.connections,
       status: 'Online',
-      supply: market.max_supply,
+      supply: market.available_supply,
       usd: market.price_usd
     });
 
