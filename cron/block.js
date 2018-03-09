@@ -62,7 +62,7 @@ async function syncBlocks(current, stop) {
             // Remove unspent transaction if txid is
             // supplied.
             if (vin.txid && vin.vout) {
-              await UTXO.remove({ txId: vin.txid, n: vin.vout });
+              //await UTXO.remove({ txId: vin.txid, n: vin.vout });
             }
           });
         }
@@ -84,7 +84,7 @@ async function syncBlocks(current, stop) {
 
         // Save the unspent transactions to the database.
         if (utxo.length) {
-          await UTXO.insertMany(utxo);
+          //await UTXO.insertMany(utxo);
         }
 
         txs.push(new TX({
