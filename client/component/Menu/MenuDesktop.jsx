@@ -12,7 +12,7 @@ export default class MenuDesktop extends Component {
     super(props);
 
     this.state = {
-      show: true
+      show: false
     }
   }
 
