@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import sortBy from 'lodash/sortBy';
 
 import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
@@ -80,6 +81,10 @@ class Masternode extends Component {
       </select>
     );
 
+    // Calculate the future so we can use it to
+    // sort by lastPaid in descending order.
+    const future = moment().add(1, 'year').utc().unix();
+
     return (
       <div>
         <HorizontalRule
@@ -87,17 +92,18 @@ class Masternode extends Component {
           title="Masternodes" />
         <Table
           cols={ this.state.cols }
-          data={ this.state.mns.map(mn => ({
+          data={ sortBy(this.state.mns.map(mn => ({
             ...mn,
             active: moment().subtract(mn.active, 'seconds').utc().fromNow(),
             addr: (
               <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
             ),
+            lastPaid: future - moment(mn.lastPaidAt).utc().unix(),
             lastPaidAt: moment(mn.lastPaidAt).utc().format('YYYY-MM-DD HH:MM A'),
             txHash: (
               <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
             )
-          })) } />
+          })), ['status', 'lastPaid']) } />
         <Pagination
           current={ this.state.page }
           className="float-right"
