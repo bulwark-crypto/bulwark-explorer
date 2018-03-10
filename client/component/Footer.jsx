@@ -18,7 +18,7 @@ class Footer extends Component {
 
   render() {
     const coin = this.props.coins && this.props.coins.length ? this.props.coins[0] : { status: 'offline', blocks: 0 };
-    const blocks = this.props.txs && this.props.txs.length ? this.props.txs[0].height : coin.blocks;
+    const blocks = this.props.txs && this.props.txs.length ? this.props.txs[0].blockHeight : coin.blocks;
     const statusColor = (coin.status && coin.status.toLowerCase() === 'online') ? 'green' : 'red';
 
     return (
