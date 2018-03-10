@@ -49,7 +49,7 @@ class Footer extends Component {
               <p className="footer__title">Social Media</p>
               <div className="footer__social-media-wrapper">
                 <a href="https://bitcointalk.org/index.php?topic=2499481.0" target="_blank">
-                  <Icon name="envelope-square" className="footer__social-media-icon" />
+                  <Icon name="bitcoin" className="fab footer__social-media-icon" />
                 </a>
                 <a href="https://www.reddit.com/r/BulwarkCoin/" target="_blank">
                   <Icon name="reddit" className="fab footer__social-media-icon" />
