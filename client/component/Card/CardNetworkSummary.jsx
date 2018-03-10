@@ -1,5 +1,6 @@
 
 import Component from '../../core/Component';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -35,8 +36,12 @@ export default class CardNetworkSummary extends Component {
         className="card--graph"
         style={{ marginBottom: 0 }}
         title="Network">
-        <p className="card__data-main">{ hash } { labels[idx] }/s</p>
-        <p className="card__data-sub">Difficulty: { this.props.difficulty }</p>
+        <p className="card__data-main">
+          { numeral(hash).format('0,0.00') } { labels[idx] }/s
+        </p>
+        <p className="card__data-sub">
+          Difficulty: { numeral(this.props.difficulty).format('0,0.00') }
+        </p>
         <GraphLine
           color="#1991eb"
           data={ this.props.yAxis }
