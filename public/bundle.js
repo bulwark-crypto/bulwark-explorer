@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "d798335f9f0f101c18ae"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "4e3467e6c7193b5adf05"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -5283,15 +5283,17 @@ var Overview = function (_Component) {
     value: function render() {
       // Setup the list of transactions with age since created.
       var txs = this.props.txs.map(function (tx) {
+        var createdAt = (0, _moment2.default)(tx.createdAt).utc();
+        var diffSeconds = (0, _moment2.default)().utc().diff(createdAt, 'seconds');
         var blockValue = 0.0;
         if (tx.vout && tx.vout.length) {
           tx.vout.forEach(function (vout) {
             return blockValue += vout.value;
           });
         }
-
+        console.log();
         return _extends({}, tx, {
-          age: (0, _moment2.default)(tx.createdAt).utc().fromNow(),
+          age: diffSeconds < 60 ? diffSeconds + ' seconds' : createdAt.fromNow(true),
           blockHeight: _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/block/' + tx.blockHeight },

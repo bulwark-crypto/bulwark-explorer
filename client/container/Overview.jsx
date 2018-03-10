@@ -33,14 +33,16 @@ class Overview extends Component {
   render() {
     // Setup the list of transactions with age since created.
     const txs = this.props.txs.map(tx => {
+      const createdAt = moment(tx.createdAt).utc();
+      const diffSeconds = moment().utc().diff(createdAt, 'seconds');
       let blockValue = 0.0;
       if (tx.vout && tx.vout.length) {
         tx.vout.forEach(vout => blockValue += vout.value);
       }
-
+      console.log();
       return ({
         ...tx,
-        age: moment(tx.createdAt).utc().fromNow(),
+        age: diffSeconds < 60 ? `${ diffSeconds } seconds` : createdAt.fromNow(true),
         blockHeight: (<Link to={ `/block/${ tx.blockHeight }` }>{ tx.blockHeight }</Link>),
         createdAt: moment(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
         recipients: tx.vout.length,
