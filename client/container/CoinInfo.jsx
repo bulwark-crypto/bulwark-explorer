@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import CardEarnings from '../component/Card/CardEarnings';
+import CardExchanges from '../component/Card/CardExchanges';
 import CardLinks from '../component/Card/CardLinks';
 import CardROI from '../component/Card/CardROI';
 import HorizontalRule from '../component/HorizontalRule';
@@ -26,6 +27,7 @@ class CoinInfo extends Component {
             <div className="row">
               <div className="col-sm-12 col-md-4">
                 <CardLinks />
+                <CardExchanges />
               </div>
               <div className="col-sm-12 col-md-8">
                 {/* <CardEarnings coin={ this.props.coin } /> */}

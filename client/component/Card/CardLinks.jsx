@@ -12,10 +12,6 @@ const CardLinks = () => (
     <a href="https://discord.gg/a7vhegP" target="_blank">Discord</a><br />
     <a href="https://t.me/bulwarkcrypto" target="_blank">Telegram</a><br />
     <a href="https://twitter.com/BulwarkCoin" target="_blank">Twitter</a><br />
-    <a href="https://www.cryptopia.co.nz/Exchange/?market=BWK_BTC" target="_blank">Cryptopia</a><br />
-    <a href="https://stocks.exchange/trade/BWK/BTC" target="_blank">Stocks.Exchange</a><br />
-    <a href="https://coinsmarkets.com/trade-BTC-BWK.htm" target="_blank">CoinsMarkets</a><br />
-    <a href="https://crypto-bridge.org/" target="_blank">CryptoBridge</a><br />
   </Card>
 );
 
