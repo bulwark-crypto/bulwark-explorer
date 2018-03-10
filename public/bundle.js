@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "9b676b8256348ba8e69e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "2d0b95c3270532dc15e9"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1729,10 +1729,10 @@ var CardStatus = function (_Component) {
             { className: 'col-sm-12 col-md-6 col-lg-8' },
             _react2.default.createElement(_GraphLine2.default, {
               color: isPos ? '#61d75e' : '#ed1c24',
-              data: this.props.yAxis,
+              data: this.props.yAxis.reverse(),
               height: '100px',
               hideLines: true,
-              labels: this.props.xAxis })
+              labels: this.props.xAxis.reverse() })
           )
         )
       );
@@ -1831,10 +1831,10 @@ var CardMasternodeSummary = function (_Component) {
         ),
         _react2.default.createElement(_GraphLine2.default, {
           color: '#1991eb',
-          data: this.props.yAxis,
+          data: this.props.yAxis.reverse(),
           height: '100px',
           hideLines: true,
-          labels: this.props.xAxis })
+          labels: this.props.xAxis.reverse() })
       );
     }
   }]);
@@ -1944,10 +1944,10 @@ var CardNetworkSummary = function (_Component) {
         ),
         _react2.default.createElement(_GraphLine2.default, {
           color: '#1991eb',
-          data: this.props.yAxis,
+          data: this.props.yAxis.reverse(),
           height: '100px',
           hideLines: true,
-          labels: this.props.xAxis })
+          labels: this.props.xAxis.reverse() })
       );
     }
   }]);
@@ -2251,7 +2251,7 @@ var CardStatus = function (_Component) {
 }(_Component3.default);
 
 CardStatus.defaultProps = {
-  avgBlockTime: '2 Minutes',
+  avgBlockTime: '1.50 minutes',
   blocks: 0,
   peers: 0,
   status: 'Offline'

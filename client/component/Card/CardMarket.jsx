@@ -54,10 +54,10 @@ export default class CardStatus extends Component {
           <div className="col-sm-12 col-md-6 col-lg-8">
             <GraphLine
               color={ isPos ? '#61d75e' : '#ed1c24' }
-              data={ this.props.yAxis }
+              data={ this.props.yAxis.reverse() }
               height="100px"
               hideLines={ true }
-              labels={ this.props.xAxis } />
+              labels={ this.props.xAxis.reverse() } />
           </div>
         </div>
       </Card>

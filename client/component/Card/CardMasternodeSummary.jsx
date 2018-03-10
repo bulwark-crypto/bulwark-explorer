@@ -33,10 +33,10 @@ export default class CardMasternodeSummary extends Component {
         <p className="card__data-sub">Online: { this.props.online }</p>
         <GraphLine
           color="#1991eb"
-          data={ this.props.yAxis }
+          data={ this.props.yAxis.reverse() }
           height="100px"
           hideLines={ true }
-          labels={ this.props.xAxis } />
+          labels={ this.props.xAxis.reverse() } />
       </Card>
     );
   };
