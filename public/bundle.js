@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b6d3408da420aa041919"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "9a6f134db3b8ca5cffa0"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -4974,7 +4974,7 @@ var Masternode = function (_Component) {
 
       // Calculate the future so we can use it to
       // sort by lastPaid in descending order.
-      var future = (0, _moment2.default)().add(1, 'year').utc().unix();
+      var future = (0, _moment2.default)().add(2, 'years').utc().unix();
 
       return _react2.default.createElement(
         'div',
@@ -4985,6 +4985,9 @@ var Masternode = function (_Component) {
         _react2.default.createElement(_Table2.default, {
           cols: this.state.cols,
           data: (0, _sortBy2.default)(this.state.mns.map(function (mn) {
+            var lastPaidAt = (0, _moment2.default)(mn.lastPaidAt).utc();
+            var isEpoch = lastPaidAt.unix() === 0;
+
             return _extends({}, mn, {
               active: (0, _moment2.default)().subtract(mn.active, 'seconds').utc().fromNow(),
               addr: _react2.default.createElement(
@@ -4992,15 +4995,14 @@ var Masternode = function (_Component) {
                 { to: '/tx/' + mn.txHash },
                 mn.txHash
               ),
-              lastPaid: future - (0, _moment2.default)(mn.lastPaidAt).utc().unix(),
-              lastPaidAt: (0, _moment2.default)(mn.lastPaidAt).utc().format('YYYY-MM-DD HH:MM A'),
+              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD HH:MM A'),
               txHash: _react2.default.createElement(
                 _reactRouterDom.Link,
                 { to: '/tx/' + mn.txHash },
                 mn.txHash
               )
             });
-          }), ['status', 'lastPaid']) }),
+          }), ['status']) }),
         _react2.default.createElement(_Pagination2.default, {
           current: this.state.page,
           className: 'float-right',
