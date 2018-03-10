@@ -39,7 +39,7 @@ class Overview extends Component {
       if (tx.vout && tx.vout.length) {
         tx.vout.forEach(vout => blockValue += vout.value);
       }
-      console.log();
+
       return ({
         ...tx,
         age: diffSeconds < 60 ? `${ diffSeconds } seconds` : createdAt.fromNow(true),
