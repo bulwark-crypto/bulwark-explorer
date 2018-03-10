@@ -13,24 +13,22 @@ export default class MenuDesktop extends Component {
     super(props);
 
     this.state = {
-      isOpen: false
+      show: false
     }
   }
 
-  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
+  handleToggle = () => this.setState({ show: !this.state.show });
 
   render() {
-    const { state } = this;
-
     return (
-      <div className={ `menu-mobile ${ state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
+      <div className={ `menu-mobile ${ this.state.show ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
         <div className="menu-mobile__search-wrapper">
           <SearchBar className="search--mobile mr-3" placeholder="Search Blockchain" />
           <a onClick={ this.handleToggle } >
             <Icon name="bars" className="menu-mobile__toggle" onClick={ this.handleToggle } />
           </a>
         </div>
-        <div className="menu-mobile__item-wrapper" isOpen={ state.isOpen } >
+        <div className="menu-mobile__item-wrapper" >
           <Link className="menu-mobile__item" to="/">
             <img className="menu-mobile__icon" src="/img/Home-icon@2x.png" />
             <span className="menu-mobile__item-label" >Overview</span>

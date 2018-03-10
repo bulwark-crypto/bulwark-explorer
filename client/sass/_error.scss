@@ -1,0 +1,16 @@
+
+.error {
+	&-danger {
+		background-color: $red;
+		border-radius: 2px;
+		color: $white;
+		padding: 10px;
+	}
+
+	&-success {
+		background-color: $green;
+		border-radius: 2px;
+		color: $black;
+		padding: 10px;
+	}
+}

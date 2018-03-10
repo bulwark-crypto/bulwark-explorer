@@ -22,6 +22,7 @@ class TX extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: null,
       tx: {
         blockHeight: 0,
         vin: [],
@@ -44,10 +45,15 @@ class TX extends Component {
   getTX() {
     this.props
       .getTX(this.props.match.params.hash)
-      .then(tx => this.setState({ tx }));
+      .then(tx => this.setState({ tx }))
+      .catch(error => this.setState({ error }));
   };
 
   render() {
+    if (!!this.state.error) {
+      return this.renderError(this.state.error);
+    }
+
     return (
       <div>
         <HorizontalRule title="Transaction Info" />

@@ -193,6 +193,10 @@ const getTX = async (req, res) => {
       ? { txId: req.params.hash }
       : { height: req.params.hash };
     const tx = await TX.findOne(query);
+    if (!tx) {
+      res.status(404).send('Unable to find the transaction!');
+      return;
+    }
 
     res.json(tx);
   } catch(err) {

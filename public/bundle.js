@@ -3332,11 +3332,11 @@ var MenuDesktop = function (_Component) {
     var _this = _possibleConstructorReturn(this, (MenuDesktop.__proto__ || Object.getPrototypeOf(MenuDesktop)).call(this, props));
 
     _this.handleToggle = function () {
-      return _this.setState({ isOpen: !_this.state.isOpen });
+      return _this.setState({ isopen: !_this.state.isopen });
     };
 
     _this.state = {
-      isOpen: true
+      isopen: true
     };
     return _this;
   }
@@ -3349,7 +3349,7 @@ var MenuDesktop = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'menu-desktop ' + (state.isOpen ? 'menu-desktop--open' : 'menu-desktop--close') },
+        { className: 'menu-desktop ' + (state.isopen ? 'menu-desktop--open' : 'menu-desktop--close') },
         _react2.default.createElement(
           'div',
           { className: 'menu-desktop__content-wrapper' },
@@ -3473,11 +3473,11 @@ var MenuDesktop = function (_Component) {
     var _this = _possibleConstructorReturn(this, (MenuDesktop.__proto__ || Object.getPrototypeOf(MenuDesktop)).call(this, props));
 
     _this.handleToggle = function () {
-      return _this.setState({ isOpen: !_this.state.isOpen });
+      return _this.setState({ isopen: !_this.state.isopen });
     };
 
     _this.state = {
-      isOpen: false
+      isopen: false
     };
     return _this;
   }
@@ -3490,7 +3490,7 @@ var MenuDesktop = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'menu-mobile ' + (state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close') },
+        { className: 'menu-mobile ' + (state.isopen ? 'menu-mobile--open' : 'menu-mobile--close') },
         _react2.default.createElement(
           'div',
           { className: 'menu-mobile__search-wrapper' },
@@ -3503,7 +3503,7 @@ var MenuDesktop = function (_Component) {
         ),
         _react2.default.createElement(
           'div',
-          { className: 'menu-mobile__item-wrapper', isOpen: state.isOpen },
+          { className: 'menu-mobile__item-wrapper', isopen: state.isopen },
           _react2.default.createElement(
             _reactRouterDom.Link,
             { className: 'menu-mobile__item', to: '/' },
@@ -3621,11 +3621,11 @@ var Menu = function (_Component) {
 }(_Component3.default);
 
 Menu.defaultProps = {
-  isOpen: true
+  isopen: true
 };
 Menu.propTypes = {
   handleToggle: _propTypes2.default.func,
-  isOpen: _propTypes2.default.bool
+  isopen: _propTypes2.default.bool
 };
 exports.default = Menu;
 
@@ -102094,7 +102094,7 @@ var propTypes$8 = {
   disabled: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   dropup: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   group: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   nav: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   addonType: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOf(['prepend', 'append'])]),
   size: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
@@ -102107,7 +102107,7 @@ var propTypes$8 = {
 };
 
 var defaultProps$8 = {
-  isOpen: false,
+  isopen: false,
   dropup: false,
   nav: false,
   addonType: false,
@@ -102116,7 +102116,7 @@ var defaultProps$8 = {
 
 var childContextTypes = {
   toggle: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func.isRequired,
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
   dropup: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
   inNavbar: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired
 };
@@ -102142,7 +102142,7 @@ var Dropdown = function (_React$Component) {
     value: function getChildContext() {
       return {
         toggle: this.props.toggle,
-        isOpen: this.props.isOpen,
+        isopen: this.props.isopen,
         dropup: this.props.dropup,
         inNavbar: this.props.inNavbar
       };
@@ -102155,7 +102155,7 @@ var Dropdown = function (_React$Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
-      if (this.props.isOpen !== prevProps.isOpen) {
+      if (this.props.isopen !== prevProps.isopen) {
         this.handleProps();
       }
     }
@@ -102211,11 +102211,11 @@ var Dropdown = function (_React$Component) {
 
       var container = this.getContainer();
 
-      if (e.which === keyCodes.space && this.props.isOpen && container !== e.target) {
+      if (e.which === keyCodes.space && this.props.isopen && container !== e.target) {
         e.target.click();
       }
 
-      if (e.which === keyCodes.esc || !this.props.isOpen) {
+      if (e.which === keyCodes.esc || !this.props.isopen) {
         this.toggle(e);
         container.querySelector('[aria-expanded]').focus();
         return;
@@ -102254,7 +102254,7 @@ var Dropdown = function (_React$Component) {
   }, {
     key: 'handleProps',
     value: function handleProps() {
-      if (this.props.isOpen) {
+      if (this.props.isopen) {
         this.addEvents();
       } else {
         this.removeEvents();
@@ -102278,16 +102278,16 @@ var Dropdown = function (_React$Component) {
           className = _omit.className,
           cssModule = _omit.cssModule,
           dropup = _omit.dropup,
-          isOpen = _omit.isOpen,
+          isopen = _omit.isopen,
           group = _omit.group,
           size = _omit.size,
           nav = _omit.nav,
           addonType = _omit.addonType,
-          attrs = objectWithoutProperties(_omit, ['className', 'cssModule', 'dropup', 'isOpen', 'group', 'size', 'nav', 'addonType']);
+          attrs = objectWithoutProperties(_omit, ['className', 'cssModule', 'dropup', 'isopen', 'group', 'size', 'nav', 'addonType']);
 
       attrs.tag = attrs.tag || (nav ? 'li' : 'div');
 
-      var classes = mapToCssModules(__WEBPACK_IMPORTED_MODULE_2_classnames___default()(className, (_classNames = {}, defineProperty(_classNames, 'input-group-' + addonType, addonType), defineProperty(_classNames, 'btn-group', group), defineProperty(_classNames, 'btn-group-' + size, !!size), defineProperty(_classNames, 'dropdown', !group && !addonType), defineProperty(_classNames, 'show', isOpen), defineProperty(_classNames, 'dropup', dropup), defineProperty(_classNames, 'nav-item', nav), _classNames)), cssModule);
+      var classes = mapToCssModules(__WEBPACK_IMPORTED_MODULE_2_classnames___default()(className, (_classNames = {}, defineProperty(_classNames, 'input-group-' + addonType, addonType), defineProperty(_classNames, 'btn-group', group), defineProperty(_classNames, 'btn-group-' + size, !!size), defineProperty(_classNames, 'dropdown', !group && !addonType), defineProperty(_classNames, 'show', isopen), defineProperty(_classNames, 'dropup', dropup), defineProperty(_classNames, 'nav-item', nav), _classNames)), cssModule);
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6_react_popper__["Manager"], _extends({}, attrs, { className: classes, onKeyDown: this.handleKeyDown }));
     }
   }]);
@@ -102696,7 +102696,7 @@ var defaultProps$16 = {
 };
 
 var contextTypes$1 = {
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
   dropup: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
   inNavbar: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired
 };
@@ -102713,12 +102713,12 @@ var DropdownMenu = function DropdownMenu(props, context) {
 
   var classes = mapToCssModules(__WEBPACK_IMPORTED_MODULE_2_classnames___default()(className, 'dropdown-menu', {
     'dropdown-menu-right': right,
-    show: context.isOpen
+    show: context.isopen
   }), cssModule);
 
   var Tag = tag;
 
-  if (context.isOpen && !context.inNavbar) {
+  if (context.isopen && !context.inNavbar) {
     Tag = __WEBPACK_IMPORTED_MODULE_6_react_popper__["Popper"];
     var position1 = context.dropup ? 'top' : 'bottom';
     var position2 = right ? 'end' : 'start';
@@ -102731,7 +102731,7 @@ var DropdownMenu = function DropdownMenu(props, context) {
     tabIndex: '-1',
     role: 'menu'
   }, attrs, {
-    'aria-hidden': !context.isOpen,
+    'aria-hidden': !context.isopen,
     className: classes
   }));
 };
@@ -102760,7 +102760,7 @@ var defaultProps$17 = {
 };
 
 var contextTypes$2 = {
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
   toggle: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func.isRequired,
   inNavbar: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired
 };
@@ -102837,7 +102837,7 @@ var DropdownToggle = function (_React$Component) {
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Tag, _extends({}, props, {
           className: classes,
           onClick: this.onClick,
-          'aria-expanded': this.context.isOpen,
+          'aria-expanded': this.context.isopen,
           children: children
         }));
       }
@@ -102846,7 +102846,7 @@ var DropdownToggle = function (_React$Component) {
         className: classes,
         component: Tag,
         onClick: this.onClick,
-        'aria-expanded': this.context.isOpen,
+        'aria-expanded': this.context.isopen,
         children: children
       }));
     }
@@ -104545,7 +104545,7 @@ var propTypes$35 = {
   placement: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
   placementPrefix: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
   tag: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool.isRequired,
   cssModule: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.object,
   offset: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.number]),
   fallbackPlacement: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.array]),
@@ -104557,7 +104557,7 @@ var propTypes$35 = {
 
 var defaultProps$33 = {
   placement: 'auto',
-  isOpen: false,
+  isopen: false,
   offset: 0,
   fallbackPlacement: 'flip',
   flip: true,
@@ -104602,7 +104602,7 @@ var PopperContent = function (_React$Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
-      if (this.props.isOpen !== prevProps.isOpen) {
+      if (this.props.isopen !== prevProps.isopen) {
         this.handleProps();
       } else if (this._element) {
         // rerender
@@ -104641,7 +104641,7 @@ var PopperContent = function (_React$Component) {
     key: 'handleProps',
     value: function handleProps() {
       if (this.props.container !== 'inline') {
-        if (this.props.isOpen) {
+        if (this.props.isopen) {
           this.show();
         } else {
           this.hide();
@@ -104678,7 +104678,7 @@ var PopperContent = function (_React$Component) {
       var _props = this.props,
           cssModule = _props.cssModule,
           children = _props.children,
-          isOpen = _props.isOpen,
+          isopen = _props.isopen,
           flip = _props.flip,
           target = _props.target,
           offset = _props.offset,
@@ -104688,7 +104688,7 @@ var PopperContent = function (_React$Component) {
           tag = _props.tag,
           container = _props.container,
           modifiers = _props.modifiers,
-          attrs = objectWithoutProperties(_props, ['cssModule', 'children', 'isOpen', 'flip', 'target', 'offset', 'fallbackPlacement', 'placementPrefix', 'className', 'tag', 'container', 'modifiers']);
+          attrs = objectWithoutProperties(_props, ['cssModule', 'children', 'isopen', 'flip', 'target', 'offset', 'fallbackPlacement', 'placementPrefix', 'className', 'tag', 'container', 'modifiers']);
 
       var arrowClassName = mapToCssModules('arrow', cssModule);
       var placement = (this.state.placement || attrs.placement).split('-')[0];
@@ -104717,7 +104717,7 @@ var PopperContent = function (_React$Component) {
       this.setTargetNode(getTarget(this.props.target));
 
       if (this.props.container === 'inline') {
-        return this.props.isOpen ? this.renderChildren() : null;
+        return this.props.isopen ? this.renderChildren() : null;
       }
 
       return null;
@@ -104747,7 +104747,7 @@ var propTypes$36 = {
   placement: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOf(PopperPlacements),
   target: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func, DOMElement]).isRequired,
   container: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func, DOMElement]),
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   disabled: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   className: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
   innerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
@@ -104764,7 +104764,7 @@ var DEFAULT_DELAYS = {
 };
 
 var defaultProps$34 = {
-  isOpen: false,
+  isopen: false,
   placement: 'right',
   placementPrefix: 'bs-popover',
   delay: DEFAULT_DELAYS,
@@ -104825,7 +104825,7 @@ var Popover = function (_React$Component) {
   }, {
     key: 'handleProps',
     value: function handleProps() {
-      if (this.props.isOpen) {
+      if (this.props.isopen) {
         this.show();
       } else {
         this.hide();
@@ -104836,7 +104836,7 @@ var Popover = function (_React$Component) {
     value: function show() {
       this.clearHideTimeout();
       this.addTargetEvents();
-      if (!this.props.isOpen) {
+      if (!this.props.isopen) {
         this.clearShowTimeout();
         this._showTimeout = setTimeout(this.toggle, this.getDelay('show'));
       }
@@ -104846,7 +104846,7 @@ var Popover = function (_React$Component) {
     value: function hide() {
       this.clearShowTimeout();
       this.removeTargetEvents();
-      if (this.props.isOpen) {
+      if (this.props.isopen) {
         this.clearHideTimeout();
         this._hideTimeout = setTimeout(this.toggle, this.getDelay('hide'));
       }
@@ -104871,7 +104871,7 @@ var Popover = function (_React$Component) {
           this.clearHideTimeout();
         }
 
-        if (this.props.isOpen) {
+        if (this.props.isopen) {
           this.toggle();
         }
       }
@@ -104906,7 +104906,7 @@ var Popover = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.props.isOpen) {
+      if (!this.props.isopen) {
         return null;
       }
 
@@ -104920,7 +104920,7 @@ var Popover = function (_React$Component) {
         {
           className: popperClasses,
           target: this.props.target,
-          isOpen: this.props.isOpen,
+          isopen: this.props.isopen,
           placement: this.props.placement,
           placementPrefix: this.props.placementPrefix,
           container: this.props.container,
@@ -105064,7 +105064,7 @@ function noop() {}
 var FadePropTypes = __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.shape(Fade.propTypes);
 
 var propTypes$40 = {
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   autoFocus: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   size: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
   toggle: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func,
@@ -105092,7 +105092,7 @@ var propTypes$40 = {
 var propsToOmit = Object.keys(propTypes$40);
 
 var defaultProps$38 = {
-  isOpen: false,
+  isopen: false,
   autoFocus: true,
   role: 'dialog',
   backdrop: true,
@@ -105132,7 +105132,7 @@ var Modal = function (_React$Component) {
   createClass(Modal, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.props.isOpen) {
+      if (this.props.isopen) {
         this.togglePortal();
       }
       if (this.props.onEnter) {
@@ -105142,7 +105142,7 @@ var Modal = function (_React$Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
-      if (this.props.isOpen !== prevProps.isOpen) {
+      if (this.props.isopen !== prevProps.isopen) {
         // handle portal events/dom updates
         this.togglePortal();
       } else if (this._element) {
@@ -105197,7 +105197,7 @@ var Modal = function (_React$Component) {
   }, {
     key: 'togglePortal',
     value: function togglePortal() {
-      if (this.props.isOpen) {
+      if (this.props.isopen) {
         if (this.props.autoFocus) {
           this._focus = true;
         }
@@ -105295,7 +105295,7 @@ var Modal = function (_React$Component) {
           modalClassName = _props.modalClassName,
           backdropClassName = _props.backdropClassName,
           cssModule = _props.cssModule,
-          isOpen = _props.isOpen,
+          isopen = _props.isopen,
           backdrop = _props.backdrop,
           role = _props.role,
           labelledBy = _props.labelledBy;
@@ -105325,7 +105325,7 @@ var Modal = function (_React$Component) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           Fade,
           _extends({}, modalAttributes, modalTransition, {
-            'in': isOpen,
+            'in': isopen,
             onEntered: this.onOpened,
             onExited: this.onClosed,
             cssModule: cssModule,
@@ -105334,7 +105334,7 @@ var Modal = function (_React$Component) {
           this.renderModalDialog()
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Fade, _extends({}, backdropTransition, {
-          'in': isOpen && !!backdrop,
+          'in': isopen && !!backdrop,
           cssModule: cssModule,
           className: mapToCssModules(__WEBPACK_IMPORTED_MODULE_2_classnames___default()('modal-backdrop', backdropClassName), cssModule)
         }))
@@ -105461,7 +105461,7 @@ var propTypes$44 = {
   placement: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOf(PopperPlacements),
   target: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func, DOMElement]).isRequired,
   container: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func, DOMElement]),
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   disabled: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   className: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
   innerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
@@ -105479,7 +105479,7 @@ var DEFAULT_DELAYS$1 = {
 };
 
 var defaultProps$42 = {
-  isOpen: false,
+  isopen: false,
   placement: 'top',
   placementPrefix: 'bs-tooltip',
   delay: DEFAULT_DELAYS$1,
@@ -105569,7 +105569,7 @@ var Tooltip = function (_React$Component) {
   }, {
     key: 'show',
     value: function show() {
-      if (!this.props.isOpen) {
+      if (!this.props.isopen) {
         this.clearShowTimeout();
         this.toggle();
       }
@@ -105577,7 +105577,7 @@ var Tooltip = function (_React$Component) {
   }, {
     key: 'hide',
     value: function hide() {
-      if (this.props.isOpen) {
+      if (this.props.isopen) {
         this.clearHideTimeout();
         this.toggle();
       }
@@ -105602,7 +105602,7 @@ var Tooltip = function (_React$Component) {
           this.clearHideTimeout();
         }
 
-        if (!this.props.isOpen) {
+        if (!this.props.isopen) {
           this.toggle();
         }
       }
@@ -105641,7 +105641,7 @@ var Tooltip = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (!this.props.isOpen) {
+      if (!this.props.isopen) {
         return null;
       }
 
@@ -105655,7 +105655,7 @@ var Tooltip = function (_React$Component) {
         {
           className: popperClasses,
           target: this.props.target,
-          isOpen: this.props.isOpen,
+          isopen: this.props.isopen,
           placement: this.props.placement,
           placementPrefix: this.props.placementPrefix,
           container: this.props.container,
@@ -106543,7 +106543,7 @@ var propTypes$65 = {
   closeAriaLabel: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
   cssModule: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.object,
   color: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string,
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   toggle: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func,
   tag: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string]),
   transition: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.shape(Fade.propTypes)
@@ -106551,7 +106551,7 @@ var propTypes$65 = {
 
 var defaultProps$60 = {
   color: 'success',
-  isOpen: true,
+  isopen: true,
   tag: 'div',
   closeAriaLabel: 'Close',
   transition: _extends({}, Fade.defaultProps, {
@@ -106566,11 +106566,11 @@ function Alert(props) {
       cssModule = props.cssModule,
       Tag = props.tag,
       color = props.color,
-      isOpen = props.isOpen,
+      isopen = props.isopen,
       toggle = props.toggle,
       children = props.children,
       transition = props.transition,
-      attributes = objectWithoutProperties(props, ['className', 'closeClassName', 'closeAriaLabel', 'cssModule', 'tag', 'color', 'isOpen', 'toggle', 'children', 'transition']);
+      attributes = objectWithoutProperties(props, ['className', 'closeClassName', 'closeAriaLabel', 'cssModule', 'tag', 'color', 'isopen', 'toggle', 'children', 'transition']);
 
 
   var classes = mapToCssModules(__WEBPACK_IMPORTED_MODULE_2_classnames___default()(className, 'alert', 'alert-' + color, { 'alert-dismissible': toggle }), cssModule);
@@ -106579,7 +106579,7 @@ function Alert(props) {
 
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     Fade,
-    _extends({}, attributes, transition, { tag: Tag, className: classes, 'in': isOpen, role: 'alert' }),
+    _extends({}, attributes, transition, { tag: Tag, className: classes, 'in': isopen, role: 'alert' }),
     toggle ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'button',
       { type: 'button', className: closeClasses, 'aria-label': closeAriaLabel, onClick: toggle },
@@ -106599,7 +106599,7 @@ Alert.defaultProps = defaultProps$60;
 var _transitionStatusToCl;
 
 var propTypes$66 = _extends({}, Transition.propTypes, {
-  isOpen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
+  isopen: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.bool,
   children: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.arrayOf(__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.node), __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.node]),
   tag: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.oneOfType([__WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.func, __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.string]),
   className: __WEBPACK_IMPORTED_MODULE_1_prop_types___default.a.node,
@@ -106608,7 +106608,7 @@ var propTypes$66 = _extends({}, Transition.propTypes, {
 });
 
 var defaultProps$61 = _extends({}, Transition.defaultProps, {
-  isOpen: false,
+  isopen: false,
   appear: false,
   enter: true,
   exit: true,
@@ -106681,12 +106681,12 @@ var Collapse = function (_Component) {
     value: function render() {
       var _props = this.props,
           Tag = _props.tag,
-          isOpen = _props.isOpen,
+          isopen = _props.isopen,
           className = _props.className,
           navbar = _props.navbar,
           cssModule = _props.cssModule,
           children = _props.children,
-          otherProps = objectWithoutProperties(_props, ['tag', 'isOpen', 'className', 'navbar', 'cssModule', 'children']);
+          otherProps = objectWithoutProperties(_props, ['tag', 'isopen', 'className', 'navbar', 'cssModule', 'children']);
       var height = this.state.height;
 
       // In NODE_ENV=production the Transition.propTypes are wrapped which results in an
@@ -106707,7 +106707,7 @@ var Collapse = function (_Component) {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         Transition,
         _extends({}, transitionProps, {
-          'in': isOpen,
+          'in': isopen,
           onEntering: this.onEntering,
           onEntered: this.onEntered,
           onExit: this.onExit,
@@ -106832,7 +106832,7 @@ var UncontrolledAlert = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (UncontrolledAlert.__proto__ || Object.getPrototypeOf(UncontrolledAlert)).call(this, props));
 
-    _this.state = { isOpen: true };
+    _this.state = { isopen: true };
     _this.toggle = _this.toggle.bind(_this);
     return _this;
   }
@@ -106840,12 +106840,12 @@ var UncontrolledAlert = function (_Component) {
   createClass(UncontrolledAlert, [{
     key: 'toggle',
     value: function toggle() {
-      this.setState({ isOpen: !this.state.isOpen });
+      this.setState({ isopen: !this.state.isopen });
     }
   }, {
     key: 'render',
     value: function render() {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Alert, _extends({ isOpen: this.state.isOpen, toggle: this.toggle }, this.props));
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Alert, _extends({ isopen: this.state.isopen, toggle: this.toggle }, this.props));
     }
   }]);
   return UncontrolledAlert;
@@ -106859,7 +106859,7 @@ var UncontrolledButtonDropdown = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (UncontrolledButtonDropdown.__proto__ || Object.getPrototypeOf(UncontrolledButtonDropdown)).call(this, props));
 
-    _this.state = { isOpen: false };
+    _this.state = { isopen: false };
     _this.toggle = _this.toggle.bind(_this);
     return _this;
   }
@@ -106867,12 +106867,12 @@ var UncontrolledButtonDropdown = function (_Component) {
   createClass(UncontrolledButtonDropdown, [{
     key: 'toggle',
     value: function toggle() {
-      this.setState({ isOpen: !this.state.isOpen });
+      this.setState({ isopen: !this.state.isopen });
     }
   }, {
     key: 'render',
     value: function render() {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ButtonDropdown, _extends({ isOpen: this.state.isOpen, toggle: this.toggle }, this.props));
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ButtonDropdown, _extends({ isopen: this.state.isopen, toggle: this.toggle }, this.props));
     }
   }]);
   return UncontrolledButtonDropdown;
@@ -106886,7 +106886,7 @@ var UncontrolledDropdown = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (UncontrolledDropdown.__proto__ || Object.getPrototypeOf(UncontrolledDropdown)).call(this, props));
 
-    _this.state = { isOpen: false };
+    _this.state = { isopen: false };
     _this.toggle = _this.toggle.bind(_this);
     return _this;
   }
@@ -106894,12 +106894,12 @@ var UncontrolledDropdown = function (_Component) {
   createClass(UncontrolledDropdown, [{
     key: 'toggle',
     value: function toggle() {
-      this.setState({ isOpen: !this.state.isOpen });
+      this.setState({ isopen: !this.state.isopen });
     }
   }, {
     key: 'render',
     value: function render() {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Dropdown, _extends({ isOpen: this.state.isOpen, toggle: this.toggle }, this.props));
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Dropdown, _extends({ isopen: this.state.isopen, toggle: this.toggle }, this.props));
     }
   }]);
   return UncontrolledDropdown;
@@ -106913,7 +106913,7 @@ var UncontrolledNavDropdown = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (UncontrolledNavDropdown.__proto__ || Object.getPrototypeOf(UncontrolledNavDropdown)).call(this, props));
 
-    _this.state = { isOpen: false };
+    _this.state = { isopen: false };
     _this.toggle = _this.toggle.bind(_this);
     return _this;
   }
@@ -106921,14 +106921,14 @@ var UncontrolledNavDropdown = function (_Component) {
   createClass(UncontrolledNavDropdown, [{
     key: 'toggle',
     value: function toggle() {
-      this.setState({ isOpen: !this.state.isOpen });
+      this.setState({ isopen: !this.state.isopen });
     }
   }, {
     key: 'render',
     value: function render() {
       warnOnce('The "UncontrolledNavDropdown" component has been deprecated.\nPlease use component "UncontrolledDropdown" with nav prop.');
 
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(NavDropdown, _extends({ isOpen: this.state.isOpen, toggle: this.toggle }, this.props));
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(NavDropdown, _extends({ isopen: this.state.isopen, toggle: this.toggle }, this.props));
     }
   }]);
   return UncontrolledNavDropdown;
@@ -106942,7 +106942,7 @@ var UncontrolledTooltip = function (_Component) {
 
     var _this = possibleConstructorReturn(this, (UncontrolledTooltip.__proto__ || Object.getPrototypeOf(UncontrolledTooltip)).call(this, props));
 
-    _this.state = { isOpen: false };
+    _this.state = { isopen: false };
     _this.toggle = _this.toggle.bind(_this);
     return _this;
   }
@@ -106950,12 +106950,12 @@ var UncontrolledTooltip = function (_Component) {
   createClass(UncontrolledTooltip, [{
     key: 'toggle',
     value: function toggle() {
-      this.setState({ isOpen: !this.state.isOpen });
+      this.setState({ isopen: !this.state.isopen });
     }
   }, {
     key: 'render',
     value: function render() {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Tooltip, _extends({ isOpen: this.state.isOpen, toggle: this.toggle }, this.props));
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Tooltip, _extends({ isopen: this.state.isopen, toggle: this.toggle }, this.props));
     }
   }]);
   return UncontrolledTooltip;

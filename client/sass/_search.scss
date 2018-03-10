@@ -1,6 +1,6 @@
 .search {
 	align-items: center;
-	border: 1px solid $gray;
+	border: 1px solid lighten($gray, 15%);
 	border-radius: 2px;
 	display: flex;
 	/* Used to align with menu logo */

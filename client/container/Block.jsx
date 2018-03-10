@@ -18,7 +18,11 @@ class Block extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { block: {}, txs: [] };
+    this.state = {
+      block: {},
+      error: null,
+      txs: []
+    };
   };
 
   componentDidMount() {
@@ -37,10 +41,15 @@ class Block extends Component {
   getBlock = () => {
     this.props
       .getBlock(this.props.match.params.hash)
-      .then(({ block, txs }) => this.setState({ block, txs }));
+      .then(({ block, txs }) => this.setState({ block, txs }))
+      .catch(error => this.setState({ error }));
   };
 
   render() {
+    if (!!this.state.error) {
+      return this.renderError(this.state.error);
+    }
+
     return (
       <div>
         <HorizontalRule title="Block Info" />

@@ -12,17 +12,15 @@ export default class MenuDesktop extends Component {
     super(props);
 
     this.state = {
-      isOpen: true
+      show: true
     }
   }
 
-  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
+  handleToggle = () => this.setState({ show: !this.state.show });
 
   render() {
-    const { state } = this;
-
     return (
-      <div className={ `menu-desktop ${ state.isOpen ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
+      <div className={ `menu-desktop ${ this.state.show ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
         <div className="menu-desktop__content-wrapper">
           <div className="menu-desktop__header">
             <img src="/img/Badge-White.png" className="menu-desktop__logo" />
