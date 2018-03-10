@@ -23,7 +23,7 @@ class Masternode extends Component {
       cols: [
         { key: 'lastPaidAt', title: 'Last Paid' },
         { key: 'active', title: 'Active Duration' },
-        { key: 'addr', title: 'Address' },
+        { key: 'addr', title: 'Transaction' },
         { key: 'txOutIdx', title: 'Index' },
         { key: 'ver', title: 'Version' },
         { key: 'status', title: 'Status' },
