@@ -8,7 +8,7 @@ import Card from './Card';
 
 export default class CardStatus extends Component {
   static defaultProps = {
-    avgBlockTime: '2 Minutes',
+    avgBlockTime: '1.50 minutes',
     blocks: 0,
     peers: 0,
     status: 'Offline'
