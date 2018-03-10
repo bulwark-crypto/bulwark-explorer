@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "9a6f134db3b8ca5cffa0"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "0077a336835b9b31f4b1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -4995,7 +4995,7 @@ var Masternode = function (_Component) {
                 { to: '/tx/' + mn.txHash },
                 mn.txHash
               ),
-              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD HH:MM A'),
+              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD hh:mm A'),
               txHash: _react2.default.createElement(
                 _reactRouterDom.Link,
                 { to: '/tx/' + mn.txHash },

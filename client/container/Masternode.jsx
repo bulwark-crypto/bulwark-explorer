@@ -102,7 +102,7 @@ class Masternode extends Component {
               addr: (
                 <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
               ),
-              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD HH:MM A'),
+              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD hh:mm A'),
               txHash: (
                 <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
               )
