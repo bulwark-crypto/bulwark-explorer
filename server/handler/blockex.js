@@ -40,6 +40,11 @@ const getBlock = async (req, res) => {
       ? { hash: req.params.hash }
       : { height: req.params.hash };
     const block = await Block.findOne(query);
+    if (!block) {
+      res.status(404).send('Unable to find the block!');
+      return;
+    }
+
     const txs = await TX.find({ txId: { $in: block.txs }});
 
     res.json({ block, txs });
