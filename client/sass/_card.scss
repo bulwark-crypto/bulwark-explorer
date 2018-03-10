@@ -14,6 +14,11 @@
 		height: 100%;
 	}
 
+	&__result {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	&__row {
 		display: flex;
 	}
@@ -23,7 +28,7 @@
 	}
 
 	&--block &__label {
-		min-width: 20%;
+		padding-right: 10px;
 	}
 
 	&--status &__row {

@@ -21,12 +21,13 @@ class Overview extends Component {
 
     this.state = {
       cols: [
-        'blockHeight',
+        {title: 'Height', key: 'blockHeight'},
         {title: 'Transaction Hash', key: 'txId'},
         'age',
-        'vout',
+        {title: 'Value', key: 'vout'},
         'recipients',
-        'createdAt']
+        {title: 'Created', key: 'createdAt'},
+      ]
     };
   };
 

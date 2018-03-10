@@ -22,7 +22,7 @@ export default class CardTXIn extends Component {
     this.state = {
       cols: [
         { key: 'txId', title: 'Transaction ID' },
-        { key: 'vout', title: 'VOut' }
+        { key: 'vout', title: 'Index' }
       ]
     };
   };
