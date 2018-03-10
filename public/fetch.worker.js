@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a76101f6dcfdfbd68e17"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "420c5f1ce1b2a44c6600"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -759,7 +759,7 @@ var fetch = function fetch(url) {
   var body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
   if (!url) {
-    return promise.reject(new Error('Please provide a valid fetch url.'));
+    return promise.reject({ error: 'Error: Please provide a valid fetch url.' });
   }
 
   // If query the setup url.
@@ -780,11 +780,18 @@ var fetch = function fetch(url) {
     options.body = JSON.stringify(body);
   }
 
+  var response = void 0;
   return isofetch(url, options).then(function (res) {
-    if (!res.ok || res.status >= 400) {
-      throw new Error('Bad request to coin market cap: ' + url);
+    response = res;
+    if (!response.ok || response.status >= 400) {
+      return res.text();
     }
     return res.json();
+  }).then(function (res) {
+    if (!response.ok || response.status >= 400) {
+      return promise.reject({ error: 'Error: ' + res });
+    }
+    return res;
   });
 };
 
@@ -797,6 +804,8 @@ module.exports = fetch;
 
 "use strict";
 
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 /**
  * Web Worker
@@ -888,15 +897,16 @@ self.addEventListener('message', function (ev) {
       break;
   }
 
+  var wk = self;
   if (!action) {
-    self.postMessage({ error: new Error('Type not found!') });
+    wk.postMessage({ error: new Error('Type not found!') });
     return;
   }
 
   action(ev.data.query).then(function (data) {
-    return self.postMessage({ data: data, type: ev.data.type });
-  }).catch(function (error) {
-    return self.postMessage({ error: error, type: ev.data.type });
+    return wk.postMessage({ data: data, type: ev.data.type });
+  }).catch(function (err) {
+    return wk.postMessage(_extends({}, err, { type: ev.data.type }));
   });
 });
 
