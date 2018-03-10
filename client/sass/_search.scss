@@ -1,8 +1,11 @@
 .search {
-	display: flex;
 	align-items: center;
+	border: 1px solid $gray;
+	border-radius: 2px;
+	display: flex;
 	/* Used to align with menu logo */
 	min-height: 4em;
+	padding: 0 20px;
 
 	&__icon {
 		margin-right: 1em;
