@@ -1,4 +1,4 @@
-const data = [
+const APIdata = [
   {
     heading: 'API Calls',
     subHeading: 'Return data from coind',
@@ -36,4 +36,4 @@ const data = [
   }
 ]
 
-export default data;
+export default APIdata;

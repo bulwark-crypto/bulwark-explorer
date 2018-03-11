@@ -4,12 +4,12 @@ import React from 'react';
 
 import APIsection from '../component/API/APIsection';
 import HorizontalRule from '../component/HorizontalRule';
-import data from '../component/API/data';
+import APIdata from '../component/API/APIdata';
 
 export default class API extends Component {
 
   getSections = () => {
-    return data.map((section, idx) => {
+    return APIdata.map((section, idx) => {
       return <APIsection
         key={ idx }
         heading={ section.heading }

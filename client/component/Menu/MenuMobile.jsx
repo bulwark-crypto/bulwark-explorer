@@ -2,26 +2,47 @@
 import Component from 'core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import { Link } from 'react-router-dom';
-import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 
 import Icon from '../Icon';
 import SearchBar from '../SearchBar';
 
-export default class MenuDesktop extends Component {
+export default class MenuMobile extends Component {
+  static propTypes = {
+    links: PropTypes.array
+  };
+
+  static defaultProps = {
+    links: []
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
-      show: false
+      isOpen: false
     }
   }
 
-  handleToggle = () => this.setState({ show: !this.state.show });
+  getLinks = () => {
+    const { props } = this;
+
+    return props.links.map((i, idx) => {
+      return (
+        <Link key={ idx } className="menu-mobile__item" to={ i.href }>
+          <img className="menu-mobile__icon" src={ i.icon } />
+          <span className="menu-mobile__item-label" >{ i.label }</span>
+        </Link>
+      )
+    })
+  };
+
+  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
 
   render() {
     return (
-      <div className={ `menu-mobile ${ this.state.show ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
+      <div className={ `menu-mobile ${ this.state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
         <div className="menu-mobile__search-wrapper">
           <SearchBar className="search--mobile mr-3" placeholder="Search Blockchain" />
           <a onClick={ this.handleToggle } >
@@ -29,38 +50,9 @@ export default class MenuDesktop extends Component {
           </a>
         </div>
         <div className="menu-mobile__item-wrapper" >
-          <Link className="menu-mobile__item" to="/">
-            <img className="menu-mobile__icon" src="/img/home.svg" />
-            <span className="menu-mobile__item-label" >Overview</span>
-          </Link>
-          <Link className="menu-mobile__item" to="/movement">
-            <img className="menu-mobile__icon" src="/img/movement.svg" />
-            <span className="menu-mobile__item-label" >Movement</span>
-          </Link>
-          {/*
-          <Link className="menu-mobile__item" to="/top">
-            <img className="menu-mobile__icon" src="/img/top100.svg" />
-            <span className="menu-mobile__item-label">Top 100</span>
-          </Link>
-          */}
-          <Link className="menu-mobile__item" to="/masternode">
-            <img className="menu-mobile__icon" src="/img/masternodes.svg" />
-            <span className="menu-mobile__item-label">Masternode</span>
-          </Link>
-          <Link className="menu-mobile__item" to="/coin">
-            <img className="menu-mobile__icon" src="/img/coininfo.svg" />
-            <span className="menu-mobile__item-label" >Coin Info</span>
-          </Link>
-          {/*
-          <Link className="menu-mobile__item" to="/faq">
-            <img className="menu-mobile__icon" src="/img/Jobs-icon@2x.png" />
-            <span className="menu-mobile__item-label">FAQ</span>
-          </Link>
-          <Link className="menu-mobile__item" to="/api">
-            <img className="menu-mobile__icon" src="/img/api.svg" />
-            <span className="menu-mobile__item-label">API</span>
-          </Link>
-          */}
+
+          { this.getLinks() }
+
         </div>
       </div>
     )

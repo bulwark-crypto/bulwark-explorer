@@ -8,6 +8,14 @@ import { Link } from 'react-router-dom';
 import Icon from '../Icon';
 
 export default class MenuDesktop extends Component {
+  static propTypes = {
+    links: PropTypes.array
+  };
+
+  static defaultProps = {
+    links: []
+  };
+
   constructor(props) {
     super(props);
 
@@ -15,6 +23,19 @@ export default class MenuDesktop extends Component {
       show: false
     }
   }
+
+  getLinks = () => {
+    const { links } = this.props;
+
+    return links.map((i, idx) => {
+      return (
+        <Link key={ idx } className="menu-desktop__item" to={ i.href }>
+          <img className="menu-desktop__icon" src={ i.icon } />
+          <span className="menu-desktop__item-label" >{ i.label }</span>
+        </Link>
+      )
+    })
+  };
 
   handleToggle = () => this.setState({ show: !this.state.show });
 
@@ -29,38 +50,9 @@ export default class MenuDesktop extends Component {
             </a>
           </div>
           <p className="menu-desktop__title">MENU</p>
-          <Link className="menu-desktop__item" to="/">
-            <img className="menu-desktop__icon" src="/img/home_white.svg" />
-            <span className="menu-desktop__item-label" >Overview</span>
-          </Link>
-          <Link className="menu-desktop__item" to="/movement">
-            <img className="menu-desktop__icon" src="/img/movement_white.svg" />
-            <span className="menu-desktop__item-label" >Movement</span>
-          </Link>
-          {/*
-          <Link className="menu-desktop__item" to="/top">
-            <img className="menu-desktop__icon" src="/img/top100_white.svg" />
-            <span className="menu-desktop__item-label">Top 100</span>
-          </Link>
-          */}
-          <Link className="menu-desktop__item" to="/masternode">
-            <img className="menu-desktop__icon" src="/img/masternodes_white.svg" />
-            <span className="menu-desktop__item-label">Masternode</span>
-          </Link>
-          <Link className="menu-desktop__item" to="/coin">
-            <img className="menu-desktop__icon" src="/img/coininfo_white.svg" />
-            <span className="menu-desktop__item-label" >Coin Info</span>
-          </Link>
-          {/*
-          <Link className="menu-desktop__item" to="/faq">
-            <img className="menu-desktop__icon" src="/img/Jobs-icon@2x.png" />
-            <span className="menu-desktop__item-label">FAQ</span>
-          </Link>
-          */}
-          <Link className="menu-desktop__item" to="/api">
-            <img className="menu-desktop__icon" src="/img/api_white.svg" />
-            <span className="menu-desktop__item-label">API</span>
-          </Link>
+
+          { this.getLinks() }
+
         </div>
       </div>
     )
