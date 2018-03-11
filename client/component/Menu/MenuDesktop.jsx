@@ -20,28 +20,35 @@ export default class MenuDesktop extends Component {
     super(props);
 
     this.state = {
-      show: false
+      isOpen: false
     }
   }
 
   getLinks = () => {
-    const { links } = this.props;
+    const { props, state } = this;
 
-    return links.map((i, idx) => {
+    return props.links.map((i, idx) => {
+      const isActive = (props.location.pathname === i.href);
+
       return (
-        <Link key={ idx } className="menu-desktop__item" to={ i.href }>
-          <img className="menu-desktop__icon" src={ i.icon } />
+        <Link
+          key={ idx }
+          className={ `menu-desktop__item ${ isActive? 'menu-desktop__item--is-active' : '' }` }
+          to={ i.href }>
+          <img className="menu-desktop__item-icon" src={ i.icon } />
           <span className="menu-desktop__item-label" >{ i.label }</span>
+          <Icon name="caret-left" className="menu-desktop__item-indicator" />
         </Link>
       )
-    })
+    }
+    )
   };
 
-  handleToggle = () => this.setState({ show: !this.state.show });
+  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
 
   render() {
     return (
-      <div className={ `menu-desktop ${ this.state.show ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
+      <div className={ `menu-desktop ${ this.state.isOpen ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
         <div className="menu-desktop__content-wrapper">
           <div className="menu-desktop__header">
             <img src="/img/whitelogo.svg" className="menu-desktop__logo" />

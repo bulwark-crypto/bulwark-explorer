@@ -69,20 +69,30 @@
 
 	}
 
+	&__item-icon {
+		height: 24px;
+		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		width: 24px;
+	}
+
 	&__item-label {
 		/*opacity: 1;
 		transition: opacity .5s;*/
-		position: absolute;
-		left: 40px;
+		/*position: absolute;*/
+		margin-left: 1em;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 		/*Prevent text wrapping when width is changed*/
 		white-space: nowrap;
 	}
 
-	&__icon {
-		height: 24px;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-		width: 24px;
+	&__item-indicator {
+		display: none;
+		position: absolute;
+		right: -32px;
+	}
+
+	&__item--is-active &__item-indicator {
+		display: block;
 	}
 
 	/*Opened modifier*/
@@ -114,7 +124,7 @@
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
-	&--close &__icon {
+	&--close &__item-icon {
 		margin: 0 auto;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}

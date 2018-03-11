@@ -18,22 +18,20 @@ const APIsection = (props) => {
       document.body.removeChild(dummy);
     };
 
-    const calls = props.calls.map((call, idx) => {
-      return (
-        <div className="api__call" key={ idx }>
-          <p className="api__call-name">{ call.name }</p>
-          <p className="api__call-info">{ call.info }</p>
-          <Icon name="caret-right" className="api__call-detail-indicator" />
-          <div className="api__call-detail" onClick={ () => handleCopy(call) }>
-            <p className="api__call-path">{ API_BASE + call.path }</p>
-            <span className="api__call-copy">
-              <Icon name="clipboard" className="far api__call-copy-icon" />
-              <span>COPY</span>
-            </span>
-          </div>
+    const calls = props.calls.map((call, idx) =>
+      <div className="api__call" key={ idx }>
+        <p className="api__call-name">{ call.name }</p>
+        <p className="api__call-info">{ call.info }</p>
+        <Icon name="caret-right" className="api__call-detail-indicator" />
+        <div className="api__call-detail" onClick={ () => handleCopy(call) }>
+          <p className="api__call-path">{ API_BASE + call.path }</p>
+          <span className="api__call-copy">
+            <Icon name="clipboard" className="far api__call-copy-icon" />
+            <span>COPY</span>
+          </span>
         </div>
-      )
-    });
+      </div>
+    );
 
     return (
       <div className="api__section">
