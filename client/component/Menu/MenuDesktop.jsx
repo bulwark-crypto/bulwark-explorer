@@ -29,13 +29,14 @@ export default class MenuDesktop extends Component {
 
     return props.links.map((i, idx) => {
       const isActive = (props.location.pathname === i.href);
+      const iconSource = i.icon.split('.svg')[0] + '_white.svg';
 
       return (
         <Link
           key={ idx }
           className={ `menu-desktop__item ${ isActive? 'menu-desktop__item--is-active' : '' }` }
           to={ i.href }>
-          <img className="menu-desktop__item-icon" src={ i.icon } />
+          <img className="menu-desktop__item-icon" src={ iconSource } />
           <span className="menu-desktop__item-label" >{ i.label }</span>
           <Icon name="caret-left" className="menu-desktop__item-indicator" />
         </Link>
