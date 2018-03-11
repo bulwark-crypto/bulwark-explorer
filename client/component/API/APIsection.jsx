@@ -7,8 +7,15 @@ import { API_BASE } from '../../constants';
 import Icon from '../Icon';
 
 const APIsection = (props) => {
-    const handleCopy = () => {
-      alert('yolo');
+    const handleCopy = (call) => {
+      const dummy = document.createElement("input");
+
+      document.body.appendChild(dummy);
+      dummy.setAttribute('id', 'dummy');
+      document.getElementById('dummy').value = API_BASE + call.path;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
     };
 
     const calls = props.calls.map((call, idx) => {
@@ -17,7 +24,7 @@ const APIsection = (props) => {
           <p className="api__call-name">{ call.name }</p>
           <p className="api__call-info">{ call.info }</p>
           <Icon name="caret-right" className="api__call-detail-indicator" />
-          <div className="api__call-detail" onClick={ handleCopy }>
+          <div className="api__call-detail" onClick={ () => handleCopy(call) }>
             <p className="api__call-path">{ API_BASE + call.path }</p>
             <span className="api__call-copy">
               <Icon name="clipboard" className="far api__call-copy-icon" />
