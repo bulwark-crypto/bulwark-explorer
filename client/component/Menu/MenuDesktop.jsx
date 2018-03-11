@@ -56,11 +56,11 @@ export default class MenuDesktop extends Component {
             <img className="menu-desktop__icon" src="/img/Jobs-icon@2x.png" />
             <span className="menu-desktop__item-label">FAQ</span>
           </Link>
+          */}
           <Link className="menu-desktop__item" to="/api">
             <img className="menu-desktop__icon" src="/img/Support-icon@2x.png" />
             <span className="menu-desktop__item-label">API</span>
           </Link>
-          */}
         </div>
       </div>
     )

@@ -1,0 +1,97 @@
+
+.api {
+
+	$detail-background-color: #323d50;
+
+	display: flex;
+	font-size: .8em;
+	font-family: $fontSmall;
+	flex-direction: row;
+
+    margin: 0;
+	width: 100%;
+
+	&__documentation {
+		flex: 1;
+	}
+
+	&__documentation-title {
+		margin-top: -8px;
+	}
+
+	&__section-info {
+		margin: $margin-lg 0;
+	}
+
+	&__section-heading {
+		font-size: 1rem;
+		font-weight: $font-weight-bold;
+		line-height: 1;
+	}
+
+	&__section-sub-heading {
+		font-size: 1rem;
+	}
+
+	&__call {
+		margin-bottom: $margin-lg;
+		position: relative;
+	}
+
+	&__call-name {
+		font-weight: $font-weight-bold;
+	}
+
+	&__call-detail {
+		color: #ffffff;
+		cursor: pointer;
+		position: absolute;
+		right: -95%;
+		top: 0;
+		width: 80%;
+	}
+
+	&__call-detail-indicator {
+		display: none;
+		color: $white;
+		font-size: 1.25em;
+		position: absolute;
+		top: .13em;
+		right: -32px;
+	}
+
+	&__call:hover &__call-detail-indicator {
+		display: inline-block;
+	}
+
+	&__call-path {
+		display: inline-block;
+		font-family: monospace;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 95%;
+	}
+
+	&__call-copy {
+		display: none;
+		align-items: center;
+		position: absolute;
+		right: -2em;
+		top: 0;
+	}
+
+	&__call-detail:hover &__call-copy {
+ 		display: flex;
+	}
+
+	&__call-copy-icon {
+		margin-right: .25em;
+	}
+
+	&__detail {
+		background-color: $detail-background-color;
+		flex: 1;
+	}
+
+}
+

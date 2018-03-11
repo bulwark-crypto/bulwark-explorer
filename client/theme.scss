@@ -15,6 +15,10 @@ $orange: #f7981c;
 $white: #ffffff;
 $white-light: rgba(255,255,255,.5);
 
+$margin: 1rem;
+$margin-lg: 1.5rem;
+
+
 $menu-gradient-main: #295af5;
 $menu-gradient-secondary: #595ff5;
 $menu-width-open: 240px;
@@ -69,15 +73,19 @@ $pagination-disabled-border-color:  $gray;
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./sass/card";
 @import "./sass/error";
-@import "./sass/footer";
 @import "./sass/form";
 @import "./sass/hr";
-@import "./sass/menu-desktop";
-@import "./sass/menu-mobile";
 @import "./sass/search";
 @import "./sass/table";
 @import "./sass/utility";
+
+@import "./sass/footer";
+@import "./sass/menu-desktop";
+@import "./sass/menu-mobile";
 @import "./sass/watch-list";
+
+/* Containers */
+@import "./sass/api";
 
 /* Reset */
 html, body {
