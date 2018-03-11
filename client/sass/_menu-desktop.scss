@@ -15,25 +15,6 @@
     min-height: 550px;
 	padding: 1em 2em 2em;
 
-	.arrow_box {
-		position: relative;
-		background: #ffffff;
-	}
-	.arrow_box:after {
-		right: 100%;
-		top: 50%;
-		border: solid transparent;
-		content: " ";
-		height: 0;
-		width: 0;
-		position: absolute;
-		pointer-events: none;
-		border-color: rgba(255, 255, 255, 0);
-		border-right-color: #ffffff;
-		border-width: 32px;
-		margin-top: -32px;
-	}
-
 	@include media-breakpoint-down(sm) {
 		display: none;
 	}

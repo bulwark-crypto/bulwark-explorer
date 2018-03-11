@@ -2,13 +2,21 @@
 import Component from 'core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import { Link } from 'react-router-dom';
-import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 
 import Icon from '../Icon';
 import SearchBar from '../SearchBar';
 
 export default class MenuDesktop extends Component {
+  static propTypes = {
+    links: PropTypes.array
+  };
+
+  static defaultProps = {
+    links: []
+  };
+
   constructor(props) {
     super(props);
 
@@ -16,6 +24,19 @@ export default class MenuDesktop extends Component {
       show: false
     }
   }
+
+  getLinks = () => {
+    const { links } = this.props;
+
+    return links.map((i, idx) => {
+      return (
+        <Link className="menu-mobile__item" to={ i.href }>
+          <img className="menu-mobile__icon" src={ i.icon } />
+          <span className="menu-mobile__item-label" >{ i.label }</span>
+        </Link>
+      )
+    })
+  };
 
   handleToggle = () => this.setState({ show: !this.state.show });
 
@@ -29,38 +50,9 @@ export default class MenuDesktop extends Component {
           </a>
         </div>
         <div className="menu-mobile__item-wrapper" >
-          <Link className="menu-mobile__item" to="/">
-            <img className="menu-mobile__icon" src="/img/Home-icon@2x.png" />
-            <span className="menu-mobile__item-label" >Overview</span>
-          </Link>
-          <Link className="menu-mobile__item" to="/movement">
-            <img className="menu-mobile__icon" src="/img/Analytics-icon@2x.png" />
-            <span className="menu-mobile__item-label" >Movement</span>
-          </Link>
-          {/*
-          <Link className="menu-mobile__item" to="/top">
-            <img className="menu-mobile__icon" src="/img/Ratings-icon@2x.png" />
-            <span className="menu-mobile__item-label">Top 100</span>
-          </Link>
-          */}
-          <Link className="menu-mobile__item" to="/masternode">
-            <img className="menu-mobile__icon" src="/img/Customers-icon@2x.png" />
-            <span className="menu-mobile__item-label">Masternode</span>
-          </Link>
-          <Link className="menu-mobile__item" to="/coin">
-            <img className="menu-mobile__icon" src="/img/Market-icon@2x.png" />
-            <span className="menu-mobile__item-label" >Coin Info</span>
-          </Link>
-          {/*
-          <Link className="menu-mobile__item" to="/faq">
-            <img className="menu-mobile__icon" src="/img/Jobs-icon@2x.png" />
-            <span className="menu-mobile__item-label">FAQ</span>
-          </Link>
-          <Link className="menu-mobile__item" to="/api">
-            <img className="menu-mobile__icon" src="/img/Support-icon@2x.png" />
-            <span className="menu-mobile__item-label">API</span>
-          </Link>
-          */}
+
+          { this.getLinks() }
+
         </div>
       </div>
     )
