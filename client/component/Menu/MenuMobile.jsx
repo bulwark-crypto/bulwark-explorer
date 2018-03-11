@@ -30,25 +30,25 @@ export default class MenuDesktop extends Component {
         </div>
         <div className="menu-mobile__item-wrapper" >
           <Link className="menu-mobile__item" to="/">
-            <img className="menu-mobile__icon" src="/img/Home-icon@2x.png" />
+            <img className="menu-mobile__icon" src="/img/home.svg" />
             <span className="menu-mobile__item-label" >Overview</span>
           </Link>
           <Link className="menu-mobile__item" to="/movement">
-            <img className="menu-mobile__icon" src="/img/Analytics-icon@2x.png" />
+            <img className="menu-mobile__icon" src="/img/movement.svg" />
             <span className="menu-mobile__item-label" >Movement</span>
           </Link>
           {/*
           <Link className="menu-mobile__item" to="/top">
-            <img className="menu-mobile__icon" src="/img/Ratings-icon@2x.png" />
+            <img className="menu-mobile__icon" src="/img/top100.svg" />
             <span className="menu-mobile__item-label">Top 100</span>
           </Link>
           */}
           <Link className="menu-mobile__item" to="/masternode">
-            <img className="menu-mobile__icon" src="/img/Customers-icon@2x.png" />
+            <img className="menu-mobile__icon" src="/img/masternodes.svg" />
             <span className="menu-mobile__item-label">Masternode</span>
           </Link>
           <Link className="menu-mobile__item" to="/coin">
-            <img className="menu-mobile__icon" src="/img/Market-icon@2x.png" />
+            <img className="menu-mobile__icon" src="/img/coininfo.svg" />
             <span className="menu-mobile__item-label" >Coin Info</span>
           </Link>
           {/*
@@ -57,7 +57,7 @@ export default class MenuDesktop extends Component {
             <span className="menu-mobile__item-label">FAQ</span>
           </Link>
           <Link className="menu-mobile__item" to="/api">
-            <img className="menu-mobile__icon" src="/img/Support-icon@2x.png" />
+            <img className="menu-mobile__icon" src="/img/api.svg" />
             <span className="menu-mobile__item-label">API</span>
           </Link>
           */}

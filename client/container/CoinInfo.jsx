@@ -22,7 +22,7 @@ class CoinInfo extends Component {
         <div className="row">
           <div className="col-md-12 col-lg-8">
             <div>
-              <img className="img-fluid" src="/img/Badge-Full-Color.png" />
+              <img className="img-fluid" src="/img/largelogo.svg" />
             </div>
             <div className="row">
               <div className="col-sm-12 col-md-4">

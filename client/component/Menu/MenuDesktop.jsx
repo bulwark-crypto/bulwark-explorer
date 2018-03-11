@@ -23,32 +23,32 @@ export default class MenuDesktop extends Component {
       <div className={ `menu-desktop ${ this.state.show ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
         <div className="menu-desktop__content-wrapper">
           <div className="menu-desktop__header">
-            <img src="/img/Badge-White.png" className="menu-desktop__logo" />
+            <img src="/img/whitelogo.svg" className="menu-desktop__logo" />
             <a onClick={ this.handleToggle } >
               <Icon name="bars" className="menu-desktop__toggle" onClick={ this.handleToggle } />
             </a>
           </div>
           <p className="menu-desktop__title">MENU</p>
           <Link className="menu-desktop__item" to="/">
-            <img className="menu-desktop__icon" src="/img/Home-icon@2x.png" />
+            <img className="menu-desktop__icon" src="/img/home_white.svg" />
             <span className="menu-desktop__item-label" >Overview</span>
           </Link>
           <Link className="menu-desktop__item" to="/movement">
-            <img className="menu-desktop__icon" src="/img/Analytics-icon@2x.png" />
+            <img className="menu-desktop__icon" src="/img/movement_white.svg" />
             <span className="menu-desktop__item-label" >Movement</span>
           </Link>
           {/*
           <Link className="menu-desktop__item" to="/top">
-            <img className="menu-desktop__icon" src="/img/Ratings-icon@2x.png" />
+            <img className="menu-desktop__icon" src="/img/top100_white.svg" />
             <span className="menu-desktop__item-label">Top 100</span>
           </Link>
           */}
           <Link className="menu-desktop__item" to="/masternode">
-            <img className="menu-desktop__icon" src="/img/Customers-icon@2x.png" />
+            <img className="menu-desktop__icon" src="/img/masternodes_white.svg" />
             <span className="menu-desktop__item-label">Masternode</span>
           </Link>
           <Link className="menu-desktop__item" to="/coin">
-            <img className="menu-desktop__icon" src="/img/Market-icon@2x.png" />
+            <img className="menu-desktop__icon" src="/img/coininfo_white.svg" />
             <span className="menu-desktop__item-label" >Coin Info</span>
           </Link>
           {/*
@@ -58,7 +58,7 @@ export default class MenuDesktop extends Component {
           </Link>
           */}
           <Link className="menu-desktop__item" to="/api">
-            <img className="menu-desktop__icon" src="/img/Support-icon@2x.png" />
+            <img className="menu-desktop__icon" src="/img/api_white.svg" />
             <span className="menu-desktop__item-label">API</span>
           </Link>
         </div>
