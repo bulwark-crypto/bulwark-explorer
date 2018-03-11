@@ -25,7 +25,7 @@ class Footer extends Component {
       <div className="footer">
         <div className="footer__wrapper">
           <div className="footer__data-wrapper">
-            <img className="footer__logo" src="/img/Layer 1945.png" />
+            <img className="footer__logo" src="/img/footerlogo.svg" />
             <span className="footer__data-block footer__legal">
               <p>Copyright &copy; 2018 Bulwark Cryptocurrency</p>
               <p>Site design / Logo &copy; 2018 Bulwark Cryptocurrency</p>

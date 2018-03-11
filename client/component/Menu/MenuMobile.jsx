@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import Icon from '../Icon';
 import SearchBar from '../SearchBar';
 
-export default class MenuDesktop extends Component {
+export default class MenuMobile extends Component {
   static propTypes = {
     links: PropTypes.array
   };
@@ -21,16 +21,16 @@ export default class MenuDesktop extends Component {
     super(props);
 
     this.state = {
-      show: false
+      isOpen: false
     }
   }
 
   getLinks = () => {
-    const { links } = this.props;
+    const { props } = this;
 
-    return links.map((i, idx) => {
+    return props.links.map((i, idx) => {
       return (
-        <Link className="menu-mobile__item" to={ i.href }>
+        <Link key={ idx } className="menu-mobile__item" to={ i.href }>
           <img className="menu-mobile__icon" src={ i.icon } />
           <span className="menu-mobile__item-label" >{ i.label }</span>
         </Link>
@@ -38,11 +38,11 @@ export default class MenuDesktop extends Component {
     })
   };
 
-  handleToggle = () => this.setState({ show: !this.state.show });
+  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
 
   render() {
     return (
-      <div className={ `menu-mobile ${ this.state.show ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
+      <div className={ `menu-mobile ${ this.state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
         <div className="menu-mobile__search-wrapper">
           <SearchBar className="search--mobile mr-3" placeholder="Search Blockchain" />
           <a onClick={ this.handleToggle } >
