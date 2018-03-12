@@ -51,6 +51,12 @@ class Footer extends Component {
               <a href="https://bitcointalk.org/index.php?topic=2499481.0" target="_blank">
                 <Icon name="bitcoin" className="fab footer__social-media-icon" />
               </a>
+              <a href="https://discord.gg/a7vhegP" target="_blank">
+                <Icon name="discord" className="fab footer__social-media-icon" />
+              </a>
+              <a href="https://t.me/bulwarkcrypto" target="_blank">
+                <Icon name="telegram" className="fab footer__social-media-icon" />
+              </a>
               <a href="https://www.reddit.com/r/BulwarkCoin/" target="_blank">
                 <Icon name="reddit" className="fab footer__social-media-icon" />
               </a>

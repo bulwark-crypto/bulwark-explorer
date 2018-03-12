@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "7f9c7d3430e767383208"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e1565fde460c27b96a1a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -3085,6 +3085,16 @@ var Footer = function (_Component) {
               ),
               _react2.default.createElement(
                 'a',
+                { href: 'https://discord.gg/a7vhegP', target: '_blank' },
+                _react2.default.createElement(_Icon2.default, { name: 'discord', className: 'fab footer__social-media-icon' })
+              ),
+              _react2.default.createElement(
+                'a',
+                { href: 'https://t.me/bulwarkcrypto', target: '_blank' },
+                _react2.default.createElement(_Icon2.default, { name: 'telegram', className: 'fab footer__social-media-icon' })
+              ),
+              _react2.default.createElement(
+                'a',
                 { href: 'https://www.reddit.com/r/BulwarkCoin/', target: '_blank' },
                 _react2.default.createElement(_Icon2.default, { name: 'reddit', className: 'fab footer__social-media-icon' })
               ),
@@ -5563,7 +5573,7 @@ var Overview = function (_Component) {
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_HorizontalRule2.default, { title: 'Latest Transactions' }),
+        _react2.default.createElement(_HorizontalRule2.default, { title: 'Latest Blocks' }),
         _react2.default.createElement(_Table2.default, {
           cols: this.state.cols,
           data: txs })
