@@ -54,7 +54,7 @@ class Overview extends Component {
 
     return (
       <div>
-        <HorizontalRule title="Latest Transactions" />
+        <HorizontalRule title="Latest Blocks" />
         <Table
           cols={ this.state.cols }
           data={ txs } />
