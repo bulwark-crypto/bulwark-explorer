@@ -30,6 +30,8 @@ class Masternode extends Component {
         { key: 'ver', title: 'Version' },
         { key: 'status', title: 'Status' },
       ],
+      error: null,
+      loading: true,
       mns: [] ,
       pages: 0,
       page: 1,
@@ -49,22 +51,25 @@ class Masternode extends Component {
   };
 
   getMNs = () => {
-    if (this.debounce) {
-      clearTimeout(this.debounce);
-    }
+    this.setState({ loading: true }, () => {
+      if (this.debounce) {
+        clearTimeout(this.debounce);
+      }
 
-    this.debounce = setTimeout(() => {
-      this.props
-        .getMNs({
-          limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
-        })
-        .then(({ mns, pages }) => {
-          if (this.debounce) {
-            this.setState({ mns, pages });
-          }
-        });
-    }, 800);
+      this.debounce = setTimeout(() => {
+        this.props
+          .getMNs({
+            limit: this.state.size,
+            skip: (this.state.page - 1) * this.state.size
+          })
+          .then(({ mns, pages }) => {
+            if (this.debounce) {
+              this.setState({ mns, pages, loading: false });
+            }
+          })
+          .catch(error => this.setState({ error, loading: false }));
+      }, 800);
+    });
   };
 
   handlePage = page => this.setState({ page }, this.getMNs);
@@ -72,6 +77,12 @@ class Masternode extends Component {
   handleSize = size => this.setState({ size, page: 1 }, this.getMNs);
 
   render() {
+    if (!!this.state.error) {
+      return this.renderError(this.state.error);
+    } else if (this.state.loading) {
+      return this.renderLoading();
+    }
+
     const select = (
       <select
         onChange={ ev => this.handleSize(ev.target.value) }

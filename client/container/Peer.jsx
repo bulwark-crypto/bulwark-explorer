@@ -22,15 +22,25 @@ class Peer extends Component {
         { key: 'subver', title: 'Sub-version' },
         { key: 'country', title: 'Country' },
       ],
+      loading: true,
       peers: []
     };
   };
 
   componentDidMount() {
-    this.props.getPeers().then(peers => this.setState({ peers }));
+    this.props
+      .getPeers()
+      .then(peers => this.setState({ peers, loading: false }))
+      .catch(error => this.setState({ error, loading: false }));
   };
 
   render() {
+    if (!!this.state.error) {
+      return this.renderError(this.state.error);
+    } else if (this.state.loading) {
+      return this.renderLoading();
+    }
+
     return (
       <div>
         <HorizontalRule title="Connections" />

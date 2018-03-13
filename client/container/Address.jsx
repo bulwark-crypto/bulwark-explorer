@@ -21,6 +21,7 @@ class Address extends Component {
     this.state = {
       address: '',
       error: null,
+      loading: true,
       pages: 0,
       page: 1,
       size: 10,
@@ -40,15 +41,19 @@ class Address extends Component {
   };
 
   getAddress = () => {
-    const address = this.props.match.params.hash;
-    this.props
-      .getAddress({
-        address,
-        limit: this.state.size,
-        skip: (this.state.page - 1) * this.state.size
-      })
-      .then(({ pages, txs }) => this.setState({ address, pages, txs }))
-      .catch(error => this.setState({ error }));
+    this.setState({ loading: true }, () => {
+      const address = this.props.match.params.hash;
+      this.props
+        .getAddress({
+          address,
+          limit: this.state.size,
+          skip: (this.state.page - 1) * this.state.size
+        })
+        .then(({ pages, txs }) => {
+          this.setState({ address, pages, txs, loading: false });
+        })
+        .catch(error => this.setState({ error, loading: false }));
+    });
   };
 
   handlePage = page => this.setState({ page }, this.getAddress);
@@ -58,6 +63,8 @@ class Address extends Component {
   render() {
     if (!!this.state.error) {
       return this.renderError(this.state.error);
+    } else if (this.state.loading) {
+      return this.renderLoading();
     }
 
     const select = (

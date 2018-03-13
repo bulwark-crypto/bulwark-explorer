@@ -23,6 +23,7 @@ class TX extends Component {
     super(props);
     this.state = {
       error: null,
+      loading: true,
       tx: {
         blockHeight: 0,
         vin: [],
@@ -43,15 +44,19 @@ class TX extends Component {
   };
 
   getTX() {
-    this.props
-      .getTX(this.props.match.params.hash)
-      .then(tx => this.setState({ tx }))
-      .catch(error => this.setState({ error }));
+    this.setState({ loading: true }, () => {
+      this.props
+        .getTX(this.props.match.params.hash)
+        .then(tx => this.setState({ tx, loading: false }))
+        .catch(error => this.setState({ error, loading: false }));
+    });
   };
 
   render() {
     if (!!this.state.error) {
       return this.renderError(this.state.error);
+    } else if (this.state.loading) {
+      return this.renderLoading();
     }
 
     return (
