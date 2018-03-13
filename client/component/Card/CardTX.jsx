@@ -1,5 +1,6 @@
 
 import Component from '../../core/Component';
+import { dateFormat } from '../../../lib/date';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import numeral from 'numeral';
@@ -45,7 +46,7 @@ export default class CardTX extends Component {
         <div className="card__row">
           <span className="card__label">Timestamp:</span>
           <span className="card__result">
-            { moment(this.props.tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A') }
+            { dateFormat(this.props.tx.createdAt) }
           </span>
         </div>
       </div>

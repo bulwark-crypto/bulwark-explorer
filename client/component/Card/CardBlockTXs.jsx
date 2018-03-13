@@ -1,5 +1,6 @@
 
 import Component from '../../core/Component';
+import { dateFormat } from '../../../lib/date';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -33,7 +34,7 @@ export default class CardBlockTXs extends Component {
         cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
-          createdAt: moment(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
+          createdAt: dateFormat(tx.createdAt),
           recipients: tx.vout.length,
           txId: (
             <Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>

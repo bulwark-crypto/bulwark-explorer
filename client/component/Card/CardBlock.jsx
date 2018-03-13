@@ -1,6 +1,6 @@
 
 import Component from '../../core/Component';
-import moment from 'moment';
+import { dateFormat } from '../../../lib/date';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -49,7 +49,7 @@ export default class CardBlock extends Component {
         <div className="card__row">
           <span className="card__label">Timestamp:</span>
           <span className="card__result">
-            { moment(this.props.block.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A') }
+            { dateFormat(this.props.block.createdAt) }
           </span>
         </div>
       </div>

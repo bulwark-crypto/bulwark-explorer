@@ -2,6 +2,7 @@
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
+import { dateFormat } from '../../lib/date';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -102,7 +103,7 @@ class Masternode extends Component {
               addr: (
                 <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
               ),
-              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD hh:mm A'),
+              lastPaidAt: isEpoch ? 'N/A' : dateFormat(mn.lastPaidAt),
               txHash: (
                 <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
               )
