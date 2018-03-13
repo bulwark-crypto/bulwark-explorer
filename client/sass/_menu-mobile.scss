@@ -54,7 +54,7 @@
 		width: 95%;
 
 		&:hover {
-			color: $white;
+			color: $blue;
 			text-decoration: none;
 		}
 
@@ -73,7 +73,6 @@
 	}
 
 	&--open &__item-wrapper {
-		margin-top: 1em;
 		/*height: 100%;*/
 		display: block;
 	}
