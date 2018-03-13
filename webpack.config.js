@@ -62,7 +62,10 @@ module.exports = {
   plugins: [
     htmlPlugin,
 		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NamedModulesPlugin()
+    new webpack.NamedModulesPlugin(),
+    new webpack.ProvidePlugin({
+      Promise: 'bluebird'
+    })
   ],
   resolve: {
     extensions: ['.js', '.jsx'],

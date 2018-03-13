@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a179f35a90eda1b18355"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "448f89244fdf3e63c7c5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -928,7 +928,7 @@ self.addEventListener('message', function (ev) {
 /***/ "./node_modules/bluebird/js/browser/bluebird.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/* @preserve
+/* WEBPACK VAR INJECTION */(function(process, Promise, global, setImmediate) {/* @preserve
  * The MIT License (MIT)
  * 
  * Copyright (c) 2013-2017 Petka Antonov
@@ -6551,7 +6551,7 @@ module.exports = ret;
 
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js"), __webpack_require__("./node_modules/webpack/buildin/global.js"), __webpack_require__("./node_modules/timers-browserify/main.js").setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js"), __webpack_require__("./node_modules/bluebird/js/browser/bluebird.js"), __webpack_require__("./node_modules/webpack/buildin/global.js"), __webpack_require__("./node_modules/timers-browserify/main.js").setImmediate))
 
 /***/ }),
 
@@ -7050,9 +7050,9 @@ module.exports = g;
 /***/ }),
 
 /***/ "./node_modules/whatwg-fetch/fetch.js":
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-(function(self) {
+/* WEBPACK VAR INJECTION */(function(Promise) {(function(self) {
   'use strict';
 
   if (self.fetch) {
@@ -7514,6 +7514,7 @@ module.exports = g;
   self.fetch.polyfill = true
 })(typeof self !== 'undefined' ? self : this);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/bluebird/js/browser/bluebird.js")))
 
 /***/ })
 
