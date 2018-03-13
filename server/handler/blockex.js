@@ -84,7 +84,7 @@ const getCoin = (req, res) => {
 const getCoinHistory = (req, res) => {
   Coin.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
+    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 12) // 12x5=60 mins
     .sort({ createdAt: -1 })
     .then((docs) => {
       res.json(docs);
