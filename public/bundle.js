@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "924985e75061f375fdb5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f10418a2e31f770fa539"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -987,28 +987,99 @@ Object.defineProperty(exports, "__esModule", {
 var APIdata = [{
   heading: 'API Calls',
   subHeading: 'Return data from coind',
-  calls: [{
+  calls: [
+  // {
+  //   name: 'getAddress [hash]',
+  //   info: 'Returns information for given address.',
+  //   path: '/api/address/bFY9cyZqZTYHGfduXo7CVNTMiCDeJ1q4gA'
+  // },
+  { name: 'getBlock [hash]',
+    info: 'Returns information for the given block.',
+    path: '/api/block/00000000000072a98f7d8385809a1f71af983d22efce85e63ec3d75f04412823'
+  }, {
+    name: 'getCoin',
+    info: 'Returns coin information.',
+    path: '/api/coin/'
+  }, { name: 'getCoinHistory',
+    info: 'Returns the coin history.',
+    path: '/api/coin/history'
+  }, {
+    name: 'getMasternodes',
+    info: 'Returns masternode information.',
+    path: '/api/masternode'
+  }, { name: 'getPeer',
+    info: 'Returns peer information.',
+    path: '/api/peer'
+  }, {
+    name: 'getPeerHistory',
+    info: 'Returns peer history.',
+    path: '/api/peer/history'
+  },
+  // { name: 'getTop100',
+  //   info: 'Returns top 100',
+  //   path: '/api/top100'
+  // },
+  {
+    name: 'getTXs',
+    info: 'Returns transaction information.',
+    path: '/api/tx'
+  }, { name: 'getTXLatest',
+    info: 'Returns latest transaction information.',
+    path: '/api/tx/latest'
+  }, {
+    name: 'getTX',
+    info: 'Returns information for the given transaction.',
+    path: '/api/tx/790c2bdeb46189f180d4a83d7b16aa75a75da1b91d117fea7a7ae818239f0137'
+  }, {
     name: 'getDifficulty',
     info: 'Returns the current difficulty.',
-    path: '/getdifficulty'
+    path: '/api/getdifficulty'
   }, { name: 'getconnectioncount',
     info: 'Returns the number of connections the block explorer has to other nodes.',
-    path: '/getconnectioncount'
+    path: '/api/getconnectioncount'
   }, { name: 'getblockcount',
     info: 'Returns the current block index.',
-    path: '/getblockcount'
-  }, { name: 'getblockhash [index]',
-    info: 'Returns the hash of the block at index.  (0 is the genesis block)',
-    path: '/getblockhash'
+    path: '/api/getblockcount'
   }, { name: 'getblock [hash]',
     info: 'Returns the information about the block with the given hash.',
-    path: '/getblock'
-  }, { name: 'getrawtransaction [txid][decrypt]',
-    info: 'Returns raw transaction representation for given transaction id.  Decrypt can be set to 0(false) or 1(true).',
-    path: '/getrawtransaction'
+    path: '/api/getblock?hash=000000000002a60bd9a1b8a065a53bfea15a1a59aa72f96836c2c448bef05156'
   }, { name: 'getnetworkhashps',
     info: 'Returns the current network hashrate. (hash/s)',
-    path: '/getnetworkhashps'
+    path: '/api/getnetworkhashps'
+  }]
+}, {
+  heading: 'Extended API',
+  subHeading: 'Return data from local indexes',
+  calls: [{
+    name: 'getmoneysupply',
+    info: 'Returns the current money supply.',
+    path: '/ext/getmoneysupply'
+  },
+  // { name: 'getdistribution',
+  //   info: 'Returns the number of connections the block explorer has to other nodes.',
+  //   path: '/ext/getdistribution'
+  // },
+  // { name: 'getaddress',
+  //   info: 'Returns address information.',
+  //   path: '/ext/getaddress'
+  // },
+  { name: 'getbalance',
+    info: 'Returns the current balance.',
+    path: '/ext/getbalance'
+  }, { name: 'getlasttxs',
+    info: 'Returns the last transactions.',
+    path: '/ext/getlasttxs'
+  }]
+}, {
+  heading: 'Linking (GET)',
+  subHeading: 'Linking to the block explorer',
+  calls: [{
+    name: 'transaction (tx/[hash])',
+    info: 'Returns transaction information',
+    path: '/#/tx/b1725bcb70b62faa0b273e5385b0225c2ef589bd638cfa582b6cb34f9430d0b9'
+  }, { name: 'block (block/[hash]',
+    info: 'Returns block information.',
+    path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
   }]
 }];
 
@@ -1221,9 +1292,7 @@ var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
 
-var _moment = __webpack_require__("./node_modules/moment/moment.js");
-
-var _moment2 = _interopRequireDefault(_moment);
+var _date = __webpack_require__("./lib/date.js");
 
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
@@ -1365,7 +1434,7 @@ var CardBlock = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: 'card__result' },
-            (0, _moment2.default)(this.props.block.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A')
+            (0, _date.dateFormat)(this.props.block.createdAt)
           )
         )
       );
@@ -1404,6 +1473,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
+
+var _date = __webpack_require__("./lib/date.js");
 
 var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
 
@@ -1452,7 +1523,7 @@ var CardBlockTXs = function (_Component) {
         cols: this.state.cols,
         data: this.props.txs.map(function (tx) {
           return _extends({}, tx, {
-            createdAt: (0, _moment2.default)(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
+            createdAt: (0, _date.dateFormat)(tx.createdAt),
             recipients: tx.vout.length,
             txId: _react2.default.createElement(
               _reactRouterDom.Link,
@@ -2435,6 +2506,8 @@ var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
 
+var _date = __webpack_require__("./lib/date.js");
+
 var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
 
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
@@ -2559,7 +2632,7 @@ var CardTX = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: 'card__result' },
-            (0, _moment2.default)(this.props.tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A')
+            (0, _date.dateFormat)(this.props.tx.createdAt)
           )
         )
       );
@@ -2786,6 +2859,8 @@ var _Component2 = __webpack_require__("./client/core/Component.jsx");
 
 var _Component3 = _interopRequireDefault(_Component2);
 
+var _date = __webpack_require__("./lib/date.js");
+
 var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
 
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
@@ -2849,7 +2924,7 @@ var CardTXs = function (_Component) {
               { to: '/block/' + tx.blockHeight },
               tx.blockHeight
             ),
-            createdAt: (0, _moment2.default)(tx.createdAt).utc().format('YYYY-MM-DD hh:mm:ss A'),
+            createdAt: (0, _date.dateFormat)(tx.createdAt),
             txId: _react2.default.createElement(
               _reactRouterDom.Link,
               { to: '/tx/' + tx.txId },
@@ -3824,7 +3899,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 var MenuData = [{ label: 'Overview', icon: '/img/home.svg', href: '/' }, { label: 'Movement', icon: '/img/movement.svg', href: '/movement' },
 // {label: 'Top 100', icon: '/img/top100.svg', href: '/top'}
-{ label: 'Masternode', icon: '/img/masternodes.svg', href: '/masternode' }, { label: 'Coin Info', icon: '/img/coininfo.svg', href: '/coin' }];
+{ label: 'Masternode', icon: '/img/masternodes.svg', href: '/masternode' }, { label: 'Coin Info', icon: '/img/coininfo.svg', href: '/coin' }, { label: 'Support', icon: '/img/api.svg', href: '/api' }];
 
 exports.default = MenuData;
 
@@ -4017,6 +4092,8 @@ var _config = __webpack_require__("./config.js");
 
 var _config2 = _interopRequireDefault(_config);
 
+var _blockchain = __webpack_require__("./lib/blockchain.js");
+
 var _propTypes = __webpack_require__("./node_modules/prop-types/index.js");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -4062,10 +4139,10 @@ var SearchBar = function (_Component) {
 
         if (!term) {
           return;
-        } else if (!isNaN(term) || term.substr(0, 4) === '0000') {
+        } else if ((0, _blockchain.isBlock)(term)) {
           _this.props.history.push('/block/' + term);
-        } else if (term.substr(0, 1) === _config2.default.addressPrefix) {
-          //this.props.history.push(`/address/${ term }`);
+        } else if ((0, _blockchain.isAddress)(term)) {
+          _this.props.history.push('/address/' + term);
         } else {
           _this.props.history.push('/tx/' + term);
         }
@@ -4419,7 +4496,7 @@ var COIN = exports.COIN = 'COIN';
 var COINS = exports.COINS = 'COINS';
 var ERROR = exports.ERROR = 'ERROR';
 var TXS = exports.TXS = 'TXS';
-var API_BASE = exports.API_BASE = '127.0.0.1/api';
+var API_BASE = exports.API_BASE = location.origin;
 
 exports.default = {
   COIN: COIN,
@@ -5103,6 +5180,8 @@ var _Component3 = _interopRequireDefault(_Component2);
 
 var _reactRedux = __webpack_require__("./node_modules/react-redux/es/index.js");
 
+var _date = __webpack_require__("./lib/date.js");
+
 var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
 
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
@@ -5253,7 +5332,7 @@ var Masternode = function (_Component) {
                 { to: '/tx/' + mn.txHash },
                 mn.txHash
               ),
-              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.format('YYYY-MM-DD hh:mm A'),
+              lastPaidAt: isEpoch ? 'N/A' : (0, _date.dateFormat)(mn.lastPaidAt),
               txHash: _react2.default.createElement(
                 _reactRouterDom.Link,
                 { to: '/tx/' + mn.txHash },
@@ -5490,6 +5569,8 @@ var _Component3 = _interopRequireDefault(_Component2);
 
 var _reactRedux = __webpack_require__("./node_modules/react-redux/es/index.js");
 
+var _date = __webpack_require__("./lib/date.js");
+
 var _reactRouterDom = __webpack_require__("./node_modules/react-router-dom/es/index.js");
 
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
@@ -5559,7 +5640,7 @@ var Overview = function (_Component) {
             { to: '/block/' + tx.blockHeight },
             tx.blockHeight
           ),
-          createdAt: (0, _moment2.default)(tx.createdAt).utc().format('MM/DD/YYYY hh:mm A'),
+          createdAt: (0, _date.dateFormat)(tx.createdAt),
           recipients: tx.vout.length,
           txId: _react2.default.createElement(
             _reactRouterDom.Link,
@@ -6408,7 +6489,6 @@ if(true) {
  * Global configuration object.
  */
 var config = {
-  'addressPrefix': 'b',
   'api': {
     'host': 'http://explorer.bulwarkcrypto.com',
     'port': '80',
@@ -6765,6 +6845,18 @@ var getROIYear = exports.getROIYear = function getROIYear(subsidy) {
     return (blocksPerYear * subsidy - mncoins) / mncoins;
 };
 
+var isAddress = exports.isAddress = function isAddress(s) {
+    return typeof s === 'string' && s.length === 34;
+};
+
+var isBlock = exports.isBlock = function isBlock(s) {
+    return !isNaN(s) || typeof s === 'string' && s.substr(0, 4) === '0000';
+};
+
+var isTX = exports.isTX = function isTX(s) {
+    return typeof s === 'string';
+};
+
 exports.default = {
     avgBlockTime: avgBlockTime,
     blocksPerDay: blocksPerDay,
@@ -6777,7 +6869,39 @@ exports.default = {
     getROIDay: getROIDay,
     getROIMonth: getROIMonth,
     getROIWeek: getROIWeek,
-    getROIYear: getROIYear
+    getROIYear: getROIYear,
+    isAddress: isAddress,
+    isBlock: isBlock,
+    isTX: isTX
+};
+
+/***/ }),
+
+/***/ "./lib/date.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Date
+ *
+ * Simple wrapper methods around moment.js.
+ */
+var moment = __webpack_require__("./node_modules/moment/moment.js");
+
+var dateFormat = function dateFormat(date) {
+  var fmt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'YYYY-MM-DD hh:mm:ss A';
+
+  if (!date) {
+    date = new Date();
+  }
+
+  return moment(date).utc().format(fmt) + ' UTC';
+};
+
+module.exports = {
+  dateFormat: dateFormat
 };
 
 /***/ }),
