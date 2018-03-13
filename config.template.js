@@ -3,7 +3,6 @@
  * Global configuration object.
  */
 const config = {
-  'addressPrefix': 'b',
   'api': {
     'host': 'http://explorer.bulwarkcrypto.com',
     'port': '80',
