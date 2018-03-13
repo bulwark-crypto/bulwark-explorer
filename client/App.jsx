@@ -43,8 +43,8 @@ class App extends Component {
 
   componentDidMount() {
     promise.all([
-        this.props.getCoins({ limit: this.state.limit }),
-        this.props.getTXs({ limit: this.state.limit })
+        this.props.getCoins({ limit: 12 }),
+        this.props.getTXs({ limit: 10 })
       ])
       .then(() => {
         this.getCoins();
