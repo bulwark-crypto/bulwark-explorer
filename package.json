@@ -15,6 +15,7 @@
     "cron:peer": "node ./cron/peer.js >> ./tmp/peer.log",
     "cron:rich": "node ./cron/rich.js >> ./tmp/rich.log",
     "start:api": "node ./server/index.js",
+    "start:maint": "node ./server/maintenance.js",
     "start:web": "webpack-dev-server --progress --colors",
     "test:api": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/api",
     "test:file": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/file",
