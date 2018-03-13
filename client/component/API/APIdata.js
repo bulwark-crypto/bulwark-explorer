@@ -3,11 +3,11 @@ const APIdata = [
     heading: 'API Calls',
     subHeading: 'Return data from coind',
     calls: [
-        // {
-        //   name: 'getAddress [hash]',
-        //   info: 'Returns information for given address.',
-        //   path: '/api/address/bFY9cyZqZTYHGfduXo7CVNTMiCDeJ1q4gA'
-        // },
+        {
+          name: 'getAddress [hash]',
+          info: 'Returns information for given address.',
+          path: '/api/address/bFY9cyZqZTYHGfduXo7CVNTMiCDeJ1q4gA'
+        },
         { name: 'getBlock [hash] [height]',
           info: 'Returns block information for the given hash or height.',
           path: '/api/block/00000000000072a98f7d8385809a1f71af983d22efce85e63ec3d75f04412823'
@@ -25,6 +25,11 @@ const APIdata = [
           name: 'getMasternodes',
           info: 'Returns masternode information.',
           path: '/api/masternode'
+        },
+        {
+          name: 'getMasternodeCount',
+          info: 'Returns masternodes enabled and total counts.',
+          path: '/api/masternodecount'
         },
         { name: 'getPeer',
           info: 'Returns peer information.',
@@ -49,7 +54,7 @@ const APIdata = [
           path: '/api/tx/latest'
         },
         {
-          name: 'getTX',
+          name: 'getTX [hash]',
           info: 'Returns information for the given transaction.',
           path: '/api/tx/790c2bdeb46189f180d4a83d7b16aa75a75da1b91d117fea7a7ae818239f0137'
         },
@@ -58,19 +63,15 @@ const APIdata = [
           info: 'Returns the current difficulty.',
           path: '/api/getdifficulty'
         },
-        { name: 'getconnectioncount',
+        { name: 'getConnectionCount',
           info: 'Returns the number of connections the block explorer has to other nodes.',
           path: '/api/getconnectioncount'
         },
-        { name: 'getblockcount',
+        { name: 'getBlockCount',
           info: 'Returns the current block index.',
           path: '/api/getblockcount'
         },
-        { name: 'getblock [hash]',
-          info: 'Returns the information about the block with the given hash.',
-          path: '/api/getblock?hash=000000000002a60bd9a1b8a065a53bfea15a1a59aa72f96836c2c448bef05156'
-        },
-        { name: 'getnetworkhashps',
+        { name: 'getNetworkHashPS',
           info: 'Returns the current network hashrate. (hash/s)',
           path: '/api/getnetworkhashps'
         },
@@ -93,10 +94,12 @@ const APIdata = [
         //   info: 'Returns address information.',
         //   path: '/ext/getaddress'
         // },
+        /*
         { name: 'getbalance',
           info: 'Returns the current balance.',
           path: '/ext/getbalance'
         },
+        */
         { name: 'getlasttxs',
           info: 'Returns the last transactions.',
           path: '/ext/getlasttxs'
@@ -112,14 +115,14 @@ const APIdata = [
           info: 'Returns transaction information',
           path: '/#/tx/b1725bcb70b62faa0b273e5385b0225c2ef589bd638cfa582b6cb34f9430d0b9'
         },
-        { name: 'block (/block/[hash]',
+        { name: 'block (/block/[hash|height]',
           info: 'Returns block information.',
           path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
         },
-        // { name: 'address (address/[hash]',
-        //   info: 'Returns address information.',
-        //   path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
-        // },
+        { name: 'address (/address/[hash]',
+          info: 'Returns address information.',
+          path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
+        },
         // { name: 'qr (qr/[hash]',
         //   info: 'Returns qr code information.',
         //   path: '/#/qr/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'

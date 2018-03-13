@@ -10,6 +10,7 @@ router.get('/block/:hash', blockex.getBlock);
 router.get('/coin', blockex.getCoin);
 router.get('/coin/history', blockex.getCoinHistory);
 router.get('/masternode', blockex.getMasternodes);
+router.get('/masternodecount', blockex.getMasternodeCount);
 router.get('/peer', blockex.getPeer);
 router.get('/peer/history', blockex.getPeerHistory);
 router.get('/top100', blockex.getTop100);

@@ -11,7 +11,9 @@ import Pagination from '../component/Pagination';
 
 class Movement extends Component {
   static propTypes = {
-    getTXs: PropTypes.func.isRequired
+    getTXs: PropTypes.func.isRequired,
+    setTXs: PropTypes.func.isRequired,
+    tx: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -49,7 +51,12 @@ class Movement extends Component {
         })
         .then(({ pages, txs }) => {
           if (this.debounce) {
-            this.setState({ pages, txs });
+            this.setState({ pages, txs }, () => {
+              if (txs.length
+                && this.props.tx.blockHeight < txs[0].blockHeight) {
+                this.props.setTXs(txs);
+              }
+            });
           }
         });
     }, 800);
@@ -88,7 +95,12 @@ class Movement extends Component {
 }
 
 const mapDispatch = dispatch => ({
-  getTXs: query => Actions.getTXs(null, query)
+  getTXs: query => Actions.getTXs(null, query),
+  setTXs: txs => Actions.setTXs(dispatch, txs)
 });
 
-export default connect(null, mapDispatch)(Movement);
+const mapState = state => ({
+  tx: state.txs.length ? state.txs[0] : {}
+});
+
+export default connect(mapState, mapDispatch)(Movement);

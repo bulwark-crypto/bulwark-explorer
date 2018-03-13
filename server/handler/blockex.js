@@ -115,6 +115,22 @@ const getMasternodes = async (req, res) => {
 };
 
 /**
+ * Get list of masternodes from the server.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getMasternodeCount = async (req, res) => {
+  try {
+    const coin = await Coin.findOne().sort({ createdAt: -1 });
+
+    res.json({ enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Get the list of peers from the database.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -235,6 +251,7 @@ module.exports =  {
   getCoin,
   getCoinHistory,
   getMasternodes,
+  getMasternodeCount,
   getPeer,
   getPeerHistory,
   getTop100,

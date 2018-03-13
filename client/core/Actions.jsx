@@ -139,6 +139,10 @@ export const getTXLatest = (dispatch, query) => {
   });
 };
 
+export const setTXs = (dispatch, txs) => {
+  dispatch({ payload: txs, type: TXS });
+};
+
 export default {
   getAddress,
   getBlock,
@@ -148,5 +152,6 @@ export default {
   getTop100,
   getTX,
   getTXs,
-  getTXLatest
+  getTXLatest,
+  setTXs
 };
