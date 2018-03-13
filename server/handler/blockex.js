@@ -18,12 +18,8 @@ const TX = require('../../model/tx');
  */
 const getAddress = async (req, res) => {
   try {
-    let txs = await TX
+    const txs = await TX
       .find({ 'vout.address': req.params.hash })
-      .sort({ blockHeight: -1 });
-
-    txs = await TX
-      .find({ 'vin.txid': { $in: txs.map(tx => tx.txid) } })
       .sort({ blockHeight: -1 });
 
     res.json(txs);
