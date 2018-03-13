@@ -18,21 +18,15 @@ const TX = require('../../model/tx');
  */
 const getAddress = async (req, res) => {
   try {
-    const txs = await TX.find({ 'vout.address': req.params.hash }).sort({ blockHeight: -1 });
-    const utxo = [];
+    let txs = await TX
+      .find({ 'vout.address': req.params.hash })
+      .sort({ blockHeight: -1 });
 
-    await forEach(txs, async (tx) => {
-      await forEach(tx.vout, async (vout) => {
-        if (vout.address === req.params.hash) {
-          const count = await TX.find({ 'vin.txid': tx.txId, 'vin.vout': vout.n });
-          if (count) {
-            utxo.push(tx);
-          }
-        }
-      });
-    });
+    txs = await TX
+      .find({ 'vin.txid': { $in: txs.map(tx => tx.txid) } })
+      .sort({ blockHeight: -1 });
 
-    res.json(utxo);
+    res.json(txs);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);

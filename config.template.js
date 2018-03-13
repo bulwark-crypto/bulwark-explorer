@@ -7,7 +7,7 @@ const config = {
     'host': 'http://explorer.bulwarkcrypto.com',
     'port': '80',
     'prefix': '/api',
-    'timeout': '5s'
+    'timeout': '10s'
   },
   'coinMarketCap': {
     'api': 'https://api.coinmarketcap.com/v1/ticker/',

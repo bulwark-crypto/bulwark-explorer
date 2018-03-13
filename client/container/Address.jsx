@@ -29,16 +29,17 @@ class Address extends Component {
   };
 
   componentDidUpdate() {
-    if (this.state.address !== this.props.match.params.hash) {
+    if (!!this.state.address
+      && this.state.address !== this.props.match.params.hash) {
       this.getAddress();
     }
   };
 
   getAddress = () => {
-    console.log(this.props.match.params.hash);
+    const address = this.props.match.params.hash;
     this.props
-      .getAddress(this.props.match.params.hash)
-      .then(({ txs }) => this.setState({ txs, address: this.props.match.params.hash }))
+      .getAddress(address)
+      .then(({ txs }) => this.setState({ address, txs }))
       .catch(error => this.setState({ error }));
   };
 
