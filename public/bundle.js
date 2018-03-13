@@ -61,7 +61,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e1565fde460c27b96a1a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "924985e75061f375fdb5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -6410,13 +6410,13 @@ if(true) {
 var config = {
   'addressPrefix': 'b',
   'api': {
-    'host': 'http://blockex.dustinengle.com',
+    'host': 'http://explorer.bulwarkcrypto.com',
     'port': '80',
     'prefix': '/api',
     'timeout': '5s'
   },
   'coinMarketCap': {
-    'api': 'http://api.coinmarketcap.com/v1/ticker/',
+    'api': 'https://api.coinmarketcap.com/v1/ticker/',
     'ticker': 'bulwark'
   },
   'db': {
@@ -6433,7 +6433,7 @@ var config = {
     'host': '127.0.0.1',
     'port': '13000',
     'user': 'bwk',
-    'pass': 'eZxSw46rC4V6GDhKkXYYg',
+    'pass': 'password',
     'timeout': 3000 // 3 seconds
   }
 };
