@@ -74,7 +74,7 @@ class App extends Component {
 
     this.timer.coins = setTimeout(() => {
       this.props
-        .getCoins({ limit: this.state.limit })
+        .getCoins({ limit: 12 })
         .then(this.getCoins)
         .catch(this.getCoins);
     }, 60000); // 1 minute
@@ -87,7 +87,7 @@ class App extends Component {
 
     this.timer.txs = setTimeout(() => {
       this.props
-        .getTXs({ limit: this.state.limit })
+        .getTXs({ limit: 10 })
         .then(this.getTXs)
         .catch(this.getTXs);
     }, 30000); // 30 seconds
