@@ -47,7 +47,7 @@ class Address extends Component {
         limit: this.state.size,
         skip: (this.state.page - 1) * this.state.size
       })
-      .then(({ txs }) => this.setState({ address, txs }))
+      .then(({ pages, txs }) => this.setState({ address, pages, txs }))
       .catch(error => this.setState({ error }));
   };
 
