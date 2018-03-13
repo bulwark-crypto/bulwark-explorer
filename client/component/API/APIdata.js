@@ -90,15 +90,15 @@ const APIdata = [
         //   path: '/ext/getdistribution'
         // },
         // { name: 'getaddress',
-        //   info: 'Returns the current block index.',
+        //   info: 'Returns address information.',
         //   path: '/ext/getaddress'
         // },
         { name: 'getbalance',
-          info: 'Returns the current block index.',
+          info: 'Returns the current balance.',
           path: '/ext/getbalance'
         },
         { name: 'getlasttxs',
-          info: 'Returns the current block index.',
+          info: 'Returns the last transactions.',
           path: '/ext/getlasttxs'
         }
     ]
