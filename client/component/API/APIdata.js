@@ -8,8 +8,8 @@ const APIdata = [
         //   info: 'Returns information for given address.',
         //   path: '/api/address/bFY9cyZqZTYHGfduXo7CVNTMiCDeJ1q4gA'
         // },
-        { name: 'getBlock [hash]',
-          info: 'Returns information for the given block.',
+        { name: 'getBlock [hash] [height]',
+          info: 'Returns block information for the given hash or height.',
           path: '/api/block/00000000000072a98f7d8385809a1f71af983d22efce85e63ec3d75f04412823'
         },
         {
