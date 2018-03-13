@@ -56,7 +56,7 @@ const CardROI = ({ coin }) => {
       </div>
       <div className="mb-5">
         <div className="h3">
-          { numeral(mncoins * coin.btc).format('0,0.0000') } BTC / 
+          { numeral(mncoins * coin.btc).format('0,0.0000') } BTC /
           { numeral(mncoins * coin.usd).format('$0,0.00') }
         </div>
         <div className="h5">

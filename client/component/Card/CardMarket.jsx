@@ -33,6 +33,7 @@ export default class CardStatus extends Component {
       growth = 0.0;
     }
     const isPos = growth >= 0;
+    const dirArrow = isPos ? 'arrow-up' : 'arrow-down';
 
     return (
       <Card className="card--market" title="Market">
@@ -41,10 +42,10 @@ export default class CardStatus extends Component {
         <div className="card__info row">
           <div className="col-sm-12 col-md-6 col-lg-4">
             <p>
-              <span className={ `u--text-${ isPos ? 'green' : 'red' }` }>
-                <Icon
-                  className="card__icon--arrow"
-                  name={ isPos ? 'arrow-up' : 'arrow-down' } />
+              <span
+                className={ `u--text-${ isPos ? 'green' : 'red' }` }
+                key={ dirArrow }>
+                <Icon className="card__icon--arrow" name={ dirArrow } />
                 <span>{ numeral(growth * 100.0).format('0,0.00') }% &nbsp;</span>
               </span>
               <span>In { this.props.xAxis.length * 5 } minutes</span>
