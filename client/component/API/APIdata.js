@@ -108,11 +108,11 @@ const APIdata = [
     subHeading: 'Linking to the block explorer',
     calls: [
         {
-          name: 'transaction (tx/[hash])',
+          name: 'transaction (/tx/[hash])',
           info: 'Returns transaction information',
           path: '/#/tx/b1725bcb70b62faa0b273e5385b0225c2ef589bd638cfa582b6cb34f9430d0b9'
         },
-        { name: 'block (block/[hash]',
+        { name: 'block (/block/[hash]',
           info: 'Returns block information.',
           path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
         },
