@@ -2,7 +2,6 @@
 import Component from '../../core/Component';
 import { dateFormat } from '../../../lib/date';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 

@@ -18,11 +18,16 @@ const TX = require('../../model/tx');
  */
 const getAddress = async (req, res) => {
   try {
-    const txs = await TX
-      .find({ 'vout.address': req.params.hash })
-      .sort({ blockHeight: -1 });
+    const qry = { 'vout.address': req.params.hash };
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const total = await TX.find(qry).sort({ blockHeight: -1 }).count();
+    const txs = await TX.find(qry).skip(skip).limit(limit).sort({ blockHeight: -1 });
 
-    res.json(txs);
+    res.json({
+      txs,
+      pages: total <= limit ? 1 : Math.ceil(total / limit)
+    });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
