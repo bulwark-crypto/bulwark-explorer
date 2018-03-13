@@ -5,8 +5,8 @@
 const config = {
   'addressPrefix': 'b',
   'api': {
-    'host': 'http://localhost',
-    'port': '3000',
+    'host': 'http://explorer.bulwarkcrypto.com',
+    'port': '80',
     'prefix': '/api',
     'timeout': '5s'
   },
@@ -26,7 +26,7 @@ const config = {
   },
   'rpc': {
     'host': '127.0.0.1',
-    'port': '7777',
+    'port': '13000',
     'user': 'bwk',
     'pass': 'password',
     'timeout': 3000, // 3 seconds
