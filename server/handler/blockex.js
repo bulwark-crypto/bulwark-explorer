@@ -1,4 +1,5 @@
 
+const { forEach } = require('p-iteration');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
 
@@ -15,18 +16,27 @@ const TX = require('../../model/tx');
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getAddress = (req, res) => {
-  TX.find({ 'vout.addresses': req.params.hash })
-    .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
-    .sort({ blockHeight: -1 })
-    .then((docs) => {
-      res.json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
+const getAddress = async (req, res) => {
+  try {
+    const txs = await TX.find({ 'vout.address': req.params.hash }).sort({ blockHeight: -1 });
+    const utxo = [];
+
+    await forEach(txs, async (tx) => {
+      await forEach(tx.vout, async (vout) => {
+        if (vout.address === req.params.hash) {
+          const count = await TX.find({ 'vin.txid': tx.txId, 'vin.vout': vout.n });
+          if (count) {
+            utxo.push(tx);
+          }
+        }
+      });
     });
+
+    res.json(utxo);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**

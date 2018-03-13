@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 // Route Containers
+import Address from './container/Address';
 import API from './container/API';
 import Block from './container/Block';
 import CoinInfo from './container/CoinInfo';
@@ -109,6 +110,7 @@ class App extends Component {
               <CoinSummary />
               <Switch>
                 <Route exact path="/" component={ Overview } />
+                <Route exact path="/address/:hash" component={ Address } />
                 <Route exact path="/api" component={ API } />
                 <Route exact path="/block/:hash" component={ Block } />
                 <Route exact path="/coin" component={ CoinInfo } />

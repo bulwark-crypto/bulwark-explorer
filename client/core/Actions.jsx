@@ -30,6 +30,12 @@ const getFromWorker = (type, resolve, reject, query = null) => {
   worker.postMessage({ query, type });
 };
 
+export const getAddress = (query) => {
+  return new promise((resolve, reject) => {
+    getFromWorker('address', resolve, reject, query);
+  });
+};
+
 export const getBlock = (query) => {
   return new promise((resolve, reject) => {
     getFromWorker('block', resolve, reject, query);
@@ -134,6 +140,7 @@ export const getTXLatest = (dispatch, query) => {
 };
 
 export default {
+  getAddress,
   getBlock,
   getCoinHistory,
   getMNs,
