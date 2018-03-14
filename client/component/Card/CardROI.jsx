@@ -7,10 +7,10 @@ import React from 'react';
 import Card from './Card';
 
 const CardROI = ({ coin }) => {
-  const mncoins = 5000.0;
+  const mncoins = blockchain.mncoins;
   const mns = coin.mnsOff + coin.mnsOn;
   const subsidy = blockchain.getMNSubsidy(coin.blocks, mns, coin.supply);
-  const roi = blockchain.getROIDay(subsidy);
+  const roi = blockchain.getROI(subsidy, coin.mnsOn);
 
   return (
     <Card>
@@ -56,8 +56,7 @@ const CardROI = ({ coin }) => {
       </div>
       <div className="mb-5">
         <div className="h3">
-          { numeral(mncoins * coin.btc).format('0,0.0000') } BTC /
-          { numeral(mncoins * coin.usd).format('$0,0.00') }
+          { numeral(mncoins * coin.btc).format('0,0.0000') } BTC / { numeral(mncoins * coin.usd).format('$0,0.00') }
         </div>
         <div className="h5">
           Masternode Worth
