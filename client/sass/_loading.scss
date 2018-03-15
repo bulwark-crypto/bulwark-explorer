@@ -2,16 +2,22 @@
     width: 24px;
     height: 24px;
     background-color: transparent;
-    box-shadow: inset 0px 0px 0px 2px #000;
+    box-shadow: inset 0px 0px 0px 2px $gray-dark;
     border-radius: 50%;
-    position: relative;
-    margin: 38px auto;/* Not necessary- its only for layouting*/
+    position:absolute;
+    top:50%;
+    left:50%;
+    animation: fadein 1s;
+    -moz-animation: fadein 1s;
+        -webkit-animation: fadein 1s;
+            -o-animation: fadein 1s;
+                animation: fadein 1s;
  }
 .timer:after, .timer:before{
     position: absolute;
     content:"";
     border-radius: 10px;
-    background-color: #000;
+    background-color: $gray-dark;
 }
 .timer:after{
     width: 10px;
@@ -51,7 +57,6 @@
     0%{transform:rotate(0deg)}
     100%{transform:rotate(360deg)}
 }
-
 @-webkit-keyframes hrhand{
     0%{-webkit-transform:rotate(0deg)}
     100%{-webkit-transform:rotate(360deg)}
