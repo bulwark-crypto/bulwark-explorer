@@ -61,3 +61,5 @@ typings/
 config.js
 
 .DS_Store
+
+\.vscode/launch\.json
