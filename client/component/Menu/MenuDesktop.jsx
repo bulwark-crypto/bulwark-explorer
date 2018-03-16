@@ -58,11 +58,7 @@ export default class MenuDesktop extends Component {
             </a>
           </div>
           <p className="menu-desktop__title">MENU</p>
-
           { this.getLinks() }
-
-          <img src="/img/settings_white.svg" className="menu-desktop__settings" />
-        
         </div>
       </div>
     )

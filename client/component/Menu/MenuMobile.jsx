@@ -50,9 +50,7 @@ export default class MenuMobile extends Component {
           </a>
         </div>
         <div className="menu-mobile__item-wrapper" >
-
           { this.getLinks() }
-
         </div>
       </div>
     )
