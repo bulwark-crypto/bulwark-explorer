@@ -1,8 +1,11 @@
 
-const block = require('./blockex');
-const Coin = require('../../model/coin');
+const blockex = require('./blockex');
 const { rpc } = require('../../lib/cron');
+// Models
+const Block = require('../../model/block');
+const Coin = require('../../model/coin');
 
+// Get latest coin info helper method.
 const getCoin = async () => Coin.findOne().sort({ createdAt: -1 });
 
 const getdifficulty = async (req, res) => {
@@ -37,8 +40,12 @@ const getblockcount = async (req, res) => {
 
 const getblockhash = async (req, res) => {
   try {
-    const hash = await rpc.call('getblockhash', [req.query.index]);
-    res.json(hash);
+    if (!req.query.index || isNaN(req.query.index)) {
+      throw new Error('Block height must be a number!');
+    }
+
+    const block = await Block.findOne({ height: req.query.index });
+    res.json(block.hash);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -47,7 +54,11 @@ const getblockhash = async (req, res) => {
 
 const getblock = async (req, res) => {
   try {
-    const block = await rpc.call('getblock', [req.query.hash]);
+    if (!req.query.hash || !isNaN(req.query.hash)) {
+      throw new Error('Block hash must be a string!');
+    }
+
+    const block = await Block.findOne({ height: req.query.index });
     res.json(block);
   } catch(err) {
     console.log(err);
@@ -112,7 +123,7 @@ const getbalance = async (req, res) => {
   }
 };
 
-const getlasttxs = block.getTXLatest;
+const getlasttxs = blockex.getTXLatest;
 
 module.exports =  {
   // /api
