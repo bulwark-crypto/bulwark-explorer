@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "420c5f1ce1b2a44c6600"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "448f89244fdf3e63c7c5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -807,6 +807,8 @@ module.exports = fetch;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 /**
  * Web Worker
  * Handles the requesting of data in a separate thread
@@ -819,13 +821,21 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var config = {
   api: {
     host: 'http://explorer.bulwarkcrypto.com',
-    port: '3000',
+    port: '80',
     prefix: '/api'
   }
 };
 var fetch = __webpack_require__("./lib/fetch.js");
 
 var api = config.api.host + ':' + config.api.port + config.api.prefix;
+
+// Get the address and all transactions related.
+var getAddress = function getAddress(_ref) {
+  var address = _ref.address,
+      query = _objectWithoutProperties(_ref, ['address']);
+
+  return fetch(api + '/address/' + address, query);
+};
 
 // Get the block and transactions.
 var getBlock = function getBlock(query) {
@@ -871,6 +881,9 @@ var getTXsLatest = function getTXsLatest(query) {
 self.addEventListener('message', function (ev) {
   var action = null;
   switch (ev.data.type) {
+    case 'address':
+      action = getAddress;
+      break;
     case 'block':
       action = getBlock;
       break;
@@ -915,7 +928,7 @@ self.addEventListener('message', function (ev) {
 /***/ "./node_modules/bluebird/js/browser/bluebird.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/* @preserve
+/* WEBPACK VAR INJECTION */(function(process, Promise, global, setImmediate) {/* @preserve
  * The MIT License (MIT)
  * 
  * Copyright (c) 2013-2017 Petka Antonov
@@ -6538,7 +6551,7 @@ module.exports = ret;
 
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js"), __webpack_require__("./node_modules/webpack/buildin/global.js"), __webpack_require__("./node_modules/timers-browserify/main.js").setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js"), __webpack_require__("./node_modules/bluebird/js/browser/bluebird.js"), __webpack_require__("./node_modules/webpack/buildin/global.js"), __webpack_require__("./node_modules/timers-browserify/main.js").setImmediate))
 
 /***/ }),
 
@@ -7037,9 +7050,9 @@ module.exports = g;
 /***/ }),
 
 /***/ "./node_modules/whatwg-fetch/fetch.js":
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-(function(self) {
+/* WEBPACK VAR INJECTION */(function(Promise) {(function(self) {
   'use strict';
 
   if (self.fetch) {
@@ -7501,6 +7514,7 @@ module.exports = g;
   self.fetch.polyfill = true
 })(typeof self !== 'undefined' ? self : this);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/bluebird/js/browser/bluebird.js")))
 
 /***/ })
 

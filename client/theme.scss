@@ -80,8 +80,10 @@ $pagination-disabled-border-color:  $gray;
 @import "./sass/utility";
 
 @import "./sass/footer";
+@import "./sass/loading";
 @import "./sass/menu-desktop";
 @import "./sass/menu-mobile";
+@import "./sass/qrcode";
 @import "./sass/watch-list";
 
 /* Containers */
@@ -183,7 +185,7 @@ h1, h2, h3, h4, h5, h6 {
 // Content Wrapper
 .content {
 	flex: 1;
-	overflow-y: scroll;
+	overflow-y: auto;
 
 	@media (min-width: 1400px) {
 		padding-left: $menu-width-open;

@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 // Route Containers
+import Address from './container/Address';
 import API from './container/API';
 import Block from './container/Block';
 import CoinInfo from './container/CoinInfo';
@@ -42,8 +43,8 @@ class App extends Component {
 
   componentDidMount() {
     promise.all([
-        this.props.getCoins({ limit: this.state.limit }),
-        this.props.getTXs({ limit: this.state.limit })
+        this.props.getCoins({ limit: 12 }),
+        this.props.getTXs({ limit: 10 })
       ])
       .then(() => {
         this.getCoins();
@@ -73,7 +74,7 @@ class App extends Component {
 
     this.timer.coins = setTimeout(() => {
       this.props
-        .getCoins({ limit: this.state.limit })
+        .getCoins({ limit: 12 })
         .then(this.getCoins)
         .catch(this.getCoins);
     }, 60000); // 1 minute
@@ -86,7 +87,7 @@ class App extends Component {
 
     this.timer.txs = setTimeout(() => {
       this.props
-        .getTXs({ limit: this.state.limit })
+        .getTXs({ limit: 10 })
         .then(this.getTXs)
         .catch(this.getTXs);
     }, 30000); // 30 seconds
@@ -109,6 +110,7 @@ class App extends Component {
               <CoinSummary />
               <Switch>
                 <Route exact path="/" component={ Overview } />
+                <Route exact path="/address/:hash" component={ Address } />
                 <Route exact path="/api" component={ API } />
                 <Route exact path="/block/:hash" component={ Block } />
                 <Route exact path="/coin" component={ CoinInfo } />

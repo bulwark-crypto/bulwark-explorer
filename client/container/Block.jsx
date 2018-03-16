@@ -20,6 +20,7 @@ class Block extends Component {
     super(props);
     this.state = {
       block: {},
+      loading: true,
       error: null,
       txs: []
     };
@@ -39,15 +40,21 @@ class Block extends Component {
   };
 
   getBlock = () => {
-    this.props
-      .getBlock(this.props.match.params.hash)
-      .then(({ block, txs }) => this.setState({ block, txs }))
-      .catch(error => this.setState({ error }));
+    this.setState({ loading: true }, () => {
+      this.props
+        .getBlock(this.props.match.params.hash)
+        .then(({ block, txs }) => {
+          this.setState({ block, txs, loading: false });
+        })
+        .catch(error => this.setState({ error, loading: false }));
+    });
   };
 
   render() {
     if (!!this.state.error) {
       return this.renderError(this.state.error);
+    } else if (this.state.loading) {
+      return this.renderLoading();
     }
 
     return (

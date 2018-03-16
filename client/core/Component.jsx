@@ -2,6 +2,7 @@
 import React from 'react';
 
 import ErrorBlock from '../component/ErrorBlock';
+import Loading from '../component/Loading';
 
 export default class Component extends React.Component {
   /**
@@ -15,4 +16,9 @@ export default class Component extends React.Component {
    * Render the provided error for the component.
    */
   renderError = (err) => (<ErrorBlock error={ err } />);
+
+  /**
+   * Render the loading indicator.
+   */
+  renderLoading = () => (<Loading />);
 }

@@ -11,13 +11,17 @@ import Pagination from '../component/Pagination';
 
 class Movement extends Component {
   static propTypes = {
-    getTXs: PropTypes.func.isRequired
+    getTXs: PropTypes.func.isRequired,
+    setTXs: PropTypes.func.isRequired,
+    tx: PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
     this.debounce = null;
     this.state = {
+      error: null,
+      loading: true,
       pages: 0,
       page: 1,
       size: 10,
@@ -37,22 +41,30 @@ class Movement extends Component {
   };
 
   getTXs = () => {
-    if (this.debounce) {
-      clearTimeout(this.debounce);
-    }
+    this.setState({ loading: true }, () => {
+      if (this.debounce) {
+        clearTimeout(this.debounce);
+      }
 
-    this.debounce = setTimeout(() => {
-      this.props
-        .getTXs({
-          limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
-        })
-        .then(({ pages, txs }) => {
-          if (this.debounce) {
-            this.setState({ pages, txs });
-          }
-        });
-    }, 800);
+      this.debounce = setTimeout(() => {
+        this.props
+          .getTXs({
+            limit: this.state.size,
+            skip: (this.state.page - 1) * this.state.size
+          })
+          .then(({ pages, txs }) => {
+            if (this.debounce) {
+              this.setState({ pages, txs, loading: false }, () => {
+                if (txs.length
+                  && this.props.tx.blockHeight < txs[0].blockHeight) {
+                  this.props.setTXs(txs);
+                }
+              });
+            }
+          })
+          .catch(error => this.setState({ error, loading: false }));
+      }, 800);
+    });
   };
 
   handlePage = page => this.setState({ page }, this.getTXs);
@@ -60,6 +72,12 @@ class Movement extends Component {
   handleSize = size => this.setState({ size, page: 1 }, this.getTXs);
 
   render() {
+    if (!!this.state.error) {
+      return this.renderError(this.state.error);
+    } else if (this.state.loading) {
+      return this.renderLoading();
+    }
+
     const select = (
       <select
         onChange={ ev => this.handleSize(ev.target.value) }
@@ -88,7 +106,12 @@ class Movement extends Component {
 }
 
 const mapDispatch = dispatch => ({
-  getTXs: query => Actions.getTXs(null, query)
+  getTXs: query => Actions.getTXs(null, query),
+  setTXs: txs => Actions.setTXs(dispatch, txs)
 });
 
-export default connect(null, mapDispatch)(Movement);
+const mapState = state => ({
+  tx: state.txs.length ? state.txs[0] : {}
+});
+
+export default connect(mapState, mapDispatch)(Movement);

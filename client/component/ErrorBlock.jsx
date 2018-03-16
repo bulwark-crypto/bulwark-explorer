@@ -4,7 +4,7 @@ import React from 'react';
 
 const ErrorBlock = (props) => (
   <div className="error-danger">
-    { props.error }
+    <div dangerouslySetInnerHTML={{ __html: props.error }} />
   </div>
 );
 

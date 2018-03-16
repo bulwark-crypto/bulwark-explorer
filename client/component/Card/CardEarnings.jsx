@@ -7,12 +7,11 @@ import React from 'react';
 import Card from './Card';
 
 const CardEarnings = ({ coin }) => {
-  const mns = coin.mnsOff + coin.mnsOn;
-  const subsidy = blockchain.getMNSubsidy(coin.blocks, mns, coin.supply);
-  const roiDay = subsidy * blockchain.getROIDay(subsidy);
-  const roiWeek = subsidy * blockchain.getROIWeek(subsidy);
-  const roiMonth = subsidy * blockchain.getROIMonth(subsidy);
-  const roiYear = subsidy * blockchain.getROIYear(subsidy);
+  const subsidy = blockchain.getMNSubsidy(coin.blocks, coin.mnsOn, coin.supply);
+  const day = blockchain.getMNBlocksPerDay(coin.mnsOn) * subsidy;
+  const week = blockchain.getMNBlocksPerWeek(coin.mnsOn) * subsidy;
+  const month = blockchain.getMNBlocksPerMonth(coin.mnsOn) * subsidy;
+  const year = blockchain.getMNBlocksPerYear(coin.mnsOn) * subsidy;
 
   const nbtc = v => numeral(v).format('0,0.0000');
   const nusd = v => numeral(v).format('$0,0.00');
@@ -24,7 +23,7 @@ const CardEarnings = ({ coin }) => {
           DAILY
         </div>
         <div className="col-sm-12 col-md-8">
-          { nbtc(roiDay) } BWK / { nbtc(roiDay * coin.btc) } BTC / { nusd(roiDay * coin.usd) }
+          { nbtc(day) } BWK / { nbtc(day * coin.btc) } BTC / { nusd(day * coin.usd) } USD
         </div>
       </div>
       <div className="row">
@@ -32,7 +31,7 @@ const CardEarnings = ({ coin }) => {
           WEEKLY
         </div>
         <div className="col-sm-12 col-md-8">
-          { nbtc(roiWeek) } BWK / { nbtc(roiWeek * coin.btc) } BTC / { nusd(roiWeek * coin.usd) }
+          { nbtc(week) } BWK / { nbtc(week * coin.btc) } BTC / { nusd(week * coin.usd) } USD
         </div>
       </div>
       <div className="row">
@@ -40,7 +39,7 @@ const CardEarnings = ({ coin }) => {
           MONTHLY
         </div>
         <div className="col-sm-12 col-md-8">
-          { nbtc(roiMonth) } BWK / { nbtc(roiMonth * coin.btc) } BTC / { nusd(roiMonth * coin.usd) }
+          { nbtc(month) } BWK / { nbtc(month * coin.btc) } BTC / { nusd(month * coin.usd) } USD
         </div>
       </div>
       <div className="row">
@@ -48,7 +47,14 @@ const CardEarnings = ({ coin }) => {
           YEARLY
         </div>
         <div className="col-sm-12 col-md-8">
-          { nbtc(roiYear) } BWK / { nbtc(roiYear * coin.btc) } BTC / { nusd(roiYear * coin.usd) }
+          { nbtc(year) } BWK / { nbtc(year * coin.btc) } BTC / { nusd(year * coin.usd) } USD
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
+          <small className="u--text-gray">
+            * Estimates based on current block subsidy and active masternodes.
+          </small>
         </div>
       </div>
     </Card>

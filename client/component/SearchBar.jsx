@@ -1,6 +1,7 @@
 
 import Component from '../core/Component';
 import config from '../../config';
+import { isAddress, isBlock } from '../../lib/blockchain';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withRouter } from 'react-router';
@@ -26,10 +27,10 @@ class SearchBar extends Component {
 
       if (!term) {
         return;
-      } else if (!isNaN(term) || term.substr(0, 4) === '0000') {
+      } else if (isBlock(term)) {
         this.props.history.push(`/block/${ term }`);
-      } else if (term.substr(0, 1) === config.addressPrefix) {
-        //this.props.history.push(`/address/${ term }`);
+      } else if (isAddress(term)) {
+        this.props.history.push(`/address/${ term }`);
       } else {
         this.props.history.push(`/tx/${ term }`);
       }

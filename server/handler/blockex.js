@@ -1,4 +1,5 @@
 
+const { forEach } = require('p-iteration');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
 
@@ -15,18 +16,22 @@ const TX = require('../../model/tx');
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getAddress = (req, res) => {
-  TX.find({ 'vout.addresses': req.params.hash })
-    .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
-    .sort({ blockHeight: -1 })
-    .then((docs) => {
-      res.json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
+const getAddress = async (req, res) => {
+  try {
+    const qry = { 'vout.address': req.params.hash };
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const total = await TX.find(qry).sort({ blockHeight: -1 }).count();
+    const txs = await TX.find(qry).skip(skip).limit(limit).sort({ blockHeight: -1 });
+
+    res.json({
+      txs,
+      pages: total <= limit ? 1 : Math.ceil(total / limit)
     });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**
@@ -79,7 +84,7 @@ const getCoin = (req, res) => {
 const getCoinHistory = (req, res) => {
   Coin.find()
     .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 10)
+    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 12) // 12x5=60 mins
     .sort({ createdAt: -1 })
     .then((docs) => {
       res.json(docs);
@@ -103,6 +108,22 @@ const getMasternodes = async (req, res) => {
     const mns = await Masternode.find().skip(skip).limit(limit).sort({ lastPaidAt: -1, status: 1 });
 
     res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
+ * Get list of masternodes from the server.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getMasternodeCount = async (req, res) => {
+  try {
+    const coin = await Coin.findOne().sort({ createdAt: -1 });
+
+    res.json({ enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -230,6 +251,7 @@ module.exports =  {
   getCoin,
   getCoinHistory,
   getMasternodes,
+  getMasternodeCount,
   getPeer,
   getPeerHistory,
   getTop100,
