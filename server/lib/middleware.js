@@ -18,8 +18,8 @@ const middleware = (app) => {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   app.use('/api', new rateLimit({
-    windowMs: 15000, // 15 seconds
-    max: 5,
+    windowMs: 1000, // 1 second
+    max: 10,
     delayMs: 100
   }));
 };
