@@ -106,6 +106,27 @@ class App extends Component {
           <Menu />
           <div className="content">
             <div className="content__wrapper">
+              <div className="alert alert-warning text-center" style={{ fontSize: '1em' }}>
+                <div style={{ fontSize: '1.25em', fontWeight: 'bold' }}>
+                  To ensure the health of the network and to get it back in sync, it is extremely
+                  important that everyone has the latest wallet (Version 1.2.2) both locally and
+                  on masternodes.
+                </div>
+                <div className="row">
+                  <div className="col-md-12 col-lg-6">
+                    <b>Wallet:</b><br />
+                    <a href="https://github.com/bulwark-crypto/Bulwark/releases" target="_blank">
+                      https://github.com/bulwark-crypto/Bulwark/releases
+                    </a><br />
+                  </div>
+                  <div className="col-md-12 col-lg-6">
+                    <b>Masternode script:</b><br />
+                    <a href="https://github.com/bulwark-crypto/Bulwark-MN-Install/blob/master/update_node.sh" target="_blank">
+                      https://github.com/bulwark-crypto/Bulwark-MN-Install/blob/master/update_node.sh
+                    </a>
+                  </div>
+                </div>
+              </div>
               <SearchBar className="d-none d-md-flex mb-3" />
               <CoinSummary />
               <Switch>
