@@ -68,8 +68,18 @@ const getblock = async (req, res) => {
 
 const getrawtransaction = async (req, res) => {
   try {
-    const tx = await rpc.call('getrawtransaction', [req.query.hash]);
-    res.json(tx);
+    if (!req.query.txid || !isNaN(req.query.txid)) {
+      throw new Error('Transaction hash must be a string!');
+    }
+
+    const raw = await rpc.call('getrawtransaction', [req.query.txid]);
+    if (!req.query.decrypt) {
+      res.json(raw);
+      return;
+    }
+
+    const tx = await rpc.call('decoderawtransaction', [raw]);
+    res.send(tx);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
