@@ -12,7 +12,6 @@ router.get('/coin/history', blockex.getCoinHistory);
 router.get('/masternode', blockex.getMasternodes);
 router.get('/masternodecount', blockex.getMasternodeCount);
 router.get('/peer', blockex.getPeer);
-router.get('/peer/history', blockex.getPeerHistory);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
 router.get('/tx/latest', blockex.getTXLatest);

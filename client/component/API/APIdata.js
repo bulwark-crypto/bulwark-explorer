@@ -35,11 +35,6 @@ const APIdata = [
           info: 'Returns peer information.',
           path: '/api/peer'
         },
-        {
-          name: 'getPeerHistory',
-          info: 'Returns peer history.',
-          path: '/api/peer/history'
-        },
         // { name: 'getTop100',
         //   info: 'Returns top 100',
         //   path: '/api/top100'

@@ -150,25 +150,6 @@ const getPeer = (req, res) => {
 };
 
 /**
- * Get the historical list of peers.
- * @param {Object} req The request object.
- * @param {Object} res The response object.
- */
-const getPeerHistory = (req, res) => {
-  Peer.find()
-    .skip(req.query.skip ? parseInt(req.query.skip, 10) : 0)
-    .limit(req.query.limit ? parseInt(req.query.limit, 10) : 500)
-    .sort({ createdAt: -1, ip: 1 })
-    .then((docs) => {
-      res.json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
-    });
-};
-
-/**
  * Get the top 100 addresses from the database.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
