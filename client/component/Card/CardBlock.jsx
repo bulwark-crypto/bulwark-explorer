@@ -32,7 +32,11 @@ export default class CardBlock extends Component {
         </div>
         <div className="card__row">
           <span className="card__label">Confirmations:</span>
-          <span className="card__result">{ this.props.height - this.props.block.height }</span>
+          <span className="card__result">
+            <span className="badge badge-success">
+              { this.props.height - this.props.block.height }
+            </span>
+          </span>
         </div>
         <div className="card__row">
           <span className="card__label">Size (kB):</span>
