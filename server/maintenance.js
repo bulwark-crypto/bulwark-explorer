@@ -23,8 +23,9 @@ app.use((req, res) => {
         </style>
     </head>
     <body>
-      <h1>BlockEx</h2>
-      <h3>Is down for scheduled maintenance, please check back soon!</h3>
+      <h1>Alpha Testing Ended</h2>
+      <h3>Thank you for participating in public alpha testing of the block explorer.</h3>
+      <h2>Stay tuned for public beta!</h2>
     </body>
     </html>
   `);
