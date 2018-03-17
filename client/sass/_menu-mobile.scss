@@ -9,7 +9,7 @@
 	flex: 1;
 	font-weight: lighter;
     margin: 0;
-	/*position: fixed;*/
+	position: fixed;
 	width: 100%;
 
 	@include media-breakpoint-up(md) {
@@ -29,7 +29,7 @@
 		display: flex;
 		align-items: center;
 		flex-direction: row;
-		/*height: $menu-mobile-height;*/
+    	min-height: $menu-mobile-height;
 		padding: 1em;
 	}
 
