@@ -43,8 +43,8 @@ export default class CardNetworkSummary extends Component {
             decimals={ 2 }
             duration={ 1 }
             end={ hash }
-            start={ 0 } />
-          <span>{ labels[idx] }/s</span>
+            start={ 0 }
+            suffix={ ` ${ labels[idx] }/s` } />
         </p>
         <p className="card__data-sub">
           Difficulty: { numeral(this.props.difficulty).format('0,0.00') }
