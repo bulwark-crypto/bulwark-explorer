@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Card from './Card';
+import CountUp from '../CountUp';
 import GraphLine from '../Graph/GraphLine';
+
 
 export default class CardMasternodeSummary extends Component {
   static defaultProps = {
@@ -29,7 +31,13 @@ export default class CardMasternodeSummary extends Component {
         className="card--graph"
         style={{ marginBottom: 0 }}
         title="Masternode">
-        <p className="card__data-main">{ total }</p>
+        <p className="card__data-main">
+          <CountUp
+            decimals={ 0 }
+            duration={ 1 }
+            end={ total }
+            start={ 0 } />
+        </p>
         <p className="card__data-sub">Online: { this.props.online }</p>
         <GraphLine
           color="#1991eb"

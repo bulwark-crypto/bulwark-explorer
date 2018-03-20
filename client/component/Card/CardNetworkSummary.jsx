@@ -5,7 +5,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Card from './Card';
+import CountUp from '../CountUp';
 import GraphLine from '../Graph/GraphLine';
+
 
 export default class CardNetworkSummary extends Component {
   static defaultProps = {
@@ -37,7 +39,12 @@ export default class CardNetworkSummary extends Component {
         style={{ marginBottom: 0 }}
         title="Network">
         <p className="card__data-main">
-          { numeral(hash).format('0,0.00') } { labels[idx] }/s
+          <CountUp
+            decimals={ 2 }
+            duration={ 1 }
+            end={ hash }
+            start={ 0 } />
+          <span>{ labels[idx] }/s</span>
         </p>
         <p className="card__data-sub">
           Difficulty: { numeral(this.props.difficulty).format('0,0.00') }

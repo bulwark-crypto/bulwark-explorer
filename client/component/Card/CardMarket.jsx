@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Card from './Card';
+import CountUp from '../CountUp';
 import GraphLine from '../Graph/GraphLine';
 import Icon from '../Icon';
 
@@ -37,7 +38,14 @@ export default class CardStatus extends Component {
 
     return (
       <Card className="card--market" title="Market">
-        <p className="card__data-main bariol">BWK ${ this.props.usd }</p>
+        <p className="card__data-main bariol">
+          <span>BWK </span>
+          <CountUp
+            decimals={ 6 }
+            duration={ 1 }
+            end={ this.props.usd }
+            start={ 0 } />
+        </p>
         <p className="card__data-sub">{ this.props.btc } BTC</p>
         <div className="card__info row">
           <div className="col-sm-12 col-md-6 col-lg-4">

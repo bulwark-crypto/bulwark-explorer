@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Card from './Card';
+import CountUp from '../CountUp';
 
 export default class CardStatus extends Component {
   static defaultProps = {
@@ -38,7 +39,13 @@ export default class CardStatus extends Component {
           <span className="card__label">Blocks:</span>
           <span className="card__result">
             <Link to={ `/block/${ this.props.blocks }` }>
-              <b>{ this.props.blocks }</b>
+              <b>
+                <CountUp
+                  decimals={ 0 }
+                  duration={ 1 }
+                  end={ this.props.blocks }
+                  start={ 0 } />
+              </b>
             </Link>
           </span>
         </div>
