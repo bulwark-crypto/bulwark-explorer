@@ -109,7 +109,7 @@ class App extends Component {
               <div className="alert alert-warning text-center" style={{ fontSize: '1em' }}>
                 <div style={{ fontSize: '1.25em', fontWeight: 'bold' }}>
                   To ensure the health of the network and to get it back in sync, it is extremely
-                  important that everyone has the latest wallet (Version 1.2.2) both locally and
+                  important that everyone has the latest wallet (Version <u>1.2.3</u>) both locally and
                   on masternodes.
                 </div>
                 <div className="row">
