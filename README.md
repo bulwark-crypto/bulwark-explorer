@@ -3,7 +3,7 @@ Simple block explorer system.
 
 __Under active development and subject to rapid sudden change.__
 
-## Reqiured
+## Required
 This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be installed globally before continuing or changed will be needed below using your best judgement.
 
 ## Install
