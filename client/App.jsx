@@ -3,6 +3,7 @@ import Actions from './core/Actions';
 import Component from './core/Component';
 import { connect } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
+import { isAddress, isBlock } from '../lib/blockchain';
 import { Link, Route, Switch } from 'react-router-dom';
 import promise from 'bluebird';
 import PropTypes from 'prop-types';
@@ -31,6 +32,15 @@ import Menu from './component/Menu';
 import SearchBar from './component/SearchBar';
 
 class App extends Component {
+  static propTypes = {
+    // Dispatch
+    getCoins: PropTypes.func.isRequired,
+    getTXs: PropTypes.func.isRequired,
+    setWatch: PropTypes.func.isRequired,
+    // State
+    watch: PropTypes.array.isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -93,6 +103,25 @@ class App extends Component {
     }, 30000); // 30 seconds
   };
 
+  handleSearch = (term) => {
+    let path = '/#/';
+    if (isBlock(term)) {
+      path = `/#/block/${ term }`;
+    } else if (isAddress(term)) {
+      path = `/#/address/${ term }`;
+    } else {
+      path = `/#/tx/${ term }`;
+    }
+
+    document.location.href = path;
+
+    if (this.props.watch.length && this.props.watch[0] === term) {
+      return;
+    }
+
+    this.props.setWatch(term);
+  };
+
   render() {
     if (this.state.init) {
       return (
@@ -103,7 +132,7 @@ class App extends Component {
     return (
       <HashRouter>
         <div className="page-wrapper">
-          <Menu />
+          <Menu onSearch={ this.handleSearch } />
           <div className="content">
             <div className="content__wrapper">
               {/*
@@ -129,8 +158,10 @@ class App extends Component {
                   </div>
                 </div>
               */}
-              <SearchBar className="d-none d-md-flex mb-3" />
-              <CoinSummary />
+              <SearchBar
+                className="d-none d-md-flex mb-3"
+                onSearch={ this.handleSearch } />
+              <CoinSummary onSearch={ this.handleSearch } />
               <Switch>
                 <Route exact path="/" component={ Overview } />
                 <Route exact path="/address/:hash" component={ Address } />
@@ -156,11 +187,12 @@ class App extends Component {
 
 const mapDispatch = dispatch => ({
   getCoins: query => Actions.getCoinHistory(dispatch, query),
-  getTXs: query => Actions.getTXLatest(dispatch, query)
+  getTXs: query => Actions.getTXLatest(dispatch, query),
+  setWatch: term => Actions.setWatch(dispatch, term)
 });
 
 const mapState = state => ({
-
+  watch: state.watch
 });
 
 export default connect(mapState, mapDispatch)(App);

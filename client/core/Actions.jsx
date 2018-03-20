@@ -1,5 +1,5 @@
 
-import { COIN, COINS, ERROR, TXS } from '../constants';
+import { COIN, COINS, ERROR, TXS, WATCH } from '../constants';
 import fetchWorker from '../../lib/fetch.worker';
 import promise from 'bluebird';
 
@@ -143,6 +143,10 @@ export const setTXs = (dispatch, txs) => {
   dispatch({ payload: txs, type: TXS });
 };
 
+export const setWatch = (dispatch, term) => {
+  dispatch({ payload: term, type: WATCH });
+};
+
 export default {
   getAddress,
   getBlock,
@@ -153,5 +157,6 @@ export default {
   getTX,
   getTXs,
   getTXLatest,
-  setTXs
+  setTXs,
+  setWatch
 };

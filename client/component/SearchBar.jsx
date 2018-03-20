@@ -4,17 +4,16 @@ import config from '../../config';
 import { isAddress, isBlock } from '../../lib/blockchain';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withRouter } from 'react-router';
 
 import Icon from './Icon';
 
-class SearchBar extends Component {
+export default class SearchBar extends Component {
   static defaultProps = {
     placeholder: 'You may enter a block height, block hash, tx hash or address and hit enter.',
   }
 
   static propTypes = {
-    history: PropTypes.object.isRequired,
+    onSearch: PropTypes.func.isRequired,
     placeholder: PropTypes.string.isRequired
   };
 
@@ -25,14 +24,8 @@ class SearchBar extends Component {
       const term = ev.target.value;
       ev.target.value = '';
 
-      if (!term) {
-        return;
-      } else if (isBlock(term)) {
-        this.props.history.push(`/block/${ term }`);
-      } else if (isAddress(term)) {
-        this.props.history.push(`/address/${ term }`);
-      } else {
-        this.props.history.push(`/tx/${ term }`);
+      if (!!term) {
+        this.props.onSearch(term);
       }
     }
   };
@@ -51,5 +44,3 @@ class SearchBar extends Component {
     );
   };
 }
-
-export default withRouter(SearchBar);

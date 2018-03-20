@@ -1,5 +1,5 @@
 
-import { COIN, COINS, TXS } from '../constants';
+import { COIN, COINS, TXS, WATCH } from '../constants';
 import { combineReducers } from 'redux';
 
 // The initial state of the coin object.
@@ -45,9 +45,23 @@ const txs = (state = [], action) => {
   return state;
 };
 
+/**
+ * Store the last 10 search results.
+ * @param {Array} state The current history of searches.
+ * @param {Object} action The flux compatible action.
+ */
+const watch = (state = [], action) => {
+  if (action.type === WATCH) {
+    const items = [ action.payload, ...state ];
+    return items.slice(0, 10);
+  }
+  return state;
+};
+
 // Export and combine our reducers.
 export default combineReducers({
   coin,
   coins,
-  txs
+  txs,
+  watch
 });

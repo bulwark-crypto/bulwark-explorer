@@ -14,20 +14,15 @@ import WatchList from '../component/WatchList';
 class CoinSummary extends Component {
   static propTypes = {
     coins: PropTypes.array.isRequired,
-    txs: PropTypes.array.isRequired
+    onSearch: PropTypes.func.isRequired,
+    txs: PropTypes.array.isRequired,
+    watch: PropTypes.array.isRequired
   };
 
   render() {
     const coin = this.props.coins && this.props.coins.length
       ? this.props.coins[0]
       : { diff: 0, netHash: 0 };
-
-    // TODO: add actual feature.
-    const watchListItems = [
-      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
-      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
-      '4FGjklsdf234j23lkj324jl3k242lkj324kl234',
-    ];
 
     return (
       <div>
@@ -69,7 +64,9 @@ class CoinSummary extends Component {
             </div>
           </div>
           <div className="col-md-12 col-lg-3">
-            <WatchList items={ watchListItems } />
+            <WatchList
+              items={ this.props.watch }
+              onSearch={ this.props.onSearch } />
           </div>
         </div>
       </div>
@@ -83,7 +80,8 @@ const mapDispatch = dispatch => ({
 
 const mapState = state => ({
   coins: state.coins,
-  txs: state.txs
+  txs: state.txs,
+  watch: state.watch
 });
 
 export default connect(mapState, mapDispatch)(CoinSummary);

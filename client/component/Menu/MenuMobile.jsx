@@ -44,7 +44,10 @@ export default class MenuMobile extends Component {
     return (
       <div className={ `menu-mobile ${ this.state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
         <div className="menu-mobile__search-wrapper">
-          <SearchBar className="search--mobile mr-3" placeholder="Search Blockchain" />
+          <SearchBar
+            className="search--mobile mr-3"
+            onSearch={ this.props.onSearch }
+            placeholder="Search Blockchain" />
           <a onClick={ this.handleToggle } >
             <Icon name="bars" className="menu-mobile__toggle" onClick={ this.handleToggle } />
           </a>

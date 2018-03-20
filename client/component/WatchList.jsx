@@ -12,9 +12,19 @@ export default class WatchList extends Component {
   };
 
   static propTypes = {
+    items: PropTypes.array.isRequired,
     loading: PropTypes.bool,
-    items: PropTypes.array,
+    onSearch: PropTypes.func.isRequired,
     title: PropTypes.string
+  };
+
+  handleClick = (ev, term) => {
+    try {
+      ev.preventDefault();
+      this.props.onSearch(term);
+    } catch(err) {
+      // Do nothing.
+    }
   };
 
   getWatchItems() {
@@ -22,23 +32,21 @@ export default class WatchList extends Component {
 
     const watchItems = items.map((item, idx) => {
       return (
-        <div className="watch-list__item" key={ idx }>
-          <Icon name={ item.active ? 'play' : 'times-circle' }
-                className="watch-list__item-close"
-                onClick={ this.removeWatchItem(idx) } />
+        <a
+          className="watch-list__item"
+          key={ idx }
+          onClick={ ev => this.handleClick(ev, item) }>
+          <Icon name="chevron-circle-right"
+                className="watch-list__item-close" />
           <span className="watch-list__item-text">
             { item }
           </span>
-        </div>
+        </a>
       )
     });
 
     return watchItems
-  }
-
-  removeWatchItem(idx) {
-    //debugger;
-  }
+  };
 
   render() {
     const { props } = this;

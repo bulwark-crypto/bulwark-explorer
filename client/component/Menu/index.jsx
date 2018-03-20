@@ -10,10 +10,14 @@ import menuData from './menuData';
 
 
 class Menu extends Component {
+  static propTypes = {
+    onSearch: PropTypes.func.isRequired
+  };
+
   render() {
     return (
       <div className="menu-wrapper">
-        <MenuMobile links={ menuData } />
+        <MenuMobile links={ menuData } onSearch={ this.props.onSearch } />
         <MenuDesktop links={ menuData } location={ this.props.location } />
       </div>
     )
