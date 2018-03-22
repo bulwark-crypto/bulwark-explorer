@@ -9,7 +9,7 @@ import CountUp from '../CountUp';
 
 export default class CardStatus extends Component {
   static defaultProps = {
-    avgBlockTime: '1.50 minutes',
+    avgBlockTime: '90 seconds',
     blocks: 0,
     peers: 0,
     status: 'Offline'
