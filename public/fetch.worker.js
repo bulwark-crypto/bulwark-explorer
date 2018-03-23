@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "921ea5526a4329d2b28f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "bef0dc9eb68287f9aec3"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -879,7 +879,7 @@ var getTXs = function getTXs(query) {
 
 // Request the transactions for a week.
 var getTXsWeek = function getTXsWeek(query) {
-  return fetch(api + '/tx/days', query);
+  return fetch(api + '/tx/week', query);
 };
 
 // Request the latest transactions.
