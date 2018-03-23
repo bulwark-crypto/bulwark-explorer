@@ -56,7 +56,7 @@ class Statistics extends Component {
             <div>
               <GraphLine
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.diff ? c.diff : 0.0) }
+                data={ this.state.coins.reverse().map(c => c.netHash ? c.netHash : 0.0) }
                 height="100px"
                 hideLines={ false }
                 labels={ this.state.coins.reverse().map(c => c.createdAt) } />
@@ -69,10 +69,10 @@ class Statistics extends Component {
             <div>
               <GraphLine
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.diff ? c.diff : 0.0) }
+                data={ this.state.txs.reverse().map(c => c.total ? c.total : 0.0) }
                 height="100px"
                 hideLines={ false }
-                labels={ this.state.coins.reverse().map(c => c.createdAt) } />
+                labels={ this.state.txs.reverse().map(c => c._id) } />
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ class Statistics extends Component {
             <div>
               <GraphLine
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.diff ? c.diff : 0.0) }
+                data={ this.state.coins.reverse().map(c => c.usd ? c.usd : 0.0) }
                 height="100px"
                 hideLines={ false }
                 labels={ this.state.coins.reverse().map(c => c.createdAt) } />
@@ -97,7 +97,7 @@ class Statistics extends Component {
             <div>
               <GraphLine
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.diff ? c.diff : 0.0) }
+                data={ this.state.coins.reverse().map(c => c.mnsOn ? c.mnsOn : 0) }
                 height="100px"
                 hideLines={ false }
                 labels={ this.state.coins.reverse().map(c => c.createdAt) } />

@@ -16,7 +16,7 @@ router.get('/peer', blockex.getPeer);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
 router.get('/tx/latest', blockex.getTXLatest);
-router.get('/tx/week', blockex.getTXsWeek);
+router.get('/tx/days', blockex.getTXsWeek);
 router.get('/tx/:hash', blockex.getTX);
 
 // Iquidus Explorer routes.

@@ -249,11 +249,15 @@ const getTXs = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTXsWeek = async (req, res) => {
+const getTXs3Days = async (req, res) => {
   try {
-    const date = moment().utc().subtract(7, 'days').toDate();
-    const qry = { createdAt: { $gt: date } };
-    const txs = await TX.find(qry).sort({ blockHeight: -1 });
+    const date = moment().utc().subtract(3, 'days').toDate();
+    const qry = [
+      { $match: { createdAt: { $gt: date } } },
+      { $project: { date: { $dateToString: '%Y-%M-%D', date: '$date' } } },
+      { $sort: { blockHeight: -1 } }
+    ];
+    const txs = await TX.aggregate(qry);
 
     res.json(txs);
   } catch(err) {
@@ -275,5 +279,5 @@ module.exports =  {
   getTXLatest,
   getTX,
   getTXs,
-  getTXsWeek
+  getTXs3Days
 };

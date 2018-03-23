@@ -64,7 +64,7 @@ export const getCoinHistory = (dispatch, query) => {
 
 export const getCoinsWeek = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('coinWeek', resolve, reject);
+    getFromWorker('coins-week', resolve, reject);
   });
 };
 
@@ -93,7 +93,7 @@ export const getPeers = () => {
 
 export const getTop100 = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('top100', resolve, reject);
+    getFromWorker('top-100', resolve, reject);
   });
 };
 
@@ -147,7 +147,7 @@ export const getTXs = (dispatch, query) => {
 
 export const getTXsWeek = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('txWeek', resolve, reject);
+    getFromWorker('txs-week', resolve, reject);
   });
 };
 

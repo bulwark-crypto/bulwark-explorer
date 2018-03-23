@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "70adc1bba36b5336337e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "921ea5526a4329d2b28f"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -879,7 +879,7 @@ var getTXs = function getTXs(query) {
 
 // Request the transactions for a week.
 var getTXsWeek = function getTXsWeek(query) {
-  return fetch(api + '/tx/week', query);
+  return fetch(api + '/tx/days', query);
 };
 
 // Request the latest transactions.
@@ -900,7 +900,7 @@ self.addEventListener('message', function (ev) {
     case 'coins':
       action = getCoins;
       break;
-    case 'coinWeek':
+    case 'coins-week':
       action = getCoinsWeek;
       break;
     case 'peers':
@@ -909,7 +909,7 @@ self.addEventListener('message', function (ev) {
     case 'mns':
       action = getMNs;
       break;
-    case 'top100':
+    case 'top-100':
       action = getTop100;
       break;
     case 'tx':
@@ -921,7 +921,7 @@ self.addEventListener('message', function (ev) {
     case 'txs-latest':
       action = getTXsLatest;
       break;
-    case 'txsWeek':
+    case 'txs-week':
       action = getTXsWeek;
       break;
   }
