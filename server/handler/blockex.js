@@ -254,7 +254,7 @@ const getTXsWeek = async (req, res) => {
     const date = moment().utc().subtract(7, 'days').toDate();
     const qry = [
       { $match: { createdAt: { $gt: date } } },
-      { $project: { date: { $dateToString: { format: '%Y-%M-%D', date: '$createdAt' } } } },
+      { $project: { date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } } } },
       { $sort: { date: 1 } }
     ];
     const txs = await TX.aggregate(qry);
