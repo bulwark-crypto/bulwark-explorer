@@ -57,7 +57,7 @@ class Statistics extends Component {
               <GraphLine
                 color="#1991eb"
                 data={ this.state.coins.reverse().map(c => c.netHash ? c.netHash : 0.0) }
-                height="100px"
+                height="420px"
                 hideLines={ false }
                 labels={ this.state.coins.reverse().map(c => c.createdAt) } />
             </div>
@@ -69,10 +69,10 @@ class Statistics extends Component {
             <div>
               <GraphLine
                 color="#1991eb"
-                data={ this.state.txs.reverse().map(c => c.total ? c.total : 0.0) }
-                height="100px"
+                data={ this.state.txs.map(c => c.date ? c.date : 0.0) }
+                height="420px"
                 hideLines={ false }
-                labels={ this.state.txs.reverse().map(c => c._id) } />
+                labels={ this.state.txs.map(c => c.date) } />
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ class Statistics extends Component {
               <GraphLine
                 color="#1991eb"
                 data={ this.state.coins.reverse().map(c => c.usd ? c.usd : 0.0) }
-                height="100px"
+                height="420px"
                 hideLines={ false }
                 labels={ this.state.coins.reverse().map(c => c.createdAt) } />
             </div>
@@ -98,7 +98,7 @@ class Statistics extends Component {
               <GraphLine
                 color="#1991eb"
                 data={ this.state.coins.reverse().map(c => c.mnsOn ? c.mnsOn : 0) }
-                height="100px"
+                height="420px"
                 hideLines={ false }
                 labels={ this.state.coins.reverse().map(c => c.createdAt) } />
             </div>

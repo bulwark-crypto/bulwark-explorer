@@ -249,21 +249,34 @@ const getTXs = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTXsWeek = async (req, res) => {
-  try {
-    const date = moment().utc().subtract(7, 'days').toDate();
-    const qry = [
-      { $match: { createdAt: { $gt: date } } },
-      { $project: { date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } } } },
-      { $sort: { date: 1 } }
-    ];
-    const txs = await TX.aggregate(qry);
+const getTXsWeek = () => {
+  // Aggregate the data and build the date list.
+  const getTXs = async () => {
+    try {
+      const start = moment().utc().startOf('day').subtract(7, 'days').toDate();
+      const end = moment().utc().endOf('day').toDate();
+      const qry = [
+        // Select last 7 days of txs.
+        { $match: { createdAt: { $gt: start, $lt: end } } },
+        // Convert createdAt date field to date string.
+        { $project: { date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } } } },
+        // Group by date string and build total/sum.
+        { $group: { _id: '$date', total: { $sum: 1 } } },
+        // Sort by _id/date field in ascending order (order -> newer)
+        { $sort: { _id: 1 } }
+      ];
+      const txs = await TX.aggregate(qry);
 
-    res.json(txs);
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
+      res.json(txs);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err.message || err);
+    }
+  };
+
+  return async (req, res) => {
+
+  };
 };
 
 module.exports =  {
