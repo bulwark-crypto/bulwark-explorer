@@ -155,8 +155,8 @@ class App extends Component {
                 <Route exact path="/tx/:hash" component={ TX } />
                 <Route component={ Error404 } />
               </Switch>
+              <Footer />
             </div>
-            <Footer />
           </div>
         </div>
       </HashRouter>

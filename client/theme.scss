@@ -167,7 +167,7 @@ h1, h2, h3, h4, h5, h6 {
 	flex: 1;
 	overflow-y: auto;
 
-	@media (min-width: 1400px) {
+	@media (min-width: 1600px) {
 		padding-left: $menu-width-open;
 		padding-right: $menu-width-open;
 	}
@@ -176,11 +176,19 @@ h1, h2, h3, h4, h5, h6 {
 		margin-top: $menu-mobile-height;
 	}
 
+	@include media-breakpoint-up(md) {
+		margin-bottom: 159px;
+	}
+
+	@include media-breakpoint-up(lg) {
+		margin-bottom: 112px;
+	}
+
     &__wrapper {
-		background-color: white;
+		background-color: $white;
 	    margin: 0 auto;
 	    min-height: 80vh;
-    	padding: 1em 2em 2em;
+		padding: 1em 2em 2em;
 	    position: relative;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
     }
