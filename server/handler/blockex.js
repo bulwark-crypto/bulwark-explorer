@@ -96,6 +96,24 @@ const getCoinHistory = (req, res) => {
 };
 
 /**
+ * Return all the coins for an entire week.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getCoinsWeek = async (req, res) => {
+  try {
+    const date = moment().utc().subtract(7, 'days').toDate();
+    const qry = { createdAt: { $gt: date } };
+    const coins = await Coin.find(qry).sort({ blockHeight: -1 });
+
+    res.json(coins);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Get list of masternodes from the server.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -226,16 +244,36 @@ const getTXs = async (req, res) => {
   }
 };
 
+/**
+ * Return all the transactions for an entire week.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getTXsWeek = async (req, res) => {
+  try {
+    const date = moment().utc().subtract(7, 'days').toDate();
+    const qry = { createdAt: { $gt: date } };
+    const txs = await TX.find(qry).sort({ blockHeight: -1 });
+
+    res.json(txs);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
 module.exports =  {
   getAddress,
   getBlock,
   getCoin,
   getCoinHistory,
+  getCoinsWeek,
   getMasternodes,
   getMasternodeCount,
   getPeer,
   getTop100,
   getTXLatest,
   getTX,
-  getTXs
+  getTXs,
+  getTXsWeek
 };

@@ -20,6 +20,7 @@ import Masternode from './container/Masternode';
 import Movement from './container/Movement';
 import Overview from './container/Overview';
 import Peer from './container/Peer';
+import Statistics from './container/Statistics';
 import Top100 from './container/Top100';
 import TX from './container/TX';
 
@@ -151,6 +152,7 @@ class App extends Component {
                 <Route exact path="/masternode" component={ Masternode } />
                 <Route exact path="/movement" component={ Movement } />
                 <Route exact path="/peer" component={ Peer } />
+                <Route exact path="/statistics" component={ Statistics } />
                 <Route exact path="/top" component={ Top100 } />
                 <Route exact path="/tx/:hash" component={ TX } />
                 <Route component={ Error404 } />

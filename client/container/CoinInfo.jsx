@@ -25,11 +25,11 @@ class CoinInfo extends Component {
               <img className="img-fluid" src="/img/largelogo.svg" />
             </div>
             <div className="row">
-              <div className="col-sm-12 col-md-4">
+              <div className="col-sm-12 col-md-3">
                 <CardLinks />
                 <CardExchanges />
               </div>
-              <div className="col-sm-12 col-md-8">
+              <div className="col-sm-12 col-md-9">
                 <CardEarnings coin={ this.props.coin } />
               </div>
             </div>

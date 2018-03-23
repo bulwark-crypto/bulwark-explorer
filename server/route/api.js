@@ -9,12 +9,14 @@ router.get('/address/:hash', blockex.getAddress);
 router.get('/block/:hash', blockex.getBlock);
 router.get('/coin', blockex.getCoin);
 router.get('/coin/history', blockex.getCoinHistory);
+router.get('/coin/week', blockex.getCoinsWeek);
 router.get('/masternode', blockex.getMasternodes);
 router.get('/masternodecount', blockex.getMasternodeCount);
 router.get('/peer', blockex.getPeer);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
 router.get('/tx/latest', blockex.getTXLatest);
+router.get('/tx/week', blockex.getTXsWeek);
 router.get('/tx/:hash', blockex.getTX);
 
 // Iquidus Explorer routes.

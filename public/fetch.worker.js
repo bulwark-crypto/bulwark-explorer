@@ -56,7 +56,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "448f89244fdf3e63c7c5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "70adc1bba36b5336337e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -847,6 +847,11 @@ var getCoins = function getCoins(query) {
   return fetch(api + '/coin/history', query);
 };
 
+// Request the coins for a week.
+var getCoinsWeek = function getCoinsWeek(query) {
+  return fetch(api + '/coin/week', query);
+};
+
 // Request the list of masternodes.
 var getMNs = function getMNs(query) {
   return fetch(api + '/masternode', query);
@@ -872,6 +877,11 @@ var getTXs = function getTXs(query) {
   return fetch(api + '/tx', query);
 };
 
+// Request the transactions for a week.
+var getTXsWeek = function getTXsWeek(query) {
+  return fetch(api + '/tx/week', query);
+};
+
 // Request the latest transactions.
 var getTXsLatest = function getTXsLatest(query) {
   return fetch(api + '/tx/latest', query);
@@ -890,6 +900,9 @@ self.addEventListener('message', function (ev) {
     case 'coins':
       action = getCoins;
       break;
+    case 'coinWeek':
+      action = getCoinsWeek;
+      break;
     case 'peers':
       action = getPeers;
       break;
@@ -907,6 +920,9 @@ self.addEventListener('message', function (ev) {
       break;
     case 'txs-latest':
       action = getTXsLatest;
+      break;
+    case 'txsWeek':
+      action = getTXsWeek;
       break;
   }
 

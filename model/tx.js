@@ -32,7 +32,7 @@ const TX = mongoose.model('TX', new mongoose.Schema({
   __v: { select: false, type: Number },
   blockHash: { required: true, type: String },
   blockHeight: { required: true, type: Number },
-  createdAt: { required: true, type: Date },
+  createdAt: { index: 1, required: true, type: Date },
   txId: { index: 1, required: true, type: String },
   version: { required: true, type: Number },
   vin: { required: true, type: [TXIn] },

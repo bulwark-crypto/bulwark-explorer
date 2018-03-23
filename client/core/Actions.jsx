@@ -62,6 +62,12 @@ export const getCoinHistory = (dispatch, query) => {
   });
 };
 
+export const getCoinsWeek = () => {
+  return new promise((resolve, reject) => {
+    getFromWorker('coinWeek', resolve, reject);
+  });
+};
+
 export const getMNs = (query) => {
   return new promise((resolve, reject) => {
     getFromWorker('mns', resolve, reject, query);
@@ -97,27 +103,6 @@ export const getTX = (query) => {
   });
 };
 
-export const getTXs = (dispatch, query) => {
-  return new promise((resolve, reject) => {
-    getFromWorker(
-      'txs',
-      (payload) => {
-        if (dispatch) {
-          dispatch({ payload, type: TXS });
-        }
-        resolve(payload);
-      },
-      (payload) => {
-        if (dispatch) {
-          dispatch({ payload, type: ERROR });
-        }
-        reject(payload);
-      },
-      query
-    );
-  });
-};
-
 export const getTXLatest = (dispatch, query) => {
   return new promise((resolve, reject) => {
     getFromWorker(
@@ -139,6 +124,33 @@ export const getTXLatest = (dispatch, query) => {
   });
 };
 
+export const getTXs = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    getFromWorker(
+      'txs',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: TXS });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
+export const getTXsWeek = () => {
+  return new promise((resolve, reject) => {
+    getFromWorker('txWeek', resolve, reject);
+  });
+};
+
 export const setTXs = (dispatch, txs) => {
   dispatch({ payload: txs, type: TXS });
 };
@@ -151,12 +163,14 @@ export default {
   getAddress,
   getBlock,
   getCoinHistory,
+  getCoinsWeek,
   getMNs,
   getPeers,
   getTop100,
   getTX,
-  getTXs,
   getTXLatest,
+  getTXs,
+  getTXsWeek,
   setTXs,
   setWatch
 };
