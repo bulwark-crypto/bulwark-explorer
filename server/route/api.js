@@ -9,7 +9,7 @@ router.get('/address/:hash', blockex.getAddress);
 router.get('/block/:hash', blockex.getBlock);
 router.get('/coin', blockex.getCoin);
 router.get('/coin/history', blockex.getCoinHistory);
-router.get('/coin/week', blockex.getCoinsWeek);
+router.get('/coin/week', blockex.getCoinsWeek());
 router.get('/masternode', blockex.getMasternodes);
 router.get('/masternodecount', blockex.getMasternodeCount);
 router.get('/peer', blockex.getPeer);

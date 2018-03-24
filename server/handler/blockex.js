@@ -116,7 +116,7 @@ const getCoinsWeek = () => {
       const start = moment().utc().startOf('day').subtract(7, 'days').toDate();
       const end = moment().utc().endOf('day').toDate();
       const qry = [
-        // Select last 7 days of txs.
+        // Select last 7 days of coins.
         { $match: { createdAt: { $gt: start, $lt: end } } },
         // Sort by _id/date field in ascending order (order -> newer)
         { $sort: { createdAt: 1 } }
