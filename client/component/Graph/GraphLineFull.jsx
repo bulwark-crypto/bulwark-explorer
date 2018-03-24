@@ -7,7 +7,7 @@ import React from 'react';
 
 export default class GraphLineFull extends Component {
   static defaultProps = {
-    color: 'rgba(0,255,0,1)',
+    color: 'rgba(25, 145, 235, 1)',
     data: [],
     labels: []
   };
@@ -74,8 +74,8 @@ export default class GraphLineFull extends Component {
     let gradientFill;
     if (ctx) {
       gradientFill = ctx.createLinearGradient(canvas.width/2, 0, canvas.width/2, canvas.height*2);
-      gradientFill.addColorStop(0, "rgba(0, 0, 255, 0.6)");
-      gradientFill.addColorStop(1, "rgba(0, 0, 255, 0.0)");
+      gradientFill.addColorStop(0, "rgba(25, 145, 235, 0.6)");
+      gradientFill.addColorStop(1, "rgba(25, 145, 235, 0.0)");
     } else {
       gradientFill = false;
     }
@@ -147,7 +147,22 @@ export default class GraphLineFull extends Component {
         },
         title: {
           display: true
-        }
+        },
+        tooltips: {
+          backgroundColor: 'white',
+          bodyFontColor: '#161616',
+          bodyFontFamily: "'bariol', sans-serif",
+          bodyFontSize: 16,
+          bodyFontStyle: 'bold',
+          borderColor: '#cccccc',
+          borderWidth: 1,
+          displayColors: false,
+          titleFontColor: '#565656',
+          titleFontFamily: "'Source Sans Pro', sans-serif",
+          titleFontSize: 12,
+          xPadding: 10,
+          yPadding: 10
+        },
       }
     };
   };

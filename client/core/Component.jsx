@@ -6,6 +6,24 @@ import Loading from '../component/Loading';
 
 export default class Component extends React.Component {
   /**
+   * Format network hash power a second into:
+   *  - TH
+   *  - GH
+   *  - MH
+   *  - kH
+   */
+  formatNetHash = (hash) => {
+    const labels = ['H', 'kH', 'MH', 'GH', 'TH'];
+    let idx = 0;
+    while (hash > 1000) {
+      hash = hash / 1000;
+      idx++;
+    }
+
+    return { hash, label: labels[idx] };
+  };
+
+  /**
    * Generate a random string.
    */
   randomString = () => {

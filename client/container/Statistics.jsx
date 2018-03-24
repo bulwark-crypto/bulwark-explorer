@@ -2,6 +2,7 @@
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -61,28 +62,64 @@ class Statistics extends Component {
     const avgTX = ((tTX / 7) / 24) / this.state.txs.length;
     const diff = coin.diff;
 
-    const labels = ['H', 'kH', 'MH', 'GH', 'TH'];
-    let hash = coin.netHash;
-    let idx = 0;
-    while (hash > 1000) {
-      hash = hash / 1000;
-      idx++;
-    }
+    // Setup network hash values for graph title.
+    const netHash = this.formatNetHash(coin.netHash);
+
+    // Setup graph data objects.
+    const hashes = new Map();
+    const mns = new Map();
+    const prices = new Map();
+    this.state.coins.forEach((c) => {
+      const k = moment(c.createdAt).format('MMM DD');
+
+      if (hashes.has(k)) {
+        hashes.set(k, hashes.get(k) + c.netHash);
+      } else {
+        hashes.set(k, c.netHash);
+      }
+
+      if (mns.has(k)) {
+        mns.set(k, mns.get(k) + c.mnsOn);
+      } else {
+        mns.set(k, c.mnsOn);
+      }
+
+      if (prices.has(k)) {
+        prices.set(k, prices.get(k) + c.usd);
+      } else {
+        prices.set(k, c.usd);
+      }
+    });
+
+    // Generate averages for each key in each map.
+    const l = (24 * 60) / 5; // How many 5 min intervals in a day.
+    hashes.forEach((v, k) => {
+      const { hash } = this.formatNetHash(v / l);
+      hashes.set(k, numeral(hash).format('0,0.00'));
+    });
+    mns.forEach((v, k) => mns.set(k, v / l));
+    prices.forEach((v, k) => prices.set(k, v / l));
+
+    // Setup the labels for the transactions per day map.
+    const txs = new Map();
+    this.state.txs.forEach((t) => {
+      txs.set(moment(t._id, 'YYYY-MM-DD').format('MMM DD'), t.total);
+    });
 
     return (
       <div>
         <div className="row">
           <div className="col-md-12 col-lg-6">
             <h3>Network Hash Rate Last 7 Days</h3>
-            <h4>{ numeral(hash).format('0,0.0000') } { labels[idx] }/s</h4>
+            <h4>{ numeral(netHash.hash).format('0,0.0000') } { netHash.label }/s</h4>
             <h5>Difficulty: { numeral(diff).format('0,0.0000') }</h5>
             <div>
               <GraphLineFull
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.netHash ? c.netHash : 0.0) }
+                data={ Array.from(hashes.values()) }
                 height="420px"
                 hideLines={ false }
-                labels={ this.state.coins.reverse().map(c => c.createdAt) } />
+                labels={ Array.from(hashes.keys()) } />
             </div>
           </div>
           <div className="col-md-12 col-lg-6">
@@ -92,10 +129,10 @@ class Statistics extends Component {
             <div>
               <GraphLineFull
                 color="#1991eb"
-                data={ this.state.txs.map(c => c.total ? c.total : 0.0) }
+                data={ Array.from(txs.values()) }
                 height="420px"
                 hideLines={ false }
-                labels={ this.state.txs.map(c => c._id) } />
+                labels={ Array.from(txs.keys()) } />
             </div>
           </div>
         </div>
@@ -107,10 +144,10 @@ class Statistics extends Component {
             <div>
               <GraphLineFull
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.usd ? c.usd : 0.0) }
+                data={ Array.from(prices.values()) }
                 height="420px"
                 hideLines={ false }
-                labels={ this.state.coins.reverse().map(c => c.createdAt) } />
+                labels={ Array.from(prices.keys()) } />
             </div>
           </div>
           <div className="col-md-12 col-lg-6">
@@ -120,10 +157,10 @@ class Statistics extends Component {
             <div>
               <GraphLineFull
                 color="#1991eb"
-                data={ this.state.coins.reverse().map(c => c.mnsOn ? c.mnsOn : 0) }
+                data={ Array.from(mns.values()) }
                 height="420px"
                 hideLines={ false }
-                labels={ this.state.coins.reverse().map(c => c.createdAt) } />
+                labels={ Array.from(mns.keys()) } />
             </div>
           </div>
         </div>
