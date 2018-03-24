@@ -113,8 +113,8 @@ const getCoinsWeek = () => {
     loading = true;
 
     try {
-      const start = moment().utc().startOf('day').subtract(7, 'days').toDate();
-      const end = moment().utc().startOf('day').toDate();
+      const start = moment().utc().startOf('day').subtract(8, 'days').toDate();
+      const end = moment().utc().endOf('day').subtract(1, 'days').toDate();
       const qry = [
         // Select last 7 days of coins.
         { $match: { createdAt: { $gt: start, $lt: end } } },
@@ -293,8 +293,8 @@ const getTXsWeek = () => {
     loading = true;
 
     try {
-      const start = moment().utc().startOf('day').subtract(7, 'days').toDate();
-      const end = moment().utc().startOf('day').toDate();
+      const start = moment().utc().startOf('day').subtract(8, 'days').toDate();
+      const end = moment().utc().endOf('day').subtract(1, 'days').toDate();
       const qry = [
         // Select last 7 days of txs.
         { $match: { createdAt: { $gt: start, $lt: end } } },
