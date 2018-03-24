@@ -97,8 +97,8 @@ class Statistics extends Component {
       const { hash } = this.formatNetHash(v / l);
       hashes.set(k, numeral(hash).format('0,0.00'));
     });
-    mns.forEach((v, k) => mns.set(k, v / l));
-    prices.forEach((v, k) => prices.set(k, v / l));
+    mns.forEach((v, k) => mns.set(k, numeral(v / l).format('0,0')));
+    prices.forEach((v, k) => prices.set(k, numeral(v / l).format('0,0.00')));
 
     // Setup the labels for the transactions per day map.
     const txs = new Map();
