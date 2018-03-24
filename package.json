@@ -7,7 +7,7 @@
   "author": "Dustin Engle <dustin@dustinengle.com>",
   "license": "MIT",
   "scripts": {
-    "build": "yarn run build:web",
+    "build": "NODE_ENV=production yarn run build:web",
     "build:web": "webpack --progress --colors",
     "cron:block": "node ./cron/block.js >> ./tmp/block.log",
     "cron:coin": "node ./cron/coin.js >> ./tmp/coin.log",
@@ -68,6 +68,7 @@
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.1",
+    "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "^3.11.0",
     "webpack-dev-server": "^2.11.1",
     "worker-loader": "^1.1.1"

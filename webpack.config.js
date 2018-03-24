@@ -2,10 +2,12 @@
 const compressionPlugin = require('compression-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const uglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
 
 const htmlPlugin = new htmlWebpackPlugin({
   filename: 'index.html',
+  hash: true,
   inject: 'body',
   template: './client/template.html'
 });
@@ -67,6 +69,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       Promise: 'bluebird'
     }),
+    new uglifyJsPlugin(),
     new compressionPlugin({
       algorithm: 'gzip',
       asset: '[path].gz[query]'
