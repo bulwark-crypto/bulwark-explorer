@@ -1,4 +1,5 @@
 
+const compressionPlugin = require('compression-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
@@ -65,6 +66,10 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     new webpack.ProvidePlugin({
       Promise: 'bluebird'
+    }),
+    new compressionPlugin({
+      algorithm: 'gzip',
+      asset: '[path].gz[query]'
     })
   ],
   resolve: {
