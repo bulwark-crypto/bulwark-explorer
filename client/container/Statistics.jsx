@@ -108,6 +108,10 @@ class Statistics extends Component {
 
     return (
       <div>
+        <div className="alert alert-info text-center">
+          Some charts show less than 7 days worth of data and start from March 20th.<br />
+          <small>This will not be an issue in a few days.</small>
+        </div>
         <div className="row">
           <div className="col-md-12 col-lg-6">
             <h3>Network Hash Rate Last 7 Days</h3>
