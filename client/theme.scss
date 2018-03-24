@@ -1,6 +1,4 @@
 
-@import "./sass/font";
-
 /* Variables */
 $black: #222222;
 $blue: #1991eb;
@@ -71,6 +69,7 @@ $pagination-disabled-bg:            $gray-light;
 $pagination-disabled-border-color:  $gray;
 
 @import "~bootstrap/scss/bootstrap.scss";
+@import "./sass/font";
 @import "./sass/card";
 @import "./sass/error";
 @import "./sass/form";

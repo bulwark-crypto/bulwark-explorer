@@ -2,10 +2,11 @@
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import GraphLine from '../component/Graph/GraphLine';
+import GraphLineFull from '../component/Graph/GraphLineFull';
 
 class Statistics extends Component {
   static propTypes = {
@@ -46,15 +47,37 @@ class Statistics extends Component {
       return this.renderLoading();
     }
 
+    const coin = this.state.coins.length
+      ? this.state.coins[this.state.coins.length - 1]
+      : {
+          diff: 0.0,
+          netHash: 0.0
+        };
+
+    let tTX = 0;
+    this.state.txs.forEach((tx) => {
+      tTX += tx.total;
+    });
+    const avgTX = ((tTX / 7) / 24) / this.state.txs.length;
+    const diff = coin.diff;
+
+    const labels = ['H', 'kH', 'MH', 'GH', 'TH'];
+    let hash = coin.netHash;
+    let idx = 0;
+    while (hash > 1000) {
+      hash = hash / 1000;
+      idx++;
+    }
+
     return (
       <div>
         <div className="row">
           <div className="col-md-12 col-lg-6">
-            <div className="">Network Hash Rate Last 7 Days</div>
-            <div className="">1416.2454</div>
-            <div className="">Difficulty: 123457.3244</div>
+            <h3>Network Hash Rate Last 7 Days</h3>
+            <h4>{ numeral(hash).format('0,0.0000') } { labels[idx] }/s</h4>
+            <h5>Difficulty: { numeral(diff).format('0,0.0000') }</h5>
             <div>
-              <GraphLine
+              <GraphLineFull
                 color="#1991eb"
                 data={ this.state.coins.reverse().map(c => c.netHash ? c.netHash : 0.0) }
                 height="420px"
@@ -63,26 +86,26 @@ class Statistics extends Component {
             </div>
           </div>
           <div className="col-md-12 col-lg-6">
-            <div className="">Transactions Last 7 Days</div>
-            <div className="">234545</div>
-            <div className="">Average: 2344 Per Second</div>
+            <h3>Transactions Last 7 Days</h3>
+            <h4>{ numeral(tTX).format('0,0') }</h4>
+            <h5>Average: { numeral(avgTX).format('0,0') } Per Hour</h5>
             <div>
-              <GraphLine
+              <GraphLineFull
                 color="#1991eb"
-                data={ this.state.txs.map(c => c.date ? c.date : 0.0) }
+                data={ this.state.txs.map(c => c.total ? c.total : 0.0) }
                 height="420px"
                 hideLines={ false }
-                labels={ this.state.txs.map(c => c.date) } />
+                labels={ this.state.txs.map(c => c._id) } />
             </div>
           </div>
         </div>
         <div className="row">
           <div className="col-md-12 col-lg-6">
-            <div className="">Bulwark Price USD</div>
-            <div className="">$1.45</div>
-            <div className="">0.0001423 BTC</div>
+            <h3>Bulwark Price USD</h3>
+            <h4>{ numeral(coin.usd).format('$0,0.00') }</h4>
+            <h5>{ numeral(coin.btc).format('0.00000000') } BTC</h5>
             <div>
-              <GraphLine
+              <GraphLineFull
                 color="#1991eb"
                 data={ this.state.coins.reverse().map(c => c.usd ? c.usd : 0.0) }
                 height="420px"
@@ -91,11 +114,11 @@ class Statistics extends Component {
             </div>
           </div>
           <div className="col-md-12 col-lg-6">
-            <div className="">Masternodes Online Last 7 Days</div>
-            <div className="">567</div>
-            <div className="">Seen: 654</div>
+            <h3>Masternodes Online Last 7 Days</h3>
+            <h4>{ coin.mnsOn }</h4>
+            <h5>Seen: { coin.mnsOn + coin.mnsOff }</h5>
             <div>
-              <GraphLine
+              <GraphLineFull
                 color="#1991eb"
                 data={ this.state.coins.reverse().map(c => c.mnsOn ? c.mnsOn : 0) }
                 height="420px"

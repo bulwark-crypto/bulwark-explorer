@@ -40,10 +40,10 @@ export default class CardStatus extends Component {
       <Card className="card--market" title="Market">
         <p className="card__data-main bariol">
           <CountUp
-            decimals={ 6 }
+            decimals={ 2 }
             duration={ 1 }
             end={ this.props.usd }
-            prefix={ 'BWK '}
+            prefix={ '$' }
             start={ 0 } />
         </p>
         <p className="card__data-sub">{ this.props.btc } BTC</p>
@@ -65,7 +65,6 @@ export default class CardStatus extends Component {
               color={ isPos ? '#61d75e' : '#ed1c24' }
               data={ this.props.yAxis.reverse() }
               height="100px"
-              hideLines={ true }
               labels={ this.props.xAxis.reverse() } />
           </div>
         </div>

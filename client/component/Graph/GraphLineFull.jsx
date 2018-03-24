@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class GraphLine extends Component {
+export default class GraphLineFull extends Component {
   static defaultProps = {
     color: 'rgba(0,255,0,1)',
     data: [],
@@ -68,19 +68,32 @@ export default class GraphLine extends Component {
     max = max + (max * 0.1);
     min = min - (min * 0.1);
 
+    // Setup the fill gradient.
+    const canvas = document.getElementById(this.id);
+    const ctx = canvas.getContext('2d');
+    let gradientFill;
+    if (ctx) {
+      gradientFill = ctx.createLinearGradient(canvas.width/2, 0, canvas.width/2, canvas.height*2);
+      gradientFill.addColorStop(0, "rgba(0, 0, 255, 0.6)");
+      gradientFill.addColorStop(1, "rgba(0, 0, 255, 0.0)");
+    } else {
+      gradientFill = false;
+    }
+
     return {
       type: 'line',
       data: {
         labels: this.props.labels,
         datasets: [{
+          backgroundColor: gradientFill,
           borderColor: this.props.color,
-          borderWidth: 4,
+          borderWidth: 2,
           cubicInterpolationMode: 'monotone', // default
           capBezierPoints: true,
           data: this.props.data,
-          fill: false,
+          fill: true,
           lineTension: 0.55,
-          pointRadius: 0,
+          pointRadius: 2,
           showLine: true,
           spanGaps: true,
           steppedLine: false
@@ -104,17 +117,16 @@ export default class GraphLine extends Component {
         scales: {
           xAxes: [{
             gridLines: {
-              display: false,
-              drawBorder: false
+              display: true,
+              drawBorder: true
             },
             pointLabels: {
-              display: false
+              display: true
             },
             scaleLabel: {
-              display: false
+              display: true
             },
             ticks: {
-              callback: () => null,
               stepSize: this.props.stepSize,
               suggestedMax: this.props.max || max,
               suggestedMin: this.props.min || min
@@ -122,20 +134,19 @@ export default class GraphLine extends Component {
           }],
           yAxes: [{
             gridLines: {
-              display: false,
-              drawBorder: false
+              display: true,
+              drawBorder: true
             },
             pointLabels: {
-              display: false
+              display: true
             },
             scaleLabel: {
-              display: false
-            },
-            ticks: { callback: () => null }
+              display: true
+            }
           }]
         },
         title: {
-          display: false
+          display: true
         }
       }
     };

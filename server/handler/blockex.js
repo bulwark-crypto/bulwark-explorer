@@ -97,20 +97,51 @@ const getCoinHistory = (req, res) => {
 
 /**
  * Return all the coins for an entire week.
+ * Method uses a closure for caching.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getCoinsWeek = async (req, res) => {
-  try {
-    const date = moment().utc().subtract(7, 'days').toDate();
-    const qry = { createdAt: { $gt: date } };
-    const coins = await Coin.find(qry).sort({ blockHeight: -1 });
+const getCoinsWeek = () => {
+  // When does the cache expire.
+  // For now this is hard coded.
+  let cache = [];
+  let cutOff = moment().utc().add(1, 'hour').unix();
+  let loading = true;
 
-    res.json(coins);
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
+  // Aggregate the data and build the date list.
+  const getCoins = async () => {
+    loading = true;
+
+    try {
+      const start = moment().utc().startOf('day').subtract(7, 'days').toDate();
+      const end = moment().utc().endOf('day').toDate();
+      const qry = [
+        // Select last 7 days of txs.
+        { $match: { createdAt: { $gt: start, $lt: end } } },
+        // Sort by _id/date field in ascending order (order -> newer)
+        { $sort: { createdAt: 1 } }
+      ];
+      cache = await Coin.aggregate(qry);
+    } catch(err) {
+      console.log(err);
+    } finally {
+      loading = false;
+    }
+  };
+
+  // Load the initial cache.
+  getCoins();
+
+  return async (req, res) => {
+    res.json(cache);
+
+    // If the cache has expired then go ahead
+    // and get a new one but return the current
+    // cache for this request.
+    if (!loading && cutOff <= moment().utc().unix()) {
+      await getCoins();
+    }
+  };
 };
 
 /**
@@ -246,12 +277,21 @@ const getTXs = async (req, res) => {
 
 /**
  * Return all the transactions for an entire week.
+ * Method uses a closure for caching.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
 const getTXsWeek = () => {
+  // When does the cache expire.
+  // For now this is hard coded.
+  let cache = [];
+  let cutOff = moment().utc().add(1, 'hour').unix();
+  let loading = true;
+
   // Aggregate the data and build the date list.
   const getTXs = async () => {
+    loading = true;
+
     try {
       const start = moment().utc().startOf('day').subtract(7, 'days').toDate();
       const end = moment().utc().endOf('day').toDate();
@@ -265,17 +305,26 @@ const getTXsWeek = () => {
         // Sort by _id/date field in ascending order (order -> newer)
         { $sort: { _id: 1 } }
       ];
-      const txs = await TX.aggregate(qry);
-
-      res.json(txs);
+      cache = await TX.aggregate(qry);
     } catch(err) {
       console.log(err);
-      res.status(500).send(err.message || err);
+    } finally {
+      loading = false;
     }
   };
 
-  return async (req, res) => {
+  // Load the initial cache.
+  getTXs();
 
+  return async (req, res) => {
+    res.json(cache);
+
+    // If the cache has expired then go ahead
+    // and get a new one but return the current
+    // cache for this request.
+    if (!loading && cutOff <= moment().utc().unix()) {
+      await getTXs();
+    }
   };
 };
 

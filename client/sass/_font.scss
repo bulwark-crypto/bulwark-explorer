@@ -81,6 +81,57 @@ $fontSmall: 'Source Sans Pro', sans-serif;
 html, body {
 	font-family: $fontSmall;
 	font-size: 16px;
+
+	* {
+		font-family: $fontSmall;
+	}
+}
+
+div {
+	font-family: $fontSmall;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	display: inline-block;
+	font-weight: normal !important;
+}
+
+h3 {
+	color: $black;
+	font-family: $fontLarge;
+	font-size: 20px;
+	height: 22px;
+	line-height: 22px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+h4 {
+	color: $black;
+	font-family: $fontLarge;
+	font-size: 26px;
+	font-weight: bold !important;
+	height: 28px;
+	line-height: 28px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+h5 {
+	color: $gray;
+	font-family: $fontSmall;
+	font-size: 14px;
+	height: 14px;
+	line-height: 14px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+p {
+	font-family: $fontSmall;
 }
 
 .bariol {

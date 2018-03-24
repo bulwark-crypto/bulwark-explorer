@@ -43,7 +43,6 @@ export default class CardMasternodeSummary extends Component {
           color="#1991eb"
           data={ this.props.yAxis.reverse() }
           height="100px"
-          hideLines={ true }
           labels={ this.props.xAxis.reverse() } />
       </Card>
     );
