@@ -11,9 +11,11 @@ import GraphLineFull from '../component/Graph/GraphLineFull';
 
 class Statistics extends Component {
   static propTypes = {
+    // State
+    coin: PropTypes.object.isRequired,
     // Dispatch
     getCoins: PropTypes.func.isRequired,
-    getTXs: PropTypes.func.isRequired,
+    getTXs: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -48,22 +50,11 @@ class Statistics extends Component {
       return this.renderLoading();
     }
 
-    const coin = this.state.coins.length
-      ? this.state.coins[this.state.coins.length - 1]
-      : {
-          diff: 0.0,
-          netHash: 0.0
-        };
-
     let tTX = 0;
     this.state.txs.forEach((tx) => {
       tTX += tx.total;
     });
     const avgTX = ((tTX / 7) / 24) / this.state.txs.length;
-    const diff = coin.diff;
-
-    // Setup network hash values for graph title.
-    const netHash = this.formatNetHash(coin.netHash);
 
     // Setup graph data objects.
     const hashes = new Map();
@@ -93,18 +84,37 @@ class Statistics extends Component {
 
     // Generate averages for each key in each map.
     const l = (24 * 60) / 5; // How many 5 min intervals in a day.
+    let avgHash, avgMN, avgPrice = 0.0;
+    let hashLabel = 'H/s';
     hashes.forEach((v, k) => {
-      const { hash } = this.formatNetHash(v / l);
+      const { hash, label } = this.formatNetHash(v / l);
+      hashLabel = label; // For use in graph.
+      avgHash += hash;
       hashes.set(k, numeral(hash).format('0,0.00'));
     });
-    mns.forEach((v, k) => mns.set(k, numeral(v / l).format('0,0')));
-    prices.forEach((v, k) => prices.set(k, numeral(v / l).format('0,0.00')));
+    mns.forEach((v, k) => {
+      avgMN += v / l;
+      mns.set(k, numeral(v / l).format('0,0'));
+    });
+    prices.forEach((v, k) => {
+      avgPrice += v / l;
+      prices.set(k, numeral(v / l).format('0,0.00'));
+    });
+    avgHash = avgHash / hashes.size;
+    avgMN = avgMN / mns.size;
+    avgPrice = avgPrice / prices.size;
+
+    // Get the current hash format and label.
+    const netHash = this.formatNetHash(this.props.coin.netHash);
 
     // Setup the labels for the transactions per day map.
     const txs = new Map();
     this.state.txs.forEach((t) => {
       txs.set(moment(t._id, 'YYYY-MM-DD').format('MMM DD'), t.total);
     });
+
+    // Get the current day of the month.
+    const day = (<small>{ moment().format('MMM DD') }</small>);
 
     return (
       <div>
@@ -115,27 +125,25 @@ class Statistics extends Component {
         <div className="row">
           <div className="col-md-12 col-lg-6">
             <h3>Network Hash Rate Last 7 Days</h3>
-            <h4>{ numeral(netHash.hash).format('0,0.0000') } { netHash.label }/s</h4>
-            <h5>Difficulty: { numeral(diff).format('0,0.0000') }</h5>
+            <h4>{ numeral(netHash.hash).format('0,0.0000') } { netHash.label }/s { day }</h4>
+            <h5>Difficulty: { numeral(this.props.coin.diff).format('0,0.0000') }</h5>
             <div>
               <GraphLineFull
                 color="#1991eb"
                 data={ Array.from(hashes.values()) }
                 height="420px"
-                hideLines={ false }
                 labels={ Array.from(hashes.keys()) } />
             </div>
           </div>
           <div className="col-md-12 col-lg-6">
             <h3>Transactions Last 7 Days</h3>
-            <h4>{ numeral(tTX).format('0,0') }</h4>
+            <h4>{ numeral(tTX).format('0,0') } { day }</h4>
             <h5>Average: { numeral(avgTX).format('0,0') } Per Hour</h5>
             <div>
               <GraphLineFull
                 color="#1991eb"
                 data={ Array.from(txs.values()) }
                 height="420px"
-                hideLines={ false }
                 labels={ Array.from(txs.keys()) } />
             </div>
           </div>
@@ -143,27 +151,25 @@ class Statistics extends Component {
         <div className="row">
           <div className="col-md-12 col-lg-6">
             <h3>Bulwark Price USD</h3>
-            <h4>{ numeral(coin.usd).format('$0,0.00') }</h4>
-            <h5>{ numeral(coin.btc).format('0.00000000') } BTC</h5>
+            <h4>{ numeral(this.props.coin.usd).format('$0,0.00') } { day }</h4>
+            <h5>{ numeral(this.props.coin.btc).format('0.00000000') } BTC</h5>
             <div>
               <GraphLineFull
                 color="#1991eb"
                 data={ Array.from(prices.values()) }
                 height="420px"
-                hideLines={ false }
                 labels={ Array.from(prices.keys()) } />
             </div>
           </div>
           <div className="col-md-12 col-lg-6">
             <h3>Masternodes Online Last 7 Days</h3>
-            <h4>{ coin.mnsOn }</h4>
-            <h5>Seen: { coin.mnsOn + coin.mnsOff }</h5>
+            <h4>{ this.props.coin.mnsOn } { day }</h4>
+            <h5>Seen: { this.props.coin.mnsOn + this.props.coin.mnsOff }</h5>
             <div>
               <GraphLineFull
                 color="#1991eb"
                 data={ Array.from(mns.values()) }
                 height="420px"
-                hideLines={ false }
                 labels={ Array.from(mns.keys()) } />
             </div>
           </div>
@@ -179,7 +185,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-
+  coin: state.coin
 });
 
 export default connect(mapState, mapDispatch)(Statistics);

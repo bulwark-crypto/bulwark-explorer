@@ -69,11 +69,13 @@ module.exports = {
     new webpack.ProvidePlugin({
       Promise: 'bluebird'
     }),
+    /*
     new uglifyJsPlugin(),
     new compressionPlugin({
       algorithm: 'gzip',
       asset: '[path].gz[query]'
     })
+    */
   ],
   resolve: {
     extensions: ['.js', '.jsx'],
