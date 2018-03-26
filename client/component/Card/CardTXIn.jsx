@@ -35,8 +35,7 @@ export default class CardTXIn extends Component {
           ...tx,
           txId: tx.txId
             ? (<Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>)
-            : tx.coinbase ? 'COINBASE' : '',
-          vout: tx.vout ? tx.vout : ''
+            : tx.coinbase ? 'COINBASE' : ''
         })) } />
     );
   };

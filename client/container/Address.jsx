@@ -49,8 +49,8 @@ class Address extends Component {
           limit: this.state.size,
           skip: (this.state.page - 1) * this.state.size
         })
-        .then(({ pages, txs }) => {
-          this.setState({ address, pages, txs, loading: false });
+        .then(({ pages, txs, utxo }) => {
+          this.setState({ address, pages, txs, utxo, loading: false });
         })
         .catch(error => this.setState({ error, loading: false }));
     });
@@ -80,7 +80,10 @@ class Address extends Component {
     return (
       <div>
         <HorizontalRule title="Wallet Info" />
-        <CardAddress address={ this.state.address } txs={ this.state.txs } />
+        <CardAddress
+          address={ this.state.address }
+          txs={ this.state.txs }
+          utxo={ this.state.utxo } />
         <HorizontalRule select={ select } title="Wallet Transactions" />
         <CardAddressTXs address={ this.state.address } txs={ this.state.txs } />
         <Pagination

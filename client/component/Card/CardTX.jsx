@@ -44,6 +44,12 @@ export default class CardTX extends Component {
           </span>
         </div>
         <div className="card__row">
+          <span className="card__label">Block Height:</span>
+          <span className="card__result">
+            <Link to={ `/block/${ this.props.tx.blockHeight }` }>{ this.props.tx.blockHeight }</Link>
+          </span>
+        </div>
+        <div className="card__row">
           <span className="card__label">Timestamp:</span>
           <span className="card__result">
             { dateFormat(this.props.tx.createdAt) }

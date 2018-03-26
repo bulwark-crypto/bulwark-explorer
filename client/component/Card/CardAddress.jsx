@@ -9,12 +9,14 @@ import React from 'react';
 export default class CardAddress extends Component {
   static defaultProps = {
     address: '',
-    txs: []
+    txs: [],
+    utxo: []
   };
 
   static propTypes = {
     address: PropTypes.string.isRequired,
-    txs: PropTypes.array.isRequired
+    txs: PropTypes.array.isRequired,
+    utxo: PropTypes.array.isRequired
   };
 
   componentDidMount() {
@@ -43,6 +45,8 @@ export default class CardAddress extends Component {
     let trecv = 0;
     let tsend = 0;
 
+    const balance = this.props.utxo.map(tx => tx.value).reduce((acc, val) => acc + val);
+
     return (
       <div className="row">
         <div className="col-md-12 col-lg-8">
@@ -62,11 +66,11 @@ export default class CardAddress extends Component {
               <span className="card__label">Total Received:</span>
               <span className="card__result">{ trecv }</span>
             </div>
+            */}
             <div className="card__row">
               <span className="card__label">Balance:</span>
-              <span className="card__result">{ numeral(trecv - tsend).format('0,0.0000') }</span>
+              <span className="card__result">{ numeral(balance).format('0,0.0000') }</span>
             </div>
-            */}
           </div>
         </div>
         <div className="col-md-12 col-lg-4">
