@@ -35,11 +35,11 @@ async function update() {
   try {
     locker.lock(type);
     await syncRich();
-    locker.unlock(type);
   } catch(err) {
     console.log(err);
     code = 1;
   } finally {
+    locker.unlock(type);
     exit(code);
   }
 }
