@@ -1,47 +1,47 @@
 
 require('babel-polyfill');
 const { exit } = require('../lib/cron');
-const { forEach } = require('p-iteration');
+const locker = require('../lib/locker');
 // Models.
 const Rich = require('../model/rich');
-const TX = require('../model/tx');
 const UTXO = require('../model/utxo');
 
 /**
  * Build the list of rich addresses from
  * unspent transactions.
  */
+async function syncRich() {
+  await Rich.remove({});
+
+  const addresses = await UTXO.aggregate([
+    { $group: { _id: '$address', sum: { $sum: '$value' } } },
+    { $sort: { sum: -1 } },
+    { $limit: 100 }
+  ]);
+
+  await Rich.insertMany(addresses.map(addr => ({
+    address: addr._id,
+    value: addr.sum
+  })));
+}
+
+/**
+ * Handle locking.
+ */
 async function update() {
+  const type = 'rich';
+  let code = 0;
+
   try {
-    await Rich.remove({});
-
-    // Clean up the rich list.
-    const utxo = await UTXO.find();
-    await forEach(utxo, async (tx) => {
-      const count = TX.find({ 'vin.txid': tx.txId, 'vin.vout': tx.n }).size();
-      if (count) {
-        await UTXO.remove({ n: tx.n, txId: tx.txId });
-      }
-    });
-
-    const addresses = await UTXO.aggregate([
-      { $group: { _id: '$address', sum: { $sum: '$value' } } },
-      { $sort: { sum: -1 } },
-      { $limit: 100 }
-    ]);
-
-    await Rich.insertMany(addresses.map((addr) => {
-      return new Rich({
-        address: addr._id,
-        value: addr.sum
-      });
-    }));
+    locker.lock(type);
+    await syncRich();
+    locker.unlock(type);
   } catch(err) {
     console.log(err);
-    exit(1);
+    code = 1;
+  } finally {
+    exit(code);
   }
-
-  exit();
 }
 
 update();
