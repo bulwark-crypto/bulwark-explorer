@@ -8,43 +8,46 @@ const worker = new fetchWorker();
 
 worker.onerror = (err) => {
   console.log(err);
+  return err;
 };
 
 worker.onmessage = (ev) => {
   const p = promises.get(ev.data.type);
   if (!p) {
-    return;
+    return false;
   }
 
   if (ev.data.error) {
     p.reject(ev.data.error);
     promises.delete(ev.data.type);
-    return;
+    return false;
   }
 
   p.resolve(ev.data.data);
+  return true;
 };
 
 const getFromWorker = (type, resolve, reject, query = null) => {
   promises.set(type, { resolve, reject });
   worker.postMessage({ query, type });
+  return true;
 };
 
 export const getAddress = (query) => {
   return new promise((resolve, reject) => {
-    getFromWorker('address', resolve, reject, query);
+    return getFromWorker('address', resolve, reject, query);
   });
 };
 
 export const getBlock = (query) => {
   return new promise((resolve, reject) => {
-    getFromWorker('block', resolve, reject, query);
+    return getFromWorker('block', resolve, reject, query);
   });
 };
 
 export const getCoinHistory = (dispatch, query) => {
   return new promise((resolve, reject) => {
-    getFromWorker(
+    return getFromWorker(
       'coins',
       (payload) => {
         if (payload && payload.length) {
@@ -64,19 +67,19 @@ export const getCoinHistory = (dispatch, query) => {
 
 export const getCoinsWeek = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('coins-week', resolve, reject);
+    return getFromWorker('coins-week', resolve, reject);
   });
 };
 
 export const getMNs = (query) => {
   return new promise((resolve, reject) => {
-    getFromWorker('mns', resolve, reject, query);
+    return getFromWorker('mns', resolve, reject, query);
   });
 };
 
 export const getPeers = () => {
   return new promise((resolve, reject) => {
-    getFromWorker(
+    return getFromWorker(
       'peers',
       (peers) => {
         resolve(peers.map((peer) => {
@@ -93,19 +96,19 @@ export const getPeers = () => {
 
 export const getTop100 = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('top-100', resolve, reject);
+    return getFromWorker('top-100', resolve, reject);
   });
 };
 
 export const getTX = (query) => {
   return new promise((resolve, reject) => {
-    getFromWorker('tx', resolve, reject, query);
+    return getFromWorker('tx', resolve, reject, query);
   });
 };
 
 export const getTXLatest = (dispatch, query) => {
   return new promise((resolve, reject) => {
-    getFromWorker(
+    return getFromWorker(
       'txs-latest',
       (payload) => {
         if (dispatch) {
@@ -126,7 +129,7 @@ export const getTXLatest = (dispatch, query) => {
 
 export const getTXs = (dispatch, query) => {
   return new promise((resolve, reject) => {
-    getFromWorker(
+    return getFromWorker(
       'txs',
       (payload) => {
         if (dispatch) {
@@ -147,7 +150,7 @@ export const getTXs = (dispatch, query) => {
 
 export const getTXsWeek = () => {
   return new promise((resolve, reject) => {
-    getFromWorker('txs-week', resolve, reject);
+    return getFromWorker('txs-week', resolve, reject);
   });
 };
 
