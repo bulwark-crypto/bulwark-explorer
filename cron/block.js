@@ -1,6 +1,7 @@
 
 require('babel-polyfill');
 const { exit, rpc } = require('../lib/cron');
+const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
 // Models.
 const Block = require('../model/block');
@@ -43,9 +44,30 @@ async function syncBlocks(current, stop) {
 
     // Ignore the genesis block.
     if (block.height) {
-      block.txs.forEach(async (txhash, index) => {
+      await forEachSeries(block.txs, async (txhash) => {
         const hex = await rpc.call('getrawtransaction', [txhash]);
         const rpctx = await rpc.call('decoderawtransaction', [hex]);
+
+        // Setup the input list for the transaction.
+        const txin = [];
+        if (rpctx.vin) {
+          const txIds = new Set();
+          rpctx.vin.forEach((vin) => {
+            txin.push({
+              coinbase: vin.coinbase,
+              sequence: vin.sequence,
+              txId: vin.txid,
+              vout: vin.vout
+            });
+
+            txIds.add(`${ vin.txid }:${ vin.vout }`);
+          });
+
+          // Remove unspent transactions.
+          if (txIds.size) {
+            await UTXO.remove({ _id: { $in: Array.from(txIds) } });
+          }
+        }
 
         // Setup the outputs for the transaction.
         const txout = [];
@@ -70,27 +92,6 @@ async function syncBlocks(current, stop) {
           // Insert unspent transactions.
           if (utxo.length) {
             await UTXO.insertMany(utxo);
-          }
-        }
-
-        // Setup the input list for the transaction.
-        const txin = [];
-        if (rpctx.vin) {
-          const txIds = new Set();
-          rpctx.vin.forEach(async (vin) => {
-            txin.push({
-              coinbase: vin.coinbase,
-              sequence: vin.sequence,
-              txId: vin.txid,
-              vout: vin.vout
-            });
-
-            txIds.add(`${ vin.txid }:${ vin.vout }`);
-          });
-
-          // Remove unspent transactions.
-          if (txIds.size) {
-            await UTXO.remove({ _id: { $in: Array.from(txIds) } });
           }
         }
 
