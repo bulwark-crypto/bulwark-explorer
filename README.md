@@ -1,10 +1,10 @@
 # BlockEx
-Simple block explorer system.
+Simple cryptocurrency block explorer system.
 
 __Under active development and subject to rapid sudden change.__
 
 ## Required
-This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be installed globally before continuing or changed will be needed below using your best judgement.
+This repo assumes `git`, `mongodb`, `node`, `yarn`, and are installed with configuration done.  Please adjust commands to your local environment. 
 
 ## Install
 `git clone https://github.com/dustinengle/blockex.git` - copy repo to local folder.
@@ -17,59 +17,54 @@ This repo uses `git`, `mongodb`, `node`, `yarn`, `vi` or `vim`, and should be in
 #### BlockEx API Configuration
 `cp config.js.template config.js` - setup configuration using template.
 
-`vi config.js` - replace with local values.
+`vim config.js` - replace with local values.
 
 #### Database Configuration
-`sudo mongod` - start mongodb, if not running.
-
 `mongo` - connect using mongo client.
 
-`use blockex` - to switch to database name.
+`use blockex` - switch to database.
 
-`db.createUser( { user: "blockexuser", pwd: "Explorer!1", roles: [ "readWrite" ] } )` - create a user with the values stored in the `config.js` file from above.
+`db.createUser( { user: "blockexuser", pwd: "Explorer!1", roles: [ "readWrite" ] } )` - create a user with the values stored in the `config.js` file from above, meaning they should match.
+
+`exit` - exit the mongo client.
 
 #### Crontab
-The following automated tasks are currently setup for BlockEx.  
+The following automated tasks are currently needed for BlockEx to update.  
+
+`yarn run cron:coin` - will fetch coin related information like price and supply from coinmarketcap.com.
+
+`yarn run cron:masternode` - updates the masternodes list in the database with the most recent information clearing old information before.
+
+`yarn run cron:peer` - gather the list of peers and fetch geographical IP information.
 
 `yarn run cron:block` - will sync blocks and transactions by storing them in the database.
 
-`yarn run cron:coin` - will coin related information like price and supply from coinmarketcap.com.
+`yarn run cron:rich` - generate the rich list. __*Under Development*__
 
-`yarn run cron:masternode` - will update the masternodes list in the database.
+__Note:__ is is recommended to run all the crons before editing the crontab to have the information right away.  Follow the order above, start with `cron:coin` and end with `cron:rich`.
 
-`yarn run cron:peer` - gather the list of peers and their IP information.
-
-`yarn run cron:rich` - generate the rich list or top 100. __*Under Development*__
-
-__Note:__ it is recommended to run `yarn run cron:block >> ./tmp/block.log` the first time manually.  The initial run will download the whole blockchain and put it into the database.  This can possibly take anywhere from minutes to hours depending on the size of the blockchain and other factors like hardware, bandwidth, etc.
-
-Before setting up the crontab please build the cron tasks by running `yarn run build:cron`.
-
-To setup the crontab please see run `crontab -e` to edit the crontab and paste the following lines:
+To setup the crontab please see run `crontab -e` to edit the crontab and paste the following lines (edit with your local information):
 ```
 */1 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/block.js >> ./tmp/block.log
 */5 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/coin.js >> ./tmp/coin.log
-*/15 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/rich.js >> ./tmp/rich.log
-0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/peer.js >> ./tmp/peer.log
 0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/masternode.js >> ./tmp/masternode.log
+0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/peer.js >> ./tmp/peer.log
+0 * * * * cd /path/to/blockex && /path/to/node ./dist/cron/rich.js >> ./tmp/rich.log
 ```
 
 ## Build
 At this time only the client web interface needs to be built using webpack and this can be done by running `yarn run build:web`.  This will bundle the application and put it in the `/public` folder for delivery.
 
 ## Run
-`sudo mongod` - start mongodb if not already running.
-
 `yarn run start:api` - will start the api.
 
-`yarn run start:web` - will start the web, open browser [http://localhost:8080](http://localhost:8080).
+`yarn run start:web` - will start the web, open browser [http://localhost:8081](http://localhost:8081).
 
 ## Test
 `yarn run test:client` - will run the client side tests.
 
 `yarn run test:server` - will test the rpc connection, database connection, and api endpoints.
 
-## TODO
-- Tests!!! - write those tests!
-- Cluster support for api.
-- Cron locking with `/tmp` folder.
+## To-Do
+- Write more tests
+- Cluster support for api
