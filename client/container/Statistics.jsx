@@ -118,6 +118,9 @@ class Statistics extends Component {
 
     return (
       <div>
+        <div className="alert alert-light text-center">
+          Please check back over the coming days while the statistics are gathered for display.
+        </div>
         <div className="row">
           <div className="col-md-12 col-lg-6">
             <h3>Network Hash Rate Last 7 Days</h3>
