@@ -12,6 +12,31 @@ const htmlPlugin = new htmlWebpackPlugin({
   template: './client/template.html'
 });
 
+const basePlugins = [
+  htmlPlugin,
+  new webpack.EnvironmentPlugin({
+    DEBUG: JSON.stringify(process.env.DEBUG || false),
+    NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
+  }),
+  new webpack.HotModuleReplacementPlugin(),
+  new webpack.NamedModulesPlugin(),
+  new webpack.ProvidePlugin({
+    Promise: 'bluebird'
+  })
+];
+
+const prodPlugins = [
+  new uglifyJsPlugin(),
+  new compressionPlugin({
+    algorithm: 'gzip',
+    asset: '[path].gz[query]'
+  })
+];
+
+const envPlugins = process.env.NODE_ENV === 'production'
+  ? [...basePlugins, ...prodPlugins]
+  : basePlugins;
+
 module.exports = {
   devServer: {
     compress: true,
@@ -62,21 +87,7 @@ module.exports = {
     path: path.resolve('public'),
     publicPath: '/'
   },
-  plugins: [
-    htmlPlugin,
-		new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
-    new webpack.ProvidePlugin({
-      Promise: 'bluebird'
-    }),
-    /*
-    new uglifyJsPlugin(),
-    new compressionPlugin({
-      algorithm: 'gzip',
-      asset: '[path].gz[query]'
-    })
-    */
-  ],
+  plugins: envPlugins,
   resolve: {
     extensions: ['.js', '.jsx'],
     modules: [
