@@ -27,7 +27,7 @@ async function syncPeer() {
     const url = `${ config.freegeoip.api }${ parts[0] }`;
     let geoip = {};
     if (/^\d\.\d\.\d\.\d$/.test(parts[0])) {
-      await fetch(url);
+      geoip = await fetch(url);
     }
 
     const p = new Peer({
