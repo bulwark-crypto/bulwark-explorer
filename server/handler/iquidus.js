@@ -4,6 +4,7 @@ const { rpc } = require('../../lib/cron');
 // Models
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
+const Rich = require('../../model/rich');
 
 // Get latest coin info helper method.
 const getCoin = async () => Coin.findOne().sort({ createdAt: -1 });
@@ -98,7 +99,7 @@ const getnetworkhashps = async (req, res) => {
 
 const getmoneysupply = async (req, res) => {
   try {
-    const coin = await getCoin();
+    const coin = await getCoin(); // TODO: update to actual supply from db.
     res.json(coin.supply);
   } catch(err) {
     console.log(err);
@@ -108,7 +109,7 @@ const getmoneysupply = async (req, res) => {
 
 const getdistribution = async (req, res) => {
   try {
-    res.json([]);
+    res.json([]); // TODO: update route.
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -117,7 +118,7 @@ const getdistribution = async (req, res) => {
 
 const getaddress = async (req, res) => {
   try {
-    res.json('');
+    res.json(''); // TODO: update route.
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -126,7 +127,8 @@ const getaddress = async (req, res) => {
 
 const getbalance = async (req, res) => {
   try {
-    res.json(0);
+    const rich = await Rich.find({ address: req.params.address });
+    res.json(rich.value);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);

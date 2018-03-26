@@ -10,9 +10,10 @@ const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
 const TX = require('../../model/tx');
+const UTXO = require('../../model/utxo');
 
 /**
- * Get transactions by address.
+ * Get transactions and unspent transactions by address.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
@@ -23,9 +24,11 @@ const getAddress = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const total = await TX.find(qry).sort({ blockHeight: -1 }).count();
     const txs = await TX.find(qry).skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const utxo = await UTXO.find({ address: req.params.hash }).sort({ blockHeight: -1 });
 
     res.json({
       txs,
+      utxo,
       pages: total <= limit ? 1 : Math.ceil(total / limit)
     });
   } catch(err) {
@@ -205,6 +208,7 @@ const getPeer = (req, res) => {
  */
 const getTop100 = (req, res) => {
   Rich.find()
+    .limit(100)
     .sort({ value: -1 })
     .then((docs) => {
       res.json(docs);
