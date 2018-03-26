@@ -209,6 +209,7 @@ const getPeer = (req, res) => {
 const getTop100 = (req, res) => {
   Rich.find()
     .limit(100)
+    .sort({ value: -1 })
     .then((docs) => {
       res.json(docs);
     })
