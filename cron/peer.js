@@ -28,6 +28,8 @@ async function syncPeer() {
     let geoip = {};
     if (/^\d\.\d\.\d\.\d$/.test(parts[0])) {
       geoip = await fetch(url);
+    } else {
+      return;
     }
 
     const p = new Peer({

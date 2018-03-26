@@ -49,7 +49,8 @@ class Top100 extends Component {
               <Link to={ `/address/${ wallet.address }` }>{ wallet.address }</Link>
             ),
             index: idx + 1,
-            percent: numeral((wallet.value / this.props.coin.supply) * 100.0).format('0,0.00')
+            percent: numeral((wallet.value / this.props.coin.supply) * 100.0).format('0,0.00'),
+            value: numeral(wallet.value).format('0,0.0000')
           })) } />
       </div>
     );
