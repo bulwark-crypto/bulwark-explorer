@@ -23,14 +23,12 @@ async function syncPeer() {
   const inserts = [];
   await forEach(peers, async (peer) => {
     const parts = peer.addr.split(':');
-
-    const url = `${ config.freegeoip.api }${ parts[0] }`;
-    let geoip = {};
-    if (/^\d\.\d\.\d\.\d$/.test(parts[0])) {
-      geoip = await fetch(url);
-    } else {
+    if (parts[0].substr(0, 1) === '[') {
       return;
     }
+
+    const url = `${ config.freegeoip.api }${ parts[0] }`;
+    let geoip = await fetch(url);
 
     const p = new Peer({
       _id: geoip.ip ? geoip.ip : parts[0],
