@@ -59,7 +59,8 @@ typings/
 
 # setings file for syste
 config.js
+*.cron_lock
 
 .DS_Store
 
-\.vscode/launch\.json
+.vscode/
