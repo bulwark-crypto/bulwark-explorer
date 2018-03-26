@@ -1,13 +1,18 @@
 
 const mongoose = require('mongoose');
 
+/**
+ * Peer
+ *
+ * The nodes currently connected to the blockex node.
+ */
 const Peer = mongoose.model('Peer', new mongoose.Schema({
   __v: { select: false, type: Number },
   _id: { required: true, select: false, type: String },
   country: { type: String },
   countryCode: { type: String },
-  createdAt: { index: 1, required: true, type: Date },
-  ip: { index: 1, required: true, type: String },
+  createdAt: { index: true, required: true, type: Date },
+  ip: { index: true, required: true, type: String },
   lat: { type: String },
   lon: { type: String },
   port: { type: Number },

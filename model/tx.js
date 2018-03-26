@@ -2,6 +2,8 @@
 const mongoose = require('mongoose');
 
 /**
+ * TXIn
+ *
  * The inputs for a tx.
  */
 const TXIn = new mongoose.Schema({
@@ -13,6 +15,8 @@ const TXIn = new mongoose.Schema({
 });
 
 /**
+ * TXOut
+ *
  * The outputs for a tx.
  */
 const TXOut = new mongoose.Schema({
@@ -23,6 +27,8 @@ const TXOut = new mongoose.Schema({
 });
 
 /**
+ * TX
+ *
  * The transaction object.  Very basic as
  * details will be requested by txid (hash)
  * from the node on demand.  A cache can be
@@ -30,10 +36,11 @@ const TXOut = new mongoose.Schema({
  */
 const TX = mongoose.model('TX', new mongoose.Schema({
   __v: { select: false, type: Number },
+  _id: { required: true, select: false, type: String },
   blockHash: { required: true, type: String },
   blockHeight: { required: true, type: Number },
-  createdAt: { index: 1, required: true, type: Date },
-  txId: { index: 1, required: true, type: String },
+  createdAt: { index: true, required: true, type: Date },
+  txId: { index: true, required: true, type: String },
   version: { required: true, type: Number },
   vin: { required: true, type: [TXIn] },
   vout: { required: true, type: [TXOut] }

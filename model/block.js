@@ -2,7 +2,9 @@
 const mongoose = require('mongoose');
 
 /**
- * Block is the system representation of a block
+ * Block
+ *
+ * Is the system representation of a block
  * that closely reflects that used on the network.
  */
 const Block = mongoose.model('Block', new mongoose.Schema({
