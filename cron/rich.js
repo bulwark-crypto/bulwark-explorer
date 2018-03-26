@@ -15,7 +15,7 @@ async function syncRich() {
 
   const addresses = await UTXO.aggregate([
     { $group: { _id: '$address', sum: { $sum: '$value' } } },
-    { $sort: { value: -1 } },
+    { $sort: { sum: -1 } },
     { $limit: 100 }
   ]);
 
