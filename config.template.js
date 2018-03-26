@@ -2,15 +2,18 @@
 /**
  * Global configuration object.
  */
+const isProduction = process.env.NODE_ENV === 'production';
+
 const config = {
+  'addressPrefix': 'b',
   'api': {
-    'host': 'http://explorer.bulwarkcrypto.com',
-    'port': '80',
+    'host': !isProduction ? 'localhost' : 'http://blockex.dustinengle.com',
+    'port': !isProduction ? '3000' : '80',
     'prefix': '/api',
-    'timeout': '10s'
+    'timeout': '5s'
   },
   'coinMarketCap': {
-    'api': 'https://api.coinmarketcap.com/v1/ticker/',
+    'api': 'http://api.coinmarketcap.com/v1/ticker/',
     'ticker': 'bulwark'
   },
   'db': {
@@ -25,11 +28,11 @@ const config = {
   },
   'rpc': {
     'host': '127.0.0.1',
-    'port': '13000',
+    'port': '7777',
     'user': 'bwk',
     'pass': 'password',
-    'timeout': 3000, // 3 seconds
+    'timeout': 5000, // 5 seconds
   }
 };
 
-module.exports =  config;
+module.exports = config;
