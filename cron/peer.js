@@ -25,14 +25,17 @@ async function syncPeer() {
     const parts = peer.addr.split(':');
 
     const url = `${ config.freegeoip.api }${ parts[0] }`;
-    const geoip = await fetch(url);
+    let geoip = {};
+    if (/^\d\.\d\.\d\.\d$/.test(parts[0])) {
+      await fetch(url);
+    }
 
     const p = new Peer({
-      _id: geoip.ip,
+      _id: geoip.ip ? geoip.ip : url,
       country: geoip.country_name,
       countryCode: geoip.country_code,
       createdAt: date,
-      ip: geoip.ip,
+      ip: geoip.ip ? geoip.ip : url,
       lat: geoip.latitude,
       lon: geoip.longitude,
       port: parts[1] ? parts[1] : 0,
