@@ -31,11 +31,11 @@ async function syncPeer() {
     }
 
     const p = new Peer({
-      _id: geoip.ip ? geoip.ip : url,
+      _id: geoip.ip ? geoip.ip : parts[0],
       country: geoip.country_name,
       countryCode: geoip.country_code,
       createdAt: date,
-      ip: geoip.ip ? geoip.ip : url,
+      ip: geoip.ip ? geoip.ip : parts[0],
       lat: geoip.latitude,
       lon: geoip.longitude,
       port: parts[1] ? parts[1] : 0,
