@@ -14,7 +14,9 @@ async function syncRich() {
   await Rich.remove({});
 
   const addresses = await UTXO.aggregate([
-    { $group: { _id: '$address', sum: { $sum: '$value' } } }
+    { $group: { _id: '$address', sum: { $sum: '$value' } } },
+    { $sort: { value: -1 } },
+    { $limit: 100 }
   ]);
 
   await Rich.insertMany(addresses.map(addr => ({
