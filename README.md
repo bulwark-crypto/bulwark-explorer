@@ -45,11 +45,11 @@ __Note:__ is is recommended to run all the crons before editing the crontab to h
 
 To setup the crontab please see run `crontab -e` to edit the crontab and paste the following lines (edit with your local information):
 ```
-*/1 * * * * cd /path/to/blockex && /path/to/node ./cron/block.js >> ./tmp/block.log
-*/5 * * * * cd /path/to/blockex && /path/to/node ./cron/coin.js >> ./tmp/coin.log
-0 * * * * cd /path/to/blockex && /path/to/node ./cron/masternode.js >> ./tmp/masternode.log
-0 * * * * cd /path/to/blockex && /path/to/node ./cron/peer.js >> ./tmp/peer.log
-0 * * * * cd /path/to/blockex && /path/to/node ./cron/rich.js >> ./tmp/rich.log
+*/1 * * * * cd /path/to/blockex && ./script/cron_block.sh >> ./tmp/block.log 2>&1
+*/5 * * * * cd /path/to/blockex && node ./cron/coin.js >> ./tmp/coin.log 2>&1
+0 * * * * cd /path/to/blockex && node ./cron/masternode.js >> ./tmp/masternode.log 2>&1
+0 * * * * cd /path/to/blockex && node ./cron/peer.js >> ./tmp/peer.log 2>&1
+0 * * * * cd /path/to/blockex && node ./cron/rich.js >> ./tmp/rich.log 2>&1
 ```
 
 ## Build
