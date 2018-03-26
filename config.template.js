@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const config = {
   'addressPrefix': 'b',
   'api': {
-    'host': !isProduction ? 'localhost' : 'http://blockex.dustinengle.com',
+    'host': !isProduction ? 'localhost' : 'http://195.201.58.253/',
     'port': !isProduction ? '3000' : '80',
     'prefix': '/api',
     'timeout': '5s'
