@@ -24,6 +24,7 @@ class Top100 extends Component {
     super(props);
     this.state = {
       cols: [
+        { key: 'index', title: '#' },
         { key: 'address', title: 'Address' },
         { key: 'value', title: 'Total' },
         { key: 'percent', title: '%' },
@@ -42,11 +43,12 @@ class Top100 extends Component {
         <HorizontalRule title="Top 100" />
         <Table
           cols={ this.state.cols }
-          data={ this.state.wallets.map(wallet => ({
+          data={ this.state.wallets.map((wallet, idx) => ({
             ...wallet,
             address: (
               <Link to={ `/address/${ wallet.address }` }>{ wallet.address }</Link>
             ),
+            index: idx + 1,
             percent: numeral((wallet.value / this.props.coin.supply) * 100.0).format('0,0.00')
           })) } />
       </div>
