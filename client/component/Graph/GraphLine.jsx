@@ -143,7 +143,9 @@ export default class GraphLine extends Component {
 
   render() {
     return (
-      <div style={{ height: this.props.height, width: this.props.width }}>
+      <div
+        className={ `${ this.props.className ? this.props.className : '' }` }
+        style={{ height: this.props.height, width: this.props.width }}>
         <canvas id={ this.id } />
       </div>
     );

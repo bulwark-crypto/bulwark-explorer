@@ -64,7 +64,7 @@ export default class CardStatus extends Component {
             <GraphLine
               color={ isPos ? '#61d75e' : '#ed1c24' }
               data={ this.props.yAxis.reverse() }
-              height="100px"
+              height="77px"
               labels={ this.props.xAxis.reverse() } />
           </div>
         </div>

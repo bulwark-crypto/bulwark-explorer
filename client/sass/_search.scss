@@ -1,4 +1,6 @@
 .search {
+	$search: &;
+
 	align-items: center;
 	border: 1px solid lighten($gray, 15%);
 	border-radius: 2px;
@@ -7,14 +9,25 @@
 	min-height: 4em;
 	padding: 0 20px;
 
+
 	&__icon {
 		margin-right: 1em;
+		opacity: .5;
+
+		#{$search}:hover & {
+			opacity: 1;
+		};
+
 	}
 
 	&__input {
 		border: 0;
 		flex: 1;
 		outline: none;
+
+		&:focus + svg {
+			opacity: 1;
+		};
 	}
 
 	&--mobile {
@@ -34,5 +47,6 @@
 	&--mobile input.search__input::placeholder {
 		color: $white;
 	}
+
 
 }

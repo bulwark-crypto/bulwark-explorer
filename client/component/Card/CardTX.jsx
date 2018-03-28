@@ -15,6 +15,8 @@ export default class CardTX extends Component {
 
   render() {
     let blockValue = 0.0;
+    const confirmValue = this.props.height - this.props.tx.blockHeight;
+    const confirmBadgeClass = (confirmValue > 0) ? (confirmValue < 6) ? 'primary' : 'success' : 'danger';
     if (this.props.tx.vout && this.props.tx.vout.length) {
       this.props.tx.vout.forEach(vout => blockValue += vout.value);
     }
@@ -28,8 +30,8 @@ export default class CardTX extends Component {
         <div className="card__row">
           <span className="card__label">Confirmations:</span>
           <span className="card__result">
-            <span className="badge badge-success">
-              { this.props.height - this.props.tx.blockHeight }
+            <span className={ `card__badge badge badge-${ confirmBadgeClass }` }>
+              { confirmValue }
             </span>
           </span>
         </div>

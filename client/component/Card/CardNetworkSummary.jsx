@@ -49,11 +49,13 @@ export default class CardNetworkSummary extends Component {
         <p className="card__data-sub">
           Difficulty: { numeral(this.props.difficulty).format('0,0.00') }
         </p>
-        <GraphLine
-          color="#1991eb"
-          data={ this.props.yAxis.reverse() }
-          height="100px"
-          labels={ this.props.xAxis.reverse() } />
+          <GraphLine
+            color="#1991eb"
+            className="card__graph"
+            data={ this.props.yAxis.reverse() }
+            height="100px"
+            labels={ this.props.xAxis.reverse() }
+           />
       </Card>
     );
   };

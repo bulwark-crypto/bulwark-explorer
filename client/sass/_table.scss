@@ -40,6 +40,15 @@
 		text-transform: capitalize;
 	}
 
+	th:first-child {
+		padding-left: 0;
+	}
+
+	th:last-child {
+		padding-right: 0;
+		text-align: right;
+	}
+
 	td {
 		min-width: 7em;
 		padding: .25em;
@@ -48,8 +57,13 @@
 		/*white-space: nowrap;*/
 	}
 
+	td:first-child {
+		padding-left: 0;
+	}
+
 	td:last-child {
 		padding-right: 0;
+		text-align: right;
 		min-width: 0;
 	}
 

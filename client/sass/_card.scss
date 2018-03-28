@@ -23,6 +23,22 @@
 		display: flex;
 	}
 
+	&__data-sub {
+		line-height: 2;
+	}
+
+	&__graph {
+		margin: 0 -15px;
+	}
+
+	&__badge {
+
+		/*Bootstrap override*/
+		&.badge-danger {
+			color: $white !important;
+		}
+	}
+
 	&--block &__row {
 		justify-content: flex-start;
 	}
