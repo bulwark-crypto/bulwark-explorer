@@ -11,12 +11,14 @@ export default class TableWrapper extends Component {
   static defaultProps = {
     cols: [],
     data: [],
+    hasDivider: true,
   };
 
   static propTypes = {
     cols: PropTypes.array,
     data: PropTypes.array,
     max: PropTypes.number,
+    hasDivider: PropTypes.bool,
   };
 
   componentDidMount() {
@@ -68,8 +70,8 @@ export default class TableWrapper extends Component {
     }
 
     return (
-      <Table responsive>
-        <TableHeader cols={ props.cols } />
+      <Table responsive className={ `${ this.props.hasDivider ? 'table--has-divider' : '' }` }>
+        <TableHeader cols={ props.cols } hasDivider={ this.props.has } />
         { this.getBody() }
       </Table>
     );

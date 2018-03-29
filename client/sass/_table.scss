@@ -4,8 +4,18 @@
 	width: 100%;
 
 	tr {
-		padding: 20px;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
+	}
+
+	tr:first-child {
+
+		th {
+			padding-bottom: .75em;
+		}
+
+		td {
+			padding-top: 1.5em;
+		}
 	}
 
 	tr:nth-child(even) {
@@ -51,7 +61,7 @@
 
 	td {
 		min-width: 7em;
-		padding: .25em;
+		padding: .5em;
 		padding-right: .25em;
 		text-align: left;
 		/*white-space: nowrap;*/
@@ -68,6 +78,18 @@
 	}
 
 	tbody {
-		font-size: .8em
+		font-size: .9em
+	}
+
+	&--has-divider {
+
+		thead {
+
+			th {
+				border-bottom: 1px solid $gray-light;
+				padding-bottom: .25em;
+			}
+
+		}
 	}
 }

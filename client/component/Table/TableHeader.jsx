@@ -14,7 +14,7 @@ const TableHeader = (props) => {
       }
 
       return (
-        <th key={ idx }>{ col }</th>
+        <th key={ idx } >{ col }</th>
       )
     });
 

@@ -8,26 +8,27 @@
 	/* Used to align with menu logo */
 	min-height: 4em;
 	padding: 0 20px;
+	position: relative;
 
 
 	&__icon {
+		position: absolute;
+		left: 1em;
 		margin-right: 1em;
 		opacity: .5;
-
-		#{$search}:hover & {
-			opacity: 1;
-		};
-
 	}
 
 	&__input {
 		border: 0;
 		flex: 1;
 		outline: none;
+		padding-left: 2em;
 
-		&:focus + svg {
-			opacity: 1;
-		};
+		&:focus {
+			& + svg {
+				opacity: 1;
+			}
+		}
 	}
 
 	&--mobile {

@@ -6,7 +6,7 @@ $blue-dark: #595ff5;
 $blue-light: #2ba2f8;
 $gray: #adadad;
 $gray-dark: #354052;
-$gray-light: #fefefe;
+$gray-light: #e8e8e8;
 $green: #61d75e;
 $red: #ed1c24;
 $orange: #f7981c;
@@ -209,5 +209,20 @@ h1, h2, h3, h4, h5, h6 {
 	&:hover {
 		color: $blue;
 	}
+}
+
+.scroller {
+	background-color: transparentize($gray, .5);
+	bottom: 2em;
+	border-radius: 15px;
+	padding: 1em;
+	cursor: pointer;
+	position: fixed;
+	right: 2em;
+
+	&__icon {
+		font-size: 3em;
+	}
+
 }
 
