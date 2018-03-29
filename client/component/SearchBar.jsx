@@ -34,7 +34,7 @@ export default class SearchBar extends Component {
     const { props } = this;
 
     return (
-      <div className={ `search ${ props.className ? props.className : '' }` } >
+      <div className={ `search ${ props.className ? props.className : '' }` }>
         <input
           className="search__input"
           onKeyPress={ this.handleKeyPress }

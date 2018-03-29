@@ -71,7 +71,7 @@ export default class TableWrapper extends Component {
 
     return (
       <Table responsive className={ `${ this.props.hasDivider ? 'table--has-divider' : '' }` }>
-        <TableHeader cols={ props.cols } hasDivider={ this.props.has } />
+        <TableHeader cols={ props.cols } />
         { this.getBody() }
       </Table>
     );
