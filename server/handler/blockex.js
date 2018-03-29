@@ -1,4 +1,5 @@
 
+const chain = require('../../lib/blockchain');
 const { forEach } = require('p-iteration');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
@@ -202,6 +203,31 @@ const getPeer = (req, res) => {
 };
 
 /**
+ * Get coin supply information for usage.
+ * https://github.com/coincheckup/crypto-supplies
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getSupply = async (req, res) => {
+  try {
+    let c = 0; // Circulating supply.
+    let t = 0; // Total supply.
+
+    const utxo = await UTXO.aggregate([
+      { $group: { _id: 'supply', total: { $sum: '$value' } } }
+    ]);
+
+    t = utxo[0].total;
+    c = t;
+
+    res.json({ c, t });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Get the top 100 addresses from the database.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -341,6 +367,7 @@ module.exports =  {
   getMasternodes,
   getMasternodeCount,
   getPeer,
+  getSupply,
   getTop100,
   getTXLatest,
   getTX,

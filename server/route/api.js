@@ -13,6 +13,7 @@ router.get('/coin/week', blockex.getCoinsWeek());
 router.get('/masternode', blockex.getMasternodes);
 router.get('/masternodecount', blockex.getMasternodeCount);
 router.get('/peer', blockex.getPeer);
+router.get('/supply', blockex.getSupply);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
 router.get('/tx/latest', blockex.getTXLatest);
