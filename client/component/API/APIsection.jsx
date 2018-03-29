@@ -21,7 +21,9 @@ const APIsection = (props) => {
     const calls = props.calls.map((call, idx) =>
       <div className="api__call" key={ idx }>
         <p className="api__call-name">{ call.name }</p>
-        <p className="api__call-info">{ call.info }</p>
+        <p className="api__call-info">
+          <div dangerouslySetInnerHTML={{ __html: call.info }} />
+        </p>
         <Icon name="caret-right" className="api__call-detail-indicator" />
         <div className="api__call-detail" onClick={ () => handleCopy(call) }>
           <p className="api__call-path">{ call.path }</p>
