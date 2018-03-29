@@ -116,19 +116,14 @@ const getdistribution = async (req, res) => {
   }
 };
 
-const getaddress = async (req, res) => {
-  try {
-    res.json(''); // TODO: update route.
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
-};
+const getaddress = blockex.getAddress;
 
 const getbalance = async (req, res) => {
   try {
-    const rich = await Rich.find({ address: req.params.address });
-    res.json(rich.value);
+    const utxo = await UTXO.find({ address: req.params.hash });
+    let bal = 0.0;
+    utxo.forEach(tx => bal += tx.value);
+    res.json(bal);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
