@@ -5,6 +5,7 @@ const { rpc } = require('../../lib/cron');
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
 const Rich = require('../../model/rich');
+const UTXO = require('../../model/utxo');
 
 // Get latest coin info helper method.
 const getCoin = async () => Coin.findOne().sort({ createdAt: -1 });
