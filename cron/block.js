@@ -91,7 +91,7 @@ async function syncBlocks(current, stop) {
 
           // Insert unspent transactions.
           if (utxo.length) {
-            await UTXO.upsertMany(utxo);
+            await UTXO.insertMany(utxo);
           }
         }
 
@@ -126,11 +126,11 @@ async function update() {
 
     locker.lock(type);
     await syncBlocks(height, info.blocks);
-    locker.unlock(type);
   } catch(err) {
     console.log(err);
     code = 1;
   } finally {
+    locker.unlock(type);
     exit(code);
   }
 }
