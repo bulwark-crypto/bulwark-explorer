@@ -91,7 +91,7 @@ async function syncBlocks(current, stop) {
 
           // Insert unspent transactions.
           if (utxo.length) {
-            await UTXO.insertMany(utxo);
+            await UTXO.upsertMany(utxo);
           }
         }
 
