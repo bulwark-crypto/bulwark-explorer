@@ -34,7 +34,7 @@ export default class CardAddress extends Component {
 
   drawQRCode = () => {
     const el = document.getElementById('qr-code');
-    qrcode.toCanvas(el, this.props.address, (err) => {
+    qrcode.toCanvas(el, this.props.address, { width: 220 }, (err) => {
       if (err) {
         console.log(err);
       }
@@ -82,7 +82,7 @@ export default class CardAddress extends Component {
             </div>
           </div>
         </div>
-        <div className="col-md-12 col-lg-4">
+        <div className="col-md-12 col-lg-4 text-right">
           <canvas id="qr-code" />
         </div>
       </div>
