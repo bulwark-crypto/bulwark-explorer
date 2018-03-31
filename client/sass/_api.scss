@@ -4,8 +4,6 @@
 	$detail-background-color: #323d50;
 
 	display: flex;
-	font-size: .8em;
-	font-family: $fontSmall;
 	flex-direction: row;
 
     margin: 0;
@@ -24,13 +22,11 @@
 	}
 
 	&__section-heading {
-		font-size: 1rem;
 		font-weight: $font-weight-bold;
 		line-height: 1;
 	}
 
 	&__section-sub-heading {
-		font-size: 1rem;
 	}
 
 	&__call {
@@ -54,7 +50,6 @@
 	&__call-detail-indicator {
 		display: none;
 		color: $white;
-		font-size: 1.25em;
 		position: absolute;
 		top: .13em;
 		right: -32px;

@@ -55,10 +55,10 @@ export default class CardAddress extends Component {
         <div className="col-md-12 col-lg-8">
           <div className="card--address">
             <div className="card__row">
-              <span className="card__label">
+              <span className="card__label card--address__wallet">
                 Wallet Address:
               </span>
-              <span className="card__result">
+              <span className="card__result card--address__hash">
                 { this.props.address }
               </span>
             </div>

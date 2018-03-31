@@ -79,21 +79,18 @@ $fontLarge: 'bariol';
 $fontSmall: 'Source Sans Pro', sans-serif;
 
 html, body {
+	color: $black;
 	font-size: 16px;
-
-	* {
-
-	}
 }
 
 h1, h2, h3, h4, h5, h6 {
+	color: $black;
 	display: inline-block;
+	font-family: $fontLarge;
 	font-weight: normal !important;
 }
 
 h3 {
-	color: $black;
-	font-family: $fontLarge;
 	font-size: 20px;
 	height: 22px;
 	line-height: 22px;
@@ -103,8 +100,6 @@ h3 {
 }
 
 h4 {
-	color: $black;
-	font-family: $fontLarge;
 	font-size: 26px;
 	font-weight: bold !important;
 	height: 28px;
@@ -115,7 +110,6 @@ h4 {
 }
 
 h5 {
-	color: $gray;
 	font-family: $fontSmall;
 	font-size: 14px;
 	height: 14px;
@@ -135,4 +129,22 @@ p {
 
 .code {
 	font-family: $fontSmall;
+}
+
+.font {
+	&--big {
+		font-size: 18px;
+	}
+
+	&--bigger {
+		font-size: 22px;
+	}
+
+	&--bold {
+		font-weight: bold;
+	}
+
+	&--bolder {
+		font-weight: bolder;
+	}
 }

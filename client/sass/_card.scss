@@ -1,10 +1,11 @@
 .card {
+	font-size: 20px;
 	line-height: 1.25;
 	margin-bottom: 1em;
 
 	&__title {
 		font-family: $fontLarge;
-		font-size: 1.25rem;
+		font-size: 24px;
 		margin-bottom: .8em;
 		text-transform: capitalize;
 	}
@@ -47,6 +48,18 @@
 		}
 	}
 
+	&--address {
+		&__hash {
+			font-size: 24px;
+			font-weight: 400;
+		}
+
+		&__wallet {
+			font-size: 24px;
+			font-weight: 200;
+		}
+	}
+
 	&--block &__row {
 		justify-content: flex-start;
 	}
@@ -64,7 +77,7 @@
 	}
 
 	&--market {
-		font-size: .8em;
+		font-size: 14px;
 	}
 
 	&--market &__info {
@@ -73,12 +86,11 @@
 	}
 
 	&--market &__icon--arrow {
-		font-size: .8rem;
 		font-weight: bold;
 	}
 
 	&--market &__data-main {
-		font-size: 3em;
+		font-size: 48px;
 		font-weight: bold;
 		line-height: .75;
 	}
@@ -94,6 +106,10 @@
 
 	&--status &__result--status {
 		color: $green;
+	}
+
+	&--graph {
+		padding: 0 20px;
 	}
 
 	&--graph &__data-main {
