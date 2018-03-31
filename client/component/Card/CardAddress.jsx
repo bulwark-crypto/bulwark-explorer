@@ -56,10 +56,10 @@ export default class CardAddress extends Component {
           <div className="card--address">
             <div className="card__row">
               <span className="card__label">
-                <h3>Wallet Address:</h3>
+                Wallet Address:
               </span>
               <span className="card__result">
-                <h4 className="text-primary">{ this.props.address }</h4>
+                { this.props.address }
               </span>
             </div>
             {/*
@@ -74,12 +74,10 @@ export default class CardAddress extends Component {
             */}
             <div className="card__row">
               <span className="card__label">
-                <h3>Balance:</h3>
+                Balance:
               </span>
               <span className="card__result">
-                <h4 className="text-black">
-                  { numeral(balance).format('0,0.0000') } BWK
-                </h4>
+                { numeral(balance).format('0,0.0000') } BWK
               </span>
             </div>
           </div>

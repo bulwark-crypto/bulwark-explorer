@@ -33,6 +33,10 @@
 
 	&__label {
 		padding-right: 10px;
+
+		@include media-breakpoint-up(md) {
+			min-width: 200px;
+		}
 	}
 
 	&__badge {
