@@ -45,7 +45,10 @@ export default class CardAddress extends Component {
     let trecv = 0;
     let tsend = 0;
 
-    const balance = this.props.utxo.map(tx => tx.value).reduce((acc, val) => acc + val);
+    const values = this.props.utxo.map(tx => tx.value);
+    const balance = values.length
+      ? values.reduce((acc, val) => acc + val)
+      : 0;
 
     return (
       <div className="row">
