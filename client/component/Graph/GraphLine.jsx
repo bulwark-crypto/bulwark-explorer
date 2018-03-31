@@ -136,6 +136,22 @@ export default class GraphLine extends Component {
         },
         title: {
           display: false
+        },
+        tooltips: {
+          backgroundColor: 'white',
+          bodyFontColor: '#161616',
+          bodyFontFamily: "'bariol', sans-serif",
+          bodyFontSize: 16,
+          bodyFontStyle: 'bold',
+          borderColor: '#cccccc',
+          borderWidth: 1,
+          displayColors: false,
+          enabled: false,
+          titleFontColor: '#565656',
+          titleFontFamily: "'Source Sans Pro', sans-serif",
+          titleFontSize: 12,
+          xPadding: 10,
+          yPadding: 10
         }
       }
     };
