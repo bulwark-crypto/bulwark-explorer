@@ -53,7 +53,7 @@
 			opacity: 1;
 		}
 	}
-	
+
 
 	&__content-wrapper {
 		display: flex;
@@ -73,6 +73,8 @@
 	&__toggle {
 		cursor: pointer;
 		font-size: 2em;
+		height: 24px;
+		width: 24px;
 	}
 
 	&__logo {
@@ -193,7 +195,7 @@
 		position: relative;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
-	
+
 	a, a:visited {
 		color: $white;
 		font-family: $fontLarge;
