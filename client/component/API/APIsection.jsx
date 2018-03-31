@@ -22,7 +22,7 @@ const APIsection = (props) => {
       <div className="api__call" key={ idx }>
         <p className="api__call-name">{ call.name }</p>
         <p className="api__call-info">
-          <div dangerouslySetInnerHTML={{ __html: call.info }} />
+          <span dangerouslySetInnerHTML={{ __html: call.info }} />
         </p>
         <Icon name="caret-right" className="api__call-detail-indicator" />
         <div className="api__call-detail" onClick={ () => handleCopy(call) }>
