@@ -137,7 +137,7 @@ class App extends Component {
           <Menu onSearch={ this.handleSearch } />
           <div className="content">
             <div className="content__wrapper">
-              <Notification />
+              {/* <Notification /> */}
               <SearchBar
                 className="d-none d-md-flex mb-3"
                 onSearch={ this.handleSearch } />
