@@ -11,12 +11,14 @@ import Table from '../Table';
 export default class CardAddressTXs extends Component {
   static defaultProps = {
     address: '',
-    txs: []
+    txs: [],
+    utxo: []
   };
 
   static propTypes = {
     address: PropTypes.string.isRequired,
-    txs: PropTypes.array.isRequired
+    txs: PropTypes.array.isRequired,
+    utxo: PropTypes.array.isRequired
   };
 
   constructor(props) {
@@ -31,21 +33,28 @@ export default class CardAddressTXs extends Component {
   };
 
   render() {
+    const spentTXs = new Set(
+      this.props.utxo.map(tx => `${ tx.txId }:${ tx.n }`)
+    );
+
     return (
       <Table
         cols={ this.state.cols }
         data={ this.props.txs.map((tx) => {
           let amount = 0.0;
+          let isSpent = false;
           tx.vout.forEach((vout) => {
             if (vout.address === this.props.address) {
               amount += vout.value;
+              isSpent = !spentTXs.has(`${ tx.txId }:${ vout.n }`);
             }
           });
 
           return ({
             ...tx,
             amount: (
-              <span className="badge badge-success">
+              <span
+                className={ `badge badge-${ isSpent ? 'danger' : 'success' }` }>
                 { numeral(amount).format('0,0.0000') } BWK
               </span>
             ),

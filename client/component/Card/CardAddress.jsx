@@ -52,9 +52,11 @@ export default class CardAddress extends Component {
         <div className="col-md-12 col-lg-8">
           <div className="card--address">
             <div className="card__row">
-              <span className="card__label">Wallet Address:</span>
+              <span className="card__label">
+                <h3>Wallet Address:</h3>
+              </span>
               <span className="card__result">
-                <h4>{ this.props.address }</h4>
+                <h4 className="text-primary">{ this.props.address }</h4>
               </span>
             </div>
             {/*
@@ -68,8 +70,14 @@ export default class CardAddress extends Component {
             </div>
             */}
             <div className="card__row">
-              <span className="card__label">Balance:</span>
-              <span className="card__result">{ numeral(balance).format('0,0.0000') }</span>
+              <span className="card__label">
+                <h3>Balance:</h3>
+              </span>
+              <span className="card__result">
+                <h4 className="text-black">
+                  { numeral(balance).format('0,0.0000') } BWK
+                </h4>
+              </span>
             </div>
           </div>
         </div>

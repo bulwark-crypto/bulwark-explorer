@@ -25,7 +25,8 @@ class Address extends Component {
       pages: 0,
       page: 1,
       size: 10,
-      txs: []
+      txs: [],
+      utxo: []
     };
   };
 
@@ -85,7 +86,10 @@ class Address extends Component {
           txs={ this.state.txs }
           utxo={ this.state.utxo } />
         <HorizontalRule select={ select } title="Wallet Transactions" />
-        <CardAddressTXs address={ this.state.address } txs={ this.state.txs } />
+        <CardAddressTXs
+          address={ this.state.address }
+          txs={ this.state.txs }
+          utxo={ this.state.utxo } />
         <Pagination
           current={ this.state.page }
           className="float-right"
