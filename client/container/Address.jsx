@@ -45,21 +45,25 @@ class Address extends Component {
     this.setState({ loading: true }, () => {
       const address = this.props.match.params.hash;
       this.props
-        .getAddress({
-          address,
-          limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
-        })
-        .then(({ pages, txs, utxo }) => {
-          this.setState({ address, pages, txs, utxo, loading: false });
+        .getAddress({ address })
+        .then(({ txs, utxo }) => {
+          this.setState({
+            address,
+            txs,
+            utxo,
+            loading: false,
+            pages: Math.ceil(txs.length / this.state.size)
+          });
         })
         .catch(error => this.setState({ error, loading: false }));
     });
   };
 
-  handlePage = page => this.setState({ page }, this.getAddress);
+  handlePage = page => this.setState({ page: parseInt(page, 10) });
 
-  handleSize = size => this.setState({ size, page: 1 }, this.getAddress);
+  handleSize = size => this.setState({ size: parseInt(size, 10), page: 1 }, () => {
+    this.setState({ pages: Math.ceil(this.state.txs.length / this.state.size) });
+  });
 
   render() {
     if (!!this.state.error) {
@@ -78,6 +82,10 @@ class Address extends Component {
       </select>
     );
 
+    // Setup internal pagination.
+    let start = (this.state.page - 1) * this.state.size;
+    let end = start + this.state.size;
+
     return (
       <div>
         <HorizontalRule title="Wallet Info" />
@@ -88,7 +96,7 @@ class Address extends Component {
         <HorizontalRule select={ select } title="Wallet Transactions" />
         <CardAddressTXs
           address={ this.state.address }
-          txs={ this.state.txs }
+          txs={ this.state.txs.slice(start, end) }
           utxo={ this.state.utxo } />
         <Pagination
           current={ this.state.page }

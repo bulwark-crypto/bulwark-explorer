@@ -21,17 +21,10 @@ const UTXO = require('../../model/utxo');
 const getAddress = async (req, res) => {
   try {
     const qry = { 'vout.address': req.params.hash };
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-    const total = await TX.find(qry).sort({ blockHeight: -1 }).count();
-    const txs = await TX.find(qry).skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const txs = await TX.find(qry).sort({ blockHeight: -1 });
     const utxo = await UTXO.find({ address: req.params.hash }).sort({ blockHeight: -1 });
 
-    res.json({
-      txs,
-      utxo,
-      pages: total <= limit ? 1 : Math.ceil(total / limit)
-    });
+    res.json({ txs, utxo });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);

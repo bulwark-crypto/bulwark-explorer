@@ -1,21 +1,21 @@
 
-::-moz-placeholder,
-::-webkit-input-placeholder {
-	border: 1px solid $gray;
+input, select {
+	background-color: $white;
+    border: 1px solid $gray;
+    border-radius: 2px;
+	box-sizing: border-box;
 	color: $gray-dark;
-	font-size: 1em;
-	padding: 10px;
-}
+    display: inline-block;
+    margin: 8px 0;
+	padding: 12px 20px;
 
-input, select, textarea {
-	background: $white;
-	border: 1px solid $gray;
-	border-radius: 2px;
-	color: $gray-dark;
-	font-size: 1em;
-	padding: 6px 9px;
+	&::placeholder {
+		color: $gray-dark;
+	}
 
+	&:focus,
 	&:hover {
 		border-color: $blue;
+		color: $black;
 	}
 }

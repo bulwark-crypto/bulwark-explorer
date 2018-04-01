@@ -50,6 +50,17 @@ export default class CardAddress extends Component {
       ? values.reduce((acc, val) => acc + val)
       : 0;
 
+    // Generate sent and received, we can get sent
+    // by taking the total tx value minus balance.
+    let recv = 0;
+    this.props.txs.forEach((tx) => {
+      tx.vout.forEach((vout) => {
+        if (vout.address === this.props.address) {
+          recv += vout.value;
+        }
+      });
+    });
+
     return (
       <div className="row">
         <div className="col-md-12 col-lg-8">
@@ -62,16 +73,22 @@ export default class CardAddress extends Component {
                 { this.props.address }
               </span>
             </div>
-            {/*
             <div className="card__row">
-              <span className="card__label">Total Send:</span>
-              <span className="card__result">{ tsend }</span>
+              <span className="card__label">
+                Sent:
+              </span>
+              <span className="card__result">
+                { numeral(recv - balance).format('0,0.0000') } BWK
+              </span>
             </div>
             <div className="card__row">
-              <span className="card__label">Total Received:</span>
-              <span className="card__result">{ trecv }</span>
+              <span className="card__label">
+                Received:
+              </span>
+              <span className="card__result">
+                { numeral(recv).format('0,0.0000') } BWK
+              </span>
             </div>
-            */}
             <div className="card__row">
               <span className="card__label">
                 Balance:
