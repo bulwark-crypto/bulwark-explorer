@@ -24,8 +24,9 @@ class Masternode extends Component {
     this.state = {
       cols: [
         { key: 'lastPaidAt', title: 'Last Paid' },
-        { key: 'active', title: 'Active Duration' },
-        { key: 'addr', title: 'Transaction' },
+        { key: 'active', title: 'Active' },
+        { key: 'addr', title: 'Address' },
+        { key: 'txHash', title: 'Collateral TX' },
         { key: 'txOutIdx', title: 'Index' },
         { key: 'ver', title: 'Version' },
         { key: 'status', title: 'Status' },
@@ -112,11 +113,15 @@ class Masternode extends Component {
               ...mn,
               active: moment().subtract(mn.active, 'seconds').utc().fromNow(),
               addr: (
-                <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
+                <Link to={ `/address/${ mn.addr }` }>
+                  { `${ mn.addr.substr(0, 20) }...` }
+                </Link>
               ),
               lastPaidAt: isEpoch ? 'N/A' : dateFormat(mn.lastPaidAt),
               txHash: (
-                <Link to={ `/tx/${ mn.txHash }` }>{ mn.txHash }</Link>
+                <Link to={ `/tx/${ mn.txHash }` }>
+                  { `${ mn.txHash.substr(0, 20) }...` }
+                </Link>
               )
             };
           }), ['status']) } />
