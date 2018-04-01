@@ -42,12 +42,12 @@ $badge-pill-padding-x:              .6em;
 $badge-pill-border-radius:          10rem;
 
 // Pagination
-$pagination-padding-y:              5px;
-$pagination-padding-x:              10px;
-$pagination-padding-y-sm:           5px;
-$pagination-padding-x-sm:           10px;
-$pagination-padding-y-lg:           5px;
-$pagination-padding-x-lg:           10px;
+$pagination-padding-y:              8px;
+$pagination-padding-x:              12px;
+$pagination-padding-y-sm:           8px;
+$pagination-padding-x-sm:           12px;
+$pagination-padding-y-lg:           8px;
+$pagination-padding-x-lg:           12px;
 $pagination-line-height:            1;
 
 $pagination-color:                  $gray;
@@ -59,9 +59,9 @@ $pagination-hover-color:            $blue;
 $pagination-hover-bg:            	$white;
 $pagination-hover-border-color:    	$blue;
 
-$pagination-active-color:           $gray-dark;
+$pagination-active-color:           $black;
 $pagination-active-bg:           	$white;
-$pagination-active-border-color:    $gray-dark;
+$pagination-active-border-color:    $gray-light;
 
 $pagination-disabled-color:         $gray;
 $pagination-disabled-bg:            $gray-light;
@@ -201,9 +201,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 // Pagination
+.page-item.active {
+	border-color: $gray-light;
+}
+
 .page-link, .page-link:visited {
+	border-color: $gray-light;
 	color: $gray;
-	font-size: 1em;
+	font-size: 14px;
+	height: 33px;
+	padding: 9px 12px;
 
 	&:hover {
 		color: $blue;
