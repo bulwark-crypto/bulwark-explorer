@@ -19,34 +19,34 @@ const CardEarnings = ({ coin }) => {
   return (
     <Card title="Estimated Earnings (COIN/BTC/USD)">
       <div className="row">
-        <div className="col-sm-12 col-md-4">
+        <div className="col-sm-12 col-md-3">
           DAILY
         </div>
-        <div className="col-sm-12 col-md-8">
+        <div className="col-sm-12 col-md-9">
           { nbtc(day) } BWK / { nbtc(day * coin.btc) } BTC / { nusd(day * coin.usd) } USD
         </div>
       </div>
       <div className="row">
-        <div className="col-sm-12 col-md-4">
+        <div className="col-sm-12 col-md-3">
           WEEKLY
         </div>
-        <div className="col-sm-12 col-md-8">
+        <div className="col-sm-12 col-md-9">
           { nbtc(week) } BWK / { nbtc(week * coin.btc) } BTC / { nusd(week * coin.usd) } USD
         </div>
       </div>
       <div className="row">
-        <div className="col-sm-12 col-md-4">
+        <div className="col-sm-12 col-md-3">
           MONTHLY
         </div>
-        <div className="col-sm-12 col-md-8">
+        <div className="col-sm-12 col-md-9">
           { nbtc(month) } BWK / { nbtc(month * coin.btc) } BTC / { nusd(month * coin.usd) } USD
         </div>
       </div>
       <div className="row">
-        <div className="col-sm-12 col-md-4">
+        <div className="col-sm-12 col-md-3">
           YEARLY
         </div>
-        <div className="col-sm-12 col-md-8">
+        <div className="col-sm-12 col-md-9">
           { nbtc(year) } BWK / { nbtc(year * coin.btc) } BTC / { nusd(year * coin.usd) } USD
         </div>
       </div>
