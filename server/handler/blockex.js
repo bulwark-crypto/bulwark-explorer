@@ -110,11 +110,11 @@ const getCoinsWeek = () => {
     loading = true;
 
     try {
-      const start = moment().utc().startOf('day').subtract(7, 'days');
-      const end = start.subtract(1, 'days');
+      const start = moment().utc().startOf('day').subtract(6, 'days').toDate();
+      const end = moment().utc().endOf('day').subtract(1, 'days').toDate();
       const qry = [
         // Select last 7 days of coins.
-        { $match: { createdAt: { $gt: start.toDate(), $lt: end.toDate() } } },
+        { $match: { createdAt: { $gt: start, $lt: end } } },
         // Sort by _id/date field in ascending order (order -> newer)
         { $sort: { createdAt: 1 } }
       ];
@@ -316,11 +316,11 @@ const getTXsWeek = () => {
     loading = true;
 
     try {
-      const start = moment().utc().startOf('day').subtract(7, 'days');
-      const end = start.subtract(1, 'days');
+      const start = moment().utc().startOf('day').subtract(6, 'days').toDate();
+      const end = moment().utc().endOf('day').subtract(1, 'days').toDate();
       const qry = [
         // Select last 7 days of txs.
-        { $match: { createdAt: { $gt: start.toDate(), $lt: end.toDate() } } },
+        { $match: { createdAt: { $gt: start, $lt: end } } },
         // Convert createdAt date field to date string.
         { $project: { date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } } } },
         // Group by date string and build total/sum.
