@@ -21,7 +21,7 @@ const UTXO = require('../../model/utxo');
 const getAddress = async (req, res) => {
   try {
     const qry = { 'vout.address': req.params.hash };
-    const txs = await TX.find(qry).sort({ blockHeight: -1 });
+    const txs = await TX.find(qry).sort({ blockHeight: -1 }).limit(1000);
     const utxo = await UTXO.find({ address: req.params.hash }).sort({ blockHeight: -1 });
 
     res.json({ txs, utxo });
