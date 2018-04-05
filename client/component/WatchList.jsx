@@ -51,6 +51,10 @@ export default class WatchList extends Component {
   render() {
     const { props } = this;
 
+    if (!props.items.length) {
+      return null;
+    }
+
     return (
       <Card title={ props.title } className="watch-list" >
         { this.getWatchItems() }

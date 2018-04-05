@@ -24,8 +24,8 @@ class Overview extends Component {
       cols: [
         {title: 'Height', key: 'blockHeight'},
         {title: 'Transaction Hash', key: 'txId'},
-        'age',
         {title: 'Value', key: 'vout'},
+        'age',
         'recipients',
         {title: 'Created', key: 'createdAt'},
       ]

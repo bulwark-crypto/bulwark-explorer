@@ -3,6 +3,10 @@
 
 	$detail-background-color: #323d50;
 
+	/*@include media-breakpoint-up(md) {
+		flex-direction: column;
+	}*/
+
 	display: flex;
 	flex-direction: row;
 

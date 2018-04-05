@@ -1,5 +1,13 @@
 .u {
 
+	&--font-large {
+		font-family: $fontLarge;
+	}
+
+	&--font-small {
+		font-family: $fontSmall;
+	}
+
 	&--text-gray {
 		color: $gray;
 	}
