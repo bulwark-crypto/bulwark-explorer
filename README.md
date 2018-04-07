@@ -8,25 +8,17 @@ This repo assumes `git`, `mongodb`, `node`, `yarn`, and are installed with confi
 
 It is also required to have the Bulwark daemon running in the background. It is recommended to set this up before beginning to set up the explorer so that it syncs by the time you need it.
 
-`cd ~ 
-
+```
+cd ~ 
 wget https://github.com/bulwark-crypto/Bulwark/releases/download/1.2.3/bulwark-1.2.3.0-linux64.tar.gz 
-
 tar xzvf bulwark-1.2.3.0-linux64.tar.gz 
-
 sudo mv ./bin/* /usr/local/bin  
-
 mkdir ~/.bulwark  
-
 cat >~/.bulwark/bulwark.conf <<EOL  
-
 rpcuser=bulwarkrpc  
-
 rpcpassword=someverysafepassword  
-
 EOL 
-
-bulwarkd -daemon` 
+bulwarkd -daemon```
 
 This will install the 1.2.3 Bulwark wallet and create a rpc username/password before starting the daemon.
 
