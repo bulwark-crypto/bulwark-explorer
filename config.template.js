@@ -28,9 +28,9 @@ const config = {
   },
   'rpc': {
     'host': '127.0.0.1',
-    'port': '7777',
-    'user': 'bwk',
-    'pass': 'password',
+    'port': '52541',
+    'user': 'bwkrpc',
+    'pass': 'someverysafepassword',
     'timeout': 5000, // 5 seconds
   }
 };
