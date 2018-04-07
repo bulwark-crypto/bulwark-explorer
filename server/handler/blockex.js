@@ -148,7 +148,7 @@ const getCoinsWeek = () => {
  */
 const getMasternodes = async (req, res) => {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const limit = req.query.limit ? parseInt(req.query.limit, 1000) : 1000;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const total = await Masternode.find().sort({ lastPaidAt: -1, status: 1 }).count();
     const mns = await Masternode.find().skip(skip).limit(limit).sort({ lastPaidAt: -1, status: 1 });
