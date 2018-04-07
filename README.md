@@ -15,7 +15,7 @@ This repo assumes `git`, `mongodb`, `node`, `yarn`, and are installed with confi
 
 ## Configure
 #### BlockEx API Configuration
-`cp config.js.template config.js` - setup configuration using template.
+`cp config.template.js config.js` - setup configuration using template.
 
 `vim config.js` - replace with local values.
 
