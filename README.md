@@ -12,7 +12,7 @@ Our geniuses here at BulwarkCorp™ have put together a script to do this for yo
 
 `bash bulwarkd_setup.sh`
 
-This will install the 1.2.3 Bulwark wallet and create a rpc username/password before starting the daemon.
+This will install the latest Bulwark wallet and create a rpc username/password before starting the daemon.
 
 ## Install
 `git clone https://github.com/dustinengle/blockex.git` - copy repo to local folder.
