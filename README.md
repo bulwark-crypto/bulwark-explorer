@@ -8,6 +8,10 @@ This repo assumes `git`, `mongodb`, `node`, `yarn`, and are installed with confi
 
 It is also required to have the Bulwark daemon running in the background. It is recommended to set this up before beginning to set up the explorer so that it syncs by the time you need it.
 
+Our geniuses here at BulwarkCorp™ have put together a script to do this for you. Just run
+
+`bash bulwarkd_setup.sh`
+
 This will install the 1.2.3 Bulwark wallet and create a rpc username/password before starting the daemon.
 
 ## Install
