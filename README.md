@@ -7,8 +7,11 @@ __Under active development and subject to rapid sudden change.__
 This repo assumes `git`, `mongodb`, `node`, `yarn`, and are installed with configuration done.  Please adjust commands to your local environment. 
 
 Download links:
+
 https://docs.mongodb.com/manual/administration/install-on-linux/
+
 https://nodejs.org/en/download/package-manager/
+
 https://yarnpkg.com/lang/en/docs/install/
 
 It is also required to have the Bulwark daemon running in the background. It is recommended to set this up before beginning to set up the explorer so that it syncs by the time you need it.
