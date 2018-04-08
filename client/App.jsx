@@ -139,7 +139,7 @@ class App extends Component {
             <div className="content__wrapper">
               {/* <Notification /> */}
               <SearchBar
-                className="d-none d-md-flex mb-3"
+                className="d-none d-md-block mb-3"
                 onSearch={ this.handleSearch } />
               <CoinSummary onSearch={ this.handleSearch } />
               <Switch>

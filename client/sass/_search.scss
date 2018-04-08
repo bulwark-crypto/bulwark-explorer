@@ -1,14 +1,8 @@
 .search {
 	$search: &;
 
-	align-items: center;
-	border: 1px solid lighten($gray, 15%);
-	border-radius: 2px;
-	display: flex;
-	/* Used to align with menu logo */
-	min-height: 4em;
-	padding: 0 20px;
 	position: relative;
+	width: 100%;
 
 
 	&__icon {
@@ -16,15 +10,20 @@
 		left: 1em;
 		margin-right: 1em;
 		opacity: .5;
+		top: calc(50% - .5em);
 	}
 
 	&__input {
-		border: 0;
-		flex: 1;
-		outline: none;
-		padding-left: 2em;
+		border: 1px solid lighten($gray, 15%);
+	  	border-radius: 2px;
+		padding: 25px;
+		padding-left: 45px;
+		width: 100%;
 
-		&:focus {
+		&:focus,
+		&:hover {
+			border-color: inherit;
+
 			& + svg {
 				opacity: 1;
 			}
@@ -32,16 +31,12 @@
 	}
 
 	&--mobile {
-	  border: 1px solid $white-light;
-	  border-radius: 2px;
-	  flex: 1;
 	  font-size: .8em;
-	  min-height: initial;
-	  padding: 0 .5em;
 	}
 
 	&--mobile &__input {
 		background: transparent;
+	  	border: 1px solid $white-light;
 		color: $white;
 	}
 
