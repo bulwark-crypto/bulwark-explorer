@@ -3,7 +3,7 @@ bwklink=`curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/la
 bwkfile=`echo $link | cut -d "/" -f 9`
 cd ~
 wget $bwklink
-tar xzvf $bwkfile
+tar -xzf $bwkfile
 rm $bwkfile
 sudo mv ./bin/* /usr/local/bin
 mkdir ~/.bulwark
