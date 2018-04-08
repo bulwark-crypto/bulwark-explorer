@@ -64,7 +64,7 @@ export default class CardAddress extends Component {
     return (
       <div className="row">
         <div className="col-md-12 col-lg-8">
-          <div className="card--address u--font-large">
+          <div className="card--address">
             <div className="card__row">
               <span className="card__label card--address-wallet">
                 Wallet Address:

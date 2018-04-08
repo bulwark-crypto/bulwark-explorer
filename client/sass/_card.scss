@@ -52,16 +52,11 @@
 		&-hash {
 			font-size: 24px;
 			font-weight: 400;
-			font-family: $fontSmall;
 		}
 
 		&-wallet {
 			font-size: 24px;
 		}
-	}
-
-	&--block {
-		font-family: $fontLarge;
 	}
 
 	&--block &__row {
