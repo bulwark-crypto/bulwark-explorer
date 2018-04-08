@@ -28,9 +28,8 @@ class Footer extends Component {
         </div>
         <div className="col-sm-12 col-md-6 col-lg-5">
           <span className="footer__legal">
-            <div>Copyright &copy; 2018 Bulwark Cryptocurrency</div>
-            <div>Site design / Logo &copy; 2018 Bulwark Cryptocurrency</div>
-            <div>User contributions licensed under cc by-sa 3.0 with attribution required</div>
+            <div>Copyright &copy; 2018 <a href="https://bulwarkcrypto.com/">Bulwark Cryptocurrency</a></div>
+            <div>Site design / Logo &copy; 2018 <a href="https://bulwarkcrypto.com/">Bulwark Cryptocurrency</a></div>
           </span>
         </div>
         <div className="col-sm-12 col-md-4 col-lg-2">

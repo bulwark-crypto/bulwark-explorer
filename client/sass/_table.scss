@@ -1,8 +1,8 @@
-
-/* Overrides bootstrap table class */
 .table {
-	width: 100%;
-
+	width: 99.8%;
+	border-radius: 5px;
+	margin: 1px 1px 20px 1px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 	tr {
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
@@ -10,11 +10,12 @@
 	tr:first-child {
 
 		th {
-			padding-bottom: .75em;
+			padding: 2em;
 		}
 
 		td {
 			padding-top: 1.5em;
+			padding-bottom: 1em;
 		}
 	}
 
@@ -47,15 +48,15 @@
 		min-width: 100px;
 		padding: 0 .25em;
 		padding-bottom: 1em;
-		text-transform: capitalize;
+		text-transform: uppercase;
 	}
 
 	th:first-child {
-		padding-left: 0;
+		padding-left: 2em;
 	}
 
 	th:last-child {
-		padding-right: 0;
+		padding-right: 2em;
 		text-align: right;
 	}
 
@@ -63,22 +64,23 @@
 		min-width: 7em;
 		padding: .5em;
 		padding-right: .25em;
+		padding-bottom: 1em;
 		text-align: left;
 		/*white-space: nowrap;*/
 	}
 
 	td:first-child {
-		padding-left: 0;
+		padding-left: 2em;
 	}
 
-	td:last-child {
-		padding-right: 0;
-		text-align: right;
-		min-width: 0;
-	}
+	td:last-child { 
+		padding-right: 2em; 
+		text-align: right; 
+		min-width: 0; 
+	  } 
 
 	tbody {
-		font-size: .9em
+		font-size: .9em;
 	}
 
 	&--has-divider {
