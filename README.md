@@ -33,8 +33,6 @@ This will install the latest Bulwark wallet and create a rpc username/password b
 #### BlockEx API Configuration
 `cp config.template.js config.js` - setup configuration using template.
 
-`vim config.js` - replace with local values.
-
 #### Database Configuration
 `mongo` - connect using mongo client.
 
