@@ -1,0 +1,16 @@
+#!/bin/bash
+bwklink=`curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep linux64 | cut -d '"' -f 4`
+mkdir -p /tmp/bulwark
+cd /tmp/bulwark
+curl -Lo bulwark.tar.gz $bwklink
+tar -xzf bulwark.tar.gz
+sudo mv ./bin/* /usr/local/bin
+cd
+rm -rf /tmp/bulwark
+mkdir ~/.bulwark
+cat >~/.bulwark/bulwark.conf <<EOL
+rpcuser=bulwarkrpc
+rpcpassword=someverysafepassword
+daemon=1
+EOL
+bulwarkd
