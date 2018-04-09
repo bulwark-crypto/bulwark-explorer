@@ -36,7 +36,6 @@ export default class CardNetworkSummary extends Component {
     return (
       <Card
         className="card--graph"
-        style={{ marginBottom: 0 }}
         title="Network">
         <p className="card__data-main">
           <CountUp
