@@ -15,10 +15,13 @@ import WatchList from '../component/WatchList';
 
 class CoinSummary extends Component {
   static propTypes = {
-    coins: PropTypes.array.isRequired,
     onSearch: PropTypes.func.isRequired,
+    // State
+    coins: PropTypes.array.isRequired,
     txs: PropTypes.array.isRequired,
-    watch: PropTypes.array.isRequired
+    watch: PropTypes.array.isRequired,
+    // Dispatch
+    onRemove: PropTypes.func.isRequired,
   };
 
   render() {
@@ -68,7 +71,8 @@ class CoinSummary extends Component {
           <div className="col-md-12 col-lg-3">
             <WatchList
               items={ this.props.watch }
-              onSearch={ this.props.onSearch } />
+              onSearch={ this.props.onSearch }
+              onRemove={ this.props.onRemove } />
           </div>
         </div>
       </div>
@@ -77,7 +81,7 @@ class CoinSummary extends Component {
 }
 
 const mapDispatch = dispatch => ({
-
+  onRemove: term => Actions.removeWatch(dispatch, term)
 });
 
 const mapState = state => ({
