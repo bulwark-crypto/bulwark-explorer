@@ -8,6 +8,9 @@ import React from 'react';
 import CardTXs from '../component/Card/CardTXs';
 import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
+import Select from '../component/Select';
+
+import { PAGINATION_PAGE_SIZE } from '../constants';
 
 class Movement extends Component {
   static propTypes = {
@@ -77,15 +80,13 @@ class Movement extends Component {
     } else if (this.state.loading) {
       return this.renderLoading();
     }
+    const selectOptions = PAGINATION_PAGE_SIZE;
 
     const select = (
-      <select
-        onChange={ ev => this.handleSize(ev.target.value) }
-        value={ this.state.size }>
-        <option value={ 10 }>10</option>
-        <option value={ 25 }>25</option>
-        <option value={ 50 }>50</option>
-      </select>
+      <Select
+        onChange={ value => this.handleSize(value) }
+        selectedValue={ this.state.size }
+        options={ selectOptions } />
     );
 
     return (

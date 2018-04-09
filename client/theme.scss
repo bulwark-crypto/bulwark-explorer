@@ -73,6 +73,8 @@ $pagination-disabled-border-color:  $gray;
 @import "./sass/error";
 @import "./sass/form";
 @import "./sass/hr";
+@import "./sass/pagination";
+@import "./sass/select";
 @import "./sass/search";
 @import "./sass/table";
 @import "./sass/utility";
@@ -197,23 +199,6 @@ h1, h2, h3, h4, h5, h6 {
 	& + div .menu-desktop--close + & {
 	    margin-left: $menu-width-close;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
-	}
-}
-
-// Pagination
-.page-item.active {
-	border-color: $gray-light;
-}
-
-.page-link, .page-link:visited {
-	border-color: $gray-light;
-	color: $gray;
-	font-size: 14px;
-	height: 33px;
-	padding: 9px 12px;
-
-	&:hover {
-		color: $blue;
 	}
 }
 

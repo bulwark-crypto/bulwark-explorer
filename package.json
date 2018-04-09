@@ -9,17 +9,14 @@
   "scripts": {
     "build": "yarn run build:web",
     "build:web": "NODE_ENV=production webpack --progress --colors",
-
     "cron:block": "./script/cron_block.sh >> ./tmp/block.log",
     "cron:coin": "node ./cron/coin.js >> ./tmp/coin.log",
     "cron:masternode": "node ./cron/masternode.js >> ./tmp/masternode.log",
     "cron:peer": "node ./cron/peer.js >> ./tmp/peer.log",
     "cron:rich": "node ./cron/rich.js >> ./tmp/rich.log",
-
     "start:api": "NODE_ENV=production node ./server/index.js",
     "start:maint": "NODE_ENV=production node ./server/maintenance.js",
     "start:web": "webpack-dev-server --progress --colors",
-
     "test:api": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/api",
     "test:file": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/file",
     "test:rpc": "mocha --compilers js:babel-core/register --timeout 2000 ./test/server/rpc",
@@ -49,6 +46,7 @@
     "react": "^16.2.0",
     "react-countup": "^3.0.3",
     "react-dom": "^16.2.0",
+    "react-opium-select": "^0.4.4",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^4.0.8",
