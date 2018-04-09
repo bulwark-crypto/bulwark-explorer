@@ -33,7 +33,6 @@ export default class API extends Component {
           </div>
         </div>
         <div className="api__detail">
-
         </div>
       </div>
     );

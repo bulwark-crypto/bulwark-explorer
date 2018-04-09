@@ -15,6 +15,7 @@
 
 	&__documentation {
 		flex: 1;
+		width: 100%;
 	}
 
 	&__documentation-title {
@@ -26,11 +27,13 @@
 	}
 
 	&__section-heading {
+		font-size: 1.2em;
 		font-weight: $font-weight-bold;
 		line-height: 1;
 	}
 
 	&__section-sub-heading {
+		font-color: $gray;
 	}
 
 	&__call {
@@ -43,12 +46,18 @@
 	}
 
 	&__call-detail {
-		color: #ffffff;
+		color: $white;
 		cursor: pointer;
 		position: absolute;
 		right: -95%;
 		top: 0;
 		width: 80%;
+
+		@include media-breakpoint-down(sm) {
+			color: $black;
+			margin-top: 1em;
+			position: initial;
+		}
 	}
 
 	&__call-detail-indicator {
@@ -68,10 +77,17 @@
 		font-family: monospace;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		width: 95%;
+		width: 90%;
 	}
 
 	&__call-copy {
+
+		@include media-breakpoint-down(sm) {
+			position: initial;
+			display: block;
+			opacity: 0;
+		}
+
 		display: none;
 		align-items: center;
 		position: absolute;
@@ -81,6 +97,7 @@
 
 	&__call-detail:hover &__call-copy {
  		display: flex;
+		opacity: 1;
 	}
 
 	&__call-copy-icon {
@@ -88,6 +105,11 @@
 	}
 
 	&__detail {
+
+		@include media-breakpoint-down(sm) {
+			display: none;
+		}
+
 		background-color: $detail-background-color;
 		flex: 1;
 	}
