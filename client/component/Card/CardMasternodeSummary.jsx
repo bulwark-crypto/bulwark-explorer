@@ -29,7 +29,6 @@ export default class CardMasternodeSummary extends Component {
     return (
       <Card
         className="card--graph"
-        style={{ marginBottom: 0 }}
         title="Masternode">
         <p className="card__data-main">
           <CountUp
