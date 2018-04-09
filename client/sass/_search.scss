@@ -1,9 +1,11 @@
 .search {
-	$search: &;
 
 	position: relative;
 	width: 100%;
 
+	&:hover {
+		box-shadow: 0 6px 10px rgba(0,0,0,0.15), 0 4px 4px rgba(0,0,0,0.11);
+	}
 
 	&__icon {
 		position: absolute;
