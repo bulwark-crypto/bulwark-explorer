@@ -9,13 +9,9 @@
 
 	tr:first-child {
 
-		th {
-			padding: 2em;
-		}
-
 		td {
-			padding-top: 1.5em;
-			padding-bottom: 1em;
+			padding-top: 18px;
+			padding-bottom: 16px;
 		}
 	}
 
@@ -44,40 +40,41 @@
 	}
 
 	th {
-		font-size: 1em;
+		font-size: 16px;
 		min-width: 100px;
-		padding: 0 .25em;
-		padding-bottom: 1em;
+		padding: 32px 5px;
 		text-transform: uppercase;
 	}
 
 	th:first-child {
-		padding-left: 2em;
+		padding-left: 32px;
 	}
 
 	th:last-child {
-		padding-right: 2em;
+		padding-right: 32px;
 		text-align: right;
 	}
 
 	td {
-		min-width: 7em;
-		padding: .5em;
-		padding-right: .25em;
+		min-width: 120px;
+		max-width: 450px;
+		overflow: hidden;
+		padding: 8px;
+		padding-right: 5px;
 		padding-bottom: 1em;
 		text-align: left;
-		/*white-space: nowrap;*/
+		text-overflow: ellipsis;
 	}
 
 	td:first-child {
-		padding-left: 2em;
+		padding-left: 32px;
 	}
 
-	td:last-child { 
-		padding-right: 2em; 
-		text-align: right; 
-		min-width: 0; 
-	  } 
+	td:last-child {
+		padding-right: 32px;
+		text-align: right;
+		min-width: 0;
+	  }
 
 	tbody {
 		font-size: .9em;
@@ -89,7 +86,6 @@
 
 			th {
 				border-bottom: 1px solid $gray-light;
-				padding-bottom: .25em;
 			}
 
 		}
