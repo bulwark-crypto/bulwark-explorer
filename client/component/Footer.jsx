@@ -22,6 +22,7 @@ class Footer extends Component {
     const statusColor = (coin.status && coin.status.toLowerCase() === 'online') ? 'green' : 'red';
 
     return (
+      <div className="animated fadeInUp">
       <div className="footer row">
         <div className="col-sm-12 col-md-2 col-lg-1">
           <img className="footer__logo" src="/img/footerlogo.svg" />
@@ -73,6 +74,7 @@ class Footer extends Component {
             </a>
           </div>
         </div>
+      </div>
       </div>
     );
   };

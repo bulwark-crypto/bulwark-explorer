@@ -34,6 +34,7 @@ export default class CardNetworkSummary extends Component {
     }
 
     return (
+      <div className="animated fadeInUp">
       <Card
         className="card--graph"
         title="Network">
@@ -56,6 +57,7 @@ export default class CardNetworkSummary extends Component {
             labels={ this.props.xAxis.reverse() }
            />
       </Card>
+      </div>
     );
   };
 }

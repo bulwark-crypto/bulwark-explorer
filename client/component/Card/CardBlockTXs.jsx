@@ -29,6 +29,7 @@ export default class CardBlockTXs extends Component {
 
   render() {
     return (
+      <div className="animated fadeIn">
       <Table
         cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
@@ -39,6 +40,7 @@ export default class CardBlockTXs extends Component {
             <Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>
           )
         })) } />
+        </div>
     );
   };
 }

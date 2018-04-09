@@ -35,6 +35,7 @@ export default class WatchList extends Component {
 
     const watchItems = items.map((item, idx) => {
       return (
+        <div className="animated fadeIn">
         <span
           className="watch-list__item"
           key={ idx } >
@@ -48,6 +49,7 @@ export default class WatchList extends Component {
             </span>
           </span>
         </span>
+        </div>
       )
     });
 
