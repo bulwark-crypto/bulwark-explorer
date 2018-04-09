@@ -1,4 +1,10 @@
-# BlockEx
+![Bulwark Logo](https://bulwarkcrypto.com/wp-content/uploads/2018/04/blockexplorer.svg)
+
+Bulwark Block Explorer 
+&middot;
+[![GitHub license](https://img.shields.io/github/license/dustinengle/blockex.svg)](https://github.com/dustinengle/blockex/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/dustinengle/blockex.svg)](https://github.com/dustinengle/blockex/issues) [![Discord](https://img.shields.io/discord/374271866308919296.svg)](https://discord.me/bulwarkcrypto)
+=====
+
 Simple cryptocurrency block explorer system.
 
 __Under active development and subject to rapid sudden change.__
