@@ -18,13 +18,12 @@ export default class WatchList extends Component {
     title: PropTypes.string
   };
 
-  handleClose = (ev) => {
-    alert('y');
+  handleClose = (ev, term) => {
+    this.props.onRemove(term);
   };
 
   handleClick = (ev, term) => {
     try {
-      ev.preventDefault();
       this.props.onSearch(term);
     } catch(err) {
       // Do nothing.
@@ -39,13 +38,15 @@ export default class WatchList extends Component {
         <span
           className="watch-list__item"
           key={ idx } >
-          <Icon name="chevron-circle-right"
-                className="watch-list__item-close" onClick={ this.handleClose } />
-          <a onClick={ ev => this.handleClick(ev, item) } >
+          <span onClick={ ev => this.handleClose(ev, item) }>
+            <Icon name="times-circle"
+              className="far watch-list__item-close"  />
+          </span>
+          <span onClick={ ev => this.handleClick(ev, item) } >
             <span className="watch-list__item-text">
               { item }
             </span>
-          </a>
+          </span>
         </span>
       )
     });
@@ -57,9 +58,10 @@ export default class WatchList extends Component {
     const { props } = this;
 
     return (
-      <Card title={ props.title } className="watch-list" >
+      <div className="watch-list">
+        <p className="watch-list__title">{ `Watch List (${ props.items.length }) `}</p>
         { this.getWatchItems() }
-      </Card>
+      </div>
     );
   };
 }

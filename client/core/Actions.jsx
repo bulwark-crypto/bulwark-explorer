@@ -1,7 +1,14 @@
 
-import { COIN, COINS, ERROR, TXS, WATCH } from '../constants';
 import fetchWorker from '../../lib/fetch.worker';
 import promise from 'bluebird';
+import {
+  COIN,
+  COINS,
+  ERROR,
+  TXS,
+  WATCH_ADD,
+  WATCH_REMOVE
+} from '../constants';
 
 const promises = new Map();
 const worker = new fetchWorker();
@@ -27,7 +34,8 @@ worker.onmessage = (ev) => {
   return true;
 };
 
-const getFromWorker = (type, resolve, reject, query = null) => {
+const getFromWorker = (type,
+  resolve, reject, query = null) => {
   promises.set(type, { resolve, reject });
   worker.postMessage({ query, type });
   return true;
@@ -159,7 +167,11 @@ export const setTXs = (dispatch, txs) => {
 };
 
 export const setWatch = (dispatch, term) => {
-  dispatch({ payload: term, type: WATCH });
+  dispatch({ payload: term, type: WATCH_ADD });
+};
+
+export const removeWatch = (dispatch, term) => {
+  dispatch({ payload: term, type: WATCH_REMOVE });
 };
 
 export default {
@@ -175,5 +187,6 @@ export default {
   getTXs,
   getTXsWeek,
   setTXs,
-  setWatch
+  setWatch,
+  removeWatch
 };

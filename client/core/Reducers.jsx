@@ -1,6 +1,13 @@
 
-import { COIN, COINS, TXS, WATCH } from '../constants';
 import { combineReducers } from 'redux';
+import {
+  COIN,
+  COINS,
+  ERROR,
+  TXS,
+  WATCH_ADD,
+  WATCH_REMOVE
+} from '../constants';
 
 // The initial state of the coin object.
 const coinInit = {
@@ -51,10 +58,16 @@ const txs = (state = [], action) => {
  * @param {Object} action The flux compatible action.
  */
 const watch = (state = [], action) => {
-  if (action.type === WATCH) {
+  if (action.type === WATCH_ADD) {
     const items = [ action.payload, ...state ];
     return items.slice(0, 10);
   }
+
+  if (action.type === WATCH_REMOVE) {
+    const items = state.filter( item => action.payload !== item );
+    return items;
+  }
+
   return state;
 };
 

@@ -3,7 +3,8 @@ export const COIN = 'COIN';
 export const COINS = 'COINS';
 export const ERROR = 'ERROR';
 export const TXS = 'TXS';
-export const WATCH = 'WATCH';
+export const WATCH_ADD = 'WATCH_ADD';
+export const WATCH_REMOVE = 'WATCH_REMOVE';
 
 export const API_BASE = location.origin;
 export const PAGINATION_PAGE_SIZE = [
@@ -18,7 +19,8 @@ export default {
   ERROR,
   PAGINATION_PAGE_SIZE,
   TXS,
-  WATCH,
+  WATCH_ADD,
+  WATCH_REMOVE,
 
   API_BASE
 };

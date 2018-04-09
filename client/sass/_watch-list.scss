@@ -1,8 +1,15 @@
 .watch-list {
+	margin: 16px 0;
+
+	&__title {
+		font-family: $fontLarge;
+		font-size: 24px;
+		margin-bottom: .8em;
+		text-transform: capitalize;
+	}
 
 	&__item {
 		display: flex;
-		cursor: pointer;
 		align-items: center;
 		background-color: $blue-light;
   		border-radius: 9px;
@@ -19,19 +26,20 @@
 
 	&__item-close {
 		color: $white;
+		cursor: pointer;
 		font-size: 2em;
 		margin-right: 1em;
 	}
 
 	&__item-text {
 		color: $white;
+		cursor: pointer;
 		font-family: $fontLarge;
 		font-size: 1.25em;
 		font-weight: normal;
 		font-style: normal;
 		font-stretch: normal;
 		letter-spacing: normal;
-		mix-blend-mode: undefined;
 		overflow: hidden;
 		text-align: left;
 		white-space: nowrap;
