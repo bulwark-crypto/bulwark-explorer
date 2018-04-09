@@ -4806,6 +4806,10 @@ react-dom@^16.2.0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
+react-opium-select@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/react-opium-select/-/react-opium-select-0.4.4.tgz#71316a50de249516e76ca2901f216cda01a07a91"
+
 react-popper@^0.7.2:
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-0.7.5.tgz#71c25946f291db381231281f6b95729e8b801596"
