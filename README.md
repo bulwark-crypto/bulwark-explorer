@@ -59,7 +59,7 @@ The following automated tasks are currently needed for BlockEx to update but bef
 
 `yarn run cron:block` - will sync blocks and transactions by storing them in the database.
 
-`yarn run cron:rich` - generate the rich list. __*Under Development*__
+`yarn run cron:rich` - generate the rich list.
 
 __Note:__ is is recommended to run all the crons before editing the crontab to have the information right away.  Follow the order above, start with `cron:coin` and end with `cron:rich`.
 
