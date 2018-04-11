@@ -24,7 +24,7 @@ It is also required to have the Bulwark daemon running in the background. It is 
 
 Our geniuses here at BulwarkCorp™ have put together a script to do this for you. Just run
 
-`bash bulwarkd_setup.sh`
+`bash script/bulwarkd_setup.sh`
 
 This will install the latest Bulwark wallet and create a rpc username/password before starting the daemon.
 
