@@ -2,13 +2,10 @@
 /**
  * Global configuration object.
  */
-const isProduction = process.env.NODE_ENV === 'production';
-
 const config = {
-  'addressPrefix': 'b',
   'api': {
-    'host': !isProduction ? 'localhost' : 'http://195.201.58.253',
-    'port': !isProduction ? '3000' : '80',
+    'host': 'http://51.15.93.102',
+    'port': '80',
     'prefix': '/api',
     'timeout': '5s'
   },
@@ -31,7 +28,7 @@ const config = {
     'port': '52541',
     'user': 'bulwarkrpc',
     'pass': 'someverysafepassword',
-    'timeout': 5000, // 5 seconds
+    'timeout': 8000, // 8 seconds
   }
 };
 
