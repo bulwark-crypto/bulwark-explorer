@@ -1,18 +1,28 @@
 
 /* Overrides bootstrap table class */
 .footer {
+	display: flex;
 	background-color: $white;
 	border-top: 1px solid rgba(34, 34, 34, 0.1);
 	bottom: 0;
+	flex-wrap: wrap;
 	font-size: .8em;
 	padding-top: 2em;
-    margin: .2em;
+	justify-content: space-around;
+	/* Negative used to compensate for content padding */
+    margin: .2em -2em;
+
+    &__block {
+    	display: flex;
+    	align-items: flex-start;
+    	flex-wrap: wrap;
+    	margin: 1em 0;
+    }
 
 	&__logo {
 		display: inline-block;
 		height: 60px;
-		margin-left: 1em;
-		margin-right: 2em;
+		margin-right: 1em;
 	}
 
 	&__data-wrapper {
@@ -24,24 +34,33 @@
 	&__data-block {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
 		margin: 0 1em;
 	}
 
-	&__title {
+	&__data-title {
 		text-transform: uppercase;
 	}
 
 	&__legal {
-		font-size: 1em;
+		font-size: .9em;
 		line-height: 2;
-		margin-bottom: .25em;
+	}
+
+	&__social-title {
+		margin-bottom: .5em;
+		text-transform: uppercase;
+		width: 100%;
+	}
+
+	&__social-media-wrapper {
+		display: flex;
+		flex-direction: column;
 	}
 
 	&__social-media-icon {
 		color: $gray;
 		font-size: 2em;
-		margin-right: 1em;
+		margin-right: .5em;
 		text-align: center;
 
 		&:hover,
@@ -49,18 +68,6 @@
 			color: initial;
 		}
 
-	}
-
-	@include media-breakpoint-down(sm) {
-		&__title {
-			margin-bottom: .25em;
-			margin-top: 2em;
-		}
-
-		&__legal {
-			font-size: .75em;
-			line-height: 1.2;
-		}
 	}
 
 	@include media-breakpoint-up(md) {
