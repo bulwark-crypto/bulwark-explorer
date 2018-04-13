@@ -20,6 +20,7 @@ export default class API extends Component {
 
   render() {
     return (
+      <div className="animated fadeIn">
       <div className="api">
         <div className="api__documentation">
           <HorizontalRule className="api__documentation-title" title="API Documentation" />
@@ -34,6 +35,7 @@ export default class API extends Component {
         </div>
         <div className="api__detail">
         </div>
+      </div>
       </div>
     );
   };

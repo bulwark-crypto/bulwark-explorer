@@ -37,6 +37,7 @@ export default class CardStatus extends Component {
     const dirArrow = isPos ? 'arrow-up' : 'arrow-down';
 
     return (
+      <div className="animated fadeInUp">
       <Card className="card--market" title="Market">
         <p className="card__data-main bariol">
           <CountUp
@@ -69,6 +70,7 @@ export default class CardStatus extends Component {
           </div>
         </div>
       </Card>
+      </div>
     );
   };
 }

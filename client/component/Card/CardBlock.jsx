@@ -17,6 +17,7 @@ export default class CardBlock extends Component {
 
   render() {
     return (
+      <div className="animated fadeIn">
       <div className="card--block">
         <div className="card__row">
           <span className="card__label">Hash:</span>
@@ -56,6 +57,7 @@ export default class CardBlock extends Component {
             { dateFormat(this.props.block.createdAt) }
           </span>
         </div>
+      </div>
       </div>
     );
   };

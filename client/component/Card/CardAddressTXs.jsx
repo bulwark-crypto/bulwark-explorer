@@ -38,6 +38,7 @@ export default class CardAddressTXs extends Component {
     );
 
     return (
+      <div className="animated fadeIn">
       <Table
         cols={ this.state.cols }
         data={ this.props.txs.map((tx) => {
@@ -64,6 +65,7 @@ export default class CardAddressTXs extends Component {
             )
           });
         }) } />
+        </div>
     );
   };
 }

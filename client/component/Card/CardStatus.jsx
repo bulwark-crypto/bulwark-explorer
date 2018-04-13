@@ -26,7 +26,8 @@ export default class CardStatus extends Component {
     const isOn = this.props.status === 'Online';
 
     return (
-      <Card title="Status" className="card--status">
+      <div className="animated fadeInUp">
+      <Card title="Status" className="card--status" >
         <div className="card__row">
           <span className="card__label">Status:</span>
           <span className="card__result card__result--status">
@@ -60,6 +61,7 @@ export default class CardStatus extends Component {
           <span className="card__result">{ this.props.avgBlockTime }</span>
         </div>
       </Card>
+      </div>
     );
   };
 }

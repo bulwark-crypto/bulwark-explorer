@@ -62,6 +62,7 @@ export default class CardAddress extends Component {
     });
 
     return (
+      <div className="animated fadeIn">
       <div className="row">
         <div className="col-md-12 col-lg-8">
           <div className="card--address">
@@ -102,6 +103,7 @@ export default class CardAddress extends Component {
         <div className="col-md-12 col-lg-4 text-right">
           <canvas id="qr-code" />
         </div>
+      </div>
       </div>
     );
   };

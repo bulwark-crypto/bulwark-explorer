@@ -117,6 +117,7 @@ class Statistics extends Component {
     const day = (<small>{ moment().format('MMM DD') }</small>);
 
     return (
+      <div className="animated fadeInUp">
       <div>
         <div className="row">
           <div className="col-md-12 col-lg-6">
@@ -170,6 +171,7 @@ class Statistics extends Component {
             </div>
           </div>
         </div>
+      </div>
       </div>
     );
   };

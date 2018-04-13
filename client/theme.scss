@@ -77,6 +77,8 @@ $pagination-disabled-border-color:  $gray;
 @import "./sass/search";
 @import "./sass/table";
 @import "./sass/utility";
+@import "./sass/animatevars";
+@import "../node_modules/animate-sass/animate";
 
 @import "./sass/footer";
 @import "./sass/loading";

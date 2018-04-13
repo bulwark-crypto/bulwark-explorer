@@ -24,6 +24,7 @@ export default class CardTX extends Component {
     }
 
     return (
+      <div className="animated fadeIn">
       <div className="card--block">
         <div className="card__row">
           <span className="card__label">TXID:</span>
@@ -59,6 +60,7 @@ export default class CardTX extends Component {
             { dateFormat(this.props.tx.createdAt) }
           </span>
         </div>
+      </div>
       </div>
     );
   };
