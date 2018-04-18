@@ -79,7 +79,7 @@ export default class CardAddress extends Component {
                 Sent:
               </span>
               <span className="card__result">
-                { numeral(recv - balance).format('0,0.0000') } BWK
+                -{ numeral(recv - balance).format('0,0.0000') } BWK
               </span>
             </div>
             <div className="card__row">
