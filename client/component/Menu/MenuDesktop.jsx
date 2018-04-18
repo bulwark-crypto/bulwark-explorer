@@ -36,7 +36,11 @@ export default class MenuDesktop extends Component {
           key={ idx }
           className={ `menu-desktop__item ${ isActive? 'menu-desktop__item--is-active' : '' }` }
           to={ i.href }>
-          <img className="menu-desktop__item-icon" src={ iconSource } />
+          <img
+            alt={ i.label }
+            className="menu-desktop__item-icon"
+            src={ iconSource }
+            title={ this.state.isOpen ? null : i.label } />
           <span className="menu-desktop__item-label" >{ i.label }</span>
           <Icon name="caret-left" className="menu-desktop__item-indicator" />
         </Link>

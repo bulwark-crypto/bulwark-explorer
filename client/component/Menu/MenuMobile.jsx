@@ -31,7 +31,11 @@ export default class MenuMobile extends Component {
     return props.links.map((i, idx) => {
       return (
         <Link key={ idx } className="menu-mobile__item" to={ i.href } onClick={ this.handleToggle } >
-          <img className="menu-mobile__icon" src={ i.icon } />
+          <img
+            alt={ i.label }
+            className="menu-mobile__icon"
+            src={ i.icon }
+            title={ this.state.isOpen ? null : i.label } />
           <span className="menu-mobile__item-label" >{ i.label }</span>
         </Link>
       )
