@@ -194,7 +194,8 @@ h1, h2, h3, h4, h5, h6 {
     &__wrapper {
 		background-color: $white;
 	    margin: 0 auto;
-	    min-height: 80vh;
+		min-height: 80vh;
+		overflow-x: hidden;
 		padding: 1em 2em 2em;
 	    position: relative;
 		transition: all 1s cubic-bezier(0, 1, .5, 1);
