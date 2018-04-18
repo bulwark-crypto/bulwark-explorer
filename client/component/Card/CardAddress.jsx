@@ -87,7 +87,7 @@ export default class CardAddress extends Component {
                 Received:
               </span>
               <span className="card__result">
-                { numeral(recv).format('0,0.0000') } BWK
+                +{ numeral(recv).format('0,0.0000') } BWK
               </span>
             </div>
             <div className="card__row">
