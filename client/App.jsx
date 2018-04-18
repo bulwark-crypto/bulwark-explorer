@@ -135,7 +135,7 @@ class App extends Component {
       <HashRouter>
         <div className="page-wrapper">
           <Menu onSearch={ this.handleSearch } />
-          <div className="content">
+          <div className="content" id="body-content">
             <div className="content__wrapper">
               {/* <Notification /> */}
               <SearchBar
