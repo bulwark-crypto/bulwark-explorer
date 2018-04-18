@@ -33,12 +33,16 @@
 	}
 
 	&__section-sub-heading {
-		font-color: $gray;
+		color: $gray;
 	}
 
 	&__call {
 		margin-bottom: $margin-lg;
 		position: relative;
+
+		&:hover {
+			color: $blue;
+		}
 	}
 
 	&__call-name {
@@ -50,13 +54,17 @@
 		cursor: pointer;
 		position: absolute;
 		right: -95%;
-		top: 0;
+		top: 3px;
 		width: 80%;
 
 		@include media-breakpoint-down(sm) {
 			color: $black;
 			margin-top: 1em;
 			position: initial;
+		}
+
+		&:hover {
+			color: $gray;
 		}
 	}
 
@@ -111,6 +119,7 @@
 		}
 
 		background-color: $detail-background-color;
+		margin-top: 2px;
 		flex: 1;
 	}
 

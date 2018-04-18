@@ -41,9 +41,7 @@ const APIsection = (props) => {
           <p className="api__section-heading">{ props.heading }</p>
           <p className="api__section-sub-heading">{ props.subHeading }</p>
         </div>
-
         { calls }
-
       </div>
     );
 };
