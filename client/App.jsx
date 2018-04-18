@@ -142,21 +142,23 @@ class App extends Component {
                 className="d-none d-md-block mb-3"
                 onSearch={ this.handleSearch } />
               <CoinSummary onSearch={ this.handleSearch } />
-              <Switch>
-                <Route exact path="/" component={ Overview } />
-                <Route exact path="/address/:hash" component={ Address } />
-                <Route exact path="/api" component={ API } />
-                <Route exact path="/block/:hash" component={ Block } />
-                <Route exact path="/coin" component={ CoinInfo } />
-                <Route exact path="/faq" component={ FAQ } />
-                <Route exact path="/masternode" component={ Masternode } />
-                <Route exact path="/movement" component={ Movement } />
-                <Route exact path="/peer" component={ Peer } />
-                <Route exact path="/statistics" component={ Statistics } />
-                <Route exact path="/top" component={ Top100 } />
-                <Route exact path="/tx/:hash" component={ TX } />
-                <Route component={ Error404 } />
-              </Switch>
+              <div className="content__inner-wrapper">
+                <Switch>
+                  <Route exact path="/" component={ Overview } />
+                  <Route exact path="/address/:hash" component={ Address } />
+                  <Route exact path="/api" component={ API } />
+                  <Route exact path="/block/:hash" component={ Block } />
+                  <Route exact path="/coin" component={ CoinInfo } />
+                  <Route exact path="/faq" component={ FAQ } />
+                  <Route exact path="/masternode" component={ Masternode } />
+                  <Route exact path="/movement" component={ Movement } />
+                  <Route exact path="/peer" component={ Peer } />
+                  <Route exact path="/statistics" component={ Statistics } />
+                  <Route exact path="/top" component={ Top100 } />
+                  <Route exact path="/tx/:hash" component={ TX } />
+                  <Route component={ Error404 } />
+                </Switch>
+              </div>
               <Footer />
             </div>
           </div>
