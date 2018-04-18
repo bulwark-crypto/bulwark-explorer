@@ -38,8 +38,8 @@ export default class CardTXIn extends Component {
             : tx.coinbase ? 'COINBASE' : 'Unknown',
           value: tx.value
             ? (
-                <span className="badge badge-success">
-                  { numeral(tx.value).format('0,0.0000') } BWK
+                <span className="badge badge-danger">
+                  -{ numeral(tx.value).format('0,0.0000') } BWK
                 </span>
               )
             : ''
