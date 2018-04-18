@@ -2,9 +2,9 @@
 import Component from '../core/Component';
 import React from 'react';
 
+import APIdata from '../component/API/APIdata';
 import APIsection from '../component/API/APIsection';
 import HorizontalRule from '../component/HorizontalRule';
-import APIdata from '../component/API/APIdata';
 
 export default class API extends Component {
 
@@ -21,21 +21,22 @@ export default class API extends Component {
   render() {
     return (
       <div className="animated fadeIn">
-      <div className="api">
-        <div className="api__documentation">
-          <HorizontalRule className="api__documentation-title" title="API Documentation" />
-          <div className="pr-4">
-            <p className="api__intro">
-             The block explorer provides an API allowing users and/or applications to retrieve information from the network without the need for a local wallet.
-            </p>
-            <div className="api__call-container">
-              { this.getSections() }
+        <br />
+        <div className="api">
+          <div className="api__documentation">
+            <HorizontalRule className="api__documentation-title" title="API Documentation" />
+            <div className="pr-4">
+              <p className="api__intro">
+              The block explorer provides an API allowing users and/or applications to retrieve information from the network without the need for a local wallet.
+              </p>
+              <div className="api__call-container">
+                { this.getSections() }
+              </div>
             </div>
           </div>
+          <div className="api__detail">
+          </div>
         </div>
-        <div className="api__detail">
-        </div>
-      </div>
       </div>
     );
   };
