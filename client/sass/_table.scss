@@ -1,7 +1,24 @@
+
+.table-wrapper {
+	@include media-breakpoint-down(lg) {
+		overflow-x: auto;
+	}
+
+	&__shadow-margin {
+		display: initial;
+
+		@include media-breakpoint-down(lg) {
+			display: inline-block;
+			margin-right: 20px;
+		}
+	}
+}
+
 .table {
 	width: 99.8%;
 	border-radius: 5px;
-	margin: 1px 1px 20px 1px;
+	margin: 1vh 1vw;
+	outline: 10px solid transparent;
 	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 
 	tr {

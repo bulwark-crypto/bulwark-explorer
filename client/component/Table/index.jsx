@@ -70,10 +70,14 @@ export default class TableWrapper extends Component {
     }
 
     return (
-      <Table responsive className={ `${ this.props.hasDivider ? 'table--has-divider' : '' } ${ this.props.className || 'animated fadeIn' }` }>
-        <TableHeader cols={ props.cols } />
-        { this.getBody() }
-      </Table>
+      <div className="table-wrapper">
+        <div className="table-wrapper__shadow-margin">
+          <Table className={ `${ this.props.hasDivider ? 'table--has-divider' : '' } ${ this.props.className || 'animated fadeIn' }` }>
+            <TableHeader cols={ props.cols } />
+            { this.getBody() }
+          </Table>
+        </div>
+      </div>
     );
   };
 }
