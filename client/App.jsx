@@ -120,7 +120,7 @@ class App extends Component {
     if (this.props.watch.length && this.props.watch[0] === term) {
       return;
     }
-if (isTX(term) && isBlock(term) && isAddress(term)) {
+if (isTX(term) || isBlock(term) || isAddress(term)) {
     this.props.setWatch(term);
   }
   };
