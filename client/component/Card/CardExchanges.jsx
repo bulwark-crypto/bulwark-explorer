@@ -11,7 +11,7 @@ const CardExchanges = () => (
     <a href="https://crypto-bridge.org/" target="_blank">CryptoBridge</a><br />
     <a href="https://cryptohub.online/market/BWK/" target="_blank">CryptoHub</a><br />
     <a href="https://stocks.exchange/trade/BWK/BTC" target="_blank">Stocks.Exchange</a><br />
-    <a href="https://tradesatoshi.com/" target="_blank">TradeSatoshi</a><br />
+    <a href="https://tradesatoshi.com/Exchange/?market=BWK_BTC" target="_blank">TradeSatoshi</a><br />
   </Card>
 );
 
