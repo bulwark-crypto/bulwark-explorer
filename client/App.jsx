@@ -39,6 +39,7 @@ class App extends Component {
     getCoins: PropTypes.func.isRequired,
     getTXs: PropTypes.func.isRequired,
     setWatch: PropTypes.func.isRequired,
+    removeWatch: PropTypes.func.isRequired,
     // State
     watch: PropTypes.array.isRequired
   };
@@ -117,10 +118,8 @@ class App extends Component {
 
     document.location.href = path;
 
-    if (this.props.watch.length && this.props.watch[0] === term) {
-      return;
-    }
 if (isTX(term) || isBlock(term) || isAddress(term)) {
+    this.props.removeWatch(term);
     this.props.setWatch(term);
   }
   };
@@ -172,7 +171,8 @@ if (isTX(term) || isBlock(term) || isAddress(term)) {
 const mapDispatch = dispatch => ({
   getCoins: query => Actions.getCoinHistory(dispatch, query),
   getTXs: query => Actions.getTXLatest(dispatch, query),
-  setWatch: term => Actions.setWatch(dispatch, term)
+  setWatch: term => Actions.setWatch(dispatch, term),
+  removeWatch: term => Actions.removeWatch(dispatch,term)
 });
 
 const mapState = state => ({
