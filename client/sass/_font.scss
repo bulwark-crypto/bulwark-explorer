@@ -81,6 +81,12 @@ $fontSmall: 'Source Sans Pro', sans-serif;
 html, body {
 	color: $black;
 	font-size: 16px;
+
+	/* Fix #25 - Windows rendering of fonts. */
+	-webkit-font-smoothing: subpixel-antialiased;
+	-webkit-text-stroke: 0.45px rgba(0, 0, 0, 0.1);
+	text-rendering: optimizeLegibility;
+	text-shadow: $white 0 1px 1px;
 }
 
 h1, h2, h3, h4, h5, h6 {
