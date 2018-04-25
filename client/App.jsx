@@ -106,7 +106,6 @@ class App extends Component {
   };
 
   handleSearch = (term) => {
-    console.log(term, isBlock(term));
     // If term doesn't match then ignore.
     if (!isTX(term) && !isBlock(term) && !isAddress(term)) {
       return false;
