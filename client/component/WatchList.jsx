@@ -35,20 +35,18 @@ export default class WatchList extends Component {
 
     const watchItems = items.map((item, idx) => {
       return (
-        <div className="animated fadeIn">
-        <span
-          className="watch-list__item"
-          key={ idx } >
-          <span onClick={ ev => this.handleClose(ev, item) }>
-            <Icon name="times-circle"
-              className="far watch-list__item-close"  />
-          </span>
-          <span onClick={ ev => this.handleClick(ev, item) } >
-            <span className="watch-list__item-text">
-              { item }
+        <div className="animated fadeIn" key={ idx }>
+          <span className="watch-list__item">
+            <span onClick={ ev => this.handleClose(ev, item) }>
+              <Icon name="times-circle"
+                className="far watch-list__item-close"  />
+            </span>
+            <span onClick={ ev => this.handleClick(ev, item) } >
+              <span className="watch-list__item-text">
+                { item }
+              </span>
             </span>
           </span>
-        </span>
         </div>
       )
     });
@@ -61,7 +59,7 @@ export default class WatchList extends Component {
 
     return (
       <div className="watch-list">
-        <p className="watch-list__title">{ `Watch List (${ props.items.length }) `}</p>
+        <p className="watch-list__title">{ `Search History (${ props.items.length }) `}</p>
         { this.getWatchItems() }
       </div>
     );
