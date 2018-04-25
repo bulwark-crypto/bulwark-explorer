@@ -20,9 +20,20 @@ const UTXO = require('../../model/utxo');
  */
 const getAddress = async (req, res) => {
   try {
-    const qry = { 'vout.address': req.params.hash };
-    const txs = await TX.find(qry).sort({ blockHeight: -1 }).limit(1000);
-    const utxo = await UTXO.find({ address: req.params.hash }).sort({ blockHeight: -1 });
+    const txs = await TX
+      .aggregate([
+        { $match: { 'vout.address': req.params.hash } },
+        { $sort: { blockHeight: -1 } }
+      ])
+      .allowDiskUse(true)
+      .exec();
+    const utxo = await UTXO
+      .aggregate([
+          { $match: { address: req.params.hash } },
+          { $sort: { blockHeight: -1 } }
+      ])
+      .allowDiskUse(true)
+      .exec();
 
     res.json({ txs, utxo });
   } catch(err) {
