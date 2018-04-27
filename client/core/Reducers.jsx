@@ -52,29 +52,9 @@ const txs = (state = [], action) => {
   return state;
 };
 
-/**
- * Store the last 10 search results.
- * @param {Array} state The current history of searches.
- * @param {Object} action The flux compatible action.
- */
-const watch = (state = [], action) => {
-  if (action.type === WATCH_ADD) {
-    const items = [ action.payload, ...state ];
-    return items.slice(0, 10);
-  }
-
-  if (action.type === WATCH_REMOVE) {
-    const items = state.filter( item => action.payload !== item );
-    return items;
-  }
-
-  return state;
-};
-
 // Export and combine our reducers.
 export default combineReducers({
   coin,
   coins,
-  txs,
-  watch
+  txs
 });

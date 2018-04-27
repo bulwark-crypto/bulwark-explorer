@@ -8,6 +8,7 @@ import { Link, Route, Switch } from 'react-router-dom';
 import promise from 'bluebird';
 import PropTypes from 'prop-types';
 import React from 'react';
+import searchHistory from '../lib/searchHistory';
 
 // Route Containers
 import Address from './container/Address';
@@ -37,10 +38,7 @@ class App extends Component {
   static propTypes = {
     // Dispatch
     getCoins: PropTypes.func.isRequired,
-    getTXs: PropTypes.func.isRequired,
-    setWatch: PropTypes.func.isRequired,
-    // State
-    watch: PropTypes.array.isRequired
+    getTXs: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -48,9 +46,14 @@ class App extends Component {
 
     this.state = {
       init: true,
-      limit: 10
+      limit: 10,
+      searches: []
     };
     this.timer = { coins: null, txs: null };
+  };
+
+  componentWillMount() {
+    this.setState({ searches: searchHistory.get() });
   };
 
   componentDidMount() {
@@ -105,12 +108,20 @@ class App extends Component {
     }, 30000); // 30 seconds
   };
 
+  handleRemove = (term) => {
+    this.setState({ searches: searchHistory.del(term) });
+  };
+
   handleSearch = (term) => {
     // If term doesn't match then ignore.
     if (!isTX(term) && !isBlock(term) && !isAddress(term)) {
       return false;
     }
 
+    // Add to search history using localStorage.
+    this.setState({ searches: searchHistory.add(term) });
+
+    // Setup path for search.
     let path = '/#/';
     if (isBlock(term)) {
       path = `/#/block/${ term }`;
@@ -121,12 +132,6 @@ class App extends Component {
     }
 
     document.location.href = path;
-
-    if (this.props.watch.length && this.props.watch[0] === term) {
-      return;
-    }
-
-    this.props.setWatch(term);
   };
 
   render() {
@@ -146,7 +151,10 @@ class App extends Component {
               <SearchBar
                 className="d-none d-md-block mb-3"
                 onSearch={ this.handleSearch } />
-              <CoinSummary onSearch={ this.handleSearch } />
+              <CoinSummary
+                onRemove={ this.handleRemove }
+                onSearch={ this.handleSearch }
+                searches={ this.state.searches } />
               <div className="content__inner-wrapper">
                 <Switch>
                   <Route exact path="/" component={ Overview } />
@@ -175,12 +183,11 @@ class App extends Component {
 
 const mapDispatch = dispatch => ({
   getCoins: query => Actions.getCoinHistory(dispatch, query),
-  getTXs: query => Actions.getTXLatest(dispatch, query),
-  setWatch: term => Actions.setWatch(dispatch, term)
+  getTXs: query => Actions.getTXLatest(dispatch, query)
 });
 
 const mapState = state => ({
-  watch: state.watch
+
 });
 
 export default connect(mapState, mapDispatch)(App);
