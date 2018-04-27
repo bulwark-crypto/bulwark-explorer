@@ -9,15 +9,20 @@
 	}
 
 	&__item {
-		display: flex;
 		align-items: center;
 		background-color: $blue-light;
   		border-radius: 9px;
 		color: $white;
-		font-size: .5em;
-		margin: 1em 0;
-		padding: .25em;
+		font-size: .75em;
+		margin: .5em 0;
+		padding: .5em;
 		text-transform: uppercase;
+
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width: 100%;
 	}
 
 	&__item:nth-child(odd) {
@@ -27,8 +32,9 @@
 	&__item-close {
 		color: $white;
 		cursor: pointer;
-		font-size: 2em;
-		margin-right: 1em;
+		font-size: 1.75em;
+		margin-right: .25em;
+		position: absolute;
 	}
 
 	&__item-text {
@@ -40,10 +46,19 @@
 		font-style: normal;
 		font-stretch: normal;
 		letter-spacing: normal;
-		overflow: hidden;
+		margin-left: 1.75em;
 		text-align: left;
+
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		white-space: nowrap;
-		width: 75%;
+		width: 85%;
+
+		text-rendering: auto;
+		text-shadow: none;
+		-webkit-font-smoothing: auto;
+		-webkit-text-stroke: 0;
 	}
 
 }

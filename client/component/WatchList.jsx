@@ -36,17 +36,17 @@ export default class WatchList extends Component {
     const watchItems = items.reverse().map((item, idx) => {
       return (
         <div className="animated fadeIn" key={ idx }>
-          <span className="watch-list__item">
-            <span onClick={ ev => this.handleClose(ev, item) }>
+          <div className="watch-list__item">
+            <div onClick={ ev => this.handleClose(ev, item) }>
               <Icon name="times-circle"
                 className="far watch-list__item-close"  />
-            </span>
-            <span onClick={ ev => this.handleClick(ev, item) } >
-              <span className="watch-list__item-text">
+            </div>
+            <div onClick={ ev => this.handleClick(ev, item) } >
+              <div className="watch-list__item-text">
                 { item }
-              </span>
-            </span>
-          </span>
+              </div>
+            </div>
+          </div>
         </div>
       )
     });
