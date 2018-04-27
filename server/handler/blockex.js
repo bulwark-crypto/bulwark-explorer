@@ -121,8 +121,8 @@ const getCoinsWeek = () => {
     loading = true;
 
     try {
-      const start = moment().utc().startOf('day').subtract(6, 'days').toDate();
-      const end = moment().utc().endOf('day').subtract(1, 'days').toDate();
+      const start = moment().utc().subtract(8, 'days').toDate();
+      const end = moment().utc().toDate();
       const qry = [
         // Select last 7 days of coins.
         { $match: { createdAt: { $gt: start, $lt: end } } },

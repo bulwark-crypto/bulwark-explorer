@@ -61,7 +61,7 @@ class Statistics extends Component {
     const hashes = new Map();
     const mns = new Map();
     const prices = new Map();
-    this.state.coins.forEach((c) => {
+    this.state.coins.forEach((c, idx) => {
       const k = moment(c.createdAt).format('MMM DD');
 
       if (hashes.has(k)) {
@@ -116,7 +116,7 @@ class Statistics extends Component {
 
     // Get the current day of the month.
     const day = (<small>{ moment().format('MMM DD') }</small>);
-
+    console.log(hashes, mns, prices);
     return (
       <div className="animated fadeInUp">
         <HorizontalRule title="Statistics" />
@@ -129,9 +129,9 @@ class Statistics extends Component {
               <div>
                 <GraphLineFull
                   color="#1991eb"
-                  data={ Array.from(hashes.values()) }
+                  data={ Array.from(hashes.values()).slice(1, -1) }
                   height="420px"
-                  labels={ Array.from(hashes.keys()) } />
+                  labels={ Array.from(hashes.keys()).slice(1, -1) } />
               </div>
             </div>
             <div className="col-md-12 col-lg-6">
@@ -155,9 +155,9 @@ class Statistics extends Component {
               <div>
                 <GraphLineFull
                   color="#1991eb"
-                  data={ Array.from(prices.values()) }
+                  data={ Array.from(prices.values()).slice(1, -1) }
                   height="420px"
-                  labels={ Array.from(prices.keys()) } />
+                  labels={ Array.from(prices.keys()).slice(1, -1) } />
               </div>
             </div>
             <div className="col-md-12 col-lg-6">
@@ -167,9 +167,9 @@ class Statistics extends Component {
               <div>
                 <GraphLineFull
                   color="#1991eb"
-                  data={ Array.from(mns.values()) }
+                  data={ Array.from(mns.values()).slice(1, -1) }
                   height="420px"
-                  labels={ Array.from(mns.keys()) } />
+                  labels={ Array.from(mns.keys()).slice(1, -1) } />
               </div>
             </div>
           </div>
