@@ -172,6 +172,23 @@ const getMasternodes = async (req, res) => {
 };
 
 /**
+ * Get a masternode by wallet adress hash from the server.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getMasternodeByAddress = async (req, res) => {
+  try {
+    const hash = req.params.hash;
+    const mns = await Masternode.findOne({ addr: hash});
+
+    res.json({ mns });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Get list of masternodes from the server.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -387,6 +404,7 @@ module.exports =  {
   getCoinHistory,
   getCoinsWeek,
   getMasternodes,
+  getMasternodeByAddress,
   getMasternodeCount,
   getPeer,
   getSupply,
