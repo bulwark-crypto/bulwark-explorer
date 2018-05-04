@@ -29,6 +29,11 @@ const APIdata = [
           path: '/api/masternode'
         },
         {
+          name: 'getMasternodeByAddress',
+          info: 'Returns masternode information by Wallet Address.',
+          path: '/api/masternode/bJAUCVr24X84c9k6QVuSvdjbuC69S7zMeG'
+        },
+        {
           name: 'getMasternodeCount',
           info: 'Returns masternodes enabled and total counts.',
           path: '/api/masternodecount'
