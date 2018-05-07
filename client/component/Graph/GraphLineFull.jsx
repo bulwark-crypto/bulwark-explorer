@@ -2,6 +2,7 @@
 import Chart from 'chart.js';
 import Component from '../../core/Component';
 import isEqual from 'lodash/isEqual';
+import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -63,8 +64,10 @@ export default class GraphLineFull extends Component {
   };
 
   getConfig = () => {
-    let max = Math.max(this.props.data);
-    let min = Math.min(this.props.data);
+    const data = this.props.data.map(d => numeral(d).value());
+
+    let max = Math.max.apply(Math, data);
+    let min = Math.min.apply(Math, data);
     max = max + (max * 0.1);
     min = min - (min * 0.1);
 
@@ -90,7 +93,7 @@ export default class GraphLineFull extends Component {
           borderWidth: 2,
           cubicInterpolationMode: 'monotone', // default
           capBezierPoints: true,
-          data: this.props.data,
+          data: data,
           fill: true,
           lineTension: 0.05, // 0.55
           pointRadius: 2,

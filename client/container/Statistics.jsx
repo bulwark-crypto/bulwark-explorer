@@ -116,7 +116,7 @@ class Statistics extends Component {
 
     // Get the current day of the month.
     const day = (<small>{ moment().format('MMM DD') }</small>);
-    console.log(hashes, mns, prices);
+
     return (
       <div className="animated fadeInUp">
         <HorizontalRule title="Statistics" />
