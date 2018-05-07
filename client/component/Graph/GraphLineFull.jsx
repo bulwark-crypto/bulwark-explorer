@@ -92,7 +92,7 @@ export default class GraphLineFull extends Component {
           capBezierPoints: true,
           data: this.props.data,
           fill: true,
-          lineTension: 0.55,
+          lineTension: 0.05, // 0.55
           pointRadius: 2,
           showLine: true,
           spanGaps: true,
