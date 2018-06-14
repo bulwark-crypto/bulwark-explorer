@@ -52,7 +52,7 @@ const getAvgBlockTime = async (req, res) => {
     const date = moment.utc().subtract(24, 'hours').toDate();
     const blocks = await Block.find({ createdAt: { $gt: date } });
     const seconds = 24 * 60 * 60;
-    const intervals = seconds / (blocks.length / 90.0);
+    const intervals = Math.ceil(seconds / blocks.length);
 
     res.json(intervals);
   } catch(err) {
