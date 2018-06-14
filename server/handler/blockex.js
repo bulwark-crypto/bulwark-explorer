@@ -51,6 +51,25 @@ const getAvgBlockTime = async (req, res) => {
   try {
     const date = moment.utc().subtract(24, 'hours').toDate();
     const blocks = await Block.find({ createdAt: { $gt: date } });
+    const seconds = 24 * 60 * 60;
+    const intervals = seconds / (blocks.length / 90.0);
+
+    res.json(intervals);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
+ * Will return the average masternode payout time over 24 hours.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getAvgMNTime = async (req, res) => {
+  try {
+    const date = moment.utc().subtract(24, 'hours').toDate();
+    const blocks = await Block.find({ createdAt: { $gt: date } });
     const mns = await Masternode.find();
 
     res.json((24.0 / (blocks.length / mns.length)));
@@ -418,6 +437,7 @@ const getTXsWeek = () => {
 module.exports =  {
   getAddress,
   getAvgBlockTime,
+  getAvgMNTime,
   getBlock,
   getCoin,
   getCoinHistory,
