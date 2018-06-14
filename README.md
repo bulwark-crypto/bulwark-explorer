@@ -2,7 +2,7 @@
 
 Bulwark Block Explorer 
 =====
-[![GitHub license](https://img.shields.io/github/license/bulwark-crypto/bulwark-explorer.svg)](https://github.com/bulwark-crypto/bulwark-explorer/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/dustinengle/blockex.svg)](https://github.com/bulwark-crypto/bulwark-explorer/issues) [![Discord](https://img.shields.io/discord/374271866308919296.svg)](https://discord.me/bulwarkcrypto) <a href="https://twitter.com/intent/follow?screen_name=bulwarkcoin"> <img src="https://img.shields.io/twitter/follow/bulwarkcoin.svg?style=social&logo=twitter" alt="follow on Twitter"></a>
+[![GitHub license](https://img.shields.io/github/license/bulwark-crypto/bulwark-explorer.svg)](https://github.com/bulwark-crypto/bulwark-explorer/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/bulwark-crypto/bulwark-explorer.svg)](https://github.com/bulwark-crypto/bulwark-explorer/issues) [![Discord](https://img.shields.io/discord/374271866308919296.svg)](https://discord.me/bulwarkcrypto) <a href="https://twitter.com/intent/follow?screen_name=bulwarkcoin"> <img src="https://img.shields.io/twitter/follow/bulwarkcoin.svg?style=social&logo=twitter" alt="follow on Twitter"></a>
 
 Simple cryptocurrency block explorer system.
 
@@ -26,7 +26,7 @@ Our geniuses here at BulwarkCorp™ have put together a script to do this for yo
 This will install the latest Bulwark wallet and create a rpc username/password before starting the daemon.
 
 ## Install
-`git clone https://github.com/dustinengle/blockex.git` - copy repo to local folder.
+`git clone https://github.com/bulwark-crypto/bulwark-explorer.git` - copy repo to local folder.
 
 `cd blockex` - change into project directory.
 
