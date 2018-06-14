@@ -43,6 +43,24 @@ const getAddress = async (req, res) => {
 };
 
 /**
+ * Will return the average block time over 24 hours.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getAvgBlockTime = async (req, res) => {
+  try {
+    const date = moment.utc().subtract(24, 'hours').toDate();
+    const blocks = await Block.find({ createdAt: { $gt: date } });
+    const mns = await Masternode.find();
+
+    res.json((24.0 / (blocks.length / mns.length)));
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Get block by hash or height.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -399,6 +417,7 @@ const getTXsWeek = () => {
 
 module.exports =  {
   getAddress,
+  getAvgBlockTime,
   getBlock,
   getCoin,
   getCoinHistory,

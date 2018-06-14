@@ -6,6 +6,7 @@ const iquidus = require('../handler/iquidus');
 const router = express.Router();
 
 router.get('/address/:hash', blockex.getAddress);
+router.get('/block/average', blockex.getAvgBlockTime);
 router.get('/block/:hash', blockex.getBlock);
 router.get('/coin', blockex.getCoin);
 router.get('/coin/history', blockex.getCoinHistory);
