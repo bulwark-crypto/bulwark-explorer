@@ -35,6 +35,8 @@ class CoinSummary extends Component {
             <div className="row">
               <div className="col-md-12 col-lg-6">
                 <CardStatus
+                  avgBlockTime={ coin.avgBlockTime }
+                  avgMNTime={ coin.avgMNTime }
                   blocks={ this.props.txs.length
                     ? this.props.txs[0].blockHeight
                     : coin.blocks

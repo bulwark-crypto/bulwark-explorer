@@ -9,14 +9,16 @@ import CountUp from '../CountUp';
 
 export default class CardStatus extends Component {
   static defaultProps = {
-    avgBlockTime: '90 seconds',
+    avgBlockTime: 90,
+    avgMNTime: 24,
     blocks: 0,
     peers: 0,
     status: 'Offline'
   };
 
   static propTypes = {
-    avgBlockTime: PropTypes.string.isRequired,
+    avgBlockTime: PropTypes.number.isRequired,
+    avgMNTime: PropTypes.number.isRequired,
     blocks: PropTypes.number.isRequired,
     peers: PropTypes.number.isRequired,
     status: PropTypes.string.isRequired
@@ -58,7 +60,11 @@ export default class CardStatus extends Component {
         </div>
         <div className="card__row">
           <span className="card__label">Avg. Block Time:</span>
-          <span className="card__result">{ this.props.avgBlockTime }</span>
+          <span className="card__result">{ this.props.avgBlockTime.toFixed(2) } seconds</span>
+        </div>
+        <div className="card__row">
+          <span className="card__label">Avg. MN Payment:</span>
+          <span className="card__result">{ this.props.avgMNTime.toFixed(2) } hours</span>
         </div>
       </Card>
       </div>

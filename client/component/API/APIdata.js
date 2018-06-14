@@ -14,6 +14,11 @@ const APIdata = [
           path: '/api/block/00000000000072a98f7d8385809a1f71af983d22efce85e63ec3d75f04412823'
         },
         {
+          name: 'getBlockAverage',
+          info: 'Returns the average block time over 24 hours.',
+          path: '/api/block/average'
+        },
+        {
           name: 'getCoin',
           info: 'Returns coin information.',
           path: '/api/coin/'
@@ -37,6 +42,11 @@ const APIdata = [
           name: 'getMasternodeCount',
           info: 'Returns masternodes enabled and total counts.',
           path: '/api/masternodecount'
+        },
+        {
+          name: 'getMasternodeAverage',
+          info: 'Returns the average payment for a masternode vs 24 hours.',
+          path: '/api/masternode/average'
         },
         {
           name: 'getPeer',
