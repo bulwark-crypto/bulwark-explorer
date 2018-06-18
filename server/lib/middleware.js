@@ -19,7 +19,7 @@ const middleware = (app) => {
 
   app.use('/api', new rateLimit({
     windowMs: 1000, // 1 second
-    max: 6,
+    max: 7,
     delayMs: 500
   }));
 
