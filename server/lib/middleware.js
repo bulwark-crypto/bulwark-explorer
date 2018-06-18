@@ -26,7 +26,7 @@ const middleware = (app) => {
   app.use('/ext/getbalance', new rateLimit({
     windowMs: 3000,
     max: 1,
-    delayMs: 5000
+    delayMs: 1000
   }));
 
 };
