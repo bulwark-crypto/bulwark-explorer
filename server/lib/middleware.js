@@ -19,14 +19,14 @@ const middleware = (app) => {
 
   app.use('/api', new rateLimit({
     windowMs: 1000, // 1 second
-    max: 6,
-    delayMs: 500
+    max: 10,
+    //delayMs: 500
   }));
 
   app.use('/ext/getbalance', new rateLimit({
-    windowMs: 5000,
+    windowMs: 1000,
     max: 1,
-    delayMs: 5000
+    //delayMs: 1000
   }));
 
 };
