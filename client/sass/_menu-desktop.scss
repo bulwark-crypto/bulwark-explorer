@@ -1,9 +1,6 @@
 .menu-desktop {
 
-	background: $menu-gradient-main;
-	background: -moz-linear-gradient(-45deg, $menu-gradient-main 1%, $menu-gradient-main 50%, $menu-gradient-secondary 80%);
-	background: -webkit-linear-gradient(-45deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
-	background: linear-gradient(135deg, $menu-gradient-main 1%,$menu-gradient-main 50%,$menu-gradient-secondary 80%);
+	background: rgb(41, 77, 234);
 
 	box-shadow: #7d7d7d 0px 0px 16px;
 	color: $white;

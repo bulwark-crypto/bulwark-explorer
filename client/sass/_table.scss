@@ -57,6 +57,8 @@
 	}
 
 	th {
+		background-color: $blue;
+		color: $white;
 		font-size: 16px;
 		min-width: 100px;
 		padding: 32px 5px;
@@ -65,11 +67,13 @@
 
 	th:first-child {
 		padding-left: 32px;
+		border-radius: 5px 0 0 0;
 	}
 
 	th:last-child {
 		padding-right: 32px;
 		text-align: right;
+		border-radius: 0 5px 0 0;
 	}
 
 	td {

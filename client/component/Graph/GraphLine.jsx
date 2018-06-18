@@ -74,7 +74,7 @@ export default class GraphLine extends Component {
         labels: this.props.labels,
         datasets: [{
           borderColor: this.props.color,
-          borderWidth: 4,
+          borderWidth: 3,
           cubicInterpolationMode: 'monotone', // default
           capBezierPoints: true,
           data: this.props.data,

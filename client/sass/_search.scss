@@ -4,7 +4,7 @@
 	width: 100%;
 
 	&:hover {
-		box-shadow: 0 6px 10px rgba(0,0,0,0.15), 0 4px 4px rgba(0,0,0,0.11);
+		box-shadow: 0 8px 14px rgba(0,0,0,0.20), 0 4px 4px rgba(0,0,0,0.18);
 	}
 
 	&__icon {
@@ -17,7 +17,7 @@
 
 	&__input {
 		border: 1px solid lighten($gray, 15%);
-	  	border-radius: 2px;
+	  	border-radius: 5px;
 	  	margin: 0;
 		padding: 25px;
 		padding-left: 45px;
