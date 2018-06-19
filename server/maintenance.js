@@ -23,9 +23,8 @@ app.use((req, res) => {
         </style>
     </head>
     <body>
-      <h1>Alpha Testing Ended</h2>
-      <h3>Thank you for participating in public alpha testing of the block explorer.</h3>
-      <h2>Stay tuned for public beta!</h2>
+      <h1>Under Maintenance</h2>
+      <h3>Check back soon!</h3>
     </body>
     </html>
   `);
