@@ -9,6 +9,7 @@ import React from 'react';
 
 import GraphLineFull from '../component/Graph/GraphLineFull';
 import HorizontalRule from '../component/HorizontalRule';
+import Notification from '../component/Notification';
 
 class Statistics extends Component {
   static propTypes = {
@@ -120,6 +121,7 @@ class Statistics extends Component {
     return (
       <div className="animated fadeInUp">
         <HorizontalRule title="Statistics" />
+        { Array.from(hashes.keys()).slice(1, -1).length <= 6 && <Notification /> }
         <div>
           <div className="row">
             <div className="col-md-12 col-lg-6">
