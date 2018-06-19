@@ -148,13 +148,13 @@ class App extends Component {
           <div className="content" id="body-content">
             <div className="content__wrapper">
               {/* <Notification /> */}
-              <SearchBar
-                className="d-none d-md-block mb-3"
-                onSearch={ this.handleSearch } />
               <CoinSummary
                 onRemove={ this.handleRemove }
                 onSearch={ this.handleSearch }
                 searches={ this.state.searches } />
+              <SearchBar
+                className="d-none d-md-block mb-3"
+                onSearch={ this.handleSearch } />
               <div className="content__inner-wrapper">
                 <Switch>
                   <Route exact path="/" component={ Overview } />
