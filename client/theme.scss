@@ -92,11 +92,15 @@ $pagination-disabled-border-color:  $gray;
 
 /* Reset */
 html, body {
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    width: 100vw;
+	text-rendering: auto;
+	text-shadow: none;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-stroke: 0;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+	width: 100vw;
 }
 
 a, a:visited {
@@ -151,11 +155,6 @@ h1, h2, h3, h4, h5, h6 {
 	padding: .2em .6em;
 	text-align: center;
 	text-transform: uppercase;
-
-	text-rendering: auto;
-	text-shadow: none;
-	-webkit-font-smoothing: auto;
-	-webkit-text-stroke: 0;
 
 	&-danger {
 		color: $white !important;
