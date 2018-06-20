@@ -10,6 +10,7 @@ import Icon from '../component/Icon';
 import CardMarket from '../component/Card/CardMarket';
 import CardMasternodeSummary from '../component/Card/CardMasternodeSummary';
 import CardNetworkSummary from '../component/Card/CardNetworkSummary';
+import CardPoS from '../component/Card/CardPoS';
 import CardStatus from '../component/Card/CardStatus';
 import WatchList from '../component/WatchList';
 
@@ -28,6 +29,10 @@ class CoinSummary extends Component {
       ? this.props.coins[0]
       : { diff: 0, netHash: 0 };
 
+    const height = this.props.txs.length
+      ? this.props.txs[0].blockHeight
+      : coin.blocks;
+
     return (
       <div>
         <div className="row">
@@ -37,10 +42,7 @@ class CoinSummary extends Component {
                 <CardStatus
                   avgBlockTime={ coin.avgBlockTime }
                   avgMNTime={ coin.avgMNTime }
-                  blocks={ this.props.txs.length
-                    ? this.props.txs[0].blockHeight
-                    : coin.blocks
-                  }
+                  blocks={ height }
                   peers={ coin.peers }
                   status={ coin.status } />
               </div>
@@ -70,8 +72,12 @@ class CoinSummary extends Component {
             </div>
           </div>
           <div className="col-md-12 col-lg-3">
+            <CardPoS
+              average={ coin.avgBlockTime }
+              height={ height }
+              posHeight={ 182700 } />
             <WatchList
-              items={ this.props.searches }
+              items={ height >= 182700 ? this.props.searches : this.props.searches.slice(0, 7) }
               onSearch={ this.props.onSearch }
               onRemove={ this.props.onRemove } />
           </div>

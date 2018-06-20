@@ -92,7 +92,7 @@ class App extends Component {
         .getCoins({ limit: 12 })
         .then(this.getCoins)
         .catch(this.getCoins);
-    }, 60000); // 1 minute
+    }, 30000); // 30 seconds
   };
 
   getTXs = () => {
