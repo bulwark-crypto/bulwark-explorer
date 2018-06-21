@@ -23,6 +23,8 @@ class Address extends Component {
     super(props);
     this.state = {
       address: '',
+      balance: 0.0,
+      received: 0.0,
       error: null,
       loading: true,
       pages: 0,
@@ -49,9 +51,11 @@ class Address extends Component {
       const address = this.props.match.params.hash;
       this.props
         .getAddress({ address })
-        .then(({ txs, utxo }) => {
+        .then(({ balance, received, txs, utxo }) => {
           this.setState({
             address,
+            balance,
+            received,
             txs,
             utxo,
             loading: false,
@@ -92,6 +96,8 @@ class Address extends Component {
         <HorizontalRule title="Wallet Info" />
         <CardAddress
           address={ this.state.address }
+          balance={ this.state.balance }
+          received={ this.state.received }
           txs={ this.state.txs }
           utxo={ this.state.utxo } />
         <HorizontalRule select={ select } title="Wallet Transactions" />
