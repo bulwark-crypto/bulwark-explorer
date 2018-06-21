@@ -32,10 +32,10 @@ const prodPlugins = [
     asset: '[path].gz[query]'
   }),
   new webpack.optimize.UglifyJsPlugin({
-    sourceMap: true,   // enable source maps to map errors (stack traces) to modules
-    output: {
-      comments: false, // remove all comments
-    },
+    compress: { warnings: false },
+    comments: false,
+    sourceMap: true,
+    minimize: false
   })
 ];
 
