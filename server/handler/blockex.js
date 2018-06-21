@@ -35,8 +35,8 @@ const getAddress = async (req, res) => {
       .allowDiskUse(true)
       .exec();
 
-    const balance = utxo.reduce((acc = 0.0, tx = []) => acc + tx.value);
-    const received = txs.reduce((acc = 0.0, tx = []) => acc + tx.value);
+    const balance = utxo.reduce((acc = 0.0, tx = []) => acc + tx.value, 0.0);
+    const received = txs.reduce((acc = 0.0, tx = []) => acc + tx.value, 0.0);
 
     res.json({ balance, received, txs, utxo });
   } catch(err) {
