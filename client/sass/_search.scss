@@ -4,7 +4,7 @@
 	width: 100%;
 
 	&:hover {
-		box-shadow: 0 8px 14px rgba(0,0,0,0.20), 0 4px 4px rgba(0,0,0,0.18);
+		
 	}
 
 	&__icon {
@@ -25,12 +25,15 @@
 
 		&:focus,
 		&:hover {
+
+			outline: none !important;
 			border-color: inherit;
 
 			& + svg {
 				opacity: 1;
 			}
 		}
+
 	}
 
 	&--mobile {
