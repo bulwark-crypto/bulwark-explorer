@@ -34,7 +34,7 @@ const prodPlugins = [
   })
 ];
 
-const envPlugins = process.env.NODE_ENV === '"production"'
+const envPlugins = process.env.NODE_ENV === 'production'
   ? [...basePlugins, ...prodPlugins]
   : basePlugins;
 
