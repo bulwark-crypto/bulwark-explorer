@@ -38,7 +38,7 @@ const TX = mongoose.model('TX', new mongoose.Schema({
   __v: { select: false, type: Number },
   _id: { required: true, select: false, type: String },
   blockHash: { required: true, type: String },
-  blockHeight: { required: true, type: Number },
+  blockHeight: { index: true, required: true, type: Number },
   createdAt: { index: true, required: true, type: Date },
   txId: { index: true, required: true, type: String },
   version: { required: true, type: Number },
