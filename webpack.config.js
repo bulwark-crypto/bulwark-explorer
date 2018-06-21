@@ -27,10 +27,15 @@ const basePlugins = [
 ];
 
 const prodPlugins = [
-  new uglifyJsPlugin(),
   new compressionPlugin({
     algorithm: 'gzip',
     asset: '[path].gz[query]'
+  }),
+  new webpack.optimize.UglifyJsPlugin({
+    sourceMap: true,   // enable source maps to map errors (stack traces) to modules
+    output: {
+      comments: false, // remove all comments
+    },
   })
 ];
 
@@ -46,6 +51,7 @@ module.exports = {
     port: 8081,
     publicPath: '/'
   },
+  devtool: 'source-map',
   entry: ['babel-polyfill', './client/index.js'],
   module: {
     rules: [
