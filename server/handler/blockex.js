@@ -366,7 +366,7 @@ const getTop100 = (req, res) => {
 const getTXLatest = (req, res) => {
   TX.find()
     .limit(10)
-    .sort({ blockHeight: -1 })
+    .sort({ blockHeight: -1, 'vout[0].value': { $gt: 0 } })
     .then((docs) => {
       res.json(docs);
     })
