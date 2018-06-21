@@ -33,7 +33,7 @@ export default class WatchList extends Component {
   getWatchItems() {
     const { items } = this.props;
 
-    const watchItems = items.reverse().map((item, idx) => {
+    const watchItems = items.map((item, idx) => {
       return (
         <div className="animated fadeIn" key={ idx }>
           <div className="watch-list__item">

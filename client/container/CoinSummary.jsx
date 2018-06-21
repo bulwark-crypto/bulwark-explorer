@@ -33,6 +33,10 @@ class CoinSummary extends Component {
       ? this.props.txs[0].blockHeight
       : coin.blocks;
 
+    const watchlist = height >= 182700
+      ? this.props.searches
+      : this.props.searches.slice(0, 7);
+
     return (
       <div>
         <div className="row">
@@ -77,7 +81,7 @@ class CoinSummary extends Component {
               height={ height }
               posHeight={ 182700 } />
             <WatchList
-              items={ height >= 182700 ? this.props.searches : this.props.searches.slice(0, 7) }
+              items={ watchlist }
               onSearch={ this.props.onSearch }
               onRemove={ this.props.onRemove } />
           </div>

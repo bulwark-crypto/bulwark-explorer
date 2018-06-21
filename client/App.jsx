@@ -151,7 +151,7 @@ class App extends Component {
               <CoinSummary
                 onRemove={ this.handleRemove }
                 onSearch={ this.handleSearch }
-                searches={ this.state.searches } />
+                searches={ this.state.searches.reverse() } />
               <SearchBar
                 className="d-none d-md-block mb-3"
                 onSearch={ this.handleSearch } />
