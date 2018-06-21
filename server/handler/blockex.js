@@ -35,7 +35,9 @@ const getAddress = async (req, res) => {
       .allowDiskUse(true)
       .exec();
 
-    res.json({ txs, utxo });
+    const balance = utxo.reduce((acc, tx) => acc + tx.value);
+
+    res.json({ balance, txs, utxo });
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
