@@ -36,7 +36,7 @@ const getAddress = async (req, res) => {
       .exec();
 
     const balance = utxo.reduce((acc, tx) => acc + tx.value, 0.0);
-    const received = txs.reduce((acc, tx) => acc + tx.value, 0.0);
+    const received = txs.reduce((acc, tx) => acc + tx.vout.reduce((a, t) => a + t.value, 0.0), 0.0);
 
     res.json({ balance, received, txs, utxo });
   } catch(err) {
