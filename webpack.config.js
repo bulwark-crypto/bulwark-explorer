@@ -16,7 +16,8 @@ const basePlugins = [
   htmlPlugin,
   new webpack.EnvironmentPlugin({
     DEBUG: JSON.stringify(process.env.DEBUG || false),
-    NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
+    NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
   }),
   new webpack.HotModuleReplacementPlugin(),
   new webpack.NamedModulesPlugin(),
@@ -33,7 +34,7 @@ const prodPlugins = [
   })
 ];
 
-const envPlugins = process.env.NODE_ENV === 'production'
+const envPlugins = process.env.NODE_ENV === '"production"'
   ? [...basePlugins, ...prodPlugins]
   : basePlugins;
 
