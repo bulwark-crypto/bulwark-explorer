@@ -47,18 +47,44 @@ const getAddress = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getAvgBlockTime = async (req, res) => {
-  try {
-    const date = moment.utc().subtract(24, 'hours').toDate();
-    const blocks = await Block.find({ createdAt: { $gt: date } });
-    const seconds = 24 * 60 * 60;
-    const intervals = seconds / blocks.length;
+const getAvgBlockTime = () => {
+  // When does the cache expire.
+  // For now this is hard coded.
+  let cache = 90.0;
+  let cutOff = moment().utc().add(90, 'seconds').unix();
+  let loading = true;
 
-    res.json(intervals);
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
+  // Generate the average.
+  const getAvg = async () => {
+    loading = true;
+
+    try {
+      const date = moment.utc().subtract(24, 'hours').toDate();
+      const blocks = await Block.find({ createdAt: { $gt: date } });
+      const seconds = 24 * 60 * 60;
+
+      cache = seconds / blocks.length;
+      cutOff = moment().utc().add(90, 'seconds').unix();
+    } catch(err) {
+      console.log(err);
+    } finally {
+      loading = false;
+    }
+  };
+
+  // Load the initial cache.
+  getAvg();
+
+  return async (req, res) => {
+    res.json(cache);
+
+    // If the cache has expired then go ahead
+    // and get a new one but return the current
+    // cache for this request.
+    if (!loading && cutOff <= moment().utc().unix()) {
+      await getAvg();
+    }
+  };
 };
 
 /**
@@ -66,17 +92,44 @@ const getAvgBlockTime = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getAvgMNTime = async (req, res) => {
-  try {
-    const date = moment.utc().subtract(24, 'hours').toDate();
-    const blocks = await Block.find({ createdAt: { $gt: date } });
-    const mns = await Masternode.find();
+const getAvgMNTime = () => {
+  // When does the cache expire.
+  // For now this is hard coded.
+  let cache = 24.0;
+  let cutOff = moment().utc().add(90, 'seconds').unix();
+  let loading = true;
 
-    res.json((24.0 / (blocks.length / mns.length)));
-  } catch(err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
+  // Generate the average.
+  const getAvg = async () => {
+    loading = true;
+
+    try {
+      const date = moment.utc().subtract(24, 'hours').toDate();
+      const blocks = await Block.find({ createdAt: { $gt: date } });
+      const mns = await Masternode.find();
+
+      cache = (24.0 / (blocks.length / mns.length));
+      cutOff = moment().utc().add(90, 'seconds').unix();
+    } catch(err) {
+      console.log(err);
+    } finally {
+      loading = false;
+    }
+  };
+
+  // Load the initial cache.
+  getAvg();
+
+  return async (req, res) => {
+    res.json(cache);
+
+    // If the cache has expired then go ahead
+    // and get a new one but return the current
+    // cache for this request.
+    if (!loading && cutOff <= moment().utc().unix()) {
+      await getAvg();
+    }
+  };
 };
 
 /**
@@ -166,7 +219,9 @@ const getCoinsWeek = () => {
         // Sort by _id/date field in ascending order (order -> newer)
         { $sort: { createdAt: 1 } }
       ];
+
       cache = await Coin.aggregate(qry);
+      cutOff = moment().utc().add(90, 'seconds').unix();
     } catch(err) {
       console.log(err);
     } finally {
@@ -411,7 +466,9 @@ const getTXsWeek = () => {
         // Sort by _id/date field in ascending order (order -> newer)
         { $sort: { _id: 1 } }
       ];
+
       cache = await TX.aggregate(qry);
+      cutOff = moment().utc().add(90, 'seconds').unix();
     } catch(err) {
       console.log(err);
     } finally {
