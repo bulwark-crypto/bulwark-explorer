@@ -39,7 +39,7 @@ else {
   app.listen(config.api.port, () => {
     console.log(`BlocEx running on port ${ config.api.port }`);
   });
-}
 
-// Export for testing.
-module.exports =  app;
+  // Export for testing.
+  module.exports =  app;
+}
