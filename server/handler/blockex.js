@@ -53,7 +53,7 @@ const getAvgBlockTime = () => {
   // When does the cache expire.
   // For now this is hard coded.
   let cache = 90.0;
-  let cutOff = moment().utc().add(90, 'seconds').unix();
+  let cutOff = moment().utc().add(60, 'seconds').unix();
   let loading = true;
 
   // Generate the average.
@@ -66,7 +66,7 @@ const getAvgBlockTime = () => {
       const seconds = 24 * 60 * 60;
 
       cache = seconds / blocks.length;
-      cutOff = moment().utc().add(90, 'seconds').unix();
+      cutOff = moment().utc().add(60, 'seconds').unix();
     } catch(err) {
       console.log(err);
     } finally {
@@ -98,7 +98,7 @@ const getAvgMNTime = () => {
   // When does the cache expire.
   // For now this is hard coded.
   let cache = 24.0;
-  let cutOff = moment().utc().add(90, 'seconds').unix();
+  let cutOff = moment().utc().add(5, 'minutes').unix();
   let loading = true;
 
   // Generate the average.
@@ -111,7 +111,7 @@ const getAvgMNTime = () => {
       const mns = await Masternode.find();
 
       cache = (24.0 / (blocks.length / mns.length));
-      cutOff = moment().utc().add(90, 'seconds').unix();
+      cutOff = moment().utc().add(5, 'minutes').unix();
     } catch(err) {
       console.log(err);
     } finally {
@@ -366,7 +366,7 @@ const getTop100 = (req, res) => {
  * @param {Object} res The response object.
  */
 const getTXLatest = (req, res) => {
-  TX.find()
+  TX.find({ 'vout.0.value': { $gt: 0 } })
     .limit(10)
     .sort({ blockHeight: -1 })
     .then((docs) => {
