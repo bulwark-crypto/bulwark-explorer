@@ -80,9 +80,6 @@ async function addPoS(block, rpctx) {
   if (rpctx.vin[0].coinbase && rpctx.vout[0].value === 0)
     return;
 
-  console.log(rpctx);
-  rpctx.vout.forEach(vo => console.log(vo.scriptPubKey));
-
   const txin = await vin(rpctx);
   const txout = await vout(rpctx, block.height);
 

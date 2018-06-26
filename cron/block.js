@@ -73,16 +73,15 @@ async function update() {
     let rpcHeight = info.blocks;
 
     // If heights provided then use them instead.
-    if (!isNaN(process.argv[2]) && !isNaN(process.argv[3])) {
-      const start = parseInt(process.argv[2], 10);
-      const end = parseInt(process.argv[3], 10);
-      if (!!start && !!end && start < end) {
-        clean = true;
-        dbHeight = start;
-        rpcHeight = end;
-      }
+    if (!isNaN(process.argv[2])) {
+      clean = true;
+      dbHeight = parseInt(process.argv[2], 10);
     }
-
+    if (!isNaN(process.argv[3])) {
+      clean = true;
+      rpcHeight = parseInt(process.argv[3], 10);
+    }
+    console.log(dbHeight, rpcHeight, clean);
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
       return;
@@ -91,7 +90,7 @@ async function update() {
     else if (dbHeight === 0) {
       dbHeight = 1;
     }
-    console.log(dbHeight, rpcHeight, clean);
+
     locker.lock(type);
     await syncBlocks(dbHeight, rpcHeight, clean);
   } catch(err) {
