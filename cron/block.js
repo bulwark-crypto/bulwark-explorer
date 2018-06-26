@@ -69,7 +69,7 @@ async function update() {
     const block = await Block.findOne().sort({ height: -1});
 
     let clean = false;
-    let dbHeight = block && block.height ? (block.height + 1) : 1;
+    let dbHeight = block && block.height ? block.height : 1;
     let rpcHeight = info.blocks;
 
     // If heights provided then use them instead.
