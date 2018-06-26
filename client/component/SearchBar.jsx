@@ -21,7 +21,7 @@ export default class SearchBar extends Component {
     if (ev.key === 'Enter') {
       ev.preventDefault();
 
-      const term = ev.target.value;
+      const term = ev.target.value.trim();
       ev.target.value = '';
 
       if (!!term) {

@@ -256,6 +256,28 @@ const getCoinsWeek = () => {
 };
 
 /**
+ * Will return true if a block hash.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getIsBlock = async (req, res) => {
+  try {
+    let isBlock = false;
+
+    // Search for block hash.
+    const block = await Block.findOne({ hash: req.params.hash });
+    if (block) {
+      isBlock = true;
+    }
+
+    res.json(isBlock);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Get list of masternodes from the server.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
@@ -510,6 +532,7 @@ module.exports =  {
   getCoin,
   getCoinHistory,
   getCoinsWeek,
+  getIsBlock,
   getMasternodes,
   getMasternodeByAddress,
   getMasternodeCount,

@@ -34,8 +34,7 @@ worker.onmessage = (ev) => {
   return true;
 };
 
-const getFromWorker = (type,
-  resolve, reject, query = null) => {
+const getFromWorker = (type, resolve, reject, query = null) => {
   promises.set(type, { resolve, reject });
   worker.postMessage({ query, type });
   return true;
@@ -76,6 +75,12 @@ export const getCoinHistory = (dispatch, query) => {
 export const getCoinsWeek = () => {
   return new promise((resolve, reject) => {
     return getFromWorker('coins-week', resolve, reject);
+  });
+};
+
+export const getIsBlock = (query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker('is-block', resolve, reject, query);
   });
 };
 
@@ -179,6 +184,7 @@ export default {
   getBlock,
   getCoinHistory,
   getCoinsWeek,
+  getIsBlock,
   getMNs,
   getPeers,
   getTop100,

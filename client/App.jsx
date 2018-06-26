@@ -38,6 +38,7 @@ class App extends Component {
   static propTypes = {
     // Dispatch
     getCoins: PropTypes.func.isRequired,
+    getIsBlock: PropTypes.func.isRequired,
     getTXs: PropTypes.func.isRequired
   };
 
@@ -115,7 +116,7 @@ class App extends Component {
   handleSearch = (term) => {
     // If term doesn't match then ignore.
     if (!isTX(term) && !isBlock(term) && !isAddress(term)) {
-      return false;
+      return;
     }
 
     // Add to search history using localStorage.
@@ -123,15 +124,17 @@ class App extends Component {
 
     // Setup path for search.
     let path = '/#/';
-    if (isBlock(term)) {
-      path = `/#/block/${ term }`;
-    } else if (isAddress(term)) {
-      path = `/#/address/${ term }`;
+    if (isAddress(term)) {
+      document.location.href = `/#/address/${ term }`;
+    } else if (!isNaN(term)) {
+      document.location.href = `/#/block/${ term }`;
     } else {
-      path = `/#/tx/${ term }`;
+      this.props
+        .getIsBlock(term)
+        .then((is) => {
+          document.location.href = `/#/${ is ? 'block' : 'tx' }/${ term }`;
+        });
     }
-
-    document.location.href = path;
   };
 
   render() {
@@ -183,6 +186,7 @@ class App extends Component {
 
 const mapDispatch = dispatch => ({
   getCoins: query => Actions.getCoinHistory(dispatch, query),
+  getIsBlock: query => Actions.getIsBlock(query),
   getTXs: query => Actions.getTXLatest(dispatch, query)
 });
 
