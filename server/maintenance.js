@@ -24,7 +24,7 @@ app.use((req, res) => {
     </head>
     <body>
       <h1>Under Maintenance</h2>
-      <h3>Check back soon!</h3>
+      <h3>In light of current events and to ensure accuracy, we are currently re-indexing the block explorer node.  Please check back soon.</h3>
     </body>
     </html>
   `);
