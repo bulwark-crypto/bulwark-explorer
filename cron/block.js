@@ -68,7 +68,7 @@ async function update() {
     const info = await rpc.call('getinfo');
     const block = await Block.findOne().sort({ height: -1});
 
-    let clean = false;
+    let clean = true; // Always clear for now.
     let dbHeight = block && block.height ? block.height : 1;
     let rpcHeight = info.blocks;
 
