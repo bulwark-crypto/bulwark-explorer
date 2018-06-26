@@ -1,8 +1,10 @@
 
 require('babel-polyfill');
+const blockchain = require('../lib/blockchain');
 const { exit, rpc } = require('../lib/cron');
 const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
+const util = require('./util');
 // Models.
 const Block = require('../model/block');
 const TX = require('../model/tx');
@@ -10,18 +12,17 @@ const UTXO = require('../model/utxo');
 
 /**
  * Process the blocks and transactions.
- * @param {Number} current The current starting block height.
+ * @param {Number} start The current starting block height.
  * @param {Number} stop The current block height at the tip of the chain.
  */
-async function syncBlocks(current, stop) {
-  // If current height is greater than 0 then
-  // increment 1 to prevent duplication.  If we add
-  // 1 early it will skip the genesis block.
-  if (current > 0) {
-    current++;
+async function syncBlocks(start, stop, clean = false) {
+  if (clean) {
+    await Block.remove({ height: { $gte: start, $lte: stop } });
+    await TX.remove({ blockHeight: { $gte: start, $lte: stop } });
+    await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });
   }
 
-  for(let height = current; height <= stop; height++) {
+  for(let height = start; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
@@ -42,75 +43,15 @@ async function syncBlocks(current, stop) {
 
     await block.save();
 
-    // Ignore the genesis block.
-    if (block.height) {
-      await forEachSeries(block.txs, async (txhash) => {
-        const hex = await rpc.call('getrawtransaction', [txhash]);
-        const rpctx = await rpc.call('decoderawtransaction', [hex]);
+    await forEachSeries(block.txs, async (txhash) => {
+      const rpctx = await util.getTX(txhash);
 
-        // Setup the input list for the transaction.
-        const txin = [];
-        if (rpctx.vin) {
-          const txIds = new Set();
-          rpctx.vin.forEach((vin) => {
-            txin.push({
-              coinbase: vin.coinbase,
-              sequence: vin.sequence,
-              txId: vin.txid,
-              vout: vin.vout
-            });
-
-            txIds.add(`${ vin.txid }:${ vin.vout }`);
-          });
-
-          // Remove unspent transactions.
-          if (txIds.size) {
-            await UTXO.remove({ _id: { $in: Array.from(txIds) } });
-          }
-        }
-
-        // Setup the outputs for the transaction.
-        const txout = [];
-        if (rpctx.vout) {
-          const utxo = [];
-          rpctx.vout.forEach((vout) => {
-            if (vout.value <= 0) {
-              return;
-            }
-
-            const to = {
-              address: vout.scriptPubKey.addresses[0], // TODO - revisit
-              blockHeight: block.height,
-              n: vout.n,
-              value: vout.value
-            };
-
-            txout.push(to);
-            utxo.push({
-              ...to,
-              _id: `${ rpctx.txid }:${ vout.n }`,
-              txId: rpctx.txid
-            });
-          });
-
-          // Insert unspent transactions.
-          if (utxo.length) {
-            await UTXO.insertMany(utxo);
-          }
-        }
-
-        await TX.create({
-          _id: rpctx.txid,
-          blockHash: hash,
-          blockHeight: block.height,
-          createdAt: block.createdAt,
-          txId: rpctx.txid,
-          version: rpctx.version,
-          vin: txin,
-          vout: txout
-        });
-      });
-    }
+      if (blockchain.isPoS(block)) {
+        await util.addPoS(block, rpctx);
+      } else {
+        await util.addPoW(block, rpctx);
+      }
+    });
 
     console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
   }
@@ -125,11 +66,33 @@ async function update() {
 
   try {
     const info = await rpc.call('getinfo');
-    const block = await Block.findOne().sort({ height: - 1});
-    const height = block && block.height ? block.height : 0;
+    const block = await Block.findOne().sort({ height: -1});
+
+    let clean = false;
+    let dbHeight = block && block.height ? (block.height + 1) : 1;
+    let rpcHeight = info.blocks;
+
+    // If heights provided then use them instead.
+    if (!isNaN(process.argv[2])) {
+      clean = true;
+      dbHeight = parseInt(process.argv[2], 10);
+    }
+    if (!isNaN(process.argv[3])) {
+      clean = true;
+      rpcHeight = parseInt(process.argv[3], 10);
+    }
+    console.log(dbHeight, rpcHeight, clean);
+    // If nothing to do then exit.
+    if (dbHeight >= rpcHeight) {
+      return;
+    }
+    // If starting from genesis skip.
+    else if (dbHeight === 0) {
+      dbHeight = 1;
+    }
 
     locker.lock(type);
-    await syncBlocks(height, info.blocks);
+    await syncBlocks(dbHeight, rpcHeight, clean);
   } catch(err) {
     console.log(err);
     code = 1;
