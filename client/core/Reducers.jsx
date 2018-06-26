@@ -21,7 +21,7 @@ const coinInit = {
  * @param {Object} action The flux compatible action.
  */
 const coin = (state = coinInit, action) => {
-  if (action.type === COIN) {
+  if (action.type === COIN && action.payload) {
     return { ...action.payload };
   }
   return state;
@@ -34,7 +34,7 @@ const coin = (state = coinInit, action) => {
  * @param {Object} action The flux compatible action.
  */
 const coins = (state = [], action) => {
-  if (action.type === COINS) {
+  if (action.type === COINS && action.payload) {
     return [ ...action.payload ];
   }
   return state;
@@ -46,7 +46,7 @@ const coins = (state = [], action) => {
  * @param {Object} action The flux compatible action.
  */
 const txs = (state = [], action) => {
-  if (action.type === TXS) {
+  if (action.type === TXS && action.payload) {
     return [ ...action.payload ];
   }
   return state;

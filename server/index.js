@@ -4,8 +4,13 @@ const cluster = require('cluster');
 
 // Master
 if (cluster.isMaster) {
-  const cpus = require('os').cpus().length;
+  let cpus = require('os').cpus().length;
 
+  if (process.argv.length > 2 && !isNaN(process.argv[2])) {
+    cpus = parseInt(process.argv[2], 10);
+  }
+
+  console.log('Start', cpus, 'workers');
   for (let i = 0; i < cpus; i++) {
     cluster.fork();
   }

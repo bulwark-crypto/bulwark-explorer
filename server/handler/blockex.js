@@ -71,6 +71,10 @@ const getAvgBlockTime = () => {
     } catch(err) {
       console.log(err);
     } finally {
+      if (!cache) {
+        cache = 0.0;
+      }
+
       loading = false;
     }
   };
@@ -79,7 +83,7 @@ const getAvgBlockTime = () => {
   getAvg();
 
   return async (req, res) => {
-    res.json(cache);
+    res.json(cache || 0.0);
 
     // If the cache has expired then go ahead
     // and get a new one but return the current
@@ -116,6 +120,10 @@ const getAvgMNTime = () => {
     } catch(err) {
       console.log(err);
     } finally {
+      if (!cache) {
+        cache = 0.0;
+      }
+
       loading = false;
     }
   };
@@ -124,7 +132,7 @@ const getAvgMNTime = () => {
   getAvg();
 
   return async (req, res) => {
-    res.json(cache);
+    res.json(cache || 0.0);
 
     // If the cache has expired then go ahead
     // and get a new one but return the current
