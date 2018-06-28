@@ -5,6 +5,9 @@ const cluster = require('cluster');
 // Master
 if (cluster.isMaster) {
   let cpus = require('os').cpus().length;
+  if (cpus > 1) {
+    cpus--;
+  }
 
   if (process.argv.length > 2 && !isNaN(process.argv[2])) {
     cpus = parseInt(process.argv[2], 10);
