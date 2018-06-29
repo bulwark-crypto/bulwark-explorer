@@ -5,8 +5,8 @@ const cluster = require('cluster');
 // Master
 if (cluster.isMaster) {
   let cpus = require('os').cpus().length;
-  if (cpus > 1) {
-    cpus--;
+  if (cpus > 4) {
+    cpus = 4;
   }
 
   if (process.argv.length > 2 && !isNaN(process.argv[2])) {
