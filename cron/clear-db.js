@@ -43,13 +43,18 @@ async function update() {
     console.log(err);
     code = 1;
   } finally {
-    locker.unlock('block');
-    locker.unlock('coin');
-    locker.unlock('masternode');
-    locker.unlock('peer');
-    locker.unlock('rich');
-    locker.unlock('tx');
-    locker.unlock('utxo');
+    try {
+      locker.unlock('block');
+      locker.unlock('coin');
+      locker.unlock('masternode');
+      locker.unlock('peer');
+      locker.unlock('rich');
+      locker.unlock('tx');
+      locker.unlock('utxo');
+    } catch(err) {
+      console.log(err);
+      code = 1;
+    }
     exit(code);
   }
 }

@@ -97,7 +97,12 @@ async function update() {
     console.log(err);
     code = 1;
   } finally {
-    locker.unlock(type);
+    try {
+      locker.unlock(type);
+    } catch(err) {
+      console.log(err);
+      code = 1;
+    }
     exit(code);
   }
 }
