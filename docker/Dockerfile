@@ -1,7 +1,10 @@
-FROM node:latest
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY . /usr/src/app
-RUN npm install
+FROM ubuntu:xenial
+COPY install.sh install.sh
+EXPOSE 80
+EXPOSE 443
 EXPOSE 3000
-CMD ["npm", "start:api"]
+EXPOSE 27107
+EXPOSE 52543
+EXPOSE 52544
+CMD ["bash", "install.sh"]
+

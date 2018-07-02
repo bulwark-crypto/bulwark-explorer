@@ -1,7 +1,7 @@
 version: "2"
 services:
-        app:
-                container_name: app
+        blockex:
+                container_name: blockex
                 restart: always
                 build: .
                 ports:
@@ -12,24 +12,28 @@ services:
         bwk:
                 container_name: bwk
                 restart: always
+                build: .
                 volumes:
                         - ./bulwark:/root/.bulwark
                 ports:
                         - "52544:52544"
         mongo:
                 container_name: mongo
-                image: mongo
+                restart: always
+                build: .
                 volumes:
                         - ./data:/data/db
                 ports:
                         - "27017:27017"
         nginx:
                 container_name: nginx
-                image: nginx
                 restart: always
+                build: .
                 volumes:
                         - ./nginx:/etc/nginx
                         - ./ssl:/etc/letsencrypt/
                 ports:
                         - "80:80"
                         - "443:443"
+                links:
+                        - blockex
