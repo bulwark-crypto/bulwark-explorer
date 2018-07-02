@@ -26,7 +26,7 @@ Our geniuses here at BulwarkCorp™ have put together a script to do this for yo
 This will install the latest Bulwark wallet and create a rpc username/password before starting the daemon.
 
 ## Install
-`git clone https://github.com/bulwark-crypto/bulwark-explorer.git` - copy repo to local folder.
+`git clone https://github.com/bulwark-crypto/bulwark-explorer.git blockex` - copy repo to local folder.
 
 `cd blockex` - change into project directory.
 

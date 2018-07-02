@@ -14,6 +14,7 @@ mkdir ~/.bulwark
 rpcuser=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')
 rpcpassword=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo '')
 cat >~/.bulwark/bulwark.conf <<EOL
+rpcport=52544
 rpcuser=$rpcuser
 rpcpassword=$rpcpassword
 daemon=1
