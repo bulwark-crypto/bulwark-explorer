@@ -5,35 +5,13 @@ services:
                 restart: always
                 build: .
                 ports:
-                        - "3000:3000"
-                links:
-                        - bwk
-                        - mongo
-        bwk:
-                container_name: bwk
-                restart: always
-                build: .
-                volumes:
-                        - ./bulwark:/root/.bulwark
-                ports:
-                        - "52544:52544"
-        mongo:
-                container_name: mongo
-                restart: always
-                build: .
-                volumes:
-                        - ./data:/data/db
-                ports:
-                        - "27017:27017"
-        nginx:
-                container_name: nginx
-                restart: always
-                build: .
-                volumes:
-                        - ./nginx:/etc/nginx
-                        - ./ssl:/etc/letsencrypt/
-                ports:
                         - "80:80"
                         - "443:443"
-                links:
-                        - blockex
+                        - "3000:3000"
+                        - "27017:27017"
+                        - "52544:52544"
+                volumes:
+                        - ./bulwark:/root/.bulwark
+                        - ./data:/data/db
+                        - ./nginx:/etc/nginx
+                        - ./letsencrypt:/etc/letsencrypt/
