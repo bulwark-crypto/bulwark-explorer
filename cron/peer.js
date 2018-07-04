@@ -17,8 +17,6 @@ const Peer = require('../model/peer');
 async function syncPeer() {
   const date = moment().utc().startOf('minute').toDate();
 
-  await Peer.remove({});
-
   const peers = await rpc.call('getpeerinfo');
   const inserts = [];
   await forEach(peers, async (peer) => {
@@ -48,6 +46,7 @@ async function syncPeer() {
   });
 
   if (inserts.length) {
+    await Peer.remove({});
     await Peer.insertMany(inserts);
   }
 }
