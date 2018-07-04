@@ -1,17 +1,30 @@
-version: "2"
+version: "3"
 services:
-        blockex:
-                container_name: blockex
-                restart: always
-                build: .
+        app:
+                build: ./app
                 ports:
                         - "80:80"
                         - "443:443"
                         - "3000:3000"
-                        - "27017:27017"
-                        - "52544:52544"
+                links:
+                        - node
+                        - mongo
+                env_file:
+                        - ./.env
+        node:
+                build: ./node
                 volumes:
-                        - ./bulwark:/root/.bulwark
-                        - ./data:/data/db
-                        - ./nginx:/etc/nginx
-                        - ./letsencrypt:/etc/letsencrypt/
+                        - ./volumes/bulwark:/root/.bulwark
+                ports:
+                        - "52543:52543"
+                        - "52544:52544"
+                env_file:
+                        - ./.env
+        mongo:
+                image: mongo
+                volumes:
+                        - ./volumes/data:/data/db
+                ports:
+                        - "27017:27017"
+                env_file:
+                        - ./.env
