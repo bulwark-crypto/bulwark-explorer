@@ -31,16 +31,16 @@ async function syncPeer() {
     let geoip = await fetch(url);
 
     const p = new Peer({
-      _id: geoip.ip ? geoip.ip : parts[0],
-      country: geoip.country_name,
+      _id: parts[0],
+      country: geoip.country,
       countryCode: geoip.country_code,
       createdAt: date,
-      ip: geoip.ip ? geoip.ip : parts[0],
-      lat: geoip.latitude,
-      lon: geoip.longitude,
+      ip: parts[0],
+      lat: geoip.lat,
+      lon: geoip.lon,
       port: parts[1] ? parts[1] : 0,
       subver: peer.subver,
-      timeZone: geoip.time_zone,
+      timeZone: geoip.region,
       ver: peer.version
     });
 
