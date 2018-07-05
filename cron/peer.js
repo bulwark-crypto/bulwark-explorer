@@ -17,8 +17,6 @@ const Peer = require('../model/peer');
 async function syncPeer() {
   const date = moment().utc().startOf('minute').toDate();
 
-  await Peer.remove({});
-
   const peers = await rpc.call('getpeerinfo');
   const inserts = [];
   await forEach(peers, async (peer) => {
@@ -31,16 +29,16 @@ async function syncPeer() {
     let geoip = await fetch(url);
 
     const p = new Peer({
-      _id: geoip.ip ? geoip.ip : parts[0],
-      country: geoip.country_name,
-      countryCode: geoip.country_code,
+      _id: parts[0],
+      country: geoip.country,
+      countryCode: geoip.countryCode,
       createdAt: date,
-      ip: geoip.ip ? geoip.ip : parts[0],
-      lat: geoip.latitude,
-      lon: geoip.longitude,
+      ip: parts[0],
+      lat: geoip.lat,
+      lon: geoip.lon,
       port: parts[1] ? parts[1] : 0,
       subver: peer.subver,
-      timeZone: geoip.time_zone,
+      timeZone: geoip.region,
       ver: peer.version
     });
 
@@ -48,6 +46,7 @@ async function syncPeer() {
   });
 
   if (inserts.length) {
+    await Peer.remove({});
     await Peer.insertMany(inserts);
   }
 }
