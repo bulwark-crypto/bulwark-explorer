@@ -1,13 +1,16 @@
 #!/bin/bash
-u=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')
-p=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo '')
 
-cat > .env << EOL
-BLOCKEX_USER=$u
-BLOCKEX_PASS=$p
+user=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')
+pass=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo '')
+
+cat > ./app/.env << EOL
+BLOCKEX_USER=$user
+BLOCKEX_PASS=$pass
 EOL
 
-cp -f ../package.json app/package.json
-cp -f ../pm2.json app/pm2.json
+cat > ./node/.env << EOL
+BLOCKEX_USER=$user
+BLOCKEX_PASS=$pass
+EOL
 
 docker-compose up

@@ -1,11 +1,14 @@
 FROM keymetrics/pm2:latest-stretch
 
-COPY package.json .
-COPY pm2.json .
-COPY install.sh .
+COPY .env /root/.env
+COPY install.sh /root/install.sh
 
-RUN apt-get update -y && apt-get install -y bash
+RUN apt-get update -y && \
+    apt-get install -y bash && \
+    bash /root/install.sh
 
-RUN bash install.sh
+#EXPOSE 80
+#EXPOSE 443
+#EXPOSE 3000
 
-CMD [ "pm2-runtime", "start", "pm2.json" ]
+CMD [ "pm2-runtime", "start", "/root/blockex/pm2.json" ]

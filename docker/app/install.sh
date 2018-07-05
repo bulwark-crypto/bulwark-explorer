@@ -1,20 +1,30 @@
 #!/bin/bash
 
-apt-get install -y apt-transport-https build-essential cron curl gcc git g++ make sudo vim wget
+source /root/.env
 
-curl -sL https://deb.nodesource.com/setup_8.x | bash -
-apt-get install -y nodejs
+echo "User: $BLOCKEX_USER"
+echo "Pass: $BLOCKEX_PASS"
+sleep 1s
+if [ -z "$BLOCKEX_USER" ] || [ -z "$BLOCKEX_PASS" ]
+then
+  echo "app: BLOCKEX_USER or BLOCKEX_PASS not provied!"
+  printenv
+  exit 1
+fi
 
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-apt-get update -y
-apt-get install -y yarn
+#apt-get install -y apt-transport-https build-essential cron curl gcc git g++ make sudo vim wget
+#apt-get install -y --no-install-recommends apt-utils
 
-echo $PWD
-git clone https://github.com/bulwark-crypto/bulwark-explorer.git blockex
-cd blockex
-yarn install
+#curl -sL https://deb.nodesource.com/setup_8.x | bash -
+#apt-get install -y nodejs
 
+#curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+#echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+#apt-get update -y
+#apt-get install -y yarn
+
+git clone https://github.com/bulwark-crypto/bulwark-explorer.git /root/blockex
+cd /root/blockex
 cat > config.js << EOL
 const config = {
   "api": {
@@ -48,5 +58,10 @@ const config = {
 
 module.exports = config;
 EOL
+printenv
+cat config.js
+sleep 2s
 
-echo "User: $BLOCKEX_USER $BLOCKEX_PASS"
+yarn install
+
+node ./server/mongo.js

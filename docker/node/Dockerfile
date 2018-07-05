@@ -1,9 +1,13 @@
 FROM ubuntu:bionic
 
-COPY install.sh .
+COPY .env /root/.env
+COPY install.sh /root/install.sh
 
-RUN apt-get update -y && apt-get install -y bash
+RUN apt-get update -y && \
+    apt-get install -y bash && \
+    bash /root/install.sh
 
-RUN bash install.sh
+#EXPOSE 52543
+#EXPOSE 52544
 
-CMD [ "echo", "Bulwark" ]
+CMD [ "printenv" ]
