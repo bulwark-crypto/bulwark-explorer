@@ -1,5 +1,6 @@
 
 import Actions from '../core/Actions';
+import blockchain from '../../lib/blockchain';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -13,6 +14,7 @@ import CardNetworkSummary from '../component/Card/CardNetworkSummary';
 import CardPoS from '../component/Card/CardPoS';
 import CardStatus from '../component/Card/CardStatus';
 import WatchList from '../component/WatchList';
+import CardSeeSaw from '../component/Card/CardSeeSaw';
 
 class CoinSummary extends Component {
   static propTypes = {
@@ -33,7 +35,7 @@ class CoinSummary extends Component {
       ? this.props.txs[0].blockHeight
       : coin.blocks;
 
-    const watchlist = height >= 182700
+    const watchlist = height >= blockchain.params.LAST_POW_BLOCK && height >= blockchain.params.LAST_SEESAW_BLOCK
       ? this.props.searches
       : this.props.searches.slice(0, 7);
 
@@ -79,7 +81,11 @@ class CoinSummary extends Component {
             <CardPoS
               average={ coin.avgBlockTime }
               height={ height }
-              posHeight={ 182700 } />
+              posHeight={ blockchain.params.LAST_POW_BLOCK } />
+            <CardSeeSaw
+              average={ coin.avgBlockTime }
+              height={ height }
+              ssHeight={ blockchain.params.LAST_SEESAW_BLOCK } />
             <WatchList
               items={ watchlist }
               onSearch={ this.props.onSearch }
