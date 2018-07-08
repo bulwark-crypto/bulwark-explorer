@@ -11,11 +11,11 @@ if (!config.db.user || !config.db.pass) {
 
 /* Database */
 // Connect to the database.
-const con = mongoose.connect(db.getDSN(), db.getOptions());
+mongoose.connect(db.getDSN(), db.getOptions());
 
 /* Add User */
 // Create the database user.
-con.db.addUser({
+mongoose.connection.db.addUser({
   user: config.db.user,
   pwd: config.db.pass,
   roles: ['readWrite']

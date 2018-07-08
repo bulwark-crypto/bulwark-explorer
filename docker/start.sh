@@ -13,4 +13,8 @@ BLOCKEX_USER=$user
 BLOCKEX_PASS=$pass
 EOL
 
+rm -fR ./app/blockex
+mkdir -p ./app/blockex
+cp -R ../* ./app/blockex
+
 docker-compose up

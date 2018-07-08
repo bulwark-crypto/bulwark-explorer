@@ -23,7 +23,7 @@ fi
 #apt-get update -y
 #apt-get install -y yarn
 
-git clone https://github.com/bulwark-crypto/bulwark-explorer.git /root/blockex
+#git clone https://github.com/bulwark-crypto/bulwark-explorer.git /root/blockex
 cd /root/blockex
 cat > config.js << EOL
 const config = {
@@ -58,10 +58,9 @@ const config = {
 
 module.exports = config;
 EOL
-printenv
 cat config.js
 sleep 2s
 
-yarn install
+#node ./server/mongo.js
 
-node ./server/mongo.js
+yarn install
