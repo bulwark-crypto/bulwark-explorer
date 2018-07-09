@@ -28,7 +28,7 @@ cd /root/blockex
 cat > config.js << EOL
 const config = {
   "api": {
-    "host": "https://explorer.bulwarkcrypto.com",
+    "host": "http://localhost",
     "port": "3000",
     "prefix": "/api",
     "timeout": "180s"
