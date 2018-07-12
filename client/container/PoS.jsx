@@ -123,7 +123,10 @@ class PoS extends Component {
             PoS Amount:
           </div>
           <div className="col-sm-12 col-md-8">
-            { this.state.pos }
+            { this.state.pos > 0
+              ? this.state.pos
+              : 'Masternode recommended'
+            }
           </div>
         </div>
         <div className="row">
@@ -131,7 +134,10 @@ class PoS extends Component {
             PoS Hours:
           </div>
           <div className="col-sm-12 col-md-8">
-            { this.state.hours.toFixed(2) }
+            { this.state.pos > 0
+              ? this.state.hours.toFixed(2)
+              : 'Masternode recommended'
+            }
           </div>
         </div>
       </div>
