@@ -111,6 +111,10 @@ class PoS extends Component {
             </div>
             <div className="col-sm-12 col-md-8">
               { this.state.mn }
+              { this.state.mns > 1
+                ? ` / ${ this.state.mns }`
+                : null
+              }
             </div>
           </div>
         }
