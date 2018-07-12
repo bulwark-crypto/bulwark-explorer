@@ -121,6 +121,10 @@ class PoS extends Component {
             </div>
             <div className="col-sm-12 col-md-8">
               { this.props.coin.avgMNTime.toFixed(2) }
+              { this.state.mns > 1
+                ? ` x ${ this.state.mns } = ${ (this.props.coin.avgMNTime * this.state.mns).toFixed(2) }`
+                : null
+              }
             </div>
           </div>
         }
@@ -131,6 +135,10 @@ class PoS extends Component {
             </div>
             <div className="col-sm-12 col-md-8">
               { mnSubsidy }
+              { this.state.mns > 1
+                ? ` x ${ this.state.mns } = ${ mnSubsidy * this.state.mns}`
+                : null
+              }
             </div>
           </div>
         }
