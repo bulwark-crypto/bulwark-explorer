@@ -44,15 +44,15 @@ class PoS extends Component {
     }
   };
 
-  getRewardSplit = (v) => {
+  getRewardSplit = (amount) => {
     let mns = 0;
 
-    if (v >= blockchain.mncoins) {
-      mns = v / blockchain.mncoins;
+    if (amount >= blockchain.mncoins) {
+      mns = amount / blockchain.mncoins;
     }
 
     return {
-      pos: v - (mns * blockchain.mncoins),
+      pos: amount - (mns * blockchain.mncoins),
       mn: mns * blockchain.mncoins
     };
   };
