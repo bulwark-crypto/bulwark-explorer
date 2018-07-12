@@ -19,6 +19,7 @@ class PoS extends Component {
       amount: 0,
       hours: 0,
       mn: 0,
+      mns: 0,
       pos: 0
     };
   };
@@ -50,8 +51,9 @@ class PoS extends Component {
     if (amount >= blockchain.mncoins) {
       mns = amount / blockchain.mncoins;
     }
-
+    console.log(amount, mns);
     return {
+      mns,
       pos: amount - (mns * blockchain.mncoins),
       mn: mns * blockchain.mncoins
     };
