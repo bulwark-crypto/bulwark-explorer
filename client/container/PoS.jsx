@@ -90,14 +90,16 @@ class PoS extends Component {
             { mnSubsidy } / { posSubsidy }
           </div>
         </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Calculation Amount:
+        { this.state.pos != this.state.amount && this.state.mn != 0 &&
+          <div className="row">
+            <div className="col-sm-12 col-md-4">
+              Calculation Amount:
+            </div>
+            <div className="col-sm-12 col-md-8">
+              { this.state.amount }
+            </div>
           </div>
-          <div className="col-sm-12 col-md-8">
-            { this.state.amount }
-          </div>
-        </div>
+        }
         { this.state.mn > 0 &&
           <div className="row">
             <div className="col-sm-12 col-md-4">
