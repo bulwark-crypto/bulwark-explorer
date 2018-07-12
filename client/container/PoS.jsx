@@ -50,10 +50,10 @@ class PoS extends Component {
 
     if (amount >= blockchain.mncoins) {
       mns = Math.floor(amount / blockchain.mncoins);
+      this.setState({ mns });
     }
 
     return {
-      mns,
       pos: amount - (mns * blockchain.mncoins),
       mn: mns * blockchain.mncoins
     };
@@ -136,7 +136,7 @@ class PoS extends Component {
             <div className="col-sm-12 col-md-8">
               { mnSubsidy }
               { this.state.mns > 1
-                ? ` x ${ this.state.mns } = ${ mnSubsidy * this.state.mns}`
+                ? ` x ${ this.state.mns } = ${ mnSubsidy * this.state.mns }`
                 : null
               }
             </div>
