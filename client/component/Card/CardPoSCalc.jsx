@@ -47,8 +47,8 @@ export default class CardPoSCalc extends React.Component {
           </div>
         </div>
         <div className="row">
-          <div className="col-sm-12">
-            Something here about how it is only an estimate.
+          <div className="col-sm-12 text-gray">
+            Submit for a recommended staking breakdown depending on amount.
           </div>
         </div>
       </Card>
