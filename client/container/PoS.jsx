@@ -68,7 +68,7 @@ class PoS extends Component {
     }
 
     const subsidy = blockchain.getSubsidy(this.props.coin.blocks + 1);
-    const mnSubsidy = blockchain.getMNSubsidy(subsidy);
+    const mnSubsidy = blockchain.getMNSubsidy(this.props.coin.blocks + 1);
     const posSubsidy = subsidy - mnSubsidy;
 
     return (
