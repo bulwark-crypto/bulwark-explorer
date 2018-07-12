@@ -53,8 +53,9 @@ class PoS extends Component {
     }
 
     return {
-      pos: amount - (mns * blockchain.mncoins),
-      mn: mns * blockchain.mncoins
+      mn: mns * blockchain.mncoins,
+      mns,
+      pos: amount - (mns * blockchain.mncoins)
     };
   };
 
