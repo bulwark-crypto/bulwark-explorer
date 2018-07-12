@@ -118,6 +118,16 @@ class PoS extends Component {
             </div>
           </div>
         }
+        { this.state.mn > 0 &&
+          <div className="row">
+            <div className="col-sm-12 col-md-4">
+              Masternode Reward:
+            </div>
+            <div className="col-sm-12 col-md-8">
+              { mnSubsidy }
+            </div>
+          </div>
+        }
         <div className="row">
           <div className="col-sm-12 col-md-4">
             PoS Amount:
@@ -136,6 +146,17 @@ class PoS extends Component {
           <div className="col-sm-12 col-md-8">
             { this.state.pos > 0
               ? this.state.hours.toFixed(2)
+              : 'Masternode recommended'
+            }
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12 col-md-4">
+            PoS Reward:
+          </div>
+          <div className="col-sm-12 col-md-8">
+            { this.state.pos > 0
+              ? posSubsidy
               : 'Masternode recommended'
             }
           </div>
