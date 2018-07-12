@@ -49,9 +49,9 @@ class PoS extends Component {
     let mns = 0;
 
     if (amount >= blockchain.mncoins) {
-      mns = amount / blockchain.mncoins;
+      mns = Math.floor(amount / blockchain.mncoins);
     }
-    console.log(amount, mns);
+
     return {
       mns,
       pos: amount - (mns * blockchain.mncoins),
