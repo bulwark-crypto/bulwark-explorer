@@ -24,12 +24,12 @@ class PoS extends Component {
   };
 
   componentDidMount() {
-    getAmount();
+    this.getAmount();
   };
 
   componentDidUpdate(prevProps) {
     if (this.props.match.params.amount !== prevProps.match.params.amount) {
-      getAmount();
+      this.getAmount();
     }
   };
 
