@@ -37,9 +37,9 @@ class PoS extends Component {
   getAmount() {
     const { params: { amount } } = this.props.match;
     if (!!amount && !isNaN(amount)) {
-      const { mn, pos } = this.getRewardSplit(amount);
+      const { mn, mns, pos } = this.getRewardSplit(amount);
       const hours = this.getRewardHours(pos);
-      this.setState({ amount, hours, mn, pos });
+      this.setState({ amount, hours, mn, mns, pos });
     } else {
       this.setState({ error: 'Please provide an amount for staking calculations.' });
     }
@@ -50,7 +50,6 @@ class PoS extends Component {
 
     if (amount >= blockchain.mncoins) {
       mns = Math.floor(amount / blockchain.mncoins);
-      this.setState({ mns });
     }
 
     return {
