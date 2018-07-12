@@ -27,6 +27,7 @@ export default class CardPoSCalc extends React.Component {
             <input
               onClick={ this.handleClick }
               ref={ i => this.input = i }
+              style={{ marginTop: 9 }}
               type="text" />
           </div>
           <div className="col-sm-12 col-md-4">
