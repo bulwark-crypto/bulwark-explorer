@@ -11,11 +11,18 @@ export default class CardPoSCalc extends React.Component {
     this.input = null;
   };
 
-  handleClick = (ev) => {
+  handleClick = () => {
     const v = this.input.value;
 
     if (!!v && !isNaN(v)) {
       document.location.href = `/#/pos/${ v }`;
+    }
+  };
+
+  handleKeyPress = (ev) => {
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      this.handleClick();
     }
   };
 
@@ -26,6 +33,7 @@ export default class CardPoSCalc extends React.Component {
           <div className="col-sm-12 col-md-8">
             <input
               onClick={ this.handleClick }
+              onKeyPress={ this.handleKeyPress }
               ref={ i => this.input = i }
               style={{ width: '100%' }}
               type="text" />
