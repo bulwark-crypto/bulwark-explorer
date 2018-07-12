@@ -30,12 +30,14 @@ export default class CardPoSCalc extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        Note: the following calculations are an estimation.  
+                        Note: the following calculations are an estimation.
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <button onClick={ this.handleClick } />
+                        <button onClick={ this.handleClick }>
+                          Estimate
+                        </button>
                     </div>
                 </div>
             </Card>
