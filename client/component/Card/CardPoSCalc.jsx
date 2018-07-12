@@ -25,7 +25,10 @@ export default class CardPoSCalc extends React.Component {
             <Card title="PoS Calculator">
                 <div className="row">
                     <div className="col-sm-12">
-                        <input onClick={ this.handleClick } type="text" />
+                        <input
+                          onClick={ this.handleClick }
+                          ref={ i => this.input = i }
+                          type="text" />
                     </div>
                 </div>
                 <div className="row">
