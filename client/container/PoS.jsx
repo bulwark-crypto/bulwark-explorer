@@ -79,9 +79,8 @@ class PoS extends Component {
         <p>
           Please note the following estimations are based on current block height,
           average block time, average masternode reward time, and current block reward schedule.
-          Due to the possibility of randomness/luck, there is no exact guarantee of reward delivery
-          within the given timeframe.
         </p>
+        <br />
         <div className="row">
           <div className="col-sm-12 col-md-4">
             Block Subsidy:
