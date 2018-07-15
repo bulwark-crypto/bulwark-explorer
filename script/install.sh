@@ -104,7 +104,24 @@ rpcpassword=$rpcpassword
 daemon=1
 txindex=1
 EOL
-    bulwarkd
+    sudo cat > /etc/systemd/system/bulwarkd.service << EOL
+[Unit]
+Description=bulwarkd
+After=network.target
+[Service]
+Type=forking
+User=explorer
+WorkingDirectory=/home/explorer
+ExecStart=/home/explorer/bin/bulwarkd -datadir=/home/explorer/.bulwark
+ExecStop=/home/explorer/bin/bulwark-cli -datadir=/home/explorer/.bulwark stop
+Restart=on-abort
+[Install]
+WantedBy=multi-user.target
+EOL
+    sudo systemctl start bulwarkd
+    sudo systemctl enable bulwarkd
+    echo "Sleeping for 1 hour while node syncs blockchain..."
+    sleep 1h
     clear
 }
 
@@ -162,6 +179,7 @@ EOL
     crontab mycron
     rm -f mycron
     pm2 start ./server/index.js
+    sudo pm2 startup ubuntu
 }
 
 # Setup
