@@ -10,6 +10,7 @@ installNodeAndYarn () {
     sudo apt-get install -y yarn
     sudo npm install -g pm2
     sudo ln -s /usr/bin/nodejs /usr/bin/node
+    sudo chown -R explorer:explorer /home/explorer/.config
     clear
 }
 
