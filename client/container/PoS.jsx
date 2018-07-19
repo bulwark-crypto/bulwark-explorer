@@ -116,13 +116,17 @@ class PoS extends Component {
   getDay = () => {
     const x = this.getX();
 
-    if (x.mnHours !== 24.0) {
+    if (x.mnHours !== 24.0 && x.mnHours > 0) {
       x.mnSubsidy = (24.0 / x.mnHours) * x.mnSubsidy;
+    } else if (x.mnHours <= 0) {
+      x.mnSubsidy = 0.0;
     }
     x.mnHours = 24.0;
 
-    if (x.posHours !== 24.0) {
+    if (x.posHours !== 24.0 && x.posHours > 0) {
       x.posSubsidy = (24.0 / x.posHours) * x.posSubsidy;
+    } else if (x.posHours <= 0) {
+      x.posSubsidy = 0.0;
     }
     x.posHours = 24.0;
 
@@ -309,6 +313,7 @@ class PoS extends Component {
             { numeral(vMonth.posSubsidy).format('0,0.0000') }
           </div>
         </div>
+        <hr />
         <br />
         <div className="row">
           <div className="col-sm-12 col-md-4">
@@ -327,6 +332,23 @@ class PoS extends Component {
             { numeral(vMonth.mnSubsidy * mns + vMonth.posSubsidy).format('0,0.0000') }
           </div>
         </div>
+        <div className="row">
+          <div className="col-sm-12 col-md-4">
+            Total Amount (USD):
+          </div>
+          <div className="col-sm-12 col-md-2">
+            { numeral((vX.mnSubsidy * mns + vX.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          </div>
+          <div className="col-sm-12 col-md-2">
+            { numeral((vDay.mnSubsidy * mns + vDay.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          </div>
+          <div className="col-sm-12 col-md-2">
+            { numeral((vWeek.mnSubsidy * mns + vWeek.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          </div>
+          <div className="col-sm-12 col-md-2">
+            { numeral((vMonth.mnSubsidy * mns + vMonth.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          </div>
+        </div>
       </div>
     );
   };
@@ -339,7 +361,7 @@ const mapDispatch = dispatch => ({
 const mapState = state => ({
   coin: state.coins && state.coins.length
     ? state.coins[0]
-    : { avgMNTime: 0 }
+    : { avgMNTime: 0.0, usd: 0.0 }
 });
 
 export default connect(mapState, mapDispatch)(PoS);
