@@ -1,4 +1,19 @@
 
+button {
+	background-color: $blue;
+	border: 1px solid $blue;
+	border-radius: 3px;
+	color: $white;
+	cursor: pointer;
+	margin: 7px 4px 2px 4px;
+	padding: 4px 16px;
+
+	&:focus,
+	&:hover {
+		background-color: darken($blue, 10%);
+	}
+}
+
 input, select {
 	background-color: $white;
     border: 1px solid $gray-light;
