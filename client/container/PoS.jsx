@@ -247,7 +247,7 @@ class PoS extends Component {
         </div>
         <div className="row">
           <div className="col-sm-12 col-md-4">
-            Masternode Hours:
+            Masternode Reward Interval (Hours):
           </div>
           <div className="col-sm-12 col-md-2">
             { numeral(vX.mnHours).format('0,0.00') }
