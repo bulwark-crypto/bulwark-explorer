@@ -9,13 +9,16 @@ export default class CardPoSCalc extends React.Component {
   constructor(props) {
     super(props);
     this.input = null;
+    this.state = { amount: 0.0 };
   };
 
   handleClick = () => {
-    const v = this.input.value;
+    const v = this.state.amount;
 
-    if (!!v && !isNaN(v)) {
+    if (!!v && !isNaN(v) && v > 0) {
       document.location.href = `/#/pos/${ v }`;
+    } else {
+      this.input.focus();
     }
   };
 
@@ -23,6 +26,8 @@ export default class CardPoSCalc extends React.Component {
     if (ev.key === 'Enter') {
       ev.preventDefault();
       this.handleClick();
+    } else {
+      this.setState({ amount: ev.target.value });
     }
   };
 
@@ -34,21 +39,21 @@ export default class CardPoSCalc extends React.Component {
             <input
               onClick={ this.handleClick }
               onKeyPress={ this.handleKeyPress }
+              onChange={ ev => this.setState({ amount: ev.target.value })}
               ref={ i => this.input = i }
               style={{ width: '100%' }}
-              type="text" />
+              type="text"
+              value={ this.state.amount } />
           </div>
-          <div className="col-sm-12 col-md-4">
-            <button
-              onClick={ this.handleClick }
-              style={{ marginTop: 9 }}>
+          <div className="col-sm-12 col-md-4 text-center">
+            <button onClick={ this.handleClick }>
               Estimate
             </button>
           </div>
         </div>
         <div className="row">
           <div className="col-sm-12 text-gray">
-            Submit for a recommended staking breakdown depending on amount.
+            Submit for a recommended staking breakdown depending on amount and masternode selection count if applicable.
           </div>
         </div>
       </Card>

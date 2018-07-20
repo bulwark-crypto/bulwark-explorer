@@ -107,6 +107,12 @@ export const getPeers = () => {
   });
 };
 
+export const getSupply = (dispatch) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker('supply', resolve, reject);
+  });
+};
+
 export const getTop100 = () => {
   return new promise((resolve, reject) => {
     return getFromWorker('top-100', resolve, reject);
@@ -187,6 +193,7 @@ export default {
   getIsBlock,
   getMNs,
   getPeers,
+  getSupply,
   getTop100,
   getTX,
   getTXLatest,
