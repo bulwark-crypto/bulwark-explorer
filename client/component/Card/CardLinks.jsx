@@ -12,7 +12,7 @@ const CardLinks = () => (
     <a href="https://discord.gg/a7vhegP" target="_blank">Discord</a><br />
     <a href="https://t.me/bulwarkcrypto" target="_blank">Telegram</a><br />
     <a href="https://twitter.com/BulwarkCoin" target="_blank">Twitter</a><br />
-    <a href="https://www.facebook.com/bulwark.coin.IO/" target="_blank">Facebook</a>
+    <a href="https://www.facebook.com/bulwark.coin.IO/" target="_blank">Facebook</a><br />
     <a href="https://medium.com/@bulwarktube" target="_blank">Medium</a>
   </Card>
 );
