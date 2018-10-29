@@ -19,7 +19,7 @@ async function syncRich() {
     { $limit: 101 }
   ]);
 
-  await Rich.insertMany(addresses.filter(addr => addr.address !== 'ZEROCOIN').map(addr => ({
+  await Rich.insertMany(addresses.filter(addr => addr._id !== 'ZEROCOIN').map(addr => ({
     address: addr._id,
     value: addr.sum
   })));
