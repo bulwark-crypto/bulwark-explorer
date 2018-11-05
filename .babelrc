@@ -4,11 +4,14 @@
         "transform-object-rest-spread"
     ],
     "presets": [
-        ["env", {
-            "targets": {
-                "node": "current"
-            }
-        }],
-        "react"
+      [
+        "@babel/preset-env",
+        {
+          "modules": "commonjs",
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
     ]
 }
