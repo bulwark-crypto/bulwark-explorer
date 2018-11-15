@@ -14,7 +14,6 @@ async function syncProposal() {
 
   await Proposal.remove({});
 
-  // Increase the timeout for Proposals.
   rpc.timeout(10000); // 10 secs
 
   const pps = await rpc.call('mnbudget', ['getinfo']);
@@ -23,14 +22,16 @@ async function syncProposal() {
   await forEach(pps, async (pp) => {
     const proposal = new Proposal({
 	  name: pp.Name,	
-      created: date,
-      status: ((pp.Yeas-pp.Nays)*10>mnc),
+    created: date,
+	  yeas: pp.Yeas,
+	  nays: pp.Nays,
+    status: ((pp.Yeas-pp.Nays)*10>mnc),
 	  budgetTotal: pp.TotalPayment,
 	  budgetMonthly: pp.MonthlyPayment,
-	  budgetPeriod: (pp.TotalPayment/pp.MonthlyPayment),
+	  budgetPeriod: pp.RemainingPaymentCount,
 	  hash: pp.Hash,
 	  feehash: pp.FeeHash,
-      url: pp.URL
+      url: pp.URL,
     });
 
     inserts.push(proposal);
@@ -50,7 +51,7 @@ async function update() {
 
   try {
     locker.lock(type);
-    await syncMasternode();
+    await syncProposal();
   } catch(err) {
     console.log(err);
     code = 1;

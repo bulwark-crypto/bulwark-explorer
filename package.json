@@ -11,6 +11,7 @@
     "build:web": "NODE_ENV=production webpack --progress --colors",
     "cron:block": "./script/cron_block.sh >> ./tmp/block.log",
     "cron:coin": "node ./cron/coin.js >> ./tmp/coin.log",
+	"cron:proposal": "node ./cron/proposal.js >> ./tmp/proposal.log",
     "cron:masternode": "node ./cron/masternode.js >> ./tmp/masternode.log",
     "cron:peer": "node ./cron/peer.js >> ./tmp/peer.log",
     "cron:rich": "node ./cron/rich.js >> ./tmp/rich.log",

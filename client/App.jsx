@@ -17,6 +17,7 @@ import Block from './container/Block';
 import CoinInfo from './container/CoinInfo';
 import Error404 from './container/Error404';
 import FAQ from './container/FAQ';
+import Governance from './container/Governance';
 import Masternode from './container/Masternode';
 import Movement from './container/Movement';
 import Overview from './container/Overview';
@@ -167,6 +168,7 @@ class App extends Component {
                   <Route exact path="/block/:hash" component={ Block } />
                   <Route exact path="/coin" component={ CoinInfo } />
                   <Route exact path="/faq" component={ FAQ } />
+                  <Route exact path="/governance" component={ Governance } />
                   <Route exact path="/masternode" component={ Masternode } />
                   <Route exact path="/movement" component={ Movement } />
                   <Route exact path="/peer" component={ Peer } />

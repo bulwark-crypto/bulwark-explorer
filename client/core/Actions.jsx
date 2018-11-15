@@ -90,6 +90,12 @@ export const getMNs = (query) => {
   });
 };
 
+export const getPPs = (query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker('pps', resolve, reject, query);
+  });
+};
+
 export const getPeers = () => {
   return new promise((resolve, reject) => {
     return getFromWorker(

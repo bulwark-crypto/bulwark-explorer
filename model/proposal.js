@@ -8,6 +8,8 @@ const Proposal = mongoose.model('Proposal', new mongoose.Schema({
   id: { required: true, type: Number },
   creator: { required: false, type: String },
   name: { required: true, type: String },
+  yeas: { required: true, type: Number },
+  nays: { required: true, type: Number },
   status: { required: true, type: Boolean },
   created: { index: true, required: true, type: Date },
   budgetTotal: { required: true, type: Number },
