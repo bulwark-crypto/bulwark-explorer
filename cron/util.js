@@ -43,7 +43,7 @@ async function vout(rpctx, blockHeight) {
   if (rpctx.vout) {
     const utxo = [];
     rpctx.vout.forEach((vout) => {
-      if (vout.value <= 0) {
+      if (vout.value <= 0 || vout.type === 'nulldata') {
         return;
       }
 
