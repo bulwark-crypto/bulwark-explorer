@@ -32,8 +32,8 @@ const getconnectioncount = async (req, res) => {
 
 const getblockcount = async (req, res) => {
   try {
-    const coin = await getCoin();
-    res.json(coin.blocks);
+    const block = await Block.findOne({}).sort({'height': -1});
+    res.json(block.height);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
