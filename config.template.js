@@ -29,6 +29,12 @@ const config = {
     'user': 'bulwarkrpc',
     'pass': 'someverysafepassword',
     'timeout': 8000, // 8 seconds
+  },
+  'slack': {
+    'url': 'https://hooks.slack.com/services/A00000000/B00000000/somekindofhashhere',
+    //'channel': '#general',
+    //'username': 'Block Report',
+    //'icon_emoji': ':bwk:'
   }
 };
 
