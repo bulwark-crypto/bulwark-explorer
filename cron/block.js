@@ -61,7 +61,7 @@ async function syncBlocks(start, stop, clean = false) {
 
   // Post an update to slack incoming webhook if url is
   // provided in config.js.
-  if (!!config.slack.url) {
+  if (block && !!config.slack.url) {
     const webhook = new IncomingWebhook(config.slack.url);
     const superblock = await rpc.call('getnextsuperblock');
     const finalBlock = superblock - 1920;
