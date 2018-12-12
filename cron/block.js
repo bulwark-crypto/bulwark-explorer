@@ -56,58 +56,58 @@ async function syncBlocks(start, stop, clean = false) {
     });
 
     console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
+  }
 
-    // Post an update to slack incoming webhook if url is
-    // provided in config.js.
-    if (!!config.slack.url) {
-      const webhook = new IncomingWebhook(config.slack.url);
-      const superblock = await rpc.call('getnextsuperblock');
-      const finalBlock = superblock - 1920;
+  // Post an update to slack incoming webhook if url is
+  // provided in config.js.
+  if (!!config.slack.url) {
+    const webhook = new IncomingWebhook(config.slack.url);
+    const superblock = await rpc.call('getnextsuperblock');
+    const finalBlock = superblock - 1920;
 
-      let text = '';
-      // If finalization period is within 12 hours (12 * 60 * 60) / 90 = 480
-      if (block.height >= (finalBlock - 480)) {
-        text = `
-        Finalization window starts in 12 hours.\n
-        \n
-        Current block: ${block.height}\n
-        Finalization block: ${finalBlock}\n
-        Budget payment block: ${superblock}\n
-        https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
-        `;
-      }
-      // If finalization block.
-      else if (block.height >= finalBlock) {
-        text = `
-        Finalization block!\n
-        \n
-        Block: ${block.height}\n
-        https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
-        `;
-      }
-      // If budget payment block start then notify.
-      else if (block.height >= superblock) {
-        text = `
-        Governance payment(s) started!\n
-        \n
-        Block: ${block.height}\n
-        https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
-        `;
-      }
-      // Just every block for now while testing.
-      else {
-        text = `Block: ${block.height}\n`;
-      }
+    let text = '';
+    // If finalization period is within 12 hours (12 * 60 * 60) / 90 = 480
+    if (block.height == (finalBlock - 480)) {
+      text = `
+      Finalization window starts in 12 hours.\n
+      \n
+      Current block: ${block.height}\n
+      Finalization block: ${finalBlock}\n
+      Budget payment block: ${superblock}\n
+      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
+      `;
+    }
+    // If finalization block.
+    else if (block.height == finalBlock) {
+      text = `
+      Finalization block!\n
+      \n
+      Block: ${block.height}\n
+      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
+      `;
+    }
+    // If budget payment block start then notify.
+    else if (block.height == superblock) {
+      text = `
+      Governance payment(s) started!\n
+      \n
+      Block: ${block.height}\n
+      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
+      `;
+    }
+    // Just every block for now while testing.
+    else {
+      text = `Block: ${block.height}\n`;
+    }
 
-      if (!!text) {
-        webhook.send(text, (err, res) => {
-          if (err) {
-            console.log('Slack Error:', err);
-          } else {
-            console.log('Slack Message:', text);
-          }
-        });
-      }
+    if (!!text) {
+      webhook.send(text, (err, res) => {
+        if (err) {
+          console.log('Slack Error:', err);
+        } else {
+          console.log('Slack Message:', text);
+        }
+      });
     }
   }
 }
