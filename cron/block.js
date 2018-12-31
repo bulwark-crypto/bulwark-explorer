@@ -38,7 +38,7 @@ async function syncBlocks(start, stop, clean = false) {
       diff: rpcblock.difficulty,
       merkle: rpcblock.merkleroot,
       nonce: rpcblock.nonce,
-      prev: rpcblock.prevblockhash ? rpcblock.prevblockhash : 'GENESIS',
+      prev: (rpcblock.height == 1) ? 'GENESIS' : rpcblock.previousblockhash ? rpcblock.previousblockhash : 'UNKNOWN',
       size: rpcblock.size,
       txs: rpcblock.tx ? rpcblock.tx : [],
       ver: rpcblock.version
@@ -105,9 +105,9 @@ async function syncBlocks(start, stop, clean = false) {
       webhook.send(text, (err, res) => {
         if (err) {
           console.log('Slack Error:', err);
-        } else {
-          console.log('Slack Message:', text);
+          return;
         }
+        console.log('Slack Message:', res);
       });
     }
   }
