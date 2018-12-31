@@ -20,14 +20,34 @@ const UTXO = require('../../model/utxo');
  */
 const getAddress = async (req, res) => {
   try {
-    const txs = await TX
+    const qtxs = TX
       .aggregate([
         { $match: { 'vout.address': req.params.hash } },
+        {
+          $project:
+          {
+            vout:
+            {
+              $filter:
+              {
+                input: '$vout',
+                as: 'v',
+                cond: { $eq: ['$$v.address', req.params.hash] }
+              }
+            },
+            blockHash:1,
+            blockHeight:1,
+            createdAt:1,
+            txId:1,
+            version:1,
+            vin:1,
+          }
+        },
         { $sort: { blockHeight: -1 } }
       ])
       .allowDiskUse(true)
       .exec();
-    const utxo = await UTXO
+    const qutxo = UTXO
       .aggregate([
           { $match: { address: req.params.hash } },
           { $sort: { blockHeight: -1 } }
@@ -35,6 +55,8 @@ const getAddress = async (req, res) => {
       .allowDiskUse(true)
       .exec();
 
+    const txs = await qtxs;
+    const utxo = await qutxo;
     const balance = utxo.reduce((acc, tx) => acc + tx.value, 0.0);
     const received = txs.reduce((acc, tx) => acc + tx.vout.reduce((a, t) => a + t.value, 0.0), 0.0);
 

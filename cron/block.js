@@ -105,9 +105,9 @@ async function syncBlocks(start, stop, clean = false) {
       webhook.send(text, (err, res) => {
         if (err) {
           console.log('Slack Error:', err);
-        } else {
-          console.log('Slack Message:', text);
+          return;
         }
+        console.log('Slack Message:', res);
       });
     }
   }
