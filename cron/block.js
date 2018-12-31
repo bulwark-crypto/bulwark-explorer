@@ -38,7 +38,7 @@ async function syncBlocks(start, stop, clean = false) {
       diff: rpcblock.difficulty,
       merkle: rpcblock.merkleroot,
       nonce: rpcblock.nonce,
-      prev: rpcblock.prevblockhash ? rpcblock.prevblockhash : 'GENESIS',
+      prev: (rpcblock.height == 1) ? 'GENESIS' : rpcblock.previousblockhash ? rpcblock.previousblockhash : 'UNKNOWN',
       size: rpcblock.size,
       txs: rpcblock.tx ? rpcblock.tx : [],
       ver: rpcblock.version
