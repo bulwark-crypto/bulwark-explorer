@@ -46,6 +46,13 @@ This will install the latest Bulwark wallet and create a rpc username/password b
 
 `exit` - exit the mongo client.
 
+__IMPORTANT:__ _You should not build the frontend using the same `config.js` file as created above or  you WILL LEAK sensitive database information._
+
+#### BlockEx UI Configuration
+On the local development machine, not the server/VPS, run `cp config.template.js config.js` to create new configuration file that will have the UI information in it.  
+
+__IMPORTANT:__ _You should have two `config.js` files, one for the server with the sensitive database connection information, and one that is used by the developer/designer on their local machine to configure and build the UI._
+
 #### Crontab
 The following automated tasks are currently needed for BlockEx to update but before running the tasks please update the cron script `/path/to/blockex/script/cron_block.sh` for the block with the local `/path/to/node`.
 
