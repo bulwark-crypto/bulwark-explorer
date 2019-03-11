@@ -4,6 +4,7 @@ const htmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const uglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
+const config = require('./config')
 
 const htmlPlugin = new htmlWebpackPlugin({
   filename: 'index.html',
@@ -18,6 +19,11 @@ const basePlugins = [
     DEBUG: JSON.stringify(process.env.DEBUG || false),
     NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+  }),
+  new webpack.DefinePlugin({
+    'process.env': {
+      'config.api':JSON.stringify(config.api),
+    }
   }),
   new webpack.HotModuleReplacementPlugin(),
   new webpack.NamedModulesPlugin(),
