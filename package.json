@@ -73,7 +73,7 @@
     "style-loader": "^0.20.1",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.1",
+    "webpack-dev-server": ">=3.1.11",
     "worker-loader": "^1.1.1"
   }
 }
