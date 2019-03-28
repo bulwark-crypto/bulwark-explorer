@@ -23,11 +23,6 @@ async function vin(rpctx) {
 
       txIds.add(`${ vin.txid }:${ vin.vout }`);
     });
-
-    // Remove unspent transactions.
-    if (txIds.size) {
-      await UTXO.remove({ _id: { $in: Array.from(txIds) } });
-    }
   }
   return txin;
 }
@@ -42,10 +37,6 @@ async function vout(rpctx, blockHeight) {
   const txout = [];
   if (rpctx.vout) {
     const utxo = [];
-    rpctx.vout.forEach((vout) => {
-      if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
-        return;
-      }
 
       const to = {
         blockHeight,
@@ -76,9 +67,6 @@ async function vout(rpctx, blockHeight) {
  * @param {Object} rpctx The rpc object from the node.
  */
 async function addPoS(block, rpctx) {
-  // We will ignore the empty PoS txs.
-  if (rpctx.vin[0].coinbase && rpctx.vout[0].value === 0)
-    return;
 
   const txin = await vin(rpctx);
   const txout = await vout(rpctx, block.height);
