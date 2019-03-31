@@ -40,9 +40,9 @@ async function vout(rpctx, blockHeight) {
 
       const to = {
         blockHeight,
-        address: vout.scriptPubKey.type === 'zerocoinmint' ? 'ZEROCOIN' : vout.scriptPubKey.addresses[0],
+        address: vout.scriptPubKey.type === 'zerocoinmint' ? 'ZEROCOIN' : vout.scriptPubKey.type === 'nulldata' ? 'NON_STANDARD' : vout.scriptPubKey.addresses[0] ,
         n: vout.n,
-        value: vout.value
+        value: vout.value <= 0 ? 0 : vout.value
       };
 
       txout.push(to);
