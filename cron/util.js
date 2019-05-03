@@ -37,7 +37,7 @@ async function vout(rpctx, blockHeight) {
   const txout = [];
   if (rpctx.vout) {
     const utxo = [];
-
+    rpctx.vout.forEach((vout) => {
       const to = {
         blockHeight,
         address: vout.scriptPubKey.type === 'zerocoinmint' ? 'ZEROCOIN' : vout.scriptPubKey.type === 'nulldata' ? 'NON_STANDARD' : vout.scriptPubKey.addresses[0] ,
