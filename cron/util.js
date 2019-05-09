@@ -83,12 +83,14 @@ async function vout(rpctx, blockHeight) {
  * @param {Object} rpctx The rpc object from the node.
  */
 async function addPoS(block, rpctx) {
-  const txin = await vin(rpctx);
+  // Process & filter the outputs (this might result in an empty txout array if there are only invalid transaction types in output)
   const txout = await vout(rpctx, block.height);
 
   // We will ignore the empty PoS txs. These will not have any vouts because vout() excludes 'nulldata' and 'nonstandard' transactions
   if (rpctx.vin[0].coinbase && txout.length === 0)	
     return;
+
+  const txin = await vin(rpctx);
 
   await TX.create({
     _id: rpctx.txid,
