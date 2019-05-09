@@ -44,12 +44,11 @@ async function vout(rpctx, blockHeight) {
         case 'zerocoinmint':
           toAddress = 'ZEROCOIN';
           break;
+        // Do not store these types of transactions and continue forEach loop
         case 'nulldata':
-          // store as NON_STANDARD
-          break;
         case 'nonstandard':
-          // do not store these types of transactions
           return;
+        // By default take the first address as the "toAddress"
         default:
           toAddress = vout.scriptPubKey.addresses[0];
           break;
@@ -84,6 +83,9 @@ async function vout(rpctx, blockHeight) {
  * @param {Object} rpctx The rpc object from the node.
  */
 async function addPoS(block, rpctx) {
+  // We will ignore the empty PoS txs. These will not have any vouts because vout() excludes 'nulldata' and 'nonstandard' transactions
+  if (rpctx.vin[0].coinbase && rpctx.vout.length === 0)	
+    return;
 
   const txin = await vin(rpctx);
   const txout = await vout(rpctx, block.height);
