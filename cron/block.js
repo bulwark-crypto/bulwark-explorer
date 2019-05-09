@@ -138,6 +138,10 @@ async function update() {
       rpcHeight = parseInt(process.argv[3], 10);
     }
     console.log(dbHeight, rpcHeight, clean);
+
+    // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
+    locker.lock(type);
+    
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
       return;
@@ -147,7 +151,6 @@ async function update() {
       dbHeight = 1;
     }
 
-    locker.lock(type);
     await syncBlocks(dbHeight, rpcHeight, clean);
   } catch(err) {
     console.log(err);
