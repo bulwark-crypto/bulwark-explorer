@@ -69,7 +69,7 @@ class Footer extends Component {
               <a href="https://github.com/bulwark-crypto" target="_blank">
                 <Icon name="github" className="fab footer__social-media-icon" />
               </a>
-              <a href="https://twitter.com/BulwarkCoin" target="_blank">
+              <a href="https://twitter.com/BulwarkCrypto" target="_blank">
                 <Icon name="twitter" className="fab footer__social-media-icon" />
               </a>
               <a href="http://facebook.com/bulwark.coin.IO/" target="_blank">
