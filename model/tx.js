@@ -21,7 +21,7 @@ const TXIn = new mongoose.Schema({
  */
 const TXOut = new mongoose.Schema({
   __v: { select: false, type: Number },
-  address: { required: true, type: String },
+  address: { index: true, required: true, type: String },
   n: { required: true, type: Number },
   value: { required: true, type: Number }
 });

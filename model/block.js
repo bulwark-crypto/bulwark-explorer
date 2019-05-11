@@ -11,7 +11,7 @@ const Block = mongoose.model('Block', new mongoose.Schema({
   __v: { select: false, type: Number },
   bits: { required: true, type: String },
   confirmations: { required: true, type: Number },
-  createdAt: { required: true, type: Date },
+  createdAt: { index: true, required: true, type: Date },
   diff: { required: true, type: String },
   hash: { index: true, required: true, type: String, unique: true },
   height: { index: true, required: true, type: Number },
