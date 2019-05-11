@@ -381,12 +381,15 @@ const getSupply = async (req, res) => {
     let c = 0; // Circulating supply.
     let t = 0; // Total supply.
 
+    //@test Temporarily disable getSupply() as it's performing a "planSummary" : "COLLSCAN" in mongodb. Need a better implementation.
+    /*
     const utxo = await UTXO.aggregate([
       { $group: { _id: 'supply', total: { $sum: '$value' } } }
     ]);
 
     t = utxo[0].total;
     c = t;
+    */
 
     res.json({ c, t });
   } catch(err) {
