@@ -23,6 +23,11 @@ async function vin(rpctx) {
 
       txIds.add(`${ vin.txid }:${ vin.vout }`);
     });
+    
+    // Remove unspent transactions.
+    if (txIds.size) {
+      await UTXO.remove({ _id: { $in: Array.from(txIds) } });
+    }
   }
   return txin;
 }
@@ -38,19 +43,21 @@ async function vout(rpctx, blockHeight) {
   if (rpctx.vout) {
     const utxo = [];
     rpctx.vout.forEach((vout) => {
+      if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
+        return;
+      }
       
       let toAddress = 'NON_STANDARD';
       switch (vout.scriptPubKey.type) {
+        case 'nulldata':
+        case 'nonstandard':
+          // These are known non-standard txouts that we won't store in txout
+          break;
         case 'zerocoinmint':
           toAddress = 'ZEROCOIN';
           break;
-        case 'nulldata':
-          // store as NON_STANDARD
-          break;
-        case 'nonstandard':
-          // do not store these types of transactions
-          return;
         default:
+          // By default take the first address as the "toAddress"
           toAddress = vout.scriptPubKey.addresses[0];
           break;
       }
@@ -59,15 +66,19 @@ async function vout(rpctx, blockHeight) {
         blockHeight,
         address: toAddress,
         n: vout.n,
-        value: vout.value <= 0 ? 0 : vout.value
+        value: vout.value
       };
 
-      txout.push(to);
+      // Always add UTXO since we'll be aggregating it in richlist
       utxo.push({
         ...to,
         _id: `${ rpctx.txid }:${ vout.n }`,
         txId: rpctx.txid
       });
+
+      if (toAddress != 'NON_STANDARD') {
+        txout.push(to);
+      }
     });
 
     // Insert unspent transactions.
@@ -84,6 +95,9 @@ async function vout(rpctx, blockHeight) {
  * @param {Object} rpctx The rpc object from the node.
  */
 async function addPoS(block, rpctx) {
+  // We will ignore the empty PoS txs.
+  if (rpctx.vin[0].coinbase && rpctx.vout[0].value === 0)
+    return;
 
   const txin = await vin(rpctx);
   const txout = await vout(rpctx, block.height);
