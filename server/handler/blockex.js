@@ -342,6 +342,7 @@ const getMasternodeByAddress = async (req, res) => {
  */
 const getMasternodeCount = async (req, res) => {
   try {
+    // TODO Add caching.
     const coin = await Coin.findOne().sort({ createdAt: -1 });
 
     res.json({ enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn });
@@ -381,7 +382,7 @@ const getSupply = async (req, res) => {
     let c = 0; // Circulating supply.
     let t = 0; // Total supply.
 
-    //@test Temporarily disable getSupply() as it's performing a "planSummary" : "COLLSCAN" in mongodb. Need a better implementation.
+    // TODO Add caching.
     /*
     const utxo = await UTXO.aggregate([
       { $group: { _id: 'supply', total: { $sum: '$value' } } }
@@ -404,6 +405,7 @@ const getSupply = async (req, res) => {
  * @param {Object} res The response object.
  */
 const getTop100 = (req, res) => {
+  // TODO Add caching.
   Rich.find()
     .limit(100)
     .sort({ value: -1 })
@@ -422,6 +424,7 @@ const getTop100 = (req, res) => {
  * @param {Object} res The response object.
  */
 const getTXLatest = (req, res) => {
+  // TODO Add caching.
   TX.find()
     .limit(10)
     .sort({ blockHeight: -1 })
