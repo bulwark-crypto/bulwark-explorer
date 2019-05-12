@@ -6,6 +6,7 @@ const config = {
   'api': {
     'host': 'https://explorer.bulwarkcrypto.com',
     'port': '443',
+    'portWorker': '3000',
     'prefix': '/api',
     'timeout': '5s'
   },
