@@ -3,6 +3,8 @@ const chain = require('../../lib/blockchain');
 const { forEach } = require('p-iteration');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
+const cache = require('../lib/cache');
+
 
 // System models for query and etc.
 const Block = require('../../model/block');
@@ -85,10 +87,10 @@ const getAvgBlockTime = () => {
 
     try {
       const date = moment.utc().subtract(24, 'hours').toDate();
-      const blocks = await Block.find({ createdAt: { $gt: date } });
+      const blocksCount = await Block.count({ createdAt: { $gt: date } });
       const seconds = 24 * 60 * 60;
 
-      cache = seconds / blocks.length;
+      cache = seconds / blocksCount;
       cutOff = moment().utc().add(60, 'seconds').unix();
     } catch(err) {
       console.log(err);
@@ -134,10 +136,10 @@ const getAvgMNTime = () => {
 
     try {
       const date = moment.utc().subtract(24, 'hours').toDate();
-      const blocks = await Block.find({ createdAt: { $gt: date } });
-      const mns = await Masternode.find();
+      const blocksCount = await Block.count({ createdAt: { $gt: date } });
+      const masternodesCount = await Masternode.count();
 
-      cache = (24.0 / (blocks.length / mns.length));
+      cache = (24.0 / (blocksCount / masternodesCount));
       cutOff = moment().utc().add(5, 'minutes').unix();
     } catch(err) {
       console.log(err);
@@ -308,7 +310,7 @@ const getMasternodes = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 1000;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-    const total = await Masternode.find().sort({ lastPaidAt: -1, status: 1 }).count();
+    const total = await Masternode.count();
     const mns = await Masternode.find().skip(skip).limit(limit).sort({ lastPaidAt: -1, status: 1 });
 
     res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit) });
@@ -342,9 +344,12 @@ const getMasternodeByAddress = async (req, res) => {
  */
 const getMasternodeCount = async (req, res) => {
   try {
-    const coin = await Coin.findOne().sort({ createdAt: -1 });
+    const masternodeCount = await cache.getFromCache("masternodeCount", moment().utc().add(60, 'seconds').unix(), async () => {
+      const coin = await Coin.findOne().sort({ createdAt: -1 });
+      return { enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn };
+    });
 
-    res.json({ enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn });
+    res.json(masternodeCount);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -381,17 +386,18 @@ const getSupply = async (req, res) => {
     let c = 0; // Circulating supply.
     let t = 0; // Total supply.
 
-    //@test Temporarily disable getSupply() as it's performing a "planSummary" : "COLLSCAN" in mongodb. Need a better implementation.
-    /*
-    const utxo = await UTXO.aggregate([
-      { $group: { _id: 'supply', total: { $sum: '$value' } } }
-    ]);
+    let supply = await cache.getFromCache("supply", moment().utc().add(1, 'hours').unix(), async () => {
+      const utxo = await UTXO.aggregate([
+        { $group: { _id: 'supply', total: { $sum: '$value' } } }
+      ]);
 
-    t = utxo[0].total;
-    c = t;
-    */
+      t = utxo[0].total;
+      c = t;
+      
+      return { c, t };
+    });
 
-    res.json({ c, t });
+    res.json(supply);
   } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -403,17 +409,19 @@ const getSupply = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTop100 = (req, res) => {
-  Rich.find()
-    .limit(100)
-    .sort({ value: -1 })
-    .then((docs) => {
-      res.json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
+const getTop100 = async (req, res) => {
+  try {
+    const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
+      return await Rich.find()
+      .limit(100)
+      .sort({ value: -1 });    
     });
+    
+    res.json(docs);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**
@@ -421,17 +429,19 @@ const getTop100 = (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTXLatest = (req, res) => {
-  TX.find()
-    .limit(10)
-    .sort({ blockHeight: -1 })
-    .then((docs) => {
+const getTXLatest = async (req, res) => {
+  try {
+    const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
+      return await TX.find()
+        .limit(10)
+        .sort({ blockHeight: -1 });
+      });
+
       res.json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(err.message || err);
-    });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
 };
 
 /**
