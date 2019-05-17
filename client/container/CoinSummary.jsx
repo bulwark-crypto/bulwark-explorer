@@ -1,4 +1,5 @@
 
+import config from '../../config'
 import Actions from '../core/Actions';
 import blockchain from '../../lib/blockchain';
 import Component from '../core/Component';
@@ -85,9 +86,7 @@ class CoinSummary extends Component {
               ssHeight={ blockchain.params.LAST_SEESAW_BLOCK } />
             <CardHighlightedAddresses
               title="Community Addresses"
-              addresses={
-                { label: "Perpetual Funding", address: "bWKFundnxm6xtER3hX8gtYtZbVNTFEZ79u" }
-              }
+              addresses={ config.community.highlightedAddresses }
              />
             <WatchList
               items={ watchlist }
