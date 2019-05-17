@@ -36,6 +36,11 @@ const config = {
     //'channel': '#general',
     //'username': 'Block Report',
     //'icon_emoji': ':bwk:'
+  },
+  'community': {
+    'highlightedAddresses': [
+      { label: "Perpetual Community Funding", address: "bWKFundnxm6xtER3hX8gtYtZbVNTFEZ79u" }
+    ]
   }
 };
 
