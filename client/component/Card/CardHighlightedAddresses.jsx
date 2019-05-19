@@ -8,22 +8,18 @@ import Icon from '../Icon';
 export default class CardHighlightedAddresses extends Component {
   
   handleClick = (ev, term) => {
-    /*
     try {
-      this.props.onSearch(term);
+      this.props.onSearch(term.address);
     } catch(err) {
       // Do nothing.
-    }*/
+    }
   };
 
-  getWatchItems() {
-    const { addresses } = this.props;
-
-    const watchItems = addresses.map((item, idx) => {
+  getHighlightedAddresses() {
+    const highlightedAddresses = this.props.addresses.map((item, idx) => {
       return (
         <div className="animated fadeIn" key={ idx } onClick={ ev => this.handleClick(ev, item) } >
-          <div className="watch-list__item">
-           
+          <div className="watch-list__item">           
             <div>
               <div className="watch-list__item-text">
                 { item.label }
@@ -34,7 +30,7 @@ export default class CardHighlightedAddresses extends Component {
       )
     });
 
-    return watchItems
+    return highlightedAddresses
   };
 
   render() {
@@ -43,7 +39,7 @@ export default class CardHighlightedAddresses extends Component {
     return (
       <div className="watch-list">
         <p className="watch-list__title">{ props.title }</p>
-        { this.getWatchItems() }
+        { this.getHighlightedAddresses() }
       </div>
     )
   }

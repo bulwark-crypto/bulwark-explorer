@@ -87,6 +87,7 @@ class CoinSummary extends Component {
             <CardHighlightedAddresses
               title="Community Addresses"
               addresses={ config.community.highlightedAddresses }
+              onSearch={ this.props.onSearch }
              />
             <WatchList
               items={ watchlist }
