@@ -36,6 +36,13 @@ const config = {
     //'channel': '#general',
     //'username': 'Block Report',
     //'icon_emoji': ':bwk:'
+  },
+  'community': {
+    'highlightedAddresses': [
+      // If you comment out all of these addresses the "Community Addresses" section will not show up on the homepage. You can add as many addresses to highlight as you wish.
+      //{ label: "Community Donations", address: "XXXXXXXXXXXXXXXXXXXXXXXXXXX" }, // Uncomment and replace with your coin address to highlight an address
+      //{ label: "Community Funding", address: "XXXXXXXXXXXXXXXXXXXXXXXXXXX" }, // Uncomment and replace with your coin address to highlight any other address
+    ]
   }
 };
 

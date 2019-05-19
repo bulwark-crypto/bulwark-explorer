@@ -1,4 +1,5 @@
 
+import config from '../../config'
 import Actions from '../core/Actions';
 import blockchain from '../../lib/blockchain';
 import Component from '../core/Component';
@@ -10,6 +11,7 @@ import Icon from '../component/Icon';
 
 import CardMarket from '../component/Card/CardMarket';
 import CardMasternodeSummary from '../component/Card/CardMasternodeSummary';
+import CardHighlightedAddresses from '../component/Card/CardHighlightedAddresses';
 import CardPoS from '../component/Card/CardPoS';
 import CardPoSCalc from '../component/Card/CardPoSCalc';
 import CardStatus from '../component/Card/CardStatus';
@@ -82,6 +84,11 @@ class CoinSummary extends Component {
               average={ coin.avgBlockTime }
               height={ height }
               ssHeight={ blockchain.params.LAST_SEESAW_BLOCK } />
+            <CardHighlightedAddresses
+              title="Community Addresses"
+              addresses={ config.community.highlightedAddresses }
+              onSearch={ this.props.onSearch }
+             />
             <WatchList
               items={ watchlist }
               onSearch={ this.props.onSearch }
