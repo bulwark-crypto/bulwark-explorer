@@ -41,8 +41,7 @@ class Address extends Component {
 
   componentDidUpdate() {
     if (!!this.state.address
-      && this.state.address !== this.props.match.params.hash) {
-      this.setState({ address: this.props.match.params.hash }); // Set state to new adress to prevent calling getAddress() multiple times
+      && this.state.address !== this.props.match.params.hash && !this.state.loading) {
       this.getAddress();
     }
   };
