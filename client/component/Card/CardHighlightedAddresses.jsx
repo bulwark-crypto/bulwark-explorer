@@ -34,11 +34,14 @@ export default class CardHighlightedAddresses extends Component {
   };
 
   render() {
-    const { props } = this;
+    // Do not render anything if there are no addresses to highlight
+    if (this.props.addresses.length == 0) {
+      return null;
+    }
 
     return (
       <div className="watch-list">
-        <p className="watch-list__title">{ props.title }</p>
+        <p className="watch-list__title">{ this.props.title }</p>
         { this.getHighlightedAddresses() }
       </div>
     )
