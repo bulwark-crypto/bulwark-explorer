@@ -39,7 +39,8 @@ const config = {
   },
   'community': {
     'highlightedAddresses': [
-      { label: "Perpetual Community Funding", address: "bWKFundnxm6xtER3hX8gtYtZbVNTFEZ79u" }
+      //{ label: "Community Donations", address: "XXXXXXXXXXXXXXXXXXXXXXXXXXX" }, // Uncomment and replace with your coin address to highlight an address
+      //{ label: "Community Funding", address: "XXXXXXXXXXXXXXXXXXXXXXXXXXX" }, // Uncomment and replace with your coin address to highlight any other address
     ]
   }
 };
