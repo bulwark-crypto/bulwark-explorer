@@ -72,8 +72,6 @@ class Footer extends Component {
               <a href="https://twitter.com/BulwarkCrypto" target="_blank">
                 <Icon name="twitter" className="fab footer__social-media-icon" />
               </a>
-              </a>
-              </a>
             </div>
           </div>
         </div>
