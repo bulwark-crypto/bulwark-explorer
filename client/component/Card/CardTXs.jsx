@@ -25,6 +25,7 @@ export default class CardTXs extends Component {
         { key: 'blockHeight', title: 'Block Height' },
         { key: 'txId', title: 'Transaction Hash' },
         { key: 'vout', title: 'Amount' },
+        { key: 'recipients', title: 'Recipients' },
         { key: 'createdAt', title: 'Time' },
       ]
     };
@@ -48,6 +49,7 @@ export default class CardTXs extends Component {
               </Link>
             ),
             createdAt: dateFormat(tx.createdAt),
+            recipients: tx.vout.length,
             txId: (
               <Link to={ `/tx/${ tx.txId }` }>
                 { tx.txId }
