@@ -11,7 +11,7 @@ let cacheData = {};
 let cacheUnixTimestamps = {};
 const getFromCache = async (cacheName, expiryUnixTimestamp, callback) => {
   const currentUnixTimestamp = moment().utc().unix();
-  if (!cacheData[cacheName] || cacheUnixTimestamps[expiryUnixTimestamp] > currentUnixTimestamp) {
+  if (!cacheData[cacheName] || cacheUnixTimestamps[expiryUnixTimestamp] < currentUnixTimestamp) {
     cacheData[cacheName] = await callback();
     cacheUnixTimestamps[expiryUnixTimestamp] = expiryUnixTimestamp;
   }
