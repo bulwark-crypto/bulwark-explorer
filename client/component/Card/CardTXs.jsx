@@ -22,10 +22,12 @@ export default class CardTXs extends Component {
     super(props);
     this.state = {
       cols: [
-        { key: 'blockHeight', title: 'Block Height' },
+        { key: 'blockHeight', title: 'Height' },
         { key: 'txId', title: 'Transaction Hash' },
-        { key: 'vout', title: 'Amount' },
-        { key: 'createdAt', title: 'Time' },
+        { key: 'vout', title: 'Value' },
+        { key: 'age', title: 'Age' },
+        { key: 'recipients', title: 'Recipients' },
+        { key: 'createdAt', title: 'Created' },
       ]
     };
   };
@@ -35,6 +37,8 @@ export default class CardTXs extends Component {
       <Table
         cols={ this.state.cols }
         data={ this.props.txs.map(tx => {
+          const createdAt = moment(tx.createdAt).utc();
+          const diffSeconds = moment().utc().diff(createdAt, 'seconds');
           let blockValue = 0.0;
           if (tx.vout && tx.vout.length) {
             tx.vout.forEach(vout => blockValue += vout.value);
@@ -42,12 +46,14 @@ export default class CardTXs extends Component {
 
           return ({
             ...tx,
+            age: diffSeconds < 60 ? `${ diffSeconds } seconds` : createdAt.fromNow(true),
             blockHeight: (
               <Link to={ `/block/${ tx.blockHeight }` }>
                 { tx.blockHeight }
               </Link>
             ),
             createdAt: dateFormat(tx.createdAt),
+            recipients: tx.vout.length,
             txId: (
               <Link to={ `/tx/${ tx.txId }` }>
                 { tx.txId }
