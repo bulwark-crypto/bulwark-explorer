@@ -13,6 +13,7 @@ import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Table from '../component/Table';
 import Select from '../component/Select';
+import Icon from '../component/Icon';
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
@@ -95,6 +96,21 @@ class Masternode extends Component {
         options={ selectOptions } />
     );
 
+    const getIcon = (mn) =>{
+      switch (mn.network) {
+        case "onion":
+          return (
+            <span title="Onion Network"><Icon name="user-secret" className="pr-1 text-primary fa-lg" /></span>
+          )
+        case "ipv6":
+          return (
+            <span title="IPv6"><Icon name="desktop" className="pr-1 text-primary fa-lg" /></span>
+          )
+        default:
+          return null;
+      }
+    }
+
     // Calculate the future so we can use it to
     // sort by lastPaid in descending order.
     const future = moment().add(2, 'years').utc().unix();
@@ -123,6 +139,12 @@ class Masternode extends Component {
                 <Link to={ `/tx/${ mn.txHash }` }>
                   { `${ mn.txHash.substr(0, 20) }...` }
                 </Link>
+              ),
+              status: (
+                <span>
+                  { getIcon(mn) }
+                  { mn.status }
+                </span>
               )
             };
           }), ['status']) } />
