@@ -90,6 +90,21 @@ At this time only the client web interface needs to be built using webpack and t
 
 `yarn run test:server` - will test the rpc connection, database connection, and api endpoints.
 
+## Development - Important File Locations
+
+#### Client - Frontend (react, react-redux)
+
+`client/App.jsx` - Contains all react routes to components (using react-router-dom)
+
+`client/core/Reducers.jsx` - Contains all reducers used in redux `connect()` mapping (using react-redux)
+
+`client/core/Actions.jsx` - Contains all actions used in redux `connect()` mapping (using react-redux)
+
+
+#### Server - Rest API (node, express, mongo, mongoose)
+
+`server/route/api.js` - Contains all public rest api endpoint routes
+
 ## To-Do
 - Write more tests
 - Cluster support for api
