@@ -27,8 +27,8 @@ class Footer extends Component {
         <div className="footer__block">
           <img className="footer__logo" src="/img/footerlogo.svg" />
           <span className="footer__legal">
-            <div>Copyright &copy; 2018 <a href="https://bulwarkcrypto.com/">Bulwark Cryptocurrency</a></div>
-            <div>Site design / Logo &copy; 2018 <a href="https://bulwarkcrypto.com/">Bulwark Cryptocurrency</a></div>
+            <div>Copyright &copy; 2018 - 2019 <a href="https://bulwarkcrypto.com/">Bulwark Cryptocurrency</a></div>
+            <div>Site design / Logo &copy; 2018 - 2019 <a href="https://bulwarkcrypto.com/">Bulwark Cryptocurrency</a></div>
           </span>
         </div>
         <div className="footer__block">
@@ -71,9 +71,6 @@ class Footer extends Component {
               </a>
               <a href="https://twitter.com/BulwarkCrypto" target="_blank">
                 <Icon name="twitter" className="fab footer__social-media-icon" />
-              </a>
-              <a href="http://facebook.com/bulwark.coin.IO/" target="_blank">
-                <Icon name="facebook" className="fab footer__social-media-icon" />
               </a>
             </div>
           </div>
