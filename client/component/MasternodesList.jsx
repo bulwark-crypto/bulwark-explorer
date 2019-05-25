@@ -138,7 +138,7 @@ class MasternodesList extends Component {
                 </Link>
               ),
               status: (
-                <span>
+                <span class="text-nowrap">
                   { getIcon(mn) }
                   { mn.status }
                 </span>
