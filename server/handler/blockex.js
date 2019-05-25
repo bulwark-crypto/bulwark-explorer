@@ -315,6 +315,7 @@ const getMasternodes = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     var query = {};
+    // Optionally it's possible to filter masternodes running on a specific address
     if (req.query.hash) {
       query.addr = req.query.hash;
     }
