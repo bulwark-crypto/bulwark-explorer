@@ -86,7 +86,7 @@ export const getIsBlock = (query) => {
 
 export const getMNs = (query) => {
   return new promise((resolve, reject) => {
-    return getFromWorker('mns', resolve, reject, query);
+    return getFromWorker('mns', resolve, reject, query); // Resolves to getMNs in fetch.worker.js
   });
 };
 
