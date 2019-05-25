@@ -11,13 +11,15 @@ class Masternode extends Component {
   };
   render() {
     return (
-      <MasternodesList getMNs= { this.props.getMNs } />
+      <MasternodesList title="Masternodes" isPaginationEnabled={true} getMNs={this.props.getMNs} />
     );
   };
 }
 
 const mapDispatch = dispatch => ({
-  getMNs: query => Actions.getMNs(query)
+  getMNs: query => {
+    return Actions.getMNs(query);
+  }
 });
 
 export default connect(null, mapDispatch)(Masternode);

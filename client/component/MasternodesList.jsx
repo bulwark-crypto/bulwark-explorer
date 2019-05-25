@@ -16,7 +16,9 @@ import { PAGINATION_PAGE_SIZE } from '../constants';
 
 class MasternodesList extends Component {
   static propTypes = {
-    getMNs: PropTypes.func.isRequired
+    title: PropTypes.string.isRequired,
+    getMNs: PropTypes.func.isRequired,
+    isPaginationEnabled: PropTypes.bool.isRequired
   };
 
   constructor(props) {
@@ -34,7 +36,7 @@ class MasternodesList extends Component {
       ],
       error: null,
       loading: true,
-      mns: [] ,
+      mns: [],
       pages: 0,
       page: 1,
       size: 10
@@ -86,14 +88,30 @@ class MasternodesList extends Component {
     }
     const selectOptions = PAGINATION_PAGE_SIZE;
 
-    const select = (
-      <Select
-        onChange={ value => this.handleSize(value) }
-        selectedValue={ this.state.size }
-        options={ selectOptions } />
-    );
+    const getPaginationDropdown = () => {
+      if (!this.props.isPaginationEnabled) {
+        return null;
+      }
+      return (
+        <Select
+          onChange={value => this.handleSize(value)}
+          selectedValue={this.state.size}
+          options={selectOptions} />
+      );
+    };
 
-    const getIcon = (mn) =>{
+    const getPaginationControls = () => {
+      if (!this.props.isPaginationEnabled) {
+        return null;
+      }
+      return (<Pagination
+        current={this.state.page}
+        className="float-right"
+        onPage={this.handlePage}
+        total={this.state.pages} />);
+    }
+
+    const getIcon = (mn) => {
       switch (mn.network) {
         case "onion":
           return (
@@ -115,11 +133,11 @@ class MasternodesList extends Component {
     return (
       <div>
         <HorizontalRule
-          select={ select }
-          title="Masternodes" />
+          select={getPaginationDropdown()}
+          title={this.props.title} />
         <Table
-          cols={ this.state.cols }
-          data={ sortBy(this.state.mns.map((mn) => {
+          cols={this.state.cols}
+          data={sortBy(this.state.mns.map((mn) => {
             const lastPaidAt = moment(mn.lastPaidAt).utc();
             const isEpoch = lastPaidAt.unix() === 0;
 
@@ -127,29 +145,25 @@ class MasternodesList extends Component {
               ...mn,
               active: moment().subtract(mn.active, 'seconds').utc().fromNow(),
               addr: (
-                <Link to={ `/address/${ mn.addr }` }>
-                  { `${ mn.addr.substr(0, 20) }...` }
+                <Link to={`/address/${mn.addr}`}>
+                  {`${mn.addr.substr(0, 20)}...`}
                 </Link>
               ),
               lastPaidAt: isEpoch ? 'N/A' : dateFormat(mn.lastPaidAt),
               txHash: (
-                <Link to={ `/tx/${ mn.txHash }` }>
-                  { `${ mn.txHash.substr(0, 20) }...` }
+                <Link to={`/tx/${mn.txHash}`}>
+                  {`${mn.txHash.substr(0, 20)}...`}
                 </Link>
               ),
               status: (
-                <span class="text-nowrap">
-                  { getIcon(mn) }
-                  { mn.status }
+                <span className="text-nowrap">
+                  {getIcon(mn)}
+                  {mn.status}
                 </span>
               )
             };
-          }), ['status']) } />
-        <Pagination
-          current={ this.state.page }
-          className="float-right"
-          onPage={ this.handlePage }
-          total={ this.state.pages } />
+          }), ['status'])} />
+        {getPaginationControls()}
         <div className="clearfix" />
       </div>
     );
