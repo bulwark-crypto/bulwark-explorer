@@ -80,7 +80,7 @@ class Address extends Component {
       return null;
     }
     return (
-      <MasternodesList title="Masternode For Address" isPaginationEnabled={false} getMNs={this.props.getMNs.bind(this)} />
+      <MasternodesList title="Masternode For Address" isPaginationEnabled={false} getMNs={this.props.getMNs} hideCols={["addr"]} />
     );
   }
 
@@ -132,7 +132,7 @@ class Address extends Component {
 const mapDispatch = (dispatch, ownProps) => ({
   getAddress: query => Actions.getAddress(query),
   getMNs: query => {
-    query.hash = ownProps.match.params.hash; // Add current wallet address to the filtering of getMNs()
+    query.hash = ownProps.match.params.hash; // Add current wallet address to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
     return Actions.getMNs(query);
   }
 });

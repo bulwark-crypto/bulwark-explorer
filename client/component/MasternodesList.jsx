@@ -18,7 +18,8 @@ class MasternodesList extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     getMNs: PropTypes.func.isRequired,
-    isPaginationEnabled: PropTypes.bool.isRequired
+    isPaginationEnabled: PropTypes.bool.isRequired,
+    hideCols: PropTypes.array
   };
 
   constructor(props) {
@@ -41,6 +42,13 @@ class MasternodesList extends Component {
       page: 1,
       size: 10
     };
+
+    // You can optionally pass in array of columns to hide in masternodes table
+    if (!!this.props.hideCols) {
+      this.state.cols = this.state.cols.filter((value) => {
+        return !this.props.hideCols.includes(value.key);
+      });
+    }
   };
 
   componentDidMount() {
