@@ -1,9 +1,12 @@
 
+import configUtils from '../../lib/configUtils';
+
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+
 
 import CardAddress from '../component/Card/CardAddress';
 import CardAddressTXs from '../component/Card/CardAddressTXs';
@@ -83,6 +86,18 @@ class Address extends Component {
       <MasternodesList title="Masternode For Address" isPaginationEnabled={false} getMNs={this.props.getMNs} hideCols={["addr"]} />
     );
   }
+  getMasternodesAddressWidget = () => {
+    const address = this.props.match.params.hash;
+    const masternodesAddressWidget = configUtils.getCommunityAddressWidgetConfig(address, "masternodesAddressWidget");
+    if (!masternodesAddressWidget) {
+      return null;
+    }
+
+    return (
+      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={false} getMNs={this.props.getMasternodesAddressWidget} />
+    );
+  }
+
 
   render() {
     if (!!this.state.error) {
@@ -124,15 +139,26 @@ class Address extends Component {
           total={this.state.pages} />
         <div className="clearfix" />
         {this.getMasternodeDetails()}
+        {this.getMasternodesAddressWidget()}
       </div>
     );
   };
 }
 
+
 const mapDispatch = (dispatch, ownProps) => ({
   getAddress: query => Actions.getAddress(query),
   getMNs: query => {
     query.hash = ownProps.match.params.hash; // Add current wallet address to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
+    return Actions.getMNs(query);
+  },
+  getMasternodesAddressWidget: query => {
+    const address = ownProps.match.params.hash;
+    const masternodesAddressWidget = configUtils.getCommunityAddressWidgetConfig(address, "masternodesAddressWidget");
+    if (!masternodesAddressWidget) {
+      return null;
+    }
+    query.addresses = masternodesAddressWidget.addresses; // Add array of wallet addresses to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
     return Actions.getMNs(query);
   }
 });
