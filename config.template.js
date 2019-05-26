@@ -50,6 +50,7 @@ const config = {
       masternodesAddressWidget: {
         title: "Community Masternodes",
         description: "Profits from these masternodes fund & fuel community talent",
+        isPaginationEnabled: false, // If you have more than 10 you should enable this
         addresses: [
           "XXXXXXXXXXXXXXXXXXXXXXXXXXX",
           "XXXXXXXXXXXXXXXXXXXXXXXXXXX",
