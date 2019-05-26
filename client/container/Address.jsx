@@ -94,7 +94,7 @@ class Address extends Component {
     }
 
     return (
-      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={false} getMNs={this.props.getMasternodesAddressWidget} />
+      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={masternodesAddressWidget.isPaginationEnabled} getMNs={this.props.getMasternodesAddressWidget} />
     );
   }
 
