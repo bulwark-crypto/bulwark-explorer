@@ -324,9 +324,9 @@ const getMasternodes = async (req, res) => {
     // Optionally it's possible to filter masternodes running on a specific range of addresses. Pass in addresses as comma-seprated list
     // In redux we pass in an array and it automatically converts into a comma-seperated list of addresses
     if (req.query.addresses) {
+      const addressList = req.query.addresses.split(',');
       // At the moment the limit of addresses in a single query is 25 but this number will be increased later, perhaps with some form of caching
-      if (req.query.addresses.length < 25) {
-        const addressList = req.query.addresses.split(',');
+      if (addressList.length < 25) {
         query.addr = { "$in": addressList };
       }
     }
