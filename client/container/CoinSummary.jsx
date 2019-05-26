@@ -41,6 +41,19 @@ class CoinSummary extends Component {
       ? this.props.searches
       : this.props.searches.slice(0, 7);
 
+    const getCardHighlightedAddresses = () => {
+      if (!config.community) {
+        return null;
+      }
+      return (
+        <CardHighlightedAddresses
+          title="Community Addresses"
+          addresses={config.community.highlightedAddresses}
+          onSearch={this.props.onSearch}
+        />
+      );
+    };
+
     return (
       <div>
         <div className="row">
@@ -48,11 +61,11 @@ class CoinSummary extends Component {
             <div className="row">
               <div className="col-md-12 col-lg-6">
                 <CardStatus
-                  avgBlockTime={ coin.avgBlockTime }
-                  avgMNTime={ coin.avgMNTime }
-                  blocks={ height }
-                  peers={ coin.peers }
-                  status={ coin.status } />
+                  avgBlockTime={coin.avgBlockTime}
+                  avgMNTime={coin.avgMNTime}
+                  blocks={height}
+                  peers={coin.peers}
+                  status={coin.status} />
               </div>
               <div className="col-md-12 col-lg-6">
                 <CardPoSCalc />
@@ -61,38 +74,35 @@ class CoinSummary extends Component {
             <div className="row">
               <div className="col-md-12 col-lg-6">
                 <CardMarket
-                  btc={ coin.btc }
-                  usd={ coin.usd }
-                  xAxis={ this.props.coins.map(c => c.createdAt) }
-                  yAxis={ this.props.coins.map(c => c.usd ? c.usd : 0.0) } />
+                  btc={coin.btc}
+                  usd={coin.usd}
+                  xAxis={this.props.coins.map(c => c.createdAt)}
+                  yAxis={this.props.coins.map(c => c.usd ? c.usd : 0.0)} />
               </div>
               <div className="col-md-12 col-lg-6">
                 <CardMasternodeSummary
-                  offline={ coin.mnsOff }
-                  online={ coin.mnsOn }
-                  xAxis={ this.props.coins.map(c => c.createdAt) }
-                  yAxis={ this.props.coins.map(c => c.mnsOn ? c.mnsOn : 0.0) } />
+                  offline={coin.mnsOff}
+                  online={coin.mnsOn}
+                  xAxis={this.props.coins.map(c => c.createdAt)}
+                  yAxis={this.props.coins.map(c => c.mnsOn ? c.mnsOn : 0.0)} />
               </div>
             </div>
           </div>
           <div className="col-md-12 col-lg-3">
             <CardPoS
-              average={ coin.avgBlockTime }
-              height={ height }
-              posHeight={ blockchain.params.LAST_POW_BLOCK } />
+              average={coin.avgBlockTime}
+              height={height}
+              posHeight={blockchain.params.LAST_POW_BLOCK} />
             <CardSeeSaw
-              average={ coin.avgBlockTime }
-              height={ height }
-              ssHeight={ blockchain.params.LAST_SEESAW_BLOCK } />
-            <CardHighlightedAddresses
-              title="Community Addresses"
-              addresses={ config.community.highlightedAddresses }
-              onSearch={ this.props.onSearch }
-             />
+              average={coin.avgBlockTime}
+              height={height}
+              ssHeight={blockchain.params.LAST_SEESAW_BLOCK} />
+            {getCardHighlightedAddresses()}
+
             <WatchList
-              items={ watchlist }
-              onSearch={ this.props.onSearch }
-              onRemove={ this.props.onRemove } />
+              items={watchlist}
+              onSearch={this.props.onSearch}
+              onRemove={this.props.onRemove} />
           </div>
         </div>
       </div>
