@@ -138,8 +138,21 @@ async function addPoW(block, rpctx) {
 /**
  * Will process the tx from the node and return.
  * @param {String} tx The transaction hash string.
+ * @param {Boolean} verbose     (bool, optional, default=false) If false, return a string, otherwise return a json object 
  */
-async function getTX(txhash) {
+async function getTX(txhash, verbose = false) {
+  if (verbose) {
+    const rawTransactionDetails = await rpc.call('getrawtransaction', [txhash, 1]);
+    const hex = rawTransactionDetails.hex;
+    let rawTransaction = await rpc.call('decoderawtransaction', [hex]);
+
+    // We'll add some extra metadata to our transaction results (copy over confirmations, time & blocktime)
+    rawTransaction.confirmations = rawTransactionDetails.confirmations;
+    rawTransaction.time = rawTransactionDetails.time;
+    rawTransaction.blocktime = rawTransactionDetails.blocktime;
+
+    return rawTransaction;
+  }
   const hex = await rpc.call('getrawtransaction', [txhash]);
   return await rpc.call('decoderawtransaction', [hex]);
 }
