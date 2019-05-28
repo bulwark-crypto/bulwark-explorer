@@ -9,19 +9,12 @@ const config = {
     'prefix': '/api',
     'timeout': '5s'
   },
-  coinMarketCap: {
-    'api': 'http://api.coinmarketcap.com/v1/ticker/',
-    'ticker': 'bulwark'
-  },
   db: {
     'host': '127.0.0.1',
     'port': '27017',
     'name': 'blockex',
     'user': 'blockexuser',
     'pass': 'Explorer!1'
-  },
-  freegeoip: {
-    'api': 'https://extreme-ip-lookup.com/json/'
   },
   rpc: {
     'host': '127.0.0.1',
@@ -30,12 +23,28 @@ const config = {
     'pass': 'someverysafepassword',
     'timeout': 8000, // 8 seconds
   },
+  splitRewardsData: true, // If set to true extract out POS & MN Rewards into their own tables for additional explorer functionality
+
+  ///////////////////////////////
+  // API & Social configurations
+  ///////////////////////////////
+  freegeoip: {
+    'api': 'https://extreme-ip-lookup.com/json/'
+  },
+  coinMarketCap: {
+    'api': 'http://api.coinmarketcap.com/v1/ticker/',
+    'ticker': 'bulwark'
+  },
   slack: {
     'url': 'https://hooks.slack.com/services/A00000000/B00000000/somekindofhashhere',
     //'channel': '#general',
     //'username': 'Block Report',
     //'icon_emoji': ':bwk:'
   },
+
+  ///////////////////////////////
+  /// Community & Address Related
+  ///////////////////////////////
   community: {
     highlightedAddresses: [
       // If you comment out all of these addresses the "Community Addresses" section will not show up on the homepage. You can add as many addresses to highlight as you wish.
