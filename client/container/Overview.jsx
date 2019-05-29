@@ -11,6 +11,7 @@ import React from 'react';
 
 import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
+import TransactionValue from '../component/Table/TransactionValue';
 
 class Overview extends Component {
   static propTypes = {
@@ -49,7 +50,7 @@ class Overview extends Component {
         createdAt: dateFormat(tx.createdAt),
         recipients: tx.vout.length,
         txId: (<Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>),
-        vout: numeral(blockValue).format('0,0.0000')
+        vout: TransactionValue(tx, blockValue)
       });
     });
 

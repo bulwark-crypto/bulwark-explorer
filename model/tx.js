@@ -38,7 +38,8 @@ const txSchema = new mongoose.Schema({
   txId: { index: true, required: true, type: String },
   version: { required: true, type: Number },
   vin: { required: true, type: [TXIn] },
-  vout: { required: true, type: [TXOut] }
+  vout: { required: true, type: [TXOut] },
+  isReward: { required: false, type: Boolean }
 }, { versionKey: false });
 
 /**

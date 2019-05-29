@@ -84,22 +84,22 @@ class Movement extends Component {
 
     const select = (
       <Select
-        onChange={ value => this.handleSize(value) }
-        selectedValue={ this.state.size }
-        options={ selectOptions } />
+        onChange={value => this.handleSize(value)}
+        selectedValue={this.state.size}
+        options={selectOptions} />
     );
 
     return (
       <div>
         <HorizontalRule
-          select={ select }
+          select={select}
           title="Movement" />
-        <CardTXs txs={ this.state.txs } />
+        <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
         <Pagination
-          current={ this.state.page }
+          current={this.state.page}
           className="float-right"
-          onPage={ this.handlePage }
-          total={ this.state.pages } />
+          onPage={this.handlePage}
+          total={this.state.pages} />
         <div className="clearfix" />
       </div>
     );
