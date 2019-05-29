@@ -8,14 +8,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Table from '../Table';
+import TransactionValue from '../../component/Table/TransactionValue';
 
 export default class CardTXs extends Component {
   static defaultProps = {
-    txs: []
+    txs: [],
+    addBadgeClassToValue: true
   };
 
   static propTypes = {
-    txs: PropTypes.array.isRequired
+    txs: PropTypes.array.isRequired,
+    addBadgeClassToValue: PropTypes.bool
   };
 
   constructor(props) {
@@ -35,37 +38,41 @@ export default class CardTXs extends Component {
   render() {
     return (
       <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => {
+        cols={this.state.cols}
+        data={this.props.txs.map(tx => {
           const createdAt = moment(tx.createdAt).utc();
           const diffSeconds = moment().utc().diff(createdAt, 'seconds');
           let blockValue = 0.0;
           if (tx.vout && tx.vout.length) {
             tx.vout.forEach(vout => blockValue += vout.value);
           }
+          let spanClassName = ``;
+          if (this.props.addBadgeClassToValue) {
+            spanClassName = `badge badge-${blockValue < 0 ? 'danger' : 'success'}`;
+          }
 
           return ({
             ...tx,
-            age: diffSeconds < 60 ? `${ diffSeconds } seconds` : createdAt.fromNow(true),
+            age: diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true),
             blockHeight: (
-              <Link to={ `/block/${ tx.blockHeight }` }>
-                { tx.blockHeight }
+              <Link to={`/block/${tx.blockHeight}`}>
+                {tx.blockHeight}
               </Link>
             ),
             createdAt: dateFormat(tx.createdAt),
             recipients: tx.vout.length,
             txId: (
-              <Link to={ `/tx/${ tx.txId }` }>
-                { tx.txId }
+              <Link to={`/tx/${tx.txId}`}>
+                {tx.txId}
               </Link>
             ),
             vout: (
-              <span className={ `badge badge-${ blockValue < 0 ? 'danger' : 'success' }` }>
-                { numeral(blockValue).format('0,0.0000') }
+              <span className={spanClassName}>
+                {TransactionValue(tx, blockValue)}
               </span>
             )
           });
-        }) } />
+        })} />
     );
   };
 }
