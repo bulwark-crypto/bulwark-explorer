@@ -23,7 +23,7 @@ const config = {
     'pass': 'someverysafepassword',
     'timeout': 8000, // 8 seconds
   },
-  splitRewardsData: true, // If set to true extract out POS & MN Rewards into their own tables for additional explorer functionality
+  splitRewardsData: false, //@plannedFeature If set to true extract out POS & MN Rewards into their own tables for additional explorer functionality (Setting to true now will not do anything)
 
   ///////////////////////////////
   // API & Social configurations

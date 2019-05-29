@@ -1,6 +1,7 @@
 
 require('babel-polyfill');
 const { rpc } = require('../lib/cron');
+const blockchain = require('../lib/blockchain');
 const TX = require('../model/tx');
 const UTXO = require('../model/utxo');
 
@@ -102,6 +103,9 @@ async function addPoS(block, rpctx) {
   const txin = await vin(rpctx);
   const txout = await vout(rpctx, block.height);
 
+  // Give an ability for explorer to identify POS/MN rewards
+  const isRewardRawTransaction = blockchain.isRewardRawTransaction(rpctx);
+
   await TX.create({
     _id: rpctx.txid,
     blockHash: block.hash,
@@ -110,7 +114,8 @@ async function addPoS(block, rpctx) {
     txId: rpctx.txid,
     version: rpctx.version,
     vin: txin,
-    vout: txout
+    vout: txout,
+    isReward: isRewardRawTransaction
   });
 }
 
