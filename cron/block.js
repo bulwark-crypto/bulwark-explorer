@@ -7,6 +7,7 @@ const { forEachSeries } = require('p-iteration');
 const { IncomingWebhook } = require('@slack/client');
 const locker = require('../lib/locker');
 const util = require('./util');
+
 // Models.
 const Block = require('../model/block');
 const TX = require('../model/tx');
@@ -47,7 +48,7 @@ async function syncBlocks(start, stop, clean = false) {
     await block.save();
 
     await forEachSeries(block.txs, async (txhash) => {
-      const rpctx = await util.getTX(txhash);
+      const rpctx = await util.getTX(txhash, true);
 
       if (blockchain.isPoS(block)) {
         await util.addPoS(block, rpctx);
