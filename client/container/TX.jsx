@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import CardTX from '../component/Card/CardTX';
+import CardBlockRewardDetailsMasternode from '../component/Card/CardBlockRewardDetailsMasternode';
+import CardBlockRewardDetailsStaking from '../component/Card/CardBlockRewardDetailsStaking';
 import CardTXIn from '../component/Card/CardTXIn';
 import CardTXOut from '../component/Card/CardTXOut';
 import HorizontalRule from '../component/HorizontalRule';
@@ -43,6 +45,39 @@ class TX extends Component {
     }
   };
 
+  getTransactionInfo() {
+    return (
+      <div>
+        <HorizontalRule title="Transaction Info" />
+        <CardTX height={this.props.tx.blockHeight} tx={this.state.tx} />
+      </div>
+    );
+  }
+
+  getBlockRewardDetailsMasternode() {
+    if (!this.props.tx.isReward) {
+      return null;
+    }
+    return (
+      <div>
+        <HorizontalRule title="Block Reward (Masternode)" />
+        <CardBlockRewardDetailsMasternode tx={this.state.tx} />
+      </div>
+    );
+  }
+
+  getBlockRewardDetailsStaking() {
+    if (!this.props.tx.isReward) {
+      return null;
+    }
+    return (
+      <div>
+        <HorizontalRule title="Block Reward (POS)" />
+        <CardBlockRewardDetailsStaking tx={this.state.tx} />
+      </div>
+    );
+  }
+
   getTX() {
     this.setState({ loading: true }, () => {
       this.props
@@ -61,16 +96,23 @@ class TX extends Component {
 
     return (
       <div>
-        <HorizontalRule title="Transaction Info" />
-        <CardTX height={ this.props.tx.blockHeight } tx={ this.state.tx } />
+        {this.getTransactionInfo()}
+        <div className="row">
+          <div className="col">
+            {this.getBlockRewardDetailsMasternode()}
+          </div>
+          <div className="col">
+            {this.getBlockRewardDetailsStaking()}
+          </div>
+        </div>
         <div className="row">
           <div className="col">
             <HorizontalRule title="Sending Addresses" />
-            <CardTXIn txs={ this.state.tx.vin } />
+            <CardTXIn txs={this.state.tx.vin} />
           </div>
           <div className="col">
             <HorizontalRule title="Recipients" />
-            <CardTXOut txs={ this.state.tx.vout } />
+            <CardTXOut txs={this.state.tx.vout} />
           </div>
         </div>
       </div>
