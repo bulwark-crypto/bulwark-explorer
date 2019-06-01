@@ -12,6 +12,7 @@ const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
+const BlockRewardDetails = require('../../model/blockRewardDetails');
 const TX = require('../../model/tx');
 const UTXO = require('../../model/utxo');
 
@@ -315,10 +316,10 @@ const getMasternodes = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     var query = {};
-    
+
     // Optionally it's possible to filter masternodes running on a specific address
     if (req.query.hash) {
-      query.addr = req.query.hash;      
+      query.addr = req.query.hash;
     }
 
     // Optionally it's possible to filter masternodes running on a specific range of addresses. Pass in addresses as comma-seprated list
@@ -454,6 +455,7 @@ const getTXLatest = async (req, res) => {
   try {
     const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
       return await TX.find()
+        .populate('blockRewardDetails')
         .limit(10)
         .sort({ blockHeight: -1 });
     });
@@ -475,7 +477,7 @@ const getTX = async (req, res) => {
     const query = isNaN(req.params.hash)
       ? { txId: req.params.hash }
       : { height: req.params.hash };
-    const tx = await TX.findOne(query);
+    const tx = await TX.findOne(query).populate('blockRewardDetails');
     if (!tx) {
       res.status(404).send('Unable to find the transaction!');
       return;
@@ -516,7 +518,7 @@ const getTXs = async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const total = await TX.find().sort({ blockHeight: -1 }).count();
-    const txs = await TX.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const txs = await TX.find().populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

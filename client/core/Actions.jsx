@@ -173,14 +173,17 @@ export const getTXsWeek = () => {
   });
 };
 
+// This is currently the only action that updates anything in the store - Look at Reducers.jsx, txs()
 export const setTXs = (dispatch, txs) => {
   dispatch({ payload: txs, type: TXS });
 };
 
+//@todo Remove, don't think this is used
 export const setWatch = (dispatch, term) => {
   dispatch({ payload: term, type: WATCH_ADD });
 };
 
+//@todo Remove, don't think this is used
 export const removeWatch = (dispatch, term) => {
   dispatch({ payload: term, type: WATCH_REMOVE });
 };
