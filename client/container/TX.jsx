@@ -102,9 +102,6 @@ class TX extends Component {
   }
 
   getTransactionDetails() {
-    if (this.state.tx.isReward) {
-      return null;
-    }
     return (
       <div className="row">
         <div className="col">
