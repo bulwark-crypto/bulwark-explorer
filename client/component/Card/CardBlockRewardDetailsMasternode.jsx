@@ -26,7 +26,7 @@ export default class CardBlockRewardDetailsMasternode extends Component {
           </div>
           <div className="card__row">
             <span className="card__label">Masternode Reward:</span>
-            <span className="card__result">{numeral(blockRewardDetails.stake.reward.amount).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</span>
+            <span className="card__result">{numeral(blockRewardDetails.masternode.reward.amount).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</span>
           </div>
         </div>
       </div>
