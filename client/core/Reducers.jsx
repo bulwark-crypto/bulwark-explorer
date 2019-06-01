@@ -54,11 +54,12 @@ const txs = (state = [], action) => {
     }
 
     // Merge state with the new payload
-    action.payload.forEach((tx) => {
+    action.payload.forEach((tx, index) => {
       if (state.some(stateTx => stateTx.txId == tx.txId)) {
+        state[index] = tx; // Update tx data
         return;
       }
-      state.push(tx);
+      state.push(tx); // Add new tx to store
     });
 
     // Ensure the transactions are ordered with most recent blocks first

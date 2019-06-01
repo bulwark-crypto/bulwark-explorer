@@ -58,10 +58,7 @@ class Movement extends Component {
           .then(({ pages, txs }) => {
             if (this.debounce) {
               this.setState({ pages, txs, loading: false }, () => {
-                if (txs.length
-                  && this.props.tx.blockHeight < txs[0].blockHeight) {
-                  this.props.setTXs(txs);
-                }
+                this.props.setTXs(txs); // Add this set of new txs to store
               });
             }
           })
