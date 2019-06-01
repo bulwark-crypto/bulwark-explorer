@@ -23,56 +23,6 @@ const TXOut = new mongoose.Schema({
 });
 
 /**
- * Structure for detailed breakdown of the staking reward
- */
-const BlockRewardDetailsStakeInput = new mongoose.Schema({
-  txId: { index: false, required: true, type: String },
-  amount: { index: false, required: true, type: Number },
-  confirmations: { index: false, required: true, type: Number },
-  date: { index: false, required: true, type: Date },
-  age: { index: false, required: true, type: Number },
-});
-/**
- * Structure for detailed breakdown of the staking input
- */
-const BlockRewardDetailsStakeReward = new mongoose.Schema({
-  amount: { index: false, required: true, type: Number },
-  address: { index: false, required: true, type: String },
-});
-
-/**
- * Structure for detailed breakdown of the stake
- */
-const BlockRewardDetailsStake = new mongoose.Schema({
-  address: { index: false, required: true, type: String },
-  input: { index: false, required: true, type: BlockRewardDetailsStakeInput },
-  reward: { index: false, required: true, type: BlockRewardDetailsStakeReward },
-});
-
-/**
- * Structure for detailed breakdown of the masternode reward
- */
-const BlockRewardDetailsMasternodeReward = new mongoose.Schema({
-  amount: { index: false, required: true, type: Number },
-  address: { index: false, required: true, type: String },
-});
-/**
- * Structure for detailed breakdown of the stake
- */
-const BlockRewardDetailsMasternode = new mongoose.Schema({
-  reward: { index: false, required: true, type: BlockRewardDetailsMasternodeReward },
-});
-
-/**
- * Structure for detailed breakdown of the reward
- */
-const BlockRewardDetails = new mongoose.Schema({
-  stake: { index: false, required: true, type: BlockRewardDetailsStake },
-  masternode: { index: false, required: true, type: BlockRewardDetailsMasternode },
-});
-
-
-/**
  * Setup the schema for transactions.
  */
 const txSchema = new mongoose.Schema({
@@ -86,7 +36,7 @@ const txSchema = new mongoose.Schema({
   vin: { required: true, type: [TXIn] },
   vout: { required: true, type: [TXOut] },
   isReward: { required: false, type: Boolean },
-  blockRewardDetails: { required: false, type: BlockRewardDetails }
+  blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' }
 }, { versionKey: false });
 
 /**

@@ -5,12 +5,9 @@ const mongoose = require('mongoose');
   Nesting is as follows: 
   
   BlockRewardDetails
+  ->BlockRewardDetailsMasternode
   ->BlockRewardDetailsStake
   -->BlockRewardDetailsStakeInput
-  -->BlockRewardDetailsStakeReward
-  ->BlockRewardDetailsMasternode
-  -->BlockRewardDetailsMasternodeReward
-  
 */
 
 /**
@@ -23,44 +20,33 @@ const BlockRewardDetailsStakeInput = new mongoose.Schema({
   date: { index: true, required: true, type: Date },
   age: { index: true, required: true, type: Number },
 });
-/**
- * Structure for detailed breakdown of the staking input
- */
-const BlockRewardDetailsStakeReward = new mongoose.Schema({
-  amount: { index: false, required: true, type: Number },
-  address: { index: true, required: true, type: String },
-});
 
 /**
  * Structure for detailed breakdown of the stake
  */
 const BlockRewardDetailsStake = new mongoose.Schema({
   address: { index: true, required: true, type: String },
+  reward: { index: false, required: true, type: Number },
   input: { index: false, required: true, type: BlockRewardDetailsStakeInput },
-  reward: { index: false, required: true, type: BlockRewardDetailsStakeReward },
 });
 
-/**
- * Structure for detailed breakdown of the masternode reward
- */
-const BlockRewardDetailsMasternodeReward = new mongoose.Schema({
-  amount: { index: false, required: true, type: Number },
-  address: { index: true, required: true, type: String },
-});
 /**
  * Structure for detailed breakdown of the stake
  */
 const BlockRewardDetailsMasternode = new mongoose.Schema({
-  reward: { index: false, required: true, type: BlockRewardDetailsMasternodeReward },
+  address: { index: true, required: true, type: String },
+  reward: { index: false, required: true, type: Number },
 });
 
 /**
  * Structure for detailed breakdown of the reward
  */
 const BlockRewardDetails = new mongoose.Schema({
-  __v: { select: false, type: Number },
+  _id: mongoose.Schema.Types.ObjectId,
   blockHash: { required: true, type: String },
   blockHeight: { index: true, required: true, type: Number },
+  date: { index: true, required: true, type: Date },
+
   stake: { index: false, required: true, type: BlockRewardDetailsStake },
   masternode: { index: false, required: true, type: BlockRewardDetailsMasternode },
 }, { versionKey: false });
