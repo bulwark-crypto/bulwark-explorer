@@ -16,46 +16,54 @@ class TX extends Component {
   static propTypes = {
     getTX: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
-    // We get this from the store to force confirmation
-    // updates when the system updates.
-    tx: PropTypes.object.isRequired
+
+    // Props from mapState() below:
+    txFromStore: PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
     this.state = {
       error: null,
-      loading: true,
-      tx: {
-        blockHeight: 0,
-        vin: [],
-        vout: []
-      }
+      loading: true
     };
   };
 
   componentDidMount() {
     this.getTX();
-  };
+  }
 
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
     if (!!this.state.tx.txId && hash !== this.state.tx.txId && !this.state.loading) {
       this.getTX();
     }
-  };
+  }
 
   getTransactionInfo() {
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
-        <CardTX height={this.props.tx.blockHeight} tx={this.state.tx} />
+        <CardTX height={this.state.tx.blockHeight} tx={this.state.tx} />
+      </div>
+    );
+  }
+
+  getBlockRewardDetails() {
+    return (
+      <div className="row">
+        <div className="col">
+          {this.getBlockRewardDetailsMasternode()}
+        </div>
+        <div className="col">
+          {this.getBlockRewardDetailsStaking()}
+        </div>
       </div>
     );
   }
 
   getBlockRewardDetailsMasternode() {
-    if (!this.props.tx.isReward) {
+    if (!this.state.tx.isReward) {
       return null;
     }
     return (
@@ -67,7 +75,7 @@ class TX extends Component {
   }
 
   getBlockRewardDetailsStaking() {
-    if (!this.props.tx.isReward) {
+    if (!this.state.tx.isReward) {
       return null;
     }
     return (
@@ -79,13 +87,37 @@ class TX extends Component {
   }
 
   getTX() {
+    if (this.props.txFromStore) {
+      this.setState({ tx: this.props.txFromStore, loading: false });
+      return;
+    }
     this.setState({ loading: true }, () => {
       this.props
         .getTX(this.props.match.params.hash)
-        .then(tx => this.setState({ tx, loading: false }))
+        .then(tx => {
+          this.setState({ tx, loading: false });
+        })
         .catch(error => this.setState({ error, loading: false }));
     });
-  };
+  }
+
+  getTransactionDetails() {
+    if (this.state.tx.isReward) {
+      return null;
+    }
+    return (
+      <div className="row">
+        <div className="col">
+          <HorizontalRule title="Sending Addresses" />
+          <CardTXIn txs={this.state.tx.vin} />
+        </div>
+        <div className="col">
+          <HorizontalRule title="Recipients" />
+          <CardTXOut txs={this.state.tx.vout} />
+        </div>
+      </div>
+    );
+  }
 
   render() {
     if (!!this.state.error) {
@@ -97,24 +129,8 @@ class TX extends Component {
     return (
       <div>
         {this.getTransactionInfo()}
-        <div className="row">
-          <div className="col">
-            {this.getBlockRewardDetailsMasternode()}
-          </div>
-          <div className="col">
-            {this.getBlockRewardDetailsStaking()}
-          </div>
-        </div>
-        <div className="row">
-          <div className="col">
-            <HorizontalRule title="Sending Addresses" />
-            <CardTXIn txs={this.state.tx.vin} />
-          </div>
-          <div className="col">
-            <HorizontalRule title="Recipients" />
-            <CardTXOut txs={this.state.tx.vout} />
-          </div>
-        </div>
+        {this.getBlockRewardDetails()}
+        {this.getTransactionDetails()}
       </div>
     );
   };
@@ -124,10 +140,13 @@ const mapDispatch = dispatch => ({
   getTX: query => Actions.getTX(query)
 });
 
-const mapState = state => ({
-  tx: state.txs.length
-    ? state.txs[0]
-    : { blockHeight: state.coin.blocks }
-});
+const mapState = (state, ownProps) => {
+  // Try to fetch transaction from store, if it exists we don't need to reload it
+  const txForHashFromStore = state.txs.find(tx => tx.txId == ownProps.match.params.hash);
+
+  return {
+    txFromStore: txForHashFromStore,
+  };
+};
 
 export default connect(mapState, mapDispatch)(TX);
