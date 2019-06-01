@@ -1,5 +1,6 @@
 
 require('babel-polyfill');
+const mongoose = require('mongoose');
 const config = require('../config');
 const { rpc } = require('../lib/cron');
 const blockchain = require('../lib/blockchain');
@@ -145,41 +146,34 @@ async function addPoS(block, rpctx) {
       const masternodeRewardAmount = rpctx.vout[2].value;
       const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
 
-      // You can see the schema for this object in model/schemas/blockRewardDetails
-      const blockRewardDetails = {
-        stake: {
-          address: stakeRewardAddress,
-          input: {
-            txId: stakeInputTxId,
-            amount: stakeInputAmount,
-            confirmations: stakedInputConfirmations,
-            date: new Date(stakedInputTime * 1000),
-            age: currentTxTime - stakedInputTime,
-          },
-          reward: {
-            amount: stakeRewardAmount,
-            address: stakeRewardAddress
-          }
-        },
-        masternode: {
-          reward: {
-            amount: masternodeRewardAmount,
-            address: masternodeRewardAddress
-          } 
-        }
-      }
-
-      txDetails.blockRewardDetails = blockRewardDetails; // Notice how we're assigning the block reward to the TX as extra metadata
-
       // Store all the block rewards in it's own indexed collection
-      const blockRewardDetailsObject = new BlockRewardDetails(
+      let blockRewardDetails = new BlockRewardDetails(
         {
+          _id: new mongoose.Types.ObjectId(),
           blockHash: block.hash,
           blockHeight: block.height,
-          ...blockRewardDetails // Copy all properties to our new object
+          date: block.createdAt,
+          stake: {
+            address: stakeRewardAddress,
+            input: {
+              txId: stakeInputTxId,
+              amount: stakeInputAmount,
+              confirmations: stakedInputConfirmations,
+              date: new Date(stakedInputTime * 1000),
+              age: currentTxTime - stakedInputTime,
+            },
+            reward: stakeRewardAmount
+          },
+          masternode: {
+            address: masternodeRewardAddress,
+            reward: masternodeRewardAmount
+          }
         }
       );
-      await blockRewardDetailsObject.save();
+
+      txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
+
+      await blockRewardDetails.save();
     } 
   }
 
