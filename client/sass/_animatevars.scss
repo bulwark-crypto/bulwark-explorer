@@ -1,3 +1,4 @@
 // These override the default vars inside animate-sass/helpers/_settings.scss
 $use-fadeInUp: true;
 $use-fadeIn: true;
+$base-duration: 0.1s; // Default animation speed is 1s which is too slow for navigation between transactions
