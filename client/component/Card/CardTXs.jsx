@@ -28,8 +28,8 @@ export default class CardTXs extends Component {
         { key: 'blockHeight', title: 'Height' },
         { key: 'txId', title: 'Transaction Hash' },
         { key: 'vout', title: 'Value' },
-        { key: 'age', title: 'Age' },
-        { key: 'recipients', title: 'Recipients' },
+        { key: 'inputs', title: 'Inputs' },
+        { key: 'outputs', title: 'Outputs' },
         { key: 'createdAt', title: 'Created' },
       ]
     };
@@ -53,14 +53,11 @@ export default class CardTXs extends Component {
 
           return ({
             ...tx,
-            age: diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true),
             blockHeight: (
               <Link to={`/block/${tx.blockHeight}`}>
                 {tx.blockHeight}
               </Link>
             ),
-            createdAt: dateFormat(tx.createdAt),
-            recipients: tx.vout.length,
             txId: (
               <Link to={`/tx/${tx.txId}`}>
                 {tx.txId}
@@ -68,9 +65,26 @@ export default class CardTXs extends Component {
             ),
             vout: (
               <span className={spanClassName}>
-                {TransactionValue(tx, blockValue)}
+                <Link to={`/tx/${tx.txId}`}>
+                  {TransactionValue(tx, blockValue)}
+                </Link>
               </span>
-            )
+            ),
+            inputs: (
+              <Link to={`/tx/${tx.txId}`}>
+                {tx.vin.length}
+              </Link>
+            ),
+            outputs: (
+              <Link to={`/tx/${tx.txId}`}>
+                {tx.vout.length}
+              </Link>
+            ),
+            createdAt: (
+              <Link to={`/tx/${tx.txId}`}>
+                {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
+              </Link>
+            ),
           });
         })} />
     );

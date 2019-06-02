@@ -26,8 +26,8 @@ class Overview extends Component {
         {title: 'Height', key: 'blockHeight'},
         {title: 'Transaction Hash', key: 'txId'},
         {title: 'Value', key: 'vout'},
-        'age',
-        'recipients',
+        {title: 'Inputs', key: 'inputs'},
+        {title: 'Outputs', key: 'outputs'},
         {title: 'Created', key: 'createdAt'},
       ]
     };
@@ -45,12 +45,36 @@ class Overview extends Component {
 
       return ({
         ...tx,
-        age: diffSeconds < 60 ? `${ diffSeconds } seconds` : createdAt.fromNow(true),
-        blockHeight: (<Link to={ `/block/${ tx.blockHeight }` }>{ tx.blockHeight }</Link>),
-        createdAt: dateFormat(tx.createdAt),
-        recipients: tx.vout.length,
-        txId: (<Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>),
-        vout: TransactionValue(tx, blockValue)
+        blockHeight: (
+          <Link to={`/block/${tx.blockHeight}`}>
+            {tx.blockHeight}
+          </Link>
+        ),
+        txId: (
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.txId}
+          </Link>
+        ),
+        vout: (
+          <Link to={`/tx/${tx.txId}`}>
+            {TransactionValue(tx, blockValue)}
+          </Link>
+        ),
+        inputs: (
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.vin.length}
+          </Link>
+        ),
+        outputs: (
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.vout.length}
+          </Link>
+        ),
+        createdAt: (
+          <Link to={`/tx/${tx.txId}`} className="test">
+            {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
+          </Link>
+        ),
       });
     });
 
@@ -70,7 +94,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  txs: state.txs
+  txs: state.txs.filter((tx, index) => index < 10) // Only take first 10 items from txs
 });
 
 export default connect(mapState, mapDispatch)(Overview);

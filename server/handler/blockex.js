@@ -12,6 +12,7 @@ const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
+const BlockRewardDetails = require('../../model/blockRewardDetails');
 const TX = require('../../model/tx');
 const UTXO = require('../../model/utxo');
 
@@ -37,7 +38,7 @@ const getAddress = async (req, res) => {
                 cond: { $eq: ['$$v.address', req.params.hash] }
               }
             },
-            blockHash: 1,
+            //blockHash: 1,
             blockHeight: 1,
             createdAt: 1,
             txId: 1,
@@ -186,7 +187,7 @@ const getBlock = async (req, res) => {
       return;
     }
 
-    const txs = await TX.find({ txId: { $in: block.txs } });
+    const txs = await TX.find({ txId: { $in: block.txs } }, { involvedAddresses: 0 });
 
     res.json({ block, txs });
   } catch (err) {
@@ -315,10 +316,10 @@ const getMasternodes = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     var query = {};
-    
+
     // Optionally it's possible to filter masternodes running on a specific address
     if (req.query.hash) {
-      query.addr = req.query.hash;      
+      query.addr = req.query.hash;
     }
 
     // Optionally it's possible to filter masternodes running on a specific range of addresses. Pass in addresses as comma-seprated list
@@ -453,7 +454,8 @@ const getTop100 = async (req, res) => {
 const getTXLatest = async (req, res) => {
   try {
     const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
-      return await TX.find()
+      return await TX.find({}, { involvedAddresses: 0 }) // Don't include involvedAddresses for txs as 1000 inputs would give 1000 extra addresses
+        .populate('blockRewardDetails')
         .limit(10)
         .sort({ blockHeight: -1 });
     });
@@ -475,31 +477,13 @@ const getTX = async (req, res) => {
     const query = isNaN(req.params.hash)
       ? { txId: req.params.hash }
       : { height: req.params.hash };
-    const tx = await TX.findOne(query);
+    const tx = await TX.findOne(query).populate('blockRewardDetails');
     if (!tx) {
       res.status(404).send('Unable to find the transaction!');
       return;
     }
 
-    // Get the transactions that are found in the
-    // vin section of the tx.
-    const vin = [];
-    await forEach(tx.vin, async (vi) => {
-      if (vi.txId) {
-        const t = await TX.findOne({ txId: vi.txId });
-        if (!!t) {
-          t.vout.forEach((vo) => {
-            if (vo.n === vi.vout) {
-              vin.push({ address: vo.address, value: vo.value });
-            }
-          });
-        }
-      } else if (vi.coinbase) {
-        vin.push(vi);
-      }
-    });
-
-    res.json({ ...tx.toObject(), vin });
+    res.json(tx);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -515,8 +499,11 @@ const getTXs = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+
     const total = await TX.find().sort({ blockHeight: -1 }).count();
-    const txs = await TX.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const txs = await TX.find({}, { involvedAddresses: 0 }).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
+    
+    //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {
