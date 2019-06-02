@@ -43,7 +43,7 @@ const BlockRewardDetailsMasternode = new mongoose.Schema({
  */
 const BlockRewardDetails = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  blockHash: { required: true, type: String },
+  //blockHash: { required: true, type: String },
   blockHeight: { index: true, required: true, type: Number },
   date: { index: true, required: true, type: Date },
 

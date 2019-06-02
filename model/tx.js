@@ -18,7 +18,7 @@ const RelatedVout = new mongoose.Schema({
 const TXIn = new mongoose.Schema({
   __v: { select: false, type: Number },
   coinbase: { type: String },
-  sequence: { type: Number },
+  //sequence: { type: Number },
   txId: { type: String },
   vout: { type: Number },
   relatedVout: { required: false, type: RelatedVout },
@@ -40,7 +40,7 @@ const TXOut = new mongoose.Schema({
 const txSchema = new mongoose.Schema({
   __v: { select: false, type: Number },
   _id: mongoose.Schema.Types.ObjectId,
-  blockHash: { required: true, type: String },
+  //blockHash: { required: true, type: String },
   blockHeight: { index: true, required: true, type: Number },
   createdAt: { index: true, required: true, type: Date },
   txId: { index: true, required: true, type: String },
@@ -49,7 +49,7 @@ const txSchema = new mongoose.Schema({
   vout: { required: true, type: [TXOut] },
   isReward: { required: false, type: Boolean },
   blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' },
-  vinTxs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TX' }]
+  involvedAddresses: { required: true, type: [String], index: true }
 }, { versionKey: false });
 
 /**

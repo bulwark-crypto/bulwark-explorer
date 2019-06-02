@@ -17,22 +17,30 @@ async function vin(rpctx, blockHeight) {
   // Setup the input list for the transaction.
   const txin = [];
   if (rpctx.vin) {
+
+    // Figure out what txIds are used in all the inputs
+    const usedTxIdsInVins = new Set();
+    rpctx.vin.forEach((vin) => {
+      if (vin.txid) {
+        usedTxIdsInVins.add(vin.txid);
+      }
+    });
+    
+    const usedTxs = await TX.find({ txId: { $in: Array.from(usedTxIdsInVins) } }, { txId: 1, vout: 1, blockHeight: 1, createdAt: 1 }); // Only include vout, blockHeight & createdAt fields that we need
+
     const txIds = new Set();
 
-    for (let i = 0; i < rpctx.vin.length; i++) {
-      const vin = rpctx.vin[i];
-
+    rpctx.vin.forEach((vin) => {
       let vinDetails = {
         coinbase: vin.coinbase,
-        sequence: vin.sequence,
+        //sequence: vin.sequence,
         txId: vin.txid,
         vout: vin.vout
       };
 
-
       // Find the matching vout for vin and store extra metadata for vout
       if (vin.txid) {
-        const txById = await TX.findOne({ txId: vin.txid });
+        const txById = usedTxs.find(usedTx => usedTx.txId == vin.txid);
         if (!txById) {
           throw `Could not find related TX: ${vin.txid}`;
         }
@@ -50,7 +58,7 @@ async function vin(rpctx, blockHeight) {
       txin.push(vinDetails);
 
       txIds.add(`${vin.txid}:${vin.vout}`);
-    }
+    });
 
     // Remove unspent transactions.
     if (txIds.size) {
@@ -135,7 +143,7 @@ async function addPoS(block, rpctx) {
 
   let txDetails = {
     _id: new mongoose.Types.ObjectId(),
-    blockHash: block.hash,
+    //blockHash: block.hash,
     blockHeight: block.height,
     createdAt: block.createdAt,
     txId: rpctx.txid,
@@ -174,7 +182,7 @@ async function addPoS(block, rpctx) {
       let blockRewardDetails = new BlockRewardDetails(
         {
           _id: new mongoose.Types.ObjectId(),
-          blockHash: block.hash,
+          //blockHash: block.hash,
           blockHeight: block.height,
           date: block.createdAt,
           stake: {
@@ -201,6 +209,8 @@ async function addPoS(block, rpctx) {
     }
   }
 
+  addInvolvedAddresses(txDetails);
+
   await TX.create(txDetails);
 }
 
@@ -213,21 +223,46 @@ async function addPoW(block, rpctx) {
   const txin = await vin(rpctx, block.height);
   const txout = await vout(rpctx, block.height);
 
-  await TX.create({
+  let txDetails = {
     _id: new mongoose.Types.ObjectId(),
-    blockHash: block.hash,
+    //blockHash: block.hash,
     blockHeight: block.height,
     createdAt: block.createdAt,
     txId: rpctx.txid,
     version: rpctx.version,
     vin: txin,
     vout: txout
+  };
+
+  addInvolvedAddresses(txDetails);
+
+  await TX.create(txDetails);
+}
+
+/**
+ * Store addresses involved in any vin or vouts, We'll use this as the basis for new "perfect ledger system" 
+ * @param {String} tx Mongodb TX doc
+ */
+function addInvolvedAddresses(tx) {
+  let involvedAddresses = new Set(); // Will store distinct addresses used in this transaction
+  
+  tx.vout.forEach(vout => {
+    if (vout.address) {
+      involvedAddresses.add(vout.address);
+    }
   });
+  tx.vin.forEach(vin => {
+    if (vin.relatedVout) {
+      involvedAddresses.add(vin.relatedVout.address);
+    }
+  });
+
+  tx.involvedAddresses = Array.from(involvedAddresses);
 }
 
 /**
  * Will process the tx from the node and return.
- * @param {String} tx The transaction hash string.
+ * @param {String} txhash The transaction hash string.
  * @param {Boolean} verbose     (bool, optional, default=false) If false, return a string, otherwise return a json object 
  */
 async function getTX(txhash, verbose = false) {
