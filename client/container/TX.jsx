@@ -111,11 +111,11 @@ class TX extends Component {
     return (
       <div className="row">
         <div className="col">
-          <HorizontalRule title="Inputs" />
+          <HorizontalRule title={`Inputs (${this.state.tx.vin.length})`} />
           <CardTXIn txs={this.state.tx.vin} />
         </div>
         <div className="col">
-          <HorizontalRule title="Outputs" />
+          <HorizontalRule title={`Outputs (${this.state.tx.vout.length})`} />
           <CardTXOut txs={this.state.tx.vout} />
         </div>
       </div>
