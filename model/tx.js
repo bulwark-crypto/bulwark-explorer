@@ -10,29 +10,27 @@ const RelatedVout = new mongoose.Schema({
   confirmations: { required: true, type: Number },
   date: { index: true, required: true, type: Date },
   age: { index: true, required: true, type: Number },
-});
+},{ _id : false, versionKey: false });
 
 /**
  * The inputs for a tx.
  */
 const TXIn = new mongoose.Schema({
-  __v: { select: false, type: Number },
   coinbase: { type: String },
   //sequence: { type: Number },
   txId: { type: String },
   vout: { type: Number },
   relatedVout: { required: false, type: RelatedVout },
-});
+},{ _id : false, versionKey: false });
 
 /**
  * The outputs for a tx.
  */
 const TXOut = new mongoose.Schema({
-  __v: { select: false, type: Number },
   address: { index: true, required: true, type: String },
   n: { required: true, type: Number },
   value: { required: true, type: Number }
-});
+},{ _id : false, versionKey: false });
 
 /**
  * Setup the schema for transactions.
