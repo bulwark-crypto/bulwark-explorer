@@ -485,7 +485,7 @@ const getTX = async (req, res) => {
 
     // Get the transactions that are found in the
     // vin section of the tx.
-    const vin = [];
+    /*const vin = [];
     await forEach(tx.vin, async (vi) => {
       if (vi.txId) {
         const t = await TX.findOne({ txId: vi.txId });
@@ -499,9 +499,9 @@ const getTX = async (req, res) => {
       } else if (vi.coinbase) {
         vin.push(vi);
       }
-    });
+    });*/
 
-    res.json({ ...tx.toObject(), vin });
+    res.json({ ...tx.toObject() });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -517,6 +517,7 @@ const getTXs = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+
     const total = await TX.find().sort({ blockHeight: -1 }).count();
     const txs = await TX.find().populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
 

@@ -15,7 +15,7 @@ const mongoose = require('mongoose');
  */
 const BlockRewardDetailsStakeInput = new mongoose.Schema({
   txId: { index: true, required: true, type: String },
-  amount: { index: true, required: true, type: Number },
+  value: { index: true, required: true, type: Number },
   confirmations: { index: true, required: true, type: Number },
   date: { index: true, required: true, type: Date },
   age: { index: true, required: true, type: Number },
