@@ -49,6 +49,7 @@ async function syncBlocks(start, stop, clean = false) {
     let vinsCount = 0;
     let voutsCount = 0;
 
+    // Notice how we're ensuring to only use a single rpc call with forEachSeries()
     await forEachSeries(block.txs, async (txhash) => {
       const rpctx = await util.getTX(txhash, true);
 
@@ -157,6 +158,7 @@ async function update() {
 
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
+      locker.unlock(type); // Be sure to properly unlock cron
       return;
     }
     // If starting from genesis skip.
@@ -165,16 +167,12 @@ async function update() {
     }
 
     await syncBlocks(dbHeight, rpcHeight, clean);
+
+    locker.unlock(type); // It is important that we keep proper lock during syncing otherwise there will be blockchain data corruption and we can't be sure of integrity
   } catch (err) {
     console.log(err);
     code = 1;
   } finally {
-    try {
-      locker.unlock(type);
-    } catch (err) {
-      console.log(err);
-      code = 1;
-    }
     exit(code);
   }
 }
