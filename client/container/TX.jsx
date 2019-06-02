@@ -17,15 +17,16 @@ class TX extends Component {
     getTX: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
 
-    // Props from mapState() below:
-    txFromStore: PropTypes.object.isRequired
+    // Props from mapState() below (only if available)
+    txFromStore: PropTypes.object
   };
 
   constructor(props) {
     super(props);
     this.state = {
       error: null,
-      loading: true
+      loading: true,
+      tx: null
     };
   };
 
@@ -35,7 +36,7 @@ class TX extends Component {
 
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
-    if (!!this.state.tx.txId && hash !== this.state.tx.txId && !this.state.loading) {
+    if ((!this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
       this.getTX();
     }
   }
