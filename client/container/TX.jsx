@@ -15,6 +15,7 @@ import HorizontalRule from '../component/HorizontalRule';
 class TX extends Component {
   static propTypes = {
     getTX: PropTypes.func.isRequired,
+    setTXs: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
 
     // Props from mapState() below (only if available)
@@ -36,7 +37,7 @@ class TX extends Component {
 
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
-    if ((!this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
+    if ((!this.props.txFromStore && !this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
       this.getTX();
     }
   }
@@ -97,6 +98,7 @@ class TX extends Component {
         .getTX(this.props.match.params.hash)
         .then(tx => {
           this.setState({ tx, loading: false });
+          this.props.setTXs([tx]); // Add this new tx to store so we don't have to reload it later on
         })
         .catch(error => this.setState({ error, loading: false }));
     });
@@ -106,11 +108,11 @@ class TX extends Component {
     return (
       <div className="row">
         <div className="col">
-          <HorizontalRule title="Sending Addresses" />
+          <HorizontalRule title="Inputs" />
           <CardTXIn txs={this.state.tx.vin} />
         </div>
         <div className="col">
-          <HorizontalRule title="Recipients" />
+          <HorizontalRule title="Outputs" />
           <CardTXOut txs={this.state.tx.vout} />
         </div>
       </div>
@@ -135,7 +137,8 @@ class TX extends Component {
 }
 
 const mapDispatch = dispatch => ({
-  getTX: query => Actions.getTX(query)
+  getTX: query => Actions.getTX(query),
+  setTXs: txs => Actions.setTXs(dispatch, txs)
 });
 
 const mapState = (state, ownProps) => {

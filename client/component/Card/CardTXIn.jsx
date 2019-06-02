@@ -33,7 +33,7 @@ export default class CardTXIn extends Component {
         cols={ this.state.cols }
         data={ this.props.txs.map(tx => ({
           ...tx,
-          address: tx.relatedVout.address
+          address: tx.relatedVout && tx.relatedVout.address
             ? (<Link to={ `/address/${ tx.relatedVout.address }` }>{ tx.relatedVout.address }</Link>)
             : tx.coinbase ? 'COINBASE' : 'Unknown',
           value: tx.relatedVout
