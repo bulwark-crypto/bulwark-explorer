@@ -26,7 +26,7 @@ async function syncBlocks(start, stop, clean = false) {
   }
 
   let block;
-  for(let height = start; height <= stop; height++) {
+  for (let height = start; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
@@ -52,8 +52,8 @@ async function syncBlocks(start, stop, clean = false) {
     await forEachSeries(block.txs, async (txhash) => {
       const rpctx = await util.getTX(txhash, true);
 
-      vinsCount+=rpctx.vin.length;
-      voutsCount+=rpctx.vout.length;
+      vinsCount += rpctx.vin.length;
+      voutsCount += rpctx.vout.length;
 
       if (blockchain.isPoS(block)) {
         await util.addPoS(block, rpctx);
@@ -64,11 +64,12 @@ async function syncBlocks(start, stop, clean = false) {
 
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;
-    
+
+    // Notice how this is done at the end. If we crash half way through syncing a block, we'll re-try till the block was correctly saved.
     await block.save();
 
-
-    console.log(`Height: ${ block.height } Hash: ${ block.hash } Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
+    const syncPercent = ((block.height / stop) * 100).toFixed(2);
+    console.log(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
   }
 
   // Post an update to slack incoming webhook if url is
@@ -134,7 +135,7 @@ async function update() {
 
   try {
     const info = await rpc.call('getinfo');
-    const block = await Block.findOne().sort({ height: -1});
+    const block = await Block.findOne().sort({ height: -1 });
 
     let clean = true; // Always clear for now.
     let dbHeight = block && block.height ? block.height : 1;
@@ -153,7 +154,7 @@ async function update() {
 
     // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
     locker.lock(type);
-    
+
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
       return;
@@ -164,13 +165,13 @@ async function update() {
     }
 
     await syncBlocks(dbHeight, rpcHeight, clean);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     code = 1;
   } finally {
     try {
       locker.unlock(type);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       code = 1;
     }
