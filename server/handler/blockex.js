@@ -38,7 +38,7 @@ const getAddress = async (req, res) => {
                 cond: { $eq: ['$$v.address', req.params.hash] }
               }
             },
-            blockHash: 1,
+            //blockHash: 1,
             blockHeight: 1,
             createdAt: 1,
             txId: 1,
@@ -187,7 +187,7 @@ const getBlock = async (req, res) => {
       return;
     }
 
-    const txs = await TX.find({ txId: { $in: block.txs } });
+    const txs = await TX.find({ txId: { $in: block.txs } }, { involvedAddresses: 0 });
 
     res.json({ block, txs });
   } catch (err) {
@@ -454,7 +454,7 @@ const getTop100 = async (req, res) => {
 const getTXLatest = async (req, res) => {
   try {
     const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
-      return await TX.find()
+      return await TX.find({}, { involvedAddresses: 0 }) // Don't include involvedAddresses for txs as 1000 inputs would give 1000 extra addresses
         .populate('blockRewardDetails')
         .limit(10)
         .sort({ blockHeight: -1 });
@@ -500,8 +500,8 @@ const getTXs = async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const total = await TX.find().sort({ blockHeight: -1 }).count();
-    const txs = await TX.find().populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const total = await TX.find({}, { involvedAddresses: 0 }).sort({ blockHeight: -1 }).count();
+    const txs = await TX.find({}, { involvedAddresses: 0 }).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

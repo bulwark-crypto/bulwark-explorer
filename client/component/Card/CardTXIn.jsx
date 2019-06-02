@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Table from '../Table';
+import config from '../../../config'
 
 export default class CardTXIn extends Component {
   static defaultProps = {
@@ -56,7 +57,7 @@ export default class CardTXIn extends Component {
           value: tx.relatedVout
             ? (
                 <span className="badge badge-danger">
-                  -{ numeral(tx.relatedVout.value).format('0,0.0000') } BWK
+                -{numeral(tx.relatedVout.value).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
                 </span>
               )
             : ''
