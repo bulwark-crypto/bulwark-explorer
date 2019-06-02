@@ -40,19 +40,35 @@ async function vin(rpctx, blockHeight) {
 
       // Find the matching vout for vin and store extra metadata for vout
       if (vin.txid) {
-        const txById = usedTxs.find(usedTx => usedTx.txId == vin.txid);
-        if (!txById) {
-          throw `Could not find related TX: ${vin.txid}`;
+        let shouldStoreRelatedVout = true;
+
+        // Do not store zerocoin spend in relatedVout
+        if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
+          vinDetails.scriptSig = { asm: vin.scriptSig.asm }; // Will allow us to identify ZEROCOIN inputs on frontend
+          shouldStoreRelatedVout = false;
         }
 
-        const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)
-        vinDetails.relatedVout = {
-          value: vinVout.value,
-          address: vinVout.address,
-          confirmations: blockHeight - txById.blockHeight,
-          date: txById.createdAt,
-          age: rpctx.time - txById.createdAt.getTime() / 1000,
-        };
+        if (shouldStoreRelatedVout) {
+          const txById = usedTxs.find(usedTx => usedTx.txId == vin.txid);
+          if (!txById) {
+            // Verbose console outputs of the unsupported TX so we can easily debug TXs we don't support for inputs
+            console.log("Unsupported TX:");
+            console.log("===============");
+            console.log(rpctx);
+            console.log("===============");
+            console.log(vin);
+            throw `Could not find related TX: ${vin.txid}`;
+          }
+
+          const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)
+          vinDetails.relatedVout = {
+            value: vinVout.value,
+            address: vinVout.address,
+            confirmations: blockHeight - txById.blockHeight,
+            date: txById.createdAt,
+            age: rpctx.time - txById.createdAt.getTime() / 1000,
+          };
+        }
       }
 
       txin.push(vinDetails);
