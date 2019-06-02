@@ -57,7 +57,7 @@ async function vin(rpctx, blockHeight) {
             console.log(rpctx);
             console.log("===============");
             console.log(vin);
-            throw `Could not find related TX: ${vin.txid}`;
+            throw `*** UNSUPPORTED BLOCKCHAIN: Could not find related TX: ${vin.txid}`;
           }
 
           const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)

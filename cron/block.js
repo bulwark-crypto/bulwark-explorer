@@ -45,10 +45,15 @@ async function syncBlocks(start, stop, clean = false) {
       ver: rpcblock.version
     });
 
-    await block.save();
+    // Count how many inputs/outputs are in each block
+    let vinsCount = 0;
+    let voutsCount = 0;
 
     await forEachSeries(block.txs, async (txhash) => {
       const rpctx = await util.getTX(txhash, true);
+
+      vinsCount+=rpctx.vin.length;
+      voutsCount+=rpctx.vout.length;
 
       if (blockchain.isPoS(block)) {
         await util.addPoS(block, rpctx);
@@ -57,7 +62,13 @@ async function syncBlocks(start, stop, clean = false) {
       }
     });
 
-    console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
+    block.vinsCount = vinsCount;
+    block.voutsCount = voutsCount;
+    
+    await block.save();
+
+
+    console.log(`Height: ${ block.height } Hash: ${ block.hash } Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
   }
 
   // Post an update to slack incoming webhook if url is
