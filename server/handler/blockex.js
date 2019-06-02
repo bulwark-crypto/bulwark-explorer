@@ -500,8 +500,10 @@ const getTXs = async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const total = await TX.find({}, { involvedAddresses: 0 }).sort({ blockHeight: -1 }).count();
+    const total = await TX.find().sort({ blockHeight: -1 }).count();
     const txs = await TX.find({}, { involvedAddresses: 0 }).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
+    
+    //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {
