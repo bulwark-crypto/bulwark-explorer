@@ -26,8 +26,8 @@ class Overview extends Component {
         {title: 'Height', key: 'blockHeight'},
         {title: 'Transaction Hash', key: 'txId'},
         {title: 'Value', key: 'vout'},
-        {title: 'Age', key: 'age'},
-        {title: 'Recipients', key: 'recipients'},
+        {title: 'Inputs', key: 'inputs'},
+        {title: 'Outputs', key: 'outputs'},
         {title: 'Created', key: 'createdAt'},
       ]
     };
@@ -60,19 +60,19 @@ class Overview extends Component {
             {TransactionValue(tx, blockValue)}
           </Link>
         ),
-        age: (
+        inputs: (
           <Link to={`/tx/${tx.txId}`}>
-            {diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)}
+            {tx.vin.length}
           </Link>
         ),
-        recipients: (
+        outputs: (
           <Link to={`/tx/${tx.txId}`}>
             {tx.vout.length}
           </Link>
         ),
         createdAt: (
-          <Link to={`/tx/${tx.txId}`}>
-            {dateFormat(tx.createdAt)}
+          <Link to={`/tx/${tx.txId}`} className="test">
+            {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
           </Link>
         ),
       });
@@ -94,7 +94,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  txs: state.txs
+  txs: state.txs.filter((tx, index) => index < 10) // Only take first 10 items from txs
 });
 
 export default connect(mapState, mapDispatch)(Overview);
