@@ -37,6 +37,8 @@ class TX extends Component {
 
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
+
+    // Try to get this TX from redux store, if it doesn't exist
     if ((!this.props.txFromStore && !this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
       this.getTX();
     }
@@ -93,14 +95,15 @@ class TX extends Component {
       this.setState({ tx: this.props.txFromStore, loading: false });
       return;
     }
+    const txId = this.props.match.params.hash;
     this.setState({ loading: true }, () => {
       this.props
-        .getTX(this.props.match.params.hash)
+        .getTX(txId)
         .then(tx => {
           this.setState({ tx, loading: false });
           this.props.setTXs([tx]); // Add this new tx to store so we don't have to reload it later on
         })
-        .catch(error => this.setState({ error, loading: false }));
+        .catch(error => this.setState({ error, tx: { txId }, loading: false })); // Notice how we set tx.txId so we know current url already tried to getTx() and won't retry on failure
     });
   }
 
