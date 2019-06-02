@@ -11,23 +11,47 @@ const BlockRewardDetails = require('../model/blockRewardDetails');
 /**
  * Process the inputs for the tx.
  * @param {Object} rpctx The rpc tx object.
+ * @param {Number} blockHeight The block height for the tx.
  */
-async function vin(rpctx) {
+async function vin(rpctx, blockHeight) {
   // Setup the input list for the transaction.
   const txin = [];
   if (rpctx.vin) {
     const txIds = new Set();
-    rpctx.vin.forEach((vin) => {
-      txin.push({
+
+    for (let i = 0; i < rpctx.vin.length; i++) {
+      const vin = rpctx.vin[i];
+
+      let vinDetails = {
         coinbase: vin.coinbase,
         sequence: vin.sequence,
         txId: vin.txid,
         vout: vin.vout
-      });
+      };
 
-      txIds.add(`${ vin.txid }:${ vin.vout }`);
-    });
-    
+
+      // Find the matching vout for vin and store extra metadata for vout
+      if (vin.txid) {
+        const txById = await TX.findOne({ txId: vin.txid });
+        if (!txById) {
+          throw `Could not find related TX: ${vin.txid}`;
+        }
+
+        const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)
+        vinDetails.relatedVout = {
+          value: vinVout.value,
+          address: vinVout.address,
+          confirmations: blockHeight - txById.blockHeight,
+          date: txById.createdAt,
+          age: rpctx.time - txById.createdAt.getTime() / 1000,
+        };
+      }
+
+      txin.push(vinDetails);
+
+      txIds.add(`${vin.txid}:${vin.vout}`);
+    }
+
     // Remove unspent transactions.
     if (txIds.size) {
       await UTXO.remove({ _id: { $in: Array.from(txIds) } });
@@ -50,7 +74,7 @@ async function vout(rpctx, blockHeight) {
       if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
         return;
       }
-      
+
       let toAddress = 'NON_STANDARD';
       switch (vout.scriptPubKey.type) {
         case 'nulldata':
@@ -76,7 +100,7 @@ async function vout(rpctx, blockHeight) {
       // Always add UTXO since we'll be aggregating it in richlist
       utxo.push({
         ...to,
-        _id: `${ rpctx.txid }:${ vout.n }`,
+        _id: `${rpctx.txid}:${vout.n}`,
         txId: rpctx.txid
       });
 
@@ -103,14 +127,14 @@ async function addPoS(block, rpctx) {
   if (rpctx.vin[0].coinbase && rpctx.vout[0].value === 0)
     return;
 
-  const txin = await vin(rpctx);
+  const txin = await vin(rpctx, block.height);
   const txout = await vout(rpctx, block.height);
 
   // Give an ability for explorer to identify POS/MN rewards
   const isRewardRawTransaction = blockchain.isRewardRawTransaction(rpctx);
 
   let txDetails = {
-    _id: rpctx.txid,
+    _id: new mongoose.Types.ObjectId(),
     blockHash: block.hash,
     blockHeight: block.height,
     createdAt: block.createdAt,
@@ -128,7 +152,7 @@ async function addPoS(block, rpctx) {
     if (isRewardRawTransaction) {
 
       const currentTxTime = rpctx.time;
-      
+
       const stakeInputTxId = rpctx.vin[0].txid;
       const stakedTxVoutIndex = rpctx.vin[0].vout;
 
@@ -137,12 +161,12 @@ async function addPoS(block, rpctx) {
 
       const stakedInputRawTxVout = stakedInputRawTx.vout[stakedTxVoutIndex];
 
-      const stakeInputAmount = stakedInputRawTxVout.value;
+      const stakeInputValue = stakedInputRawTxVout.value;
       const stakedInputConfirmations = stakedInputRawTx.confirmations - rpctx.confirmations; // How many confirmations did we get on staked input before the stake occured (subtract the new tx confirmations)
       const stakedInputTime = stakedInputRawTx.time;
 
       const stakeRewardAddress = rpctx.vout[1].scriptPubKey.addresses[0];
-      const stakeRewardAmount = rpctx.vout[1].value - stakeInputAmount;
+      const stakeRewardAmount = rpctx.vout[1].value - stakeInputValue;
       const masternodeRewardAmount = rpctx.vout[2].value;
       const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
 
@@ -157,7 +181,7 @@ async function addPoS(block, rpctx) {
             address: stakeRewardAddress,
             input: {
               txId: stakeInputTxId,
-              amount: stakeInputAmount,
+              value: stakeInputValue,
               confirmations: stakedInputConfirmations,
               date: new Date(stakedInputTime * 1000),
               age: currentTxTime - stakedInputTime,
@@ -174,7 +198,7 @@ async function addPoS(block, rpctx) {
       txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
 
       await blockRewardDetails.save();
-    } 
+    }
   }
 
   await TX.create(txDetails);
@@ -186,11 +210,11 @@ async function addPoS(block, rpctx) {
  * @param {Object} rpctx The rpc object from the node.
  */
 async function addPoW(block, rpctx) {
-  const txin = await vin(rpctx);
+  const txin = await vin(rpctx, block.height);
   const txout = await vout(rpctx, block.height);
 
   await TX.create({
-    _id: rpctx.txid,
+    _id: new mongoose.Types.ObjectId(),
     blockHash: block.hash,
     blockHeight: block.height,
     createdAt: block.createdAt,
