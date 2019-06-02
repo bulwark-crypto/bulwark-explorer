@@ -55,8 +55,10 @@ const txs = (state = [], action) => {
 
     // Merge state with the new payload
     action.payload.forEach((tx, index) => {
-      if (state.some(stateTx => stateTx.txId == tx.txId)) {
-        state[index] = tx; // Update tx data
+      let matchingTx = state.find(stateTx => stateTx.txId == tx.txId);
+      if (matchingTx) {
+        Object.assign(matchingTx, tx); // Copy new payload data to exisiting object
+        
         return;
       }
       state.push(tx); // Add new tx to store
