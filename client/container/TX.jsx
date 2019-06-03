@@ -19,7 +19,8 @@ class TX extends Component {
     match: PropTypes.object.isRequired,
 
     // Props from mapState() below (only if available)
-    txFromStore: PropTypes.object
+    txFromStore: PropTypes.object,
+    blockHeight: PropTypes.number.isRequired
   };
 
   constructor(props) {
@@ -27,7 +28,8 @@ class TX extends Component {
     this.state = {
       error: null,
       loading: true,
-      tx: null
+      tx: null,
+      blockHeight: props.blockHeight
     };
   };
 
@@ -37,7 +39,6 @@ class TX extends Component {
 
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
-
     // Try to get this TX from redux store, if it doesn't exist
     if ((!this.props.txFromStore && !this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
       this.getTX();
@@ -48,7 +49,7 @@ class TX extends Component {
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
-        <CardTX height={this.state.tx.blockHeight} tx={this.state.tx} />
+        <CardTX height={this.state.blockHeight} tx={this.state.tx} />
       </div>
     );
   }
@@ -150,6 +151,7 @@ const mapState = (state, ownProps) => {
 
   return {
     txFromStore: txForHashFromStore,
+    blockHeight: state.txs.length > 0 ? state.txs[0].blockHeight : 0 // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending)
   };
 };
 
