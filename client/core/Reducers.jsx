@@ -66,7 +66,7 @@ const txs = (state = [], action) => {
 
     // Ensure the transactions are ordered with most recent blocks first
     state.sort((tx1, tx2) => {
-      return tx1.blockHeight < tx2.blockHeight;
+      return tx2.blockHeight - tx1.blockHeight;
     });
   }
   return state;
