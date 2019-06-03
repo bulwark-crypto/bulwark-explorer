@@ -20,7 +20,7 @@ class TX extends Component {
 
     // Props from mapState() below (only if available)
     txFromStore: PropTypes.object,
-    blockHeight: PropTypes.number.isRequired
+    latestTx: PropTypes.object
   };
 
   constructor(props) {
@@ -28,8 +28,7 @@ class TX extends Component {
     this.state = {
       error: null,
       loading: true,
-      tx: null,
-      blockHeight: props.blockHeight
+      tx: null
     };
   };
 
@@ -46,10 +45,11 @@ class TX extends Component {
   }
 
   getTransactionInfo() {
+    const blockHeight = this.props.latestTx ? this.props.latestTx.blockHeight : 0; // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending);
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
-        <CardTX height={this.state.blockHeight} tx={this.state.tx} />
+        <CardTX height={blockHeight} tx={this.state.tx} />
       </div>
     );
   }
@@ -148,10 +148,11 @@ const mapDispatch = dispatch => ({
 const mapState = (state, ownProps) => {
   // Try to fetch transaction from store, if it exists we don't need to reload it
   const txForHashFromStore = state.txs.find(tx => tx.txId == ownProps.match.params.hash);
+  const latestTx = state.txs.length > 0 ? state.txs[0] : null; // fetch most recent block from store (if there is one)
 
   return {
     txFromStore: txForHashFromStore,
-    blockHeight: state.txs.length > 0 ? state.txs[0].blockHeight : 0 // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending)
+    latestTx: latestTx
   };
 };
 
