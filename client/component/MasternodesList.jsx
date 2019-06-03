@@ -1,4 +1,5 @@
 import Component from '../core/Component';
+import throttle from '../../lib/throttle';
 import { dateFormat } from '../../lib/date';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -24,7 +25,6 @@ class MasternodesList extends Component {
 
   constructor(props) {
     super(props);
-    this.debounce = null;
     this.state = {
       cols: [
         { key: 'lastPaidAt', title: 'Last Paid' },
@@ -49,6 +49,18 @@ class MasternodesList extends Component {
         return !this.props.hideCols.includes(value.key);
       });
     }
+
+    this.getThrottledMns = throttle(() => {
+      this.props
+        .getMNs({
+          limit: this.state.size,
+          skip: (this.state.page - 1) * this.state.size
+        })
+        .then(({ mns, pages }) => {
+          this.setState({ mns, pages, loading: false });
+        })
+        .catch(error => this.setState({ error, loading: false }));
+    }, 800);
   };
 
   componentDidMount() {
@@ -56,31 +68,14 @@ class MasternodesList extends Component {
   };
 
   componentWillUnmount() {
-    if (this.debounce) {
-      clearTimeout(this.debounce);
-      this.debounce = null;
+    if (this.getThrottledMns) {
+      clearTimeout(this.getThrottledMns);
     }
   };
 
   getMNs = () => {
     this.setState({ loading: true }, () => {
-      if (this.debounce) {
-        clearTimeout(this.debounce);
-      }
-
-      this.debounce = setTimeout(() => {
-        this.props
-          .getMNs({
-            limit: this.state.size,
-            skip: (this.state.page - 1) * this.state.size
-          })
-          .then(({ mns, pages }) => {
-            if (this.debounce) {
-              this.setState({ mns, pages, loading: false });
-            }
-          })
-          .catch(error => this.setState({ error, loading: false }));
-      }, 800);
+      this.getThrottledMns();
     });
   };
 
