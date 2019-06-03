@@ -19,7 +19,7 @@ const BlockRewardDetailsStakeInput = new mongoose.Schema({
   confirmations: { index: true, required: true, type: Number },
   date: { index: true, required: true, type: Date },
   age: { index: true, required: true, type: Number },
-});
+}, { _id: false, versionKey: false });
 
 /**
  * Structure for detailed breakdown of the stake
@@ -28,7 +28,7 @@ const BlockRewardDetailsStake = new mongoose.Schema({
   address: { index: true, required: true, type: String },
   reward: { index: false, required: true, type: Number },
   input: { index: false, required: true, type: BlockRewardDetailsStakeInput },
-});
+}, { _id: false, versionKey: false });
 
 /**
  * Structure for detailed breakdown of the stake
@@ -36,7 +36,7 @@ const BlockRewardDetailsStake = new mongoose.Schema({
 const BlockRewardDetailsMasternode = new mongoose.Schema({
   address: { index: true, required: true, type: String },
   reward: { index: false, required: true, type: Number },
-});
+}, { _id: false, versionKey: false });
 
 /**
  * Structure for detailed breakdown of the reward
