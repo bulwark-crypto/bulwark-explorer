@@ -46,6 +46,70 @@ const config = {
     //'username': 'Block Report',
     //'icon_emoji': ':bwk:'
   },
+  
+  ///////////////////////////////
+  // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
+  ///////////////////////////////
+  profitabilityScore: {
+    /**
+     * Figure out how profitable you are staking. Each output is multiplied by the number below, you can configure it for your blockchain
+     * 
+     * The formula is: (reward.stake.input.confirmations / ((reward.stake.reward / reward.stake.input.value) * 100)) * config.profitabilityScore.weightMultiplier
+     */
+    weightMultiplier: 0.1,
+
+    /**
+     * In order to get the color below (from scoreStyles) we'll use an exponential formula
+     * 
+     * The formula is: profitabilityScore < weightColorScale * Math.pow(2, i + 1) 
+     */
+    weightColorScale: 30,
+
+    scoreStyles: [
+      // Best case
+      {
+        color: "#72f87b",
+        title: "Rank 1/10 - Excellent!!!"
+      },
+      {
+        color: "#84f771",
+        title: "Rank 2/10 - Excellent!"
+      },
+      {
+        color: "#a0f771",
+        title: "Rank 3/10 - Excellent"
+      },
+      {
+        color: "#bcf671",
+        title: "Rank 4/10 - Very Good"
+      },
+      {
+        color: "#d8f671",
+        title: "Rank 5/10 - Above Average"
+      },
+      {
+        color: "#f3f671",
+        title: "Rank 6/10 - Average"
+      },
+      {
+        color: "#f5dc71",
+        title: "Rank 7/10 - Below Average"
+      },
+      {
+        color: "#f5c071",
+        title: "Rank 8/10 - Not Optimal"
+      },
+      {
+        color: "#f4a471",
+        title: "Rank 9/10 - Not Optimal!"
+      },
+      // Worst case (default)
+      {
+        color: "#f48871",
+        title: "Rank 10/10 - Not Optimal!!!"
+      }
+    ]
+  },
 
   ///////////////////////////////
   /// Community & Address Related
