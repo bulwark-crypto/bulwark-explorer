@@ -46,7 +46,7 @@ export default class CardTX extends Component {
           </div>
           <div className="card__row">
             <span className="card__label">Block Value:</span>
-            <span className="card__result"><Link to={`/block/${this.props.tx.blockHash}`}>{numeral(blockValue).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</Link></span>
+            <span className="card__result"><Link to={`/block/${this.props.tx.blockHeight}`}>{numeral(blockValue).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</Link></span>
           </div>
           <div className="card__row">
             <span className="card__label">Block Height:</span>

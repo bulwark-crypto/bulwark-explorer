@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import config from '../../../config'
+import PosProfitabilityScore from '../PosProfitabilityScore'
 
 export default class CardBlockRewardDetailsStaking extends Component {
   static propTypes = {
@@ -39,6 +40,10 @@ export default class CardBlockRewardDetailsStaking extends Component {
           <div className="card__row">
             <span className="card__label">Stake Input Confirmations:</span>
             <span className="card__result">{inputConfirmations}</span>
+          </div>
+          <div className="card__row">
+            <span className="card__label">POS Profitability Score:</span>
+            <span className="card__result"><PosProfitabilityScore reward={this.props.tx.blockRewardDetails} /></span>
           </div>
         </div>
       </div>

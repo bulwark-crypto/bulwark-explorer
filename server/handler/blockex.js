@@ -500,7 +500,7 @@ const getTXs = async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const total = await TX.find().sort({ blockHeight: -1 }).count();
+    const total = await TX.count();
     const txs = await TX.find({}, { involvedAddresses: 0 }).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
     
     //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
@@ -511,6 +511,28 @@ const getTXs = async (req, res) => {
     res.status(500).send(err.message || err);
   }
 };
+
+/**
+ * Return a paginated list of transactions.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getRewards = async (req, res) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+
+    const total = await BlockRewardDetails.count();
+    const rewards = await BlockRewardDetails.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
+    
+    res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+
 
 /**
  * Return all the transactions for an entire week.
@@ -585,5 +607,6 @@ module.exports = {
   getTXLatest,
   getTX,
   getTXs,
+  getRewards,
   getTXsWeek
 };
