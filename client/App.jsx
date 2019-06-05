@@ -20,6 +20,7 @@ import FAQ from './container/FAQ';
 import Masternode from './container/Masternode';
 import Movement from './container/Movement';
 import Overview from './container/Overview';
+import Rewards from './container/Rewards';
 import Peer from './container/Peer';
 import PoS from './container/PoS';
 import Statistics from './container/Statistics';
@@ -60,9 +61,9 @@ class App extends Component {
 
   componentDidMount() {
     promise.all([
-        this.props.getCoins({ limit: 12 }),
-        this.props.getTXs({ limit: 10 })
-      ])
+      this.props.getCoins({ limit: 12 }),
+      this.props.getTXs({ limit: 10 })
+    ])
       .then(() => {
         this.getCoins();
         this.getTXs();
@@ -126,14 +127,14 @@ class App extends Component {
     // Setup path for search.
     let path = '/#/';
     if (isAddress(term)) {
-      document.location.href = `/#/address/${ term }`;
+      document.location.href = `/#/address/${term}`;
     } else if (!isNaN(term)) {
-      document.location.href = `/#/block/${ term }`;
+      document.location.href = `/#/block/${term}`;
     } else {
       this.props
         .getIsBlock(term)
         .then((is) => {
-          document.location.href = `/#/${ is ? 'block' : 'tx' }/${ term }`;
+          document.location.href = `/#/${is ? 'block' : 'tx'}/${term}`;
         });
     }
   };
@@ -148,33 +149,34 @@ class App extends Component {
     return (
       <HashRouter>
         <div className="page-wrapper">
-          <Menu onSearch={ this.handleSearch } />
+          <Menu onSearch={this.handleSearch} />
           <div className="content" id="body-content">
             <div className="content__wrapper">
               {/* <Notification /> */}
               <CoinSummary
-                onRemove={ this.handleRemove }
-                onSearch={ this.handleSearch }
-                searches={ this.state.searches.reverse() } />
+                onRemove={this.handleRemove}
+                onSearch={this.handleSearch}
+                searches={this.state.searches.reverse()} />
               <SearchBar
                 className="d-none d-md-block mb-3"
-                onSearch={ this.handleSearch } />
+                onSearch={this.handleSearch} />
               <div className="content__inner-wrapper">
                 <Switch>
-                  <Route exact path="/" component={ Overview } />
-                  <Route exact path="/address/:hash" component={ Address } />
-                  <Route exact path="/api" component={ API } />
-                  <Route exact path="/block/:hash" component={ Block } />
-                  <Route exact path="/coin" component={ CoinInfo } />
-                  <Route exact path="/faq" component={ FAQ } />
-                  <Route exact path="/masternode" component={ Masternode } />
-                  <Route exact path="/movement" component={ Movement } />
-                  <Route exact path="/peer" component={ Peer } />
-                  <Route exact path="/pos/:amount" component={ PoS } />
-                  <Route exact path="/statistics" component={ Statistics } />
-                  <Route exact path="/top" component={ Top100 } />
-                  <Route exact path="/tx/:hash" component={ TX } />
-                  <Route component={ Error404 } />
+                  <Route exact path="/" component={Overview} />
+                  <Route exact path="/address/:hash" component={Address} />
+                  <Route exact path="/api" component={API} />
+                  <Route exact path="/block/:hash" component={Block} />
+                  <Route exact path="/coin" component={CoinInfo} />
+                  <Route exact path="/faq" component={FAQ} />
+                  <Route exact path="/masternode" component={Masternode} />
+                  <Route exact path="/rewards" component={Rewards} />
+                  <Route exact path="/movement" component={Movement} />
+                  <Route exact path="/peer" component={Peer} />
+                  <Route exact path="/pos/:amount" component={PoS} />
+                  <Route exact path="/statistics" component={Statistics} />
+                  <Route exact path="/top" component={Top100} />
+                  <Route exact path="/tx/:hash" component={TX} />
+                  <Route component={Error404} />
                 </Switch>
               </div>
               <Footer />
