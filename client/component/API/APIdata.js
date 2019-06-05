@@ -69,6 +69,11 @@ const APIdata = [
           path: '/api/tx'
         },
         {
+          name: 'getRewards',
+          info: 'Returns block rewards information.',
+          path: '/api/rewards'
+        },
+        {
           name: 'getTXLatest',
           info: 'Returns latest transaction information.',
           path: '/api/tx/latest'
