@@ -167,6 +167,28 @@ export const getTXs = (dispatch, query) => {
   });
 };
 
+export const getRewards = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'rewards',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: REWARDS });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
+
 export const getTXsWeek = () => {
   return new promise((resolve, reject) => {
     return getFromWorker('txs-week', resolve, reject);
@@ -204,5 +226,6 @@ export default {
   getTXsWeek,
   setTXs,
   setWatch,
-  removeWatch
+  removeWatch,
+  getRewards
 };
