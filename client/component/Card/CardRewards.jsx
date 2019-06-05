@@ -9,7 +9,7 @@ import React from 'react';
 import config from '../../../config'
 
 import Table from '../Table';
-import TransactionValue from '../../component/Table/TransactionValue';
+import PosProfitabilityScore from '../PosProfitabilityScore';
 
 export default class CardRewards extends Component {
   static defaultProps = {
@@ -46,40 +46,11 @@ export default class CardRewards extends Component {
     return amountFormatted;
   }
 
-  //@todo move into component
-  getProfitabilityScore(profitabilityScore) {
-    const weightColorScale = config.profitabilityScore.weightColorScale;
-
-    const scores = config.profitabilityScore.scoreStyles;    
-
-    //@todo optimize into array
-    let profitabilityStyle = scores[scores.length - 1]; // Worst case by default
-
-    for (let i = 0; i < scores.length;i++) {
-      if (profitabilityScore < weightColorScale * Math.pow(2, i + 1)) {
-        profitabilityStyle = scores[i];
-        break;
-      }
-    }
-
-    return (
-      <span class="badge" style={{ backgroundColor: profitabilityStyle.color }} title={profitabilityStyle.title}>
-        {profitabilityScore}
-      </span>
-    );
-  }
 
   getTableData() {
     return this.props.rewards.map(reward => {
       const date = moment(reward.date).utc();
       const diffSeconds = moment().utc().diff(date, 'seconds');
-
-      const profitPercent = (reward.stake.reward / reward.stake.input.value) * 100;
-      const timeCostOfStake = (reward.stake.input.confirmations / profitPercent);
-
-      let profitabilityWeight = (timeCostOfStake * config.profitabilityScore.weightMultiplier);
-
-      const computedProfitabilityScore = profitabilityWeight.toFixed(0);
 
       return ({
         ...reward,
@@ -105,7 +76,7 @@ export default class CardRewards extends Component {
         ),
         computedProfitabilityScore: (
           <Link to={`/tx/${reward.stake.input.txId}`}>
-            {this.getProfitabilityScore(computedProfitabilityScore)}
+            <PosProfitabilityScore reward={reward} />
           </Link>
         ),
         // Optional columns we could enable:
