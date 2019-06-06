@@ -11,6 +11,7 @@ import Icon from '../Icon'
 
 import Table from '../Table';
 import PosProfitabilityScore from '../PosProfitabilityScore';
+import PosRestakeIndicator from '../FormattedValues/PosRestakeIndicator'
 
 export default class CardRewards extends Component {
   static defaultProps = {
@@ -47,12 +48,6 @@ export default class CardRewards extends Component {
     return amountFormatted;
   }
 
-  getRestakeIcon(reward) {
-    if (!reward.stake.input.isRestake) {
-      return null;
-    }
-    return <Icon name="recycle" className="fas pl-1 text-primary" />;
-  }
   getRewardLink(reward) {
     // By default go to the tx that was stake's input
     let txId = reward.stake.input.txId;
@@ -62,12 +57,6 @@ export default class CardRewards extends Component {
     }
 
     return `/tx/${txId}`;
-  }
-  getTitle(reward) {
-    if (!reward.stake.input.isRestake) {
-      return null;
-    }
-    return "Restake (Stake of Previously Staked Output)";
   }
 
   getTableData() {
@@ -83,11 +72,9 @@ export default class CardRewards extends Component {
           </Link>
         ),
         posInputSize: (
-          <span title={this.getTitle(reward)}>
-            <Link to={this.getRewardLink(reward)}>
-              {this.formatAmount(reward.stake.input.value)}{this.getRestakeIcon(reward)}
-            </Link>
-          </span>
+          <Link to={this.getRewardLink(reward)}>
+            <PosRestakeIndicator reward={reward} />
+          </Link>
         ),
         posInputConfirmations: (
           <Link to={this.getRewardLink(reward)}>
