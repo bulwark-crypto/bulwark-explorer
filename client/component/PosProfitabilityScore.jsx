@@ -22,7 +22,7 @@ const PosProfitabilityScore = ({ reward, includeTitle = true }) => {
     const profitabilityTitle = includeTitle ? profitabilityStyle.title : null;
 
     return (
-      <span class="badge" style={{ backgroundColor: profitabilityStyle.color }} title={profitabilityTitle}>
+      <span className="badge" style={{ backgroundColor: profitabilityStyle.color }} title={profitabilityTitle}>
         {profitabilityWeight.toFixed(0)}
       </span>
     );

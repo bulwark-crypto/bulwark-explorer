@@ -5,11 +5,27 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import config from '../../../config'
 import PosProfitabilityScore from '../PosProfitabilityScore'
+import PosRestakeIndicator from '../../component/FormattedValues/PosRestakeIndicator'
 
 export default class CardBlockRewardDetailsStaking extends Component {
   static propTypes = {
     tx: PropTypes.object.isRequired
   };
+  
+  getBlockRewardLink(reward) {
+    const posRestakeIndicator = <PosRestakeIndicator reward={reward} includeShortName={true} />;
+    
+    // Link to the previous stake if this is a restake
+    if (reward.stake.input.isRestake) {
+      return (
+        <Link to={`/tx/${reward.stake.input.txId}`}>
+          {posRestakeIndicator}
+        </Link>
+      );
+    }
+
+    return posRestakeIndicator;
+  }
 
   render() {
     // Ensure this reward transaction has new blockRewardDetails data (for backwards compatability)
@@ -31,7 +47,9 @@ export default class CardBlockRewardDetailsStaking extends Component {
           </div>
           <div className="card__row">
             <span className="card__label">Stake Reward:</span>
-            <span className="card__result">{numeral(blockRewardDetails.stake.reward).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</span>
+            <span className="card__result">
+              {this.getBlockRewardLink(blockRewardDetails)}
+            </span>
           </div>
           <div className="card__row">
             <span className="card__label">Stake Input Age:</span>

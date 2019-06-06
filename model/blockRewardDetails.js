@@ -19,6 +19,9 @@ const BlockRewardDetailsStakeInput = new mongoose.Schema({
   confirmations: { index: true, required: true, type: Number },
   date: { index: true, required: true, type: Date },
   age: { index: true, required: true, type: Number },
+  isRestake: { index: false, required: true, type: Boolean },
+  vinCount: { index: true, required: true, type: Number },
+  voutCount: { index: true, required: true, type: Number },
 }, { _id: false, versionKey: false });
 
 /**
@@ -46,6 +49,7 @@ const BlockRewardDetails = new mongoose.Schema({
   //blockHash: { required: true, type: String },
   blockHeight: { index: true, required: true, type: Number },
   date: { index: true, required: true, type: Date },
+  txId: { index: true, required: true, type: String },
 
   stake: { index: false, required: true, type: BlockRewardDetailsStake },
   masternode: { index: false, required: true, type: BlockRewardDetailsMasternode },
