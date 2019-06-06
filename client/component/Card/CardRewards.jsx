@@ -7,6 +7,7 @@ import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 import config from '../../../config'
+import Icon from '../Icon'
 
 import Table from '../Table';
 import PosProfitabilityScore from '../PosProfitabilityScore';
@@ -28,7 +29,7 @@ export default class CardRewards extends Component {
     this.state = {
       cols: [
         { key: 'blockHeight', title: 'Block #' },
-        { key: 'posInputSizeAddress', title: 'Input Size' },
+        { key: 'posInputSize', title: 'Input Size' },
         { key: 'posInputConfirmations', title: 'Confirmations' },
         { key: 'computedProfitabilityScore', title: 'POS Profitability Score' },
         { key: 'date', title: 'Created' },
@@ -46,6 +47,28 @@ export default class CardRewards extends Component {
     return amountFormatted;
   }
 
+  getRestakeIcon(reward) {
+    if (!reward.stake.input.isRestake) {
+      return null;
+    }
+    return <Icon name="recycle" className="fas pl-1 text-primary" />;
+  }
+  getRewardLink(reward) {
+    // By default go to the tx that was stake's input
+    let txId = reward.stake.input.txId;
+    // In update, we now can go directly to reward tx
+    if (reward.txId) {
+      txId = reward.txId;
+    }
+
+    return `/tx/${txId}`;
+  }
+  getTitle(reward) {
+    if (!reward.stake.input.isRestake) {
+      return null;
+    }
+    return "Restake (Stake of Previously Staked Output)";
+  }
 
   getTableData() {
     return this.props.rewards.map(reward => {
@@ -55,27 +78,29 @@ export default class CardRewards extends Component {
       return ({
         ...reward,
         blockHeight: (
-          <Link to={`/tx/${reward.stake.input.txId}`}>
+          <Link to={this.getRewardLink(reward)}>
             {reward.blockHeight}
           </Link>
         ),
-        posInputSizeAddress: (
-          <Link to={`/tx/${reward.stake.input.txId}`}>
-            {this.formatAmount(reward.stake.input.value)}
-          </Link>
+        posInputSize: (
+          <span title={this.getTitle(reward)}>
+            <Link to={this.getRewardLink(reward)}>
+              {this.formatAmount(reward.stake.input.value)}{this.getRestakeIcon(reward)}
+            </Link>
+          </span>
         ),
         posInputConfirmations: (
-          <Link to={`/tx/${reward.stake.input.txId}`}>
+          <Link to={this.getRewardLink(reward)}>
             {reward.stake.input.confirmations}
           </Link>
         ),
         date: (
-          <Link to={`/tx/${reward.stake.input.txId}`}>
+          <Link to={this.getRewardLink(reward)}>
             {dateFormat(reward.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
           </Link>
         ),
         computedProfitabilityScore: (
-          <Link to={`/tx/${reward.stake.input.txId}`}>
+          <Link to={this.getRewardLink(reward)}>
             <PosProfitabilityScore reward={reward} />
           </Link>
         ),
