@@ -48,6 +48,7 @@ const getAddress = async (req, res) => {
         },
         { $sort: { blockHeight: -1 } }
       ])
+      .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
       .allowDiskUse(true)
       .exec();
     const qutxo = UTXO
@@ -55,6 +56,7 @@ const getAddress = async (req, res) => {
         { $match: { address: req.params.hash } },
         { $sort: { blockHeight: -1 } }
       ])
+      .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
       .allowDiskUse(true)
       .exec();
 
