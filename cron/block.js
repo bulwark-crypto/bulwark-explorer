@@ -140,7 +140,7 @@ async function update() {
     const info = await rpc.call('getinfo');
     const block = await Block.findOne().sort({ height: -1 });
 
-    let clean = false; // We no longer need to clean by default because block is the last item inserted. If we have the block that means all data for that block exists
+    let clean = true; // We no longer need to clean by default because block is the last item inserted. If we have the block that means all data for that block exists
     let dbHeight = block && block.height ? block.height : 1;
     let rpcHeight = info.blocks;
 
