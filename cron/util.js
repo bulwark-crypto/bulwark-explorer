@@ -194,6 +194,9 @@ async function addPoS(block, rpctx) {
       const masternodeRewardAmount = rpctx.vout[2].value;
       const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
 
+      // Allows us to tell if we've staked on an output of a stake reward (staking a stake)
+      const isRestake = blockchain.isRewardRawTransaction(stakedInputRawTx);
+
       // Store all the block rewards in it's own indexed collection
       let blockRewardDetails = new BlockRewardDetails(
         {
@@ -201,6 +204,7 @@ async function addPoS(block, rpctx) {
           //blockHash: block.hash,
           blockHeight: block.height,
           date: block.createdAt,
+          txId: rpctx.txid,
           stake: {
             address: stakeRewardAddress,
             input: {
@@ -209,6 +213,9 @@ async function addPoS(block, rpctx) {
               confirmations: stakedInputConfirmations,
               date: new Date(stakedInputTime * 1000),
               age: currentTxTime - stakedInputTime,
+              isRestake: isRestake,
+              vinCount: rpctx.vin.length,
+              voutCount: rpctx.vout.length
             },
             reward: stakeRewardAmount
           },
