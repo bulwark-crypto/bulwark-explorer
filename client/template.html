@@ -26,7 +26,10 @@
     <![endif]-->
     <title>Bulwark Block Explorer</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" data-auto-replace-svg="nest"></script>
+    <script>
+        FontAwesomeConfig = { autoReplaceSvg: 'nest' } // Make fontawesome compatible with react way of removing dom
+    </script>
     <!-- Google Tag Manager -->
     <script>
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
