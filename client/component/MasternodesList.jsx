@@ -152,7 +152,11 @@ class MasternodesList extends Component {
                   {`${mn.addr.substr(0, 20)}...`}
                 </Link>
               ),
-              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.fromNow(),
+              lastPaidAt: (
+                <span className="text-nowrap">
+                  {isEpoch ? 'N/A' : lastPaidAt.fromNow()}
+                </span>
+              ),
               txHash: (
                 <Link to={`/tx/${mn.txHash}`}>
                   {`${mn.txHash.substr(0, 20)}...`}
