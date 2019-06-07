@@ -13,7 +13,7 @@ const PosRestakeIndicator = ({ reward, includeShortName = false }) => {
     if (!reward.stake.input.isRestake) {
       return null;
     }
-    return <Icon name="recycle" className="fas pl-1 text-primary" />;
+    return <Icon name="recycle" className="fas pl-1 text-primary align-middle" />;
   }
   const getTitle = (reward) => {
     if (!reward.stake.input.isRestake) {

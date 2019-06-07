@@ -42,11 +42,6 @@ export default class CardRewards extends Component {
       ]
     };
   };
-  formatAmount(amountToFormat) {
-    const amountFormatted = (numeral(amountToFormat).format(config.coinDetails.coinNumberFormat));
-
-    return amountFormatted;
-  }
 
   getRewardLink(reward) {
     // By default go to the tx that was stake's input
@@ -81,14 +76,14 @@ export default class CardRewards extends Component {
             {reward.stake.input.confirmations}
           </Link>
         ),
-        date: (
-          <Link to={this.getRewardLink(reward)}>
-            {dateFormat(reward.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
-          </Link>
-        ),
         computedProfitabilityScore: (
           <Link to={this.getRewardLink(reward)}>
             <PosProfitabilityScore reward={reward} />
+          </Link>
+        ),
+        date: (
+          <Link to={this.getRewardLink(reward)} className="text-nowrap">
+            {dateFormat(reward.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
           </Link>
         ),
         // Optional columns we could enable:

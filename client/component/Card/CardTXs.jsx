@@ -81,7 +81,7 @@ export default class CardTXs extends Component {
               </Link>
             ),
             createdAt: (
-              <Link to={`/tx/${tx.txId}`}>
+              <Link to={`/tx/${tx.txId}`} className="text-nowrap">
                 {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
               </Link>
             ),

@@ -5,6 +5,7 @@ import config from '../../../config'
 
 /**
  * Adds ability to format a transaction value
+ * @todo move to FormattedValues folder
  */
 const TransactionValue = (tx, blockValue) => {
   const formattedBlockValue = (numeral(blockValue).format('0,0.0000'));
@@ -26,7 +27,7 @@ const TransactionValue = (tx, blockValue) => {
     return (
       <span title={getTransactionTitle(tx)}>
         {formattedBlockValue}
-        <Icon name="gem" className="far pl-1 text-primary" />
+        <Icon name="gem" className="far pl-1 text-primary align-middle" />
       </span>
     );
   }
