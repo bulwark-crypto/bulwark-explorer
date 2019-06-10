@@ -15,6 +15,19 @@ const UTXO = require('../model/utxo');
 const BlockRewardDetails = require('../model/blockRewardDetails');
 
 /**
+ * console.log but with date prepended to it
+ */
+console.dateLog = (...log) => {
+  if (!config.verboseCron) {
+    console.log(...log);
+    return;
+  }
+
+  const currentDate = new Date().toGMTString();
+  console.log(`${currentDate}: `,...log);
+}
+
+/**
  * Process the blocks and transactions.
  * @param {Number} start The current starting block height.
  * @param {Number} stop The current block height at the tip of the chain.
@@ -136,7 +149,12 @@ async function update() {
   const type = 'block';
   let code = 0;
 
+  console.verboseCron && console.dateLog(`Block Sync Started`)
   try {
+    // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
+    // Notice how we moved the cron lock on top so we lock before block height is fetched otherwise collisions could occur
+    locker.lock(type);
+
     const info = await rpc.call('getinfo');
     const block = await Block.findOne().sort({ height: -1 });
 
@@ -153,13 +171,11 @@ async function update() {
       clean = true;
       rpcHeight = parseInt(process.argv[3], 10);
     }
-    console.log(dbHeight, rpcHeight, clean);
-
-    // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
-    locker.lock(type);
+    console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"}`);
 
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
+      console.dateLog(`No Sync Required!`);
       locker.unlock(type); // Be sure to properly unlock cron
       return;
     }
@@ -168,11 +184,13 @@ async function update() {
       dbHeight = 1;
     }
 
+    console.verboseCron && console.dateLog(`Sync Started!`);
     await syncBlocks(dbHeight, rpcHeight, clean);
+    console.verboseCron && console.dateLog(`Sync Finished!`);
 
     locker.unlock(type); // It is important that we keep proper lock during syncing otherwise there will be blockchain data corruption and we can't be sure of integrity
   } catch (err) {
-    console.log(err);
+    console.dateLog(err);
     code = 1;
   } finally {
     exit(code);
