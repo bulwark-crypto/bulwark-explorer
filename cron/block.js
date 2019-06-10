@@ -24,7 +24,7 @@ console.dateLog = (...log) => {
   }
 
   const currentDate = new Date().toGMTString();
-  console.log(`${currentDate}: `,...log);
+  console.log(`${currentDate}\t`,...log);
 }
 
 /**
@@ -85,7 +85,7 @@ async function syncBlocks(start, stop, clean = false) {
     await block.save();
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
-    console.log(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
+    console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
   }
 
   // Post an update to slack incoming webhook if url is
@@ -171,7 +171,7 @@ async function update() {
       clean = true;
       rpcHeight = parseInt(process.argv[3], 10);
     }
-    console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"}`);
+    console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"})`);
 
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
