@@ -23,6 +23,7 @@ const config = {
     'pass': 'someverysafepassword',
     'timeout': 8000, // 8 seconds
   },
+  verboseCron: true, // If set to true there are extra logging details in cron scripts
   coinDetails: {
     name: 'Bulwark',
     shortName: 'BWK',
