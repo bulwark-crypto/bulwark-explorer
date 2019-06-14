@@ -24,7 +24,7 @@ console.dateLog = (...log) => {
   }
 
   const currentDate = new Date().toGMTString();
-  console.log(`${currentDate}\t`,...log);
+  console.log(`${currentDate}\t`, ...log);
 }
 
 /**
@@ -148,18 +148,20 @@ async function syncBlocks(start, stop, clean = false) {
 async function update() {
   const type = 'block';
   let code = 0;
+  let hasAcquiredLocked = false;
 
   config.verboseCron && console.dateLog(`Block Sync Started`)
   try {
     // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
     // Notice how we moved the cron lock on top so we lock before block height is fetched otherwise collisions could occur
     locker.lock(type);
+    hasAcquiredLocked = true;
 
     const info = await rpc.call('getinfo');
     const block = await Block.findOne().sort({ height: -1 });
 
     let clean = true; // We no longer need to clean by default because block is the last item inserted. If we have the block that means all data for that block exists
-    let dbHeight = block && block.height ? block.height + 1 : 1;
+    let dbHeight = block && block.height ? block.height : 1;
     let rpcHeight = info.blocks;
 
     // If heights provided then use them instead.
@@ -187,12 +189,15 @@ async function update() {
     config.verboseCron && console.dateLog(`Sync Started!`);
     await syncBlocks(dbHeight, rpcHeight, clean);
     config.verboseCron && console.dateLog(`Sync Finished!`);
-
-    locker.unlock(type); // It is important that we keep proper lock during syncing otherwise there will be blockchain data corruption and we can't be sure of integrity
   } catch (err) {
     console.dateLog(err);
     code = 1;
   } finally {
+    // Try to release the lock if lock was acquired
+    if (hasAcquiredLocked) {
+      locker.unlock(type);
+    }
+
     config.verboseCron && console.log(""); // Adds new line between each run with verbosity
     exit(code);
   }
