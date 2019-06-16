@@ -178,7 +178,6 @@ async function update() {
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
       console.dateLog(`No Sync Required!`);
-      locker.unlock(type); // Be sure to properly unlock cron
       return;
     }
     // If starting from genesis skip.
