@@ -25,12 +25,12 @@ async function vin(rpctx, blockHeight) {
         usedTxIdsInVins.add(vin.txid);
       }
     });
-    
+
     const usedTxs = await TX.find({ txId: { $in: Array.from(usedTxIdsInVins) } }, { txId: 1, vout: 1, blockHeight: 1, createdAt: 1 }); // Only include vout, blockHeight & createdAt fields that we need
 
     const txIds = new Set();
 
-    rpctx.vin.forEach((vin) => {
+    await rpctx.vin.forEach(async (vin) => {
       let vinDetails = {
         coinbase: vin.coinbase,
         //sequence: vin.sequence,
@@ -94,7 +94,7 @@ async function vout(rpctx, blockHeight) {
   const txout = [];
   if (rpctx.vout) {
     const utxo = [];
-    rpctx.vout.forEach((vout) => {
+    await rpctx.vout.forEach(async (vout) => {
       if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
         return;
       }
@@ -268,7 +268,7 @@ async function addPoW(block, rpctx) {
  */
 function addInvolvedAddresses(tx) {
   let involvedAddresses = new Set(); // Will store distinct addresses used in this transaction
-  
+
   tx.vout.forEach(vout => {
     if (vout.address) {
       involvedAddresses.add(vout.address);
