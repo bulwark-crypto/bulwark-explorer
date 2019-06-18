@@ -41,7 +41,7 @@ async function syncBlocks(start, stop, clean = false) {
   }
 
   let block;
-  for (let height = start; height <= stop; height++) {
+  for (let height = start + 1; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
@@ -179,10 +179,6 @@ async function update() {
     if (dbHeight >= rpcHeight) {
       console.dateLog(`No Sync Required!`);
       return;
-    }
-    // If starting from genesis skip.
-    else if (dbHeight === 0) {
-      dbHeight = 1;
     }
 
     config.verboseCron && console.dateLog(`Sync Started!`);
