@@ -34,10 +34,10 @@ console.dateLog = (...log) => {
  */
 async function syncBlocks(start, stop, clean = false) {
   if (clean) {
-    await Block.remove({ height: { $gte: start, $lte: stop } });
-    await TX.remove({ blockHeight: { $gte: start, $lte: stop } });
-    await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });
-    await BlockRewardDetails.remove({ blockHeight: { $gte: start, $lte: stop } });
+    await Block.remove({ height: { $gt: start, $lte: stop } });
+    await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
+    await UTXO.remove({ blockHeight: { $gt: start, $lte: stop } });
+    await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   }
 
   let block;
@@ -161,7 +161,7 @@ async function update() {
     const block = await Block.findOne().sort({ height: -1 });
 
     let clean = true;
-    let dbHeight = block && block.height ? block.height + 1 : 1; // Height + 1 because block is the last item inserted. If we have the block that means all data for that block exists
+    let dbHeight = block && block.height ? block.height : 1; // Height + 1 because block is the last item inserted. If we have the block that means all data for that block exists
     let rpcHeight = info.blocks;
 
     // If heights provided then use them instead.
@@ -173,7 +173,7 @@ async function update() {
       clean = true;
       rpcHeight = parseInt(process.argv[3], 10);
     }
-    console.dateLog(`DB Height: ${dbHeight - 1}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"})`);
+    console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"})`);
 
     // If nothing to do then exit.
     if (dbHeight >= rpcHeight) {
