@@ -151,8 +151,10 @@ async function addPoS(block, rpctx) {
   if (rpctx.vin[0].coinbase && rpctx.vout[0].value === 0)
     return;
 
-  const txin = await vin(rpctx, block.height);
+
+  // Sync vout first then vins (because a block can have same input as output in the same block)
   const txout = await vout(rpctx, block.height);
+  const txin = await vin(rpctx, block.height);
 
   // Give an ability for explorer to identify POS/MN rewards
   const isRewardRawTransaction = blockchain.isRewardRawTransaction(rpctx);
@@ -243,8 +245,9 @@ async function addPoS(block, rpctx) {
  * @param {Object} rpctx The rpc object from the node.
  */
 async function addPoW(block, rpctx) {
-  const txin = await vin(rpctx, block.height);
+  // Sync vout first then vins (because a block can have same input as output in the same block)
   const txout = await vout(rpctx, block.height);
+  const txin = await vin(rpctx, block.height);
 
   let txDetails = {
     _id: new mongoose.Types.ObjectId(),
