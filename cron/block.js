@@ -36,7 +36,7 @@ async function syncBlocks(start, stop, clean = false) {
   if (clean) {
     await Block.remove({ height: { $gt: start, $lte: stop } });
     await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
-    await UTXO.remove({ blockHeight: { $gt: start, $lte: stop } });
+    await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
     await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   }
 
