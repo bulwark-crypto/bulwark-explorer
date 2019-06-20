@@ -161,7 +161,7 @@ async function update() {
     const block = await Block.findOne().sort({ height: -1 });
 
     let clean = true;
-    let dbHeight = block && block.height ? block.height : 1; // Height + 1 because block is the last item inserted. If we have the block that means all data for that block exists
+    let dbHeight = block && block.height ? block.height : 0; // Height + 1 because block is the last item inserted. If we have the block that means all data for that block exists
     let rpcHeight = info.blocks;
 
     // If heights provided then use them instead.
