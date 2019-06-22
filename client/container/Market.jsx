@@ -8,6 +8,7 @@ import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
 import BitShares from 'btsdex-fix';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import config from '../../../config'
 class Market extends Component {
   static defaultProps = {
     coin: {}
@@ -22,7 +23,7 @@ static propTypes = {
     this.state = {
       cols: [
         { key: 'price', title: 'BTC' },
-        { key: 'quantity', title: 'BWK' },      ],
+        { key: 'quantity', title: config.coinDetails.shortName },      ],
       orderbookasks:[],orderbookbids:[],orderdataret:[],loading : true,newrefresh: false
     };
   };
@@ -30,7 +31,7 @@ static propTypes = {
   fetchOrderBook = async(update) => {
     if(update){this.setState({newrefresh : true})}
     try {
-      let quote = "BWK"
+      let quote = config.coinDetails.shortName
       let base = "BTC"
       quote =  `BRIDGE.${quote}`;
       base = `BRIDGE.${base}`;
@@ -46,7 +47,7 @@ static propTypes = {
           asks: [],
           type: 'snapshot',
           exchange: 'cryptobridge',
-          symbol: "BWK/BTC"
+          symbol: config.coinDetails.shortName + "/BTC"
         };
         //Optimize data retrived
         data.forEach(el => {
