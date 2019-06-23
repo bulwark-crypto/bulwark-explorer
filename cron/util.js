@@ -162,6 +162,7 @@ async function addPoS(block, rpctx) {
   const txout = await vout(rpctx, block.height);
   const txin = await vin(rpctx, block.height);
 
+
   // Give an ability for explorer to identify POS/MN rewards
   const isRewardRawTransaction = blockchain.isRewardRawTransaction(rpctx);
 
@@ -176,6 +177,17 @@ async function addPoS(block, rpctx) {
     vout: txout,
     isReward: isRewardRawTransaction
   };
+
+  // Save tx first then we'll scan it later (as the same )
+  await TX.create(txDetails);
+
+  return txDetails;
+}
+
+/**
+ * Analyse POS reward data (extract useful details such as confirmations)
+ */
+async function performDeepTxAnalysis(block, rpctx, txDetails) {
 
   // @Todo add POW Rewards (Before POS switchover)
   // If our config allows us to extract additional reward data
@@ -242,7 +254,7 @@ async function addPoS(block, rpctx) {
 
   addInvolvedAddresses(txDetails);
 
-  await TX.create(txDetails);
+  txDetails.save();
 }
 
 /**

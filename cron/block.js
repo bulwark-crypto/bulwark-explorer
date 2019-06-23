@@ -65,6 +65,7 @@ async function syncBlocks(start, stop, clean = false) {
     let voutsCount = 0;
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
+    let addedPosTxs = []
     await forEachSeries(block.txs, async (txhash) => {
       const rpctx = await util.getTX(txhash, true);
 
@@ -72,10 +73,16 @@ async function syncBlocks(start, stop, clean = false) {
       voutsCount += rpctx.vout.length;
 
       if (blockchain.isPoS(block)) {
-        await util.addPoS(block, rpctx);
+        const posTx = await util.addPoS(block, rpctx);
+        addedPosTxs.push(posTx);
       } else {
         await util.addPoW(block, rpctx);
       }
+    });
+
+    // After adding the tx we'll scan them and do deep analysis
+    await forEachSeries(addedPosTxs, async (addedPosTx) => {
+      await util.performDeepTxAnalysis(block, rpctx, addedPosTx);
     });
 
     block.vinsCount = vinsCount;
