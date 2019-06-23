@@ -74,7 +74,7 @@ async function syncBlocks(start, stop, clean = false) {
 
       if (blockchain.isPoS(block)) {
         const posTx = await util.addPoS(block, rpctx);
-        addedPosTxs.push(posTx);
+        addedPosTxs.push({ rpctx, posTx });
       } else {
         await util.addPoW(block, rpctx);
       }
@@ -82,7 +82,8 @@ async function syncBlocks(start, stop, clean = false) {
 
     // After adding the tx we'll scan them and do deep analysis
     await forEachSeries(addedPosTxs, async (addedPosTx) => {
-      await util.performDeepTxAnalysis(block, rpctx, addedPosTx);
+      const { rpctx, posTx } = addedPosTx;
+      await util.performDeepTxAnalysis(block, rpctx, posTx);
     });
 
     block.vinsCount = vinsCount;
