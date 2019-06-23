@@ -179,9 +179,7 @@ async function addPoS(block, rpctx) {
   };
 
   // Save tx first then we'll scan it later (as the same )
-  await TX.create(txDetails);
-
-  return txDetails;
+  return await TX.create(txDetails);
 }
 
 /**
