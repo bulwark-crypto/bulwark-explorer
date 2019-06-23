@@ -83,7 +83,9 @@ async function syncBlocks(start, stop, clean = false) {
     // After adding the tx we'll scan them and do deep analysis
     await forEachSeries(addedPosTxs, async (addedPosTx) => {
       const { rpctx, posTx } = addedPosTx;
-      await util.performDeepTxAnalysis(block, rpctx, posTx);
+      if (posTx) {
+        await util.performDeepTxAnalysis(block, rpctx, posTx);
+      }
     });
 
     block.vinsCount = vinsCount;
