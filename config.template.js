@@ -23,7 +23,8 @@ const config = {
     'pass': 'someverysafepassword',
     'timeout': 8000, // 8 seconds
   },
-  verboseCron: true, // If set to true there are extra logging details in cron scripts
+  verboseCron: true,      // If set to true there are extra logging details in cron scripts
+  verboseCronTx: false,   // If set to true there are extra tx logging details in cron scripts (Not recommended)
   coinDetails: {
     name: 'Bulwark',
     shortName: 'BWK',
@@ -47,7 +48,7 @@ const config = {
     //'username': 'Block Report',
     //'icon_emoji': ':bwk:'
   },
-  
+
   ///////////////////////////////
   // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
   ///////////////////////////////
