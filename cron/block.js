@@ -70,7 +70,7 @@ async function syncBlocks(start, stop, clean = false) {
     await forEachSeries(block.txs, async (txhash) => {
 
       const rpctx = await util.getTX(txhash, true);
-      config.verboseCron && console.log(`txId: ${rpctx.txid}`);
+      config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
@@ -83,7 +83,7 @@ async function syncBlocks(start, stop, clean = false) {
         await util.addPoW(block, rpctx);
       }
 
-      config.verboseCron && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
+      config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
     });
 
     // After adding the tx we'll scan them and do deep analysis
