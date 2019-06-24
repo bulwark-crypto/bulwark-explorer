@@ -74,8 +74,6 @@ async function vin(rpctx, blockHeight) {
         if (shouldStoreRelatedVout) {
           const txById = usedTxs.find(usedTx => usedTx.txId == vin.txid);
           if (txById) {
-            failTx(vin, rpctx);
-
             const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)
             vinDetails.relatedVout = {
               value: vinVout.value,
@@ -84,6 +82,8 @@ async function vin(rpctx, blockHeight) {
               date: txById.createdAt,
               age: rpctx.time - txById.createdAt.getTime() / 1000,
             };
+          } else {
+            failTx(vin, rpctx);
           }
         }
       }
