@@ -48,7 +48,7 @@ async function vin(rpctx, blockHeight) {
       console.log(vin);
       console.log("")
 
-      throw `*** UNSUPPORTED BLOCKCHAIN: Could not find related TX: ${vin.txid}`;
+      console.log(`*** UNSUPPORTED BLOCKCHAIN: Could not find related TX: ${vin.txid}`);
     }
 
     const txIds = new Set();
@@ -73,18 +73,18 @@ async function vin(rpctx, blockHeight) {
 
         if (shouldStoreRelatedVout) {
           const txById = usedTxs.find(usedTx => usedTx.txId == vin.txid);
-          if (!txById) {
+          if (txById) {
             failTx(vin, rpctx);
-          }
 
-          const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)
-          vinDetails.relatedVout = {
-            value: vinVout.value,
-            address: vinVout.address,
-            confirmations: blockHeight - txById.blockHeight,
-            date: txById.createdAt,
-            age: rpctx.time - txById.createdAt.getTime() / 1000,
-          };
+            const vinVout = txById.vout.find(vout => vout.n == vin.vout); // Notice how we are accessing by vout number instead of by index (as some vouts are not stored like POS)
+            vinDetails.relatedVout = {
+              value: vinVout.value,
+              address: vinVout.address,
+              confirmations: blockHeight - txById.blockHeight,
+              date: txById.createdAt,
+              age: rpctx.time - txById.createdAt.getTime() / 1000,
+            };
+          }
         }
       }
 
