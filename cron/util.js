@@ -174,11 +174,9 @@ async function addPoS(block, rpctx) {
   if (rpctx.vin[0].coinbase && rpctx.vout[0].value === 0)
     return;
 
-
   // Sync vout first then vins (because a block can have same input as output in the same block)
   const txout = await vout(rpctx, block.height);
   const txin = await vin(rpctx, block.height);
-
 
   // Give an ability for explorer to identify POS/MN rewards
   const isRewardRawTransaction = blockchain.isRewardRawTransaction(rpctx);
@@ -208,7 +206,7 @@ async function performDeepTxAnalysis(block, rpctx, txDetails) {
   // If our config allows us to extract additional reward data
   if (!!config.splitRewardsData) {
     // If this is a rewards transaction fetch the pos & masternode reward details
-    if (txDetails.isRewardRawTransaction) {
+    if (txDetails.isReward) {
 
       const currentTxTime = rpctx.time;
 
@@ -262,7 +260,6 @@ async function performDeepTxAnalysis(block, rpctx, txDetails) {
       );
 
       txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
-
       await blockRewardDetails.save();
     }
   }
