@@ -40,11 +40,18 @@ async function syncBlocks(start, stop, clean = false) {
     await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   }
 
+  let blockSyncing = false;
+
   let block;
   for (let height = start + 1; height <= stop; height++) {
 
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
+
+    if (blockSyncing) {
+      throw "Block-overrun detected Only a single block should be running";
+    }
+    blockSyncing = true;
 
     block = new Block({
       hash,
@@ -67,7 +74,13 @@ async function syncBlocks(start, stop, clean = false) {
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
     let addedPosTxs = []
+    let txSyncing = false;
     await forEachSeries(block.txs, async (txhash) => {
+
+      if (txSyncing) {
+        throw "TX-overrun detected Only a single block should be running";
+      }
+      txSyncing = true;
 
       const rpctx = await util.getTX(txhash, true);
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
@@ -84,6 +97,8 @@ async function syncBlocks(start, stop, clean = false) {
       }
 
       config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
+
+      txSyncing = false;
     });
 
     // After adding the tx we'll scan them and do deep analysis
@@ -102,6 +117,8 @@ async function syncBlocks(start, stop, clean = false) {
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
+
+    blockSyncing = false;
   }
 
   // Post an update to slack incoming webhook if url is
