@@ -18,6 +18,7 @@ import CoinInfo from './container/CoinInfo';
 import Error404 from './container/Error404';
 import FAQ from './container/FAQ';
 import Masternode from './container/Masternode';
+import Market from './container/Market';
 import Movement from './container/Movement';
 import Overview from './container/Overview';
 import Rewards from './container/Rewards';
@@ -169,6 +170,7 @@ class App extends Component {
                   <Route exact path="/coin" component={CoinInfo} />
                   <Route exact path="/faq" component={FAQ} />
                   <Route exact path="/masternode" component={Masternode} />
+                  <Route exact path="/market" component={ Market } />
                   <Route exact path="/rewards" component={Rewards} />
                   <Route exact path="/movement" component={Movement} />
                   <Route exact path="/peer" component={Peer} />
