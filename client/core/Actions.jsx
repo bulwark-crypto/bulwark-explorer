@@ -89,7 +89,11 @@ export const getMNs = (query) => {
     return getFromWorker('mns', resolve, reject, query); // Resolves to getMNs in fetch.worker.js
   });
 };
-
+export const getPPs = (query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker('pps', resolve, reject, query);
+  });
+};
 export const getPeers = () => {
   return new promise((resolve, reject) => {
     return getFromWorker(
@@ -217,6 +221,7 @@ export default {
   getCoinsWeek,
   getIsBlock,
   getMNs,
+  getPPs,
   getPeers,
   getSupply,
   getTop100,
