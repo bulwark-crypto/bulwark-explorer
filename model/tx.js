@@ -54,8 +54,7 @@ const txSchema = new mongoose.Schema({
   vin: { required: true, type: [TXIn] },
   vout: { required: true, type: [TXOut] },
   isReward: { required: false, type: Boolean },
-  blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' },
-  involvedAddresses: { required: true, type: [String], index: true }
+  blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' }
 }, { versionKey: false });
 
 /**
