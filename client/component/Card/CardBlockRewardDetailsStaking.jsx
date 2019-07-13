@@ -11,10 +11,10 @@ export default class CardBlockRewardDetailsStaking extends Component {
   static propTypes = {
     tx: PropTypes.object.isRequired
   };
-  
+
   getBlockRewardLink(reward) {
-    const posRestakeIndicator = <PosRestakeIndicator reward={reward} includeShortName={true} />;
-    
+    const posRestakeIndicator = <PosRestakeIndicator reward={reward} includeShortName={true} showStakeRewardAmount={true} />;
+
     // Link to the previous stake if this is a restake
     if (reward.stake.input.isRestake) {
       return (
