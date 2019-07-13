@@ -318,7 +318,7 @@ async function getTX(txhash, verbose = false) {
 /**
  * Is this a 0 coin transaction from coinbase into nonstandard output? (0 POS txs)
  */
-export const isEmptyNonstandardTx = (tx) => {
+async function isEmptyNonstandardTx(tx) {
   return tx.vin.length === 1 &&
     tx.vin[0].coinbase &&
     tx.vout.length === 1 &&
@@ -334,5 +334,6 @@ module.exports = {
   getTX,
   vin,
   vout,
-  performDeepTxAnalysis
+  performDeepTxAnalysis,
+  isEmptyNonstandardTx
 };

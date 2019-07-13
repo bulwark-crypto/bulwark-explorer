@@ -64,7 +64,7 @@ async function syncBlocks(start, stop, clean = false) {
       nonce: rpcblock.nonce,
       prev: (rpcblock.height == 1) ? 'GENESIS' : rpcblock.previousblockhash ? rpcblock.previousblockhash : 'UNKNOWN',
       size: rpcblock.size,
-      txs: rpcblock.tx ? rpcblock.tx : [],
+      //txs: rpcblock.tx ? rpcblock.tx : [],
       ver: rpcblock.version
     });
 
@@ -73,9 +73,10 @@ async function syncBlocks(start, stop, clean = false) {
     let voutsCount = 0;
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
-    let addedPosTxs = []
+    let rpctxs = [];
+    let addedPosTxs = [];
     let txSyncing = false;
-    await forEachSeries(block.txs, async (txhash) => {
+    await forEachSeries(rpcblock.tx, async (txhash) => {
 
       if (txSyncing) {
         throw "TX-overrun detected Only a single block should be running";
@@ -83,6 +84,9 @@ async function syncBlocks(start, stop, clean = false) {
       txSyncing = true;
 
       const rpctx = await util.getTX(txhash, true);
+      console.log(txhash);
+
+      rpctxs.push(rpctx);
 
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
@@ -105,6 +109,18 @@ async function syncBlocks(start, stop, clean = false) {
       config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
 
       txSyncing = false;
+    });
+
+    console.log('rpctxs:', height, rpctxs);
+
+    // Carver2D
+    await forEachSeries(rpctxs, async (rpctx) => {
+      // Empty POS txs do not need to be processed
+      if (util.isEmptyNonstandardTx(rpctx)) {
+        return;
+      }
+
+
     });
 
     // After adding the tx we'll scan them and do deep analysis
