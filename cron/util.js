@@ -95,7 +95,7 @@ async function vin(rpctx, blockHeight) {
 
     // Remove unspent transactions.
     if (txIds.size) {
-      await UTXO.remove({ _id: { $in: Array.from(txIds) } });
+      //await UTXO.remove({ _id: { $in: Array.from(txIds) } });
     }
   }
   return txin;
@@ -110,7 +110,7 @@ async function vout(rpctx, blockHeight) {
   // Setup the outputs for the transaction.
   const txout = [];
   if (rpctx.vout) {
-    const utxo = [];
+    //const utxo = [];
     rpctx.vout.forEach((vout) => {
       if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
         return;
@@ -139,11 +139,11 @@ async function vout(rpctx, blockHeight) {
       };
 
       // Always add UTXO since we'll be aggregating it in richlist
-      utxo.push({
+      /*utxo.push({
         ...to,
         _id: `${rpctx.txid}:${vout.n}`,
         txId: rpctx.txid
-      });
+      });*/
 
       if (toAddress != 'NON_STANDARD') {
         txout.push(to);
@@ -151,7 +151,7 @@ async function vout(rpctx, blockHeight) {
     });
 
     // Insert unspent transactions.
-    if (utxo.length) {
+    /*if (utxo.length) {
       try {
         await UTXO.insertMany(utxo);
       } catch (ex) {
@@ -159,7 +159,7 @@ async function vout(rpctx, blockHeight) {
         console.log(utxo);
         throw ex;
       }
-    }
+    }*/
   }
   return txout;
 }
@@ -264,7 +264,6 @@ async function performDeepTxAnalysis(block, rpctx, txDetails) {
     }
   }
 
-  addInvolvedAddresses(txDetails);
 
   await txDetails.save();
 }
@@ -290,30 +289,8 @@ async function addPoW(block, rpctx) {
     vout: txout
   };
 
-  addInvolvedAddresses(txDetails);
 
   await TX.create(txDetails);
-}
-
-/**
- * Store addresses involved in any vin or vouts, We'll use this as the basis for new "perfect ledger system" 
- * @param {String} tx Mongodb TX doc
- */
-function addInvolvedAddresses(tx) {
-  let involvedAddresses = new Set(); // Will store distinct addresses used in this transaction
-
-  tx.vout.forEach(vout => {
-    if (vout.address) {
-      involvedAddresses.add(vout.address);
-    }
-  });
-  tx.vin.forEach(vin => {
-    if (vin.relatedVout) {
-      involvedAddresses.add(vin.relatedVout.address);
-    }
-  });
-
-  tx.involvedAddresses = Array.from(involvedAddresses);
 }
 
 /**
@@ -336,6 +313,19 @@ async function getTX(txhash, verbose = false) {
   }
   const hex = await rpc.call('getrawtransaction', [txhash]);
   return await rpc.call('decoderawtransaction', [hex]);
+}
+
+/**
+ * Is this a 0 coin transaction from coinbase into nonstandard output? (0 POS txs)
+ */
+export const isEmptyNonstandardTx = (tx) => {
+  return tx.vin.length === 1 &&
+    tx.vin[0].coinbase &&
+    tx.vout.length === 1 &&
+    tx.vout[0].value === 0 &&
+    tx.vout[0].n === 0 &&
+    tx.vout[0].scriptPubKey &&
+    tx.vout[0].scriptPubKey.type === 'nonstandard';
 }
 
 module.exports = {
