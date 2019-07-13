@@ -64,9 +64,13 @@ const getAddress = async (req, res) => {
     const isMasternode = !!masternodeForAddress;
 
     const txs = await qtxs;
-    const utxo = await qutxo;
-    const balance = utxo.reduce((acc, tx) => acc + tx.value, 0.0);
-    const received = txs.reduce((acc, tx) => acc + tx.vout.reduce((a, t) => a + t.value, 0.0), 0.0);
+    //const utxo = await qutxo;
+    // const balance = utxo.reduce((acc, tx) => acc + tx.value, 0.0);
+    //const received = txs.reduce((acc, tx) => acc + tx.vout.reduce((a, t) => a + t.value, 0.0), 0.0);
+
+    //@todo
+    const balance = 0;
+    const received = 0;
 
     res.json({ balance, received, txs, utxo, isMasternode });
   } catch (err) {
@@ -189,7 +193,7 @@ const getBlock = async (req, res) => {
       return;
     }
 
-    const txs = await TX.find({ txId: { $in: block.txs } }, { involvedAddresses: 0 });
+    const txs = await TX.find({ txId: { $in: block.txs } });
 
     res.json({ block, txs });
   } catch (err) {
@@ -410,6 +414,7 @@ const getSupply = async (req, res) => {
     let c = 0; // Circulating supply.
     let t = 0; // Total supply.
 
+    /*
     let supply = await cache.getFromCache("supply", moment().utc().add(1, 'hours').unix(), async () => {
       const utxo = await UTXO.aggregate([
         { $group: { _id: 'supply', total: { $sum: '$value' } } }
@@ -419,7 +424,10 @@ const getSupply = async (req, res) => {
       c = t;
 
       return { c, t };
-    });
+    });*/
+
+    //@todo
+    const supply = { c: 0, t: 0 }
 
     res.json(supply);
   } catch (err) {
@@ -456,7 +464,7 @@ const getTop100 = async (req, res) => {
 const getTXLatest = async (req, res) => {
   try {
     const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
-      return await TX.find({}, { involvedAddresses: 0 }) // Don't include involvedAddresses for txs as 1000 inputs would give 1000 extra addresses
+      return await TX.find({})
         .populate('blockRewardDetails')
         .limit(10)
         .sort({ blockHeight: -1 });
@@ -503,8 +511,8 @@ const getTXs = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     const total = await TX.count();
-    const txs = await TX.find({}, { involvedAddresses: 0 }).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
-    
+    const txs = await TX.find({}).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
+
     //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
@@ -526,7 +534,7 @@ const getRewards = async (req, res) => {
 
     const total = await BlockRewardDetails.count();
     const rewards = await BlockRewardDetails.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
-    
+
     res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {
     console.log(err);

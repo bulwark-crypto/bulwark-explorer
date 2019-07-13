@@ -21,7 +21,7 @@ async function clearDatabase() {
   await Peer.remove({});
   await Rich.remove({});
   await TX.remove({});
-  await UTXO.remove({});
+  //await UTXO.remove({});
 }
 
 /**
@@ -39,7 +39,7 @@ async function update() {
     locker.lock('tx');
     locker.lock('utxo');
     await clearDatabase();
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     code = 1;
   } finally {
@@ -51,7 +51,7 @@ async function update() {
       locker.unlock('rich');
       locker.unlock('tx');
       locker.unlock('utxo');
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       code = 1;
     }

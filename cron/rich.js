@@ -11,6 +11,8 @@ const UTXO = require('../model/utxo');
  * unspent transactions.
  */
 async function syncRich() {
+  //@todo
+  /*
   await Rich.remove({});
 
   const addresses = await UTXO.aggregate([
@@ -22,7 +24,7 @@ async function syncRich() {
   await Rich.insertMany(addresses.filter(addr => addr._id !== 'ZEROCOIN').map(addr => ({
     address: addr._id,
     value: addr.sum
-  })));
+  })));*/
 }
 
 /**
@@ -35,13 +37,13 @@ async function update() {
   try {
     locker.lock(type);
     await syncRich();
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     code = 1;
   } finally {
     try {
       locker.unlock(type);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       code = 1;
     }

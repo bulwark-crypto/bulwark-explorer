@@ -36,7 +36,7 @@ async function syncBlocks(start, stop, clean = false) {
   if (clean) {
     await Block.remove({ height: { $gt: start, $lte: stop } });
     await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
-    await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
+    // await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
     await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   }
 
@@ -83,13 +83,19 @@ async function syncBlocks(start, stop, clean = false) {
       txSyncing = true;
 
       const rpctx = await util.getTX(txhash, true);
+
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
 
-      let postTx = null;
       if (blockchain.isPoS(block)) {
+
+        // Empty POS txs do not need to be processed
+        if (util.isEmptyNonstandardTx(rpctx)) {
+          return;
+        }
+
         posTx = await util.addPoS(block, rpctx);
         addedPosTxs.push({ rpctx, posTx });
       } else {
@@ -120,6 +126,8 @@ async function syncBlocks(start, stop, clean = false) {
 
     blockSyncing = false;
   }
+
+  //@todo Remove the slack integration below:
 
   // Post an update to slack incoming webhook if url is
   // provided in config.js.
