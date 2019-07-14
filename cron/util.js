@@ -61,6 +61,7 @@ async function vin(rpctx, blockHeight) {
         vout: vin.vout
       };
 
+      /*
       // Find the matching vout for vin and store extra metadata for vout
       if (vin.txid) {
         let shouldStoreRelatedVout = true;
@@ -87,6 +88,7 @@ async function vin(rpctx, blockHeight) {
           }
         }
       }
+      */
 
       txin.push(vinDetails);
 
@@ -202,7 +204,9 @@ async function addPoS(block, rpctx) {
  */
 async function performDeepTxAnalysis(block, rpctx, txDetails) {
 
-  // @Todo add POW Rewards (Before POS switchover)
+  //@todo add POW Rewards (Before POS switchover)
+  //@todo add POS with stake split (three outputs)
+
   // If our config allows us to extract additional reward data
   if (!!config.splitRewardsData) {
     // If this is a rewards transaction fetch the pos & masternode reward details
@@ -318,15 +322,36 @@ async function getTX(txhash, verbose = false) {
 /**
  * Is this a 0 coin transaction from coinbase into nonstandard output? (0 POS txs)
  */
-async function isEmptyNonstandardTx(tx) {
-  return tx.vin.length === 1 &&
-    tx.vin[0].coinbase &&
-    tx.vout.length === 1 &&
-    tx.vout[0].value === 0 &&
-    tx.vout[0].n === 0 &&
-    tx.vout[0].scriptPubKey &&
-    tx.vout[0].scriptPubKey.type === 'nonstandard';
+function isEmptyNonstandardTx(rpctx) {
+  return rpctx.vin.length === 1 &&
+    rpctx.vin[0].coinbase &&
+    rpctx.vout.length === 1 &&
+    rpctx.vout[0].value === 0 &&
+    rpctx.vout[0].n === 0 &&
+    rpctx.vout[0].scriptPubKey &&
+    rpctx.vout[0].scriptPubKey.type === 'nonstandard';
 }
+
+function getVinTxIds(rpctx) {
+  const addressLabels = new Set();
+
+  for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
+    const vin = rpctx.vin[vinIndex];
+
+    if (vin.txid) {
+      if (vin.vout === undefined) {
+        console.log(vin);
+        throw 'VIN TXID WITHOUT VOUT?';
+      }
+
+      addressLabels.add(`${vin.txid}:${vin.vout}`);
+    }
+
+  }
+
+  return Array.from(addressLabels);
+}
+
 
 module.exports = {
   addPoS,
@@ -335,5 +360,6 @@ module.exports = {
   vin,
   vout,
   performDeepTxAnalysis,
-  isEmptyNonstandardTx
+  isEmptyNonstandardTx,
+  getVinTxIds
 };

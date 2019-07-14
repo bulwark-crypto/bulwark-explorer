@@ -1,5 +1,6 @@
 
 require('babel-polyfill');
+const mongoose = require('mongoose');
 const blockchain = require('../lib/blockchain');
 const config = require('../config');
 const { exit, rpc } = require('../lib/cron');
@@ -54,6 +55,7 @@ async function syncBlocks(start, stop, clean = false) {
     blockSyncing = true;
 
     block = new Block({
+      _id: new mongoose.Types.ObjectId(),
       hash,
       height,
       bits: rpcblock.bits,
@@ -65,6 +67,7 @@ async function syncBlocks(start, stop, clean = false) {
       prev: (rpcblock.height == 1) ? 'GENESIS' : rpcblock.previousblockhash ? rpcblock.previousblockhash : 'UNKNOWN',
       size: rpcblock.size,
       //txs: rpcblock.tx ? rpcblock.tx : [],
+      txs: [],
       ver: rpcblock.version
     });
 
@@ -84,7 +87,6 @@ async function syncBlocks(start, stop, clean = false) {
       txSyncing = true;
 
       const rpctx = await util.getTX(txhash, true);
-      console.log(txhash);
 
       rpctxs.push(rpctx);
 
@@ -111,13 +113,18 @@ async function syncBlocks(start, stop, clean = false) {
       txSyncing = false;
     });
 
-    console.log('rpctxs:', height, rpctxs);
-
     // Carver2D
     await forEachSeries(rpctxs, async (rpctx) => {
       // Empty POS txs do not need to be processed
       if (util.isEmptyNonstandardTx(rpctx)) {
         return;
+      }
+
+      const vinTxIds = util.getVinTxIds(rpctx); // get all vins with tx ids (that way we can get batch carver movements instead of querying one at a time)
+
+      if (vinTxIds.length > 0) {
+        console.log('vin tx ids:', vinTxIds);
+        throw '';
       }
 
 
@@ -134,6 +141,7 @@ async function syncBlocks(start, stop, clean = false) {
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;
 
+    console.log('txs:', block.txs);
     // Notice how this is done at the end. If we crash half way through syncing a block, we'll re-try till the block was correctly saved.
     await block.save();
 
@@ -242,7 +250,7 @@ async function update() {
     await syncBlocks(dbHeight, rpcHeight, clean);
     config.verboseCron && console.dateLog(`Sync Finished!`);
   } catch (err) {
-    console.dateLog(err);
+    console.dateLog(`*** Cron Exception: ${err}`);
     code = 1;
   } finally {
     // Try to release the lock if lock was acquired
