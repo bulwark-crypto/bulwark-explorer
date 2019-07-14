@@ -2,20 +2,20 @@
 const mongoose = require('mongoose');
 
 // This enum was originally a Typescript enum
-export const AddressType = {
+const CarverAddressType = {
   Tx: 0,
   Address: 1,
   Coinbase: 2,
   Zerocoin: 3,
   Burn: 4
 }
-export const Address = mongoose.model('Address', new mongoose.Schema({
+const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   label: { required: true, unique: true, index: true, type: String },
   balance: { index: true, required: true, type: Number },
 
   time: { index: true, required: true, type: Number },
-  addressType: { index: true, required: true, type: Number },
+  carverAddressType: { index: true, required: true, type: Number },
 
   lastMovementTime: { index: true, required: true, type: Number },
   valueOut: { index: true, required: true, type: Number },
@@ -24,10 +24,10 @@ export const Address = mongoose.model('Address', new mongoose.Schema({
   countOut: { index: true, required: true, type: Number },
 
   sequence: { required: true, type: Number },
-}, { _id: false, versionKey: false }), 'addresses');
+}, { _id: false, versionKey: false }), 'carverAddresses');
 
 // This enum was originally a Typescript enum
-export const MovementType = {
+const CarverMovementType = {
   CoinbaseToTx: 0,
 
   AddressToTx: 1,
@@ -42,10 +42,10 @@ export const MovementType = {
   TxToZerocoin: 8,
   Burn: 9
 }
-export const Movement = mongoose.model('Movement', new mongoose.Schema({
+const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
-  movementType: { required: true, index: true, type: Number },
+  carverMovementType: { required: true, index: true, type: Number },
 
   label: { required: true, unique: true, index: true, type: String },
   amount: { required: true, index: true, type: Number },
@@ -54,9 +54,16 @@ export const Movement = mongoose.model('Movement', new mongoose.Schema({
   fromBalance: { required: true, type: Number },
   toBalance: { required: true, type: Number },
 
-  from: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
-  to: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
+  from: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  to: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
 
   sequence: { unique: true, required: true, type: Number }
-}, { _id: false, versionKey: false }), 'movements');
+}, { _id: false, versionKey: false }), 'carverMovements');
 
+
+module.exports = {
+  CarverAddressType,
+  CarverAddress,
+  CarverMovementType,
+  CarverMovement
+}

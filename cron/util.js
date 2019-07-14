@@ -332,25 +332,6 @@ function isEmptyNonstandardTx(rpctx) {
     rpctx.vout[0].scriptPubKey.type === 'nonstandard';
 }
 
-function getVinTxIds(rpctx) {
-  const addressLabels = new Set();
-
-  for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
-    const vin = rpctx.vin[vinIndex];
-
-    if (vin.txid) {
-      if (vin.vout === undefined) {
-        console.log(vin);
-        throw 'VIN TXID WITHOUT VOUT?';
-      }
-
-      addressLabels.add(`${vin.txid}:${vin.vout}`);
-    }
-
-  }
-
-  return Array.from(addressLabels);
-}
 
 
 module.exports = {
@@ -361,5 +342,4 @@ module.exports = {
   vout,
   performDeepTxAnalysis,
   isEmptyNonstandardTx,
-  getVinTxIds
 };

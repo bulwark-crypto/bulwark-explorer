@@ -8,6 +8,7 @@ const { forEachSeries } = require('p-iteration');
 const { IncomingWebhook } = require('@slack/client');
 const locker = require('../lib/locker');
 const util = require('./util');
+const carver2d = require('./carver2d');
 
 // Models.
 const Block = require('../model/block');
@@ -49,6 +50,7 @@ async function syncBlocks(start, stop, clean = false) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
+
     if (blockSyncing) {
       throw "Block-overrun detected Only a single block should be running";
     }
@@ -76,19 +78,12 @@ async function syncBlocks(start, stop, clean = false) {
     let voutsCount = 0;
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
-    let rpctxs = [];
     let addedPosTxs = [];
-    let txSyncing = false;
-    await forEachSeries(rpcblock.tx, async (txhash) => {
 
-      if (txSyncing) {
-        throw "TX-overrun detected Only a single block should be running";
-      }
-      txSyncing = true;
+    for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
+      const txhash = rpcblock.tx[txIndex];
 
       const rpctx = await util.getTX(txhash, true);
-
-      rpctxs.push(rpctx);
 
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
@@ -110,25 +105,22 @@ async function syncBlocks(start, stop, clean = false) {
 
       config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
 
-      txSyncing = false;
-    });
-
-    // Carver2D
-    await forEachSeries(rpctxs, async (rpctx) => {
+      // Carver2D
       // Empty POS txs do not need to be processed
-      if (util.isEmptyNonstandardTx(rpctx)) {
-        return;
+      if (!util.isEmptyNonstandardTx(rpctx)) {
+
+        const vinTxInputs = carver2d.getVinTxInputs(rpctx); // get all vins with tx ids (that way we can get batch carver movements instead of querying one at a time)
+        const vinAddresses = await carver2d.getVinCarverAddresses(rpctx, vinTxInputs);
+
+        if (vinAddresses.length > 0) {
+          console.log('vin tx ids:', vinAddresses);
+          throw 'Vin address match found';
+        }
       }
-
-      const vinTxIds = util.getVinTxIds(rpctx); // get all vins with tx ids (that way we can get batch carver movements instead of querying one at a time)
-
-      if (vinTxIds.length > 0) {
-        console.log('vin tx ids:', vinTxIds);
-        throw '';
-      }
+    }
 
 
-    });
+
 
     // After adding the tx we'll scan them and do deep analysis
     await forEachSeries(addedPosTxs, async (addedPosTx) => {
