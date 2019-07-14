@@ -48,7 +48,7 @@ const CardROI = ({ coin, supply }) => {
       </div>
       <div className="mb-3">
         <div className="h3">
-          { numeral(coin.cap * coin.btc).format('0,0.0000') } BTC
+          { numeral(coin.btc / coin.usd * coin.cap).format('0,0.0000') } BTC
         </div>
         <div className="h5">
           Market Cap BTC
