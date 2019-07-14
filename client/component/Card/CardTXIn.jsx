@@ -22,6 +22,7 @@ export default class CardTXIn extends Component {
   getInputLabel(vin) {
     let inputLabel = 'Unknown';
 
+    //@todo this needs work as we're no longer using relatedVout
     if (vin.relatedVout) {
       inputLabel = vin.relatedVout.address;
     } else if (vin.coinbase) {
@@ -57,26 +58,26 @@ export default class CardTXIn extends Component {
   render() {
     return (
       <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
+        cols={this.state.cols}
+        data={this.props.txs.map(tx => ({
           ...tx,
           address: tx.relatedVout
-            ? (<Link to={ `/address/${ tx.relatedVout.address }` }>{ this.getInputLabel(tx) }</Link>)
+            ? (<Link to={`/address/${tx.relatedVout.address}`}>{this.getInputLabel(tx)}</Link>)
             : this.getInputLabel(tx),
           age: tx.relatedVout
-            ? (<Link to={ `/address/${ tx.relatedVout.address }` }>{ (tx.relatedVout.age / 60 / 60).toFixed(2) }h</Link>)
+            ? (<Link to={`/address/${tx.relatedVout.address}`}>{(tx.relatedVout.age / 60 / 60).toFixed(2)}h</Link>)
             : '',
           confirmations: tx.relatedVout
-            ? (<Link to={ `/address/${ tx.relatedVout.address }` }>{ tx.relatedVout.confirmations }</Link>)
+            ? (<Link to={`/address/${tx.relatedVout.address}`}>{tx.relatedVout.confirmations}</Link>)
             : '',
           value: tx.relatedVout
             ? (
-                <span className="badge badge-danger">
+              <span className="badge badge-danger">
                 -{numeral(tx.relatedVout.value).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
-                </span>
-              )
+              </span>
+            )
             : 'N/A'
-        })) } />
+        }))} />
     );
   };
 }
