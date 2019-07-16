@@ -33,28 +33,23 @@ console.dateLog = (...log) => {
  * Process the blocks and transactions.
  * @param {Number} start The current starting block height.
  * @param {Number} stop The current block height at the tip of the chain.
+ * @param {Number} sequence For blockchain sequencing (last sequence of inserted block)
  */
-async function syncBlocks(start, stop, clean = false) {
+async function syncBlocks(start, stop, sequence) {
+  /*
   if (clean) {
     await Block.remove({ height: { $gt: start, $lte: stop } });
     await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
     // await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
     await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   }
-
-  let blockSyncing = false;
+  */
 
   let block;
   for (let height = start + 1; height <= stop; height++) {
 
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
-
-
-    if (blockSyncing) {
-      throw "Block-overrun detected Only a single block should be running";
-    }
-    blockSyncing = true;
 
     block = new Block({
       _id: new mongoose.Types.ObjectId(),
@@ -72,6 +67,8 @@ async function syncBlocks(start, stop, clean = false) {
       txs: [],
       ver: rpcblock.version
     });
+
+    const sequenceStart = sequence;
 
     // Count how many inputs/outputs are in each block
     let vinsCount = 0;
@@ -109,8 +106,8 @@ async function syncBlocks(start, stop, clean = false) {
       // Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
 
-        const vinTxInputs = carver2d.getVinTxInputs(rpctx); // get all vins with tx ids (that way we can get batch carver movements instead of querying one at a time)
-        const vinAddresses = await carver2d.getVinCarverAddresses(rpctx, vinTxInputs);
+        const vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
+        const vinMovements = carver2d.getVinMovements(rpctx, vinAddresses);
 
         if (vinAddresses.length > 0) {
           console.log('vin tx ids:', vinAddresses);
@@ -132,6 +129,8 @@ async function syncBlocks(start, stop, clean = false) {
 
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;
+    block.sequenceStart = sequenceStart;
+    block.sequenceEnd = sequence;
 
     console.log('txs:', block.txs);
     // Notice how this is done at the end. If we crash half way through syncing a block, we'll re-try till the block was correctly saved.
@@ -139,8 +138,6 @@ async function syncBlocks(start, stop, clean = false) {
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
-
-    blockSyncing = false;
   }
 
   //@todo Remove the slack integration below:
@@ -216,6 +213,7 @@ async function update() {
 
     const info = await rpc.call('getinfo');
     const block = await Block.findOne().sort({ height: -1 });
+    let sequence = block ? block.sequenceEnd : 0;
 
     let clean = true;
     let dbHeight = block && block.height ? block.height : 0; // Height + 1 because block is the last item inserted. If we have the block that means all data for that block exists
@@ -239,10 +237,11 @@ async function update() {
     }
 
     config.verboseCron && console.dateLog(`Sync Started!`);
-    await syncBlocks(dbHeight, rpcHeight, clean);
+    await syncBlocks(dbHeight, rpcHeight, sequence);
     config.verboseCron && console.dateLog(`Sync Finished!`);
   } catch (err) {
-    console.dateLog(`*** Cron Exception: ${err}`);
+    console.log(err);
+    console.dateLog(`*** Cron Exception!`);
     code = 1;
   } finally {
     // Try to release the lock if lock was acquired
