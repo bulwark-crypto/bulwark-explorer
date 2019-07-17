@@ -25,7 +25,7 @@ async function isPosTx(tx) {
 }
 
 
-async function getOrCreateCarverAddress(carverAddressType, label, time, sequence) {
+async function getOrCreateCarverAddress(carverAddressType, label, blockDate, sequence) {
   let carverAddress = await CarverAddress.findOne({ label });
 
   if (!carverAddress) {
@@ -34,8 +34,8 @@ async function getOrCreateCarverAddress(carverAddressType, label, time, sequence
       label,
       balance: 0,
 
-      time,
-      lastMovementTime: time,
+      date: blockDate,
+      lastMovementDate: blockDate,
       carverAddressType,
 
       // for stats
@@ -56,13 +56,14 @@ async function getOrCreateCarverAddress(carverAddressType, label, time, sequence
  * Go through vins, find unique addresses and fetch them all at once
  */
 async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
+  const blockDate = new Date(rpcblock.time * 1000);
 
   const vinAddresses = new Map();
   const vinTxInputs = new Set();
 
   const sumVoutAmount = rpctx.vout.map(vout => vout.value).reduce((prev, curr) => prev + curr, 0);
 
-  const txAddress = await getOrCreateCarverAddress(CarverAddressType.Tx, rpctx.txid, rpcblock.time, ++sequence);
+  const txAddress = await getOrCreateCarverAddress(CarverAddressType.Tx, rpctx.txid, blockDate, ++sequence);
   vinAddresses.set(rpctx.txid, { address: txAddress, amount: sumVoutAmount });
 
   for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
@@ -71,13 +72,13 @@ async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
     if (vin.coinbase) {
       const label = 'COINBASE';
       if (!vinAddresses.has(label)) {
-        const address = await getOrCreateCarverAddress(CarverAddressType.Coinbase, label, rpcblock.time, ++sequence);
+        const address = await getOrCreateCarverAddress(CarverAddressType.Coinbase, label, blockDate, ++sequence);
         vinAddresses.set(label, { address, amount: sumVoutAmount });
       }
     } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
       const label = 'ZEROCOIN';
       if (!vinAddresses.has(label)) {
-        const address = await getOrCreateCarverAddress(CarverAddressType.Zerocoin, label, rpcblock.time, ++sequence);
+        const address = await getOrCreateCarverAddress(CarverAddressType.Zerocoin, label, blockDate, ++sequence);
         vinAddresses.set(label, { address, amount: sumVoutAmount });
       }
     } else if (vin.txid) {

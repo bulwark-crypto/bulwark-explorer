@@ -5,10 +5,10 @@ const blockchain = require('../lib/blockchain');
 const config = require('../config');
 const { exit, rpc } = require('../lib/cron');
 const { forEachSeries } = require('p-iteration');
-const { IncomingWebhook } = require('@slack/client');
 const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
+const { CarverMovement } = require('../model/carver2d');
 
 // Models.
 const Block = require('../model/block');
@@ -45,19 +45,27 @@ async function syncBlocks(start, stop, sequence) {
   }
   */
 
+  const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 });
+
+  const sequences = {
+    movements: lastMovement ? lastMovement.sequence : 0
+  }
+
+
   let block;
   for (let height = start + 1; height <= stop; height++) {
 
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
+    const blockDate = new Date(rpcblock.time * 1000);
     block = new Block({
       _id: new mongoose.Types.ObjectId(),
       hash,
       height,
       bits: rpcblock.bits,
       confirmations: rpcblock.confirmations,
-      createdAt: new Date(rpcblock.time * 1000),
+      createdAt: blockDate,
       diff: rpcblock.difficulty,
       merkle: rpcblock.merkleroot,
       nonce: rpcblock.nonce,
@@ -109,15 +117,33 @@ async function syncBlocks(start, stop, sequence) {
         const vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
         const vinMovements = carver2d.getVinMovements(rpctx, vinAddresses);
 
-        if (vinMovements.length > 0) {
-          console.log('vin movements:', vinMovements);
-          throw 'Vin address match found';
-        }
+        let newMovements = [];
+
+        vinMovements.forEach(vinMovement => {
+          if (++sequence > sequences.movements) {
+            newMovements.push(new CarverMovement({
+              _id: new mongoose.Types.ObjectId(),
+
+              label: vinMovement.label,
+              amount: vinMovement.amount,
+
+              date: blockDate,
+
+              from: vinMovement.from._id,
+              to: vinMovement.to._id,
+
+              fromBalance: vinMovement.from.balance,
+              toBalance: vinMovement.to.balance,
+
+              carverMovementType: vinMovement.type,
+              sequence: sequence
+            }));
+          }
+        });
+
+        await CarverMovement.insertMany(newMovements);
       }
     }
-
-
-
 
     // After adding the tx we'll scan them and do deep analysis
     await forEachSeries(addedPosTxs, async (addedPosTx) => {
@@ -132,67 +158,11 @@ async function syncBlocks(start, stop, sequence) {
     block.sequenceStart = sequenceStart;
     block.sequenceEnd = sequence;
 
-    console.log('txs:', block.txs);
     // Notice how this is done at the end. If we crash half way through syncing a block, we'll re-try till the block was correctly saved.
     await block.save();
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
-  }
-
-  //@todo Remove the slack integration below:
-
-  // Post an update to slack incoming webhook if url is
-  // provided in config.js.
-  if (block && !!config.slack && !!config.slack.url) {
-    const webhook = new IncomingWebhook(config.slack.url);
-    const superblock = await rpc.call('getnextsuperblock');
-    const finalBlock = superblock - 1920;
-
-    let text = '';
-    // If finalization period is within 12 hours (12 * 60 * 60) / 90 = 480
-    if (block.height == (finalBlock - 480)) {
-      text = `
-      Finalization window starts in 12 hours.\n
-      \n
-      Current block: ${block.height}\n
-      Finalization block: ${finalBlock}\n
-      Budget payment block: ${superblock}\n
-      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
-      `;
-    }
-    // If finalization block.
-    else if (block.height == finalBlock) {
-      text = `
-      Finalization block!\n
-      \n
-      Block: ${block.height}\n
-      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
-      `;
-    }
-    // If budget payment block start then notify.
-    else if (block.height == superblock) {
-      text = `
-      Governance payment(s) started!\n
-      \n
-      Block: ${block.height}\n
-      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
-      `;
-    }
-    // Just every block for now while testing.
-    else {
-      text = `Block: ${block.height}\n`;
-    }
-
-    if (!!text) {
-      webhook.send(text, (err, res) => {
-        if (err) {
-          console.log('Slack Error:', err);
-          return;
-        }
-        console.log('Slack Message:', res);
-      });
-    }
   }
 }
 

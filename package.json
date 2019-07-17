@@ -24,7 +24,6 @@
     "test:web": "mocha --compilers js:babel-core/register ./test/client"
   },
   "dependencies": {
-    "@slack/client": "^4.8.0",
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",

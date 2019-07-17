@@ -14,10 +14,10 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   label: { required: true, unique: true, index: true, type: String },
   balance: { index: true, required: true, type: Number },
 
-  time: { index: true, required: true, type: Number },
+  date: { index: true, required: true, type: Date },
   carverAddressType: { index: true, required: true, type: Number },
 
-  lastMovementTime: { index: true, required: true, type: Number },
+  lastMovementDate: { index: true, required: true, type: Date },
   valueOut: { index: true, required: true, type: Number },
   valueIn: { index: true, required: true, type: Number },
   countIn: { index: true, required: true, type: Number },
@@ -50,7 +50,7 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   label: { required: true, unique: true, index: true, type: String },
   amount: { required: true, index: true, type: Number },
 
-  time: { index: true, required: true, type: Number },
+  date: { index: true, required: true, type: Date },
   fromBalance: { required: true, type: Number },
   toBalance: { required: true, type: Number },
 
