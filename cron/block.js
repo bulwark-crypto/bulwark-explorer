@@ -109,8 +109,8 @@ async function syncBlocks(start, stop, sequence) {
         const vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
         const vinMovements = carver2d.getVinMovements(rpctx, vinAddresses);
 
-        if (vinAddresses.length > 0) {
-          console.log('vin tx ids:', vinAddresses);
+        if (vinMovements.length > 0) {
+          console.log('vin movements:', vinMovements);
           throw 'Vin address match found';
         }
       }

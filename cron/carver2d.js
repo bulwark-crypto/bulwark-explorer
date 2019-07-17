@@ -60,8 +60,10 @@ async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
   const vinAddresses = new Map();
   const vinTxInputs = new Set();
 
+  const sumVoutAmount = rpctx.vout.map(vout => vout.value).reduce((prev, curr) => prev + curr, 0);
+
   const txAddress = await getOrCreateCarverAddress(CarverAddressType.Tx, rpctx.txid, rpcblock.time, ++sequence);
-  vinAddresses.set(rpctx.txid, txAddress);
+  vinAddresses.set(rpctx.txid, { address: txAddress, amount: sumVoutAmount });
 
   for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
     const vin = rpctx.vin[vinIndex];
@@ -70,13 +72,13 @@ async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
       const label = 'COINBASE';
       if (!vinAddresses.has(label)) {
         const address = await getOrCreateCarverAddress(CarverAddressType.Coinbase, label, rpcblock.time, ++sequence);
-        vinAddresses.set(label, address);
+        vinAddresses.set(label, { address, amount: sumVoutAmount });
       }
     } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
       const label = 'ZEROCOIN';
       if (!vinAddresses.has(label)) {
         const address = await getOrCreateCarverAddress(CarverAddressType.Zerocoin, label, rpcblock.time, ++sequence);
-        vinAddresses.set(label, address);
+        vinAddresses.set(label, { address, amount: sumVoutAmount });
       }
     } else if (vin.txid) {
       const label = `${vin.txid}:${vin.vout}`;
@@ -90,7 +92,11 @@ async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
 
     vinTxInputs.forEach(txInput => {
       const vinMovement = vinMovements.find(vinMovement => vinMovement.label === txInput);
-      console.log(vinMovement);
+      console.log(txInput, vinMovement);
+
+      //const movementLabel = `${vinIndex}:${txid}`; //use vin index + txid as identifier
+      //const 
+
       throw 'got vin movements!!!!!!'
     });
 
@@ -100,14 +106,14 @@ async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
 
   return vinAddresses;
 }
-function getVinMovements(rpctx, addresses) {
+function getVinMovements(rpctx, vinAddresses) {
   let movements = [];
 
-  const txAmount = rpctx.vout.map(vout => vout.value).reduce((prev, curr) => prev + curr, 0);
 
   const txid = rpctx.txid;
 
-  const txAddress = addresses.get(txid);
+  const txAddress = vinAddresses.get(txid).address;
+  const txAmount = vinAddresses.get(txid).amount;
   if (!txAddress) {
     console.log(txid);
     throw 'VIN TX ID NOT FOUND?'
@@ -128,10 +134,10 @@ function getVinMovements(rpctx, addresses) {
         throw "COINBASE WITH >1 VIN?";
       }
 
-      const coinbaseAddress = addresses['COINBASE']
+      const coinbaseAddress = vinAddresses.get('COINBASE').address;
       movements.push({ type: CarverMovementType.CoinbaseToTx, label: movementLabel, from: coinbaseAddress, to: txAddress, amount: txAmount });
     } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
-      const zerocoinAddress = addresses['ZEROCOIN']
+      const zerocoinAddress = vinAddresses.get('ZEROCOIN').address;
       movements.push({ type: CarverMovementType.ZerocoinToTx, label: movementLabel, from: zerocoinAddress, to: txAddress, amount: txAmount });
     } else if (vin.txid) {
       if (vin.vout === undefined) {
@@ -140,16 +146,17 @@ function getVinMovements(rpctx, addresses) {
       }
 
       const label = `${vin.txid}:${vin.vout}`;
-      const vinAddress = addresses[label];
+      const vinAddress = vinAddresses.get(label).address;
+      const vinAmount = vinAddresses.get(label).amount;
 
       const movementLabel = `${vinIndex}:${txid}`; //use vin index + txid as identifier
 
       let movementType = CarverMovementType.AddressToTx;
-      if (isPosTx(tx)) {
+      if (isPosTx(rpctx)) {
         movementType = CarverMovementType.PosAddressToTx;
       }
 
-      movements.push({ type: movementType, label: movementLabel, from: vinAddress, to: txAddress, amount: vinMovement.amount });
+      movements.push({ type: movementType, label: movementLabel, from: vinAddress, to: txAddress, amount: vinAmount });
     } else {
       console.log(vin);
       throw 'UNSUPPORTED VIN (NOT COINBASE OR TX)';
