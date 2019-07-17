@@ -117,6 +117,8 @@ async function syncBlocks(start, stop, sequence) {
         const vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
         const vinMovements = carver2d.getVinMovements(rpctx, vinAddresses);
 
+        const voutAddresses = await carver2d.getVoutCarverAddresses(rpcblock, rpctx, sequence);
+
         let newMovements = [];
 
         vinMovements.forEach(vinMovement => {

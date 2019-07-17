@@ -53,7 +53,171 @@ async function getOrCreateCarverAddress(carverAddressType, label, blockDate, seq
 }
 
 /**
- * Go through vins, find unique addresses and fetch them all at once
+ * Go through vouts and return all addresses used in vouts (as well as their amount)
+ */
+async function getVoutCarverAddresses(rpcblock, rpctx, sequence) {
+  let addresses = new Set();
+  for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
+    const vout = tx.vout[voutIndex];
+
+    let voutLabel = '';
+    if (vout.scriptPubKey) {
+      switch (vout.scriptPubKey.type) {
+        case 'pubkey':
+        case 'pubkeyhash':
+        case 'scripthash':
+          const addresses = vout.scriptPubKey.addresses;
+          if (addresses.length !== 1) {
+            throw 'ONLY PUBKEYS WITH 1 ADDRESS ARE SUPPORTED FOR NOW';
+          }
+          if (vout.value === undefined) {
+            console.log(vout);
+            console.log(tx);
+            throw 'VOUT WITHOUT VALUE?';
+          }
+
+          voutLabel = addresses[0];
+
+          addresses.add(voutLabel);
+          break;
+        case 'nonstandard':
+          // Don't need to do any movements for this
+          break;
+        case 'zerocoinmint':
+          {
+            if (vout.value === undefined) {
+              console.log(vout);
+              console.log(tx);
+              throw 'ZEROCOIN WITHOUT VALUE?';
+            }
+
+            voutLabel = 'ZEROCOIN';
+
+            addresses.add(voutLabel);
+          }
+          break
+        case 'nulldata':
+          {
+            if (vout.value === undefined) {
+              console.log(vout);
+              console.log(tx);
+              throw 'BURN WITHOUT VALUE?';
+            }
+
+            voutLabel = 'BURN';
+            addresses.add(voutLabel);
+          }
+          break
+        default:
+          console.log(vout);
+          console.log(tx);
+          throw `UNSUPPORTED VOUT SCRIPTPUBKEY TYPE: ${vout.scriptPubKey.type}`;
+      }
+    } else {
+      console.log(vout);
+      throw `UNSUPPORTED VOUT!`;
+    }
+  }
+
+  const txAddress = await getOrCreateCarverAddress(CarverAddressType.Tx, rpctx.txid, blockDate, ++sequence);
+
+  return addresses;
+}
+/**
+ * Go through vouts and return all addresses used in vouts (as well as their amount)
+ */
+async function getVoutCarverMovements(rpcblock, rpctx, sequence) {
+  /* const blockDate = new Date(rpcblock.time * 1000);
+ 
+   for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
+     const vout = tx.vout[voutIndex];
+ 
+     const movementLabel = `${rpctx.txid}:${vout.n}`; //use txid+vout as identifier for these transactions
+ 
+     let voutLabel = '';
+     if (vout.scriptPubKey) {
+       switch (vout.scriptPubKey.type) {
+         case 'pubkey':
+         case 'pubkeyhash':
+         case 'scripthash':
+           const addresses = vout.scriptPubKey.addresses;
+           if (addresses.length !== 1) {
+             throw 'ONLY PUBKEYS WITH 1 ADDRESS ARE SUPPORTED FOR NOW';
+           }
+           if (vout.value === undefined) {
+             console.log(vout);
+             console.log(tx);
+             throw 'VOUT WITHOUT VALUE?';
+           }
+ 
+           let movementType = CarverMovementType.AddressToTx;
+ 
+           if (isPosTx(tx)) {
+             if (vout.n === 1) {
+               movementType = CarverMovementType.TxToPosAddress;
+             }
+             if (vout.n === 2) {
+               movementType = CarverMovementType.TxToMnAddress;
+             }
+           }
+           if (tx.vin.length === 1 && tx.vin[0].coinbase) {
+             movementType = CarverMovementType.TxToCoinbaseRewardAddress;
+           }
+ 
+ 
+           voutLabel = addresses[0];
+ 
+           //const address = await getOrCreateCarverAddress(CarverAddressType.Address, voutLabel, blockDate, ++sequence, true);
+           //movements.push(await addMovement(movementType, movementLabel, block.time, txAddress, address, vout.value, ++sequence, startMovementSequence)); //use txid as identifier for these transactions
+ 
+           movements.push({ type: movementType, label: movementLabel, from: txAddress, to: address, amount: vout.value });
+           break;
+         case 'nonstandard':
+           // Don't need to do any movements for this
+ 
+           break;
+         case 'zerocoinmint':
+           {
+             if (vout.value === undefined) {
+               console.log(vout);
+               console.log(tx);
+               throw 'ZEROCOIN WITHOUT VALUE?';
+             }
+ 
+             voutLabel = 'ZEROCOIN';
+             const address = await getAddressFromCache(AddressType.Zerocoin, voutLabel, block.time, ++sequence, true);
+ 
+             //movements.push(await addMovement(MovementType.TxToZerocoin, movementLabel, block.time, txAddress, address, vout.value, ++sequence, startMovementSequence)); //use txid as identifier for these transactions
+           }
+           break
+         case 'nulldata':
+           {
+             if (vout.value === undefined) {
+               console.log(vout);
+               console.log(tx);
+               throw 'BURN WITHOUT VALUE?';
+             }
+ 
+             voutLabel = 'BURN';
+             const address = await getAddressFromCache(AddressType.Burn, voutLabel, block.time, ++sequence, true);
+ 
+             //movements.push(await addMovement(MovementType.Burn, movementLabel, block.time, txAddress, address, vout.value, ++sequence, startMovementSequence)); //use txid as identifier for these transactions
+           }
+           break
+         default:
+           console.log(vout);
+           console.log(tx);
+           throw `UNSUPPORTED VOUT SCRIPTPUBKEY TYPE: ${vout.scriptPubKey.type}`;
+       }
+     } else {
+       console.log(vout);
+       throw `UNSUPPORTED VOUT!`;
+     }
+   }*/
+}
+
+/**
+ * Go through vins and return all addresses used in vins (as well as their amount)
  */
 async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
   const blockDate = new Date(rpcblock.time * 1000);
@@ -169,5 +333,6 @@ function getVinMovements(rpctx, vinAddresses) {
 
 module.exports = {
   getVinCarverAddresses,
+  getVoutCarverAddresses,
   getVinMovements
 };
