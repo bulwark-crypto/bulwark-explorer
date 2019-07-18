@@ -24,7 +24,7 @@ async function isPosTx(tx) {
     tx.vout[0].scriptPubKey.type === 'nonstandard';
 }
 
-
+/*
 async function getOrCreateCarverAddress(carverAddressType, label, blockDate, sequence) {
   let carverAddress = await CarverAddress.findOne({ label });
 
@@ -50,7 +50,7 @@ async function getOrCreateCarverAddress(carverAddressType, label, blockDate, seq
   }
 
   return carverAddress;
-}
+}*/
 
 /**
  * Go through vouts and return all addresses used in vouts (as well as their amount)
@@ -339,18 +339,118 @@ function getVoutRequiredMovements(rpctx) {
   return requiredMovements;
 }
 
-function parseRequiredMovements(params) {
-  let sequence = params.sequence;
+
+async function parseRequiredMovements(params) {
+  const blockDate = new Date(params.rpcblock.time * 1000);
+
+  const getCarverAddressFromCache = async (carverAddressType, label) => {
+    //@todo add caching
+
+    let carverAddress = await CarverAddress.findOne({ label });
+    if (!carverAddress) {
+      carverAddress = new CarverAddress({
+        _id: new mongoose.Types.ObjectId(),
+        label,
+        balance: 0,
+
+        date: blockDate,
+        lastMovementDate: blockDate,
+        carverAddressType,
+
+        // for stats
+        valueOut: 0,
+        valueIn: 0,
+        countIn: 0,
+        countOut: 0,
+
+        sequence: 0
+      });
+      await carverAddress.save();
+    }
+
+    params.carverAddressCache.push(carverAddress);
+
+    return carverAddress;
+  }
+
+  const getVinVoutMovements = async (requiredMovements) => {
+    const VinVoutMovements = new Map();
+
+    const movementsToTx = requiredMovements.filter(requiredMovement => requiredMovement.movementType == CarverMovementType.AddressToTx || requiredMovement.movementType == CarverMovementType.PosAddressToTx);
+    const vinVouts = movementsToTx.map(movementToTx => `${movementToTx.txid}:${movementToTx.vout}`);
+
+    if (vinVouts.length > 0) {
+      //const vinMovements = await CarverMovement.find({ label: { $in: Array.from(vinTxInputs) } }).populate('to');
+      console.log(vinVouts);
+      throw 'got vin/vout!!';
+    }
+    //requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
+
+    return VinVoutMovements;
+  }
+
+  // Figure out what txid+vout we need to fetch 
+  const vinVoutMovements = await getVinVoutMovements(params.requiredMovements);
+
+  const sumTxVoutAmount = params.rpctx.vout.map(vout => vout.value).reduce((prev, curr) => prev + curr, 0);
+
+  const txAddress = await getCarverAddressFromCache(CarverAddressType.Tx, params.rpctx.txid);
 
   let newMovements = [];
 
-  console.log(params);
-  throw 'xx';
+  for (let i = 0; i < params.requiredMovements.length; i++) {
+    const requiredMovement = params.requiredMovements[i];
 
-  return {
-    newMovements,
-    sequence
-  };
+    const carverMovementType = requiredMovement.movementType;
+
+    switch (carverMovementType) {
+      // VIN -> TX
+      case CarverMovementType.CoinbaseToTx:
+        const fromCoinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
+        newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromCoinbaseAddress, to: txAddress, amount: sumTxVoutAmount });
+        break;
+      case CarverMovementType.ZerocoinToTx:
+        const fromZerocoinAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'ZEROCOIN');
+        newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromZerocoinAddress, to: txAddress, amount: sumTxVoutAmount });
+        break;
+      case CarverMovementType.AddressToTx:
+      case CarverMovementType.PosAddressToTx:
+
+        //const coinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
+        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
+
+        const vinVoutKey = `${requiredMovement.txid}:${requiredMovement.vout}`;
+        const vinVoutMovement = vinVoutMovements.get(vinVoutKey);
+
+        if (!vinVoutMovement) {
+          console.log(vinVoutKey);
+          throw 'INVALID VIN+VOUT MOVEMENT?';
+        }
+
+        requiredMovements.push({ movementType, label, from: vinVoutMovement.to, to: txAddress, amount: vinVoutMovement.amount });
+
+        break;
+
+      // TX -> VOUT
+      case CarverMovementType.TxToAddress:
+      case CarverMovementType.TxToPosAddress:
+      case CarverMovementType.TxToMnAddress:
+      case CarverMovementType.TxToCoinbaseRewardAddress:
+        //const coinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
+        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
+        break;
+      case CarverMovementType.TxToZerocoin:
+        //const coinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
+        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
+        break;
+      case CarverMovementType.Burn:
+        //const coinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
+        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
+        break;
+    }
+  }
+
+  return newMovements
 }
 
 module.exports = {

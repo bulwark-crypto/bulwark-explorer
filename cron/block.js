@@ -123,44 +123,35 @@ async function syncBlocks(start, stop, sequence) {
           rpcblock,
           rpctx,
 
-          movements: vinRequiredMovements.concat(voutRequiredMovements),
+          requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
-          carverAddressCache,
-
-          sequence,
+          carverAddressCache
         };
 
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-        const newMovements = parsedMovements.newMovements;
-        sequence = parsedMovements.sequence;
+        let newMovements = [];
+        parsedMovements.forEach(parsedMovement => {
+          if (++sequence > sequences.movements) {
+            newMovements.push(new CarverMovement({
+              _id: new mongoose.Types.ObjectId(),
 
-        //onst vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
-        //const voutAddresses = await carver2d.getVoutCarverAddresses(rpcblock, rpctx, sequence);
+              label: parsedMovement.label,
+              amount: parsedMovement.amount,
 
-        // let newMovements = [];
-        /*
-                movements.forEach(movement => {
-                  if (++sequence > sequences.movements) {
-                    newMovements.push(new CarverMovement({
-                      _id: new mongoose.Types.ObjectId(),
-        
-                      label: vinMovement.label,
-                      amount: vinMovement.amount,
-        
-                      date: blockDate,
-        
-                      from: vinMovement.from._id,
-                      to: vinMovement.to._id,
-        
-                      fromBalance: vinMovement.from.balance,
-                      toBalance: vinMovement.to.balance,
-        
-                      carverMovementType: vinMovement.type,
-                      sequence: sequence
-                    }));
-                  }
-                });*/
+              date: blockDate,
+
+              from: parsedMovement.from._id,
+              to: parsedMovement.to._id,
+
+              fromBalance: parsedMovement.from.balance,
+              toBalance: parsedMovement.to.balance,
+
+              carverMovementType: parsedMovement.carverMovementType,
+              sequence: sequence
+            }));
+          }
+        });
 
         await CarverMovement.insertMany(newMovements);
       }
