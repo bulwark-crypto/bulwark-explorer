@@ -51,6 +51,8 @@ async function syncBlocks(start, stop, sequence) {
     movements: lastMovement ? lastMovement.sequence : 0
   }
 
+  // Instead of fetching addresses each tiem from db we'll store a certain number in cache (this is in config)
+  let carverAddressCache = [];
 
   let block;
   for (let height = start + 1; height <= stop; height++) {
@@ -85,6 +87,7 @@ async function syncBlocks(start, stop, sequence) {
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
     let addedPosTxs = [];
 
+
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
 
@@ -113,35 +116,51 @@ async function syncBlocks(start, stop, sequence) {
       // Carver2D
       // Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
+        const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
+        const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
 
-        const vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
-        const vinMovements = carver2d.getVinMovements(rpctx, vinAddresses);
+        const params = {
+          rpcblock,
+          rpctx,
 
-        const voutAddresses = await carver2d.getVoutCarverAddresses(rpcblock, rpctx, sequence);
+          movements: vinRequiredMovements.concat(voutRequiredMovements),
 
-        let newMovements = [];
+          carverAddressCache,
 
-        vinMovements.forEach(vinMovement => {
-          if (++sequence > sequences.movements) {
-            newMovements.push(new CarverMovement({
-              _id: new mongoose.Types.ObjectId(),
+          sequence,
+        };
 
-              label: vinMovement.label,
-              amount: vinMovement.amount,
+        const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-              date: blockDate,
+        const newMovements = parsedMovements.newMovements;
+        sequence = parsedMovements.sequence;
 
-              from: vinMovement.from._id,
-              to: vinMovement.to._id,
+        //onst vinAddresses = await carver2d.getVinCarverAddresses(rpcblock, rpctx, sequence);
+        //const voutAddresses = await carver2d.getVoutCarverAddresses(rpcblock, rpctx, sequence);
 
-              fromBalance: vinMovement.from.balance,
-              toBalance: vinMovement.to.balance,
-
-              carverMovementType: vinMovement.type,
-              sequence: sequence
-            }));
-          }
-        });
+        // let newMovements = [];
+        /*
+                movements.forEach(movement => {
+                  if (++sequence > sequences.movements) {
+                    newMovements.push(new CarverMovement({
+                      _id: new mongoose.Types.ObjectId(),
+        
+                      label: vinMovement.label,
+                      amount: vinMovement.amount,
+        
+                      date: blockDate,
+        
+                      from: vinMovement.from._id,
+                      to: vinMovement.to._id,
+        
+                      fromBalance: vinMovement.from.balance,
+                      toBalance: vinMovement.to.balance,
+        
+                      carverMovementType: vinMovement.type,
+                      sequence: sequence
+                    }));
+                  }
+                });*/
 
         await CarverMovement.insertMany(newMovements);
       }

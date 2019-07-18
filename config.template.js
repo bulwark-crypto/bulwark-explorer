@@ -43,6 +43,33 @@ const config = {
   },
 
   ///////////////////////////////
+  /// Community & Address Related
+  ///////////////////////////////
+  community: {
+    highlightedAddresses: [
+      // If you comment out all of these addresses the 'Community Addresses' section will not show up on the homepage. You can add as many addresses to highlight as you wish.
+      //{ label: 'Community Donations', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight an address
+      //{ label: 'Community Funding', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight any other address
+    ]
+  },
+  // Each address can contain it's own set of widgets and configs for those widgets
+  addressWidgets: {
+    'XXXXXXXXXXXXXXXXXXXXXXXXXXX': {
+      // WIDGET: Adds a list of masternodes when viewing address. We use this to show community-ran masternodes
+      masternodesAddressWidget: {
+        title: 'Community Masternodes',
+        description: 'Profits from these masternodes fund & fuel community talent',
+        isPaginationEnabled: false, // If you have more than 10 you should enable this
+        addresses: [
+          'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
+          'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
+          'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        ]
+      }
+    }
+  },
+
+  ///////////////////////////////
   // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
   ///////////////////////////////
   profitabilityScore: {
@@ -104,33 +131,6 @@ const config = {
         title: 'Rank 10/10 - Not Optimal!!!'
       }
     ]
-  },
-
-  ///////////////////////////////
-  /// Community & Address Related
-  ///////////////////////////////
-  community: {
-    highlightedAddresses: [
-      // If you comment out all of these addresses the 'Community Addresses' section will not show up on the homepage. You can add as many addresses to highlight as you wish.
-      //{ label: 'Community Donations', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight an address
-      //{ label: 'Community Funding', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight any other address
-    ]
-  },
-  // Each address can contain it's own set of widgets and configs for those widgets
-  addressWidgets: {
-    'XXXXXXXXXXXXXXXXXXXXXXXXXXX': {
-      // WIDGET: Adds a list of masternodes when viewing address. We use this to show community-ran masternodes
-      masternodesAddressWidget: {
-        title: 'Community Masternodes',
-        description: 'Profits from these masternodes fund & fuel community talent',
-        isPaginationEnabled: false, // If you have more than 10 you should enable this
-        addresses: [
-          'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
-          'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
-          'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
-        ]
-      }
-    }
   },
 
   ///////////////////////////////
