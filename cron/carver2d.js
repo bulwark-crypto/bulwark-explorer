@@ -168,8 +168,6 @@ async function parseRequiredMovements(params) {
       await carverAddress.save();
     }
 
-    params.carverAddressCache.push(carverAddress);
-
     return carverAddress;
   }
 

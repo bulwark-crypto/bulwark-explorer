@@ -8,7 +8,7 @@ const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
-const { CarverMovement } = require('../model/carver2d');
+const { CarverMovement, CarverAddress } = require('../model/carver2d');
 
 // Models.
 const Block = require('../model/block');
@@ -46,9 +46,11 @@ async function syncBlocks(start, stop, sequence) {
   */
 
   const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 });
+  const lastAddress = await CarverAddress.findOne().sort({ sequence: -1 });
 
   const sequences = {
-    movements: lastMovement ? lastMovement.sequence : 0
+    movements: lastMovement ? lastMovement.sequence : 0,
+    addresses: lastAddress ? lastAddress.sequence : 0,
   }
 
   // Instead of fetching addresses each tiem from db we'll store a certain number in cache (this is in config)
@@ -131,6 +133,7 @@ async function syncBlocks(start, stop, sequence) {
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
         let newMovements = [];
+        let updatedAddresses = new Set();
         parsedMovements.forEach(parsedMovement => {
           if (++sequence > sequences.movements) {
             newMovements.push(new CarverMovement({
@@ -151,6 +154,30 @@ async function syncBlocks(start, stop, sequence) {
               sequence: sequence
             }));
           }
+
+          const from = parsedMovement.from;
+          if (++sequence > sequences.addresses) {
+            from.countOut++;
+            from.balance -= parsedMovement.amount;
+            from.valueOut += parsedMovement.amount;
+            from.sequence = sequence;
+            from.lastMovementDate = blockDate;
+            updatedAddresses.add(from);
+          }
+
+          const to = parsedMovement.to;
+          if (++sequence > sequences.addresses) {
+            to.countIn++;
+            to.balance += parsedMovement.amount;
+            to.valueIn += parsedMovement.amount;
+            to.sequence = sequence;
+            to.lastMovementDate = blockDate;
+            updatedAddresses.add(to);
+          }
+        });
+
+        await forEachSeries(Array.from(updatedAddresses), async (updatedAddress) => {
+          await updatedAddress.save();
         });
 
         await CarverMovement.insertMany(newMovements);
