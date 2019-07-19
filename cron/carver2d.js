@@ -1,14 +1,7 @@
 
 require('babel-polyfill');
 const mongoose = require('mongoose');
-const config = require('../config');
-const { rpc } = require('../lib/cron');
-const blockchain = require('../lib/blockchain');
-const TX = require('../model/tx');
-const UTXO = require('../model/utxo');
-const { CarverAddress, CarverMovement, CarverMovementType, VinType, CarverAddressType } = require('../model/carver2d');
-const BlockRewardDetails = require('../model/blockRewardDetails');
-
+const { CarverAddress, CarverMovement, CarverMovementType, CarverAddressType } = require('../model/carver2d');
 
 /**
  * Is this a POS transaction?
@@ -23,170 +16,6 @@ async function isPosTx(tx) {
     tx.vout[0].scriptPubKey &&
     tx.vout[0].scriptPubKey.type === 'nonstandard';
 }
-
-/*
-async function getOrCreateCarverAddress(carverAddressType, label, blockDate, sequence) {
-  let carverAddress = await CarverAddress.findOne({ label });
-
-  if (!carverAddress) {
-    carverAddress = new CarverAddress({
-      _id: new mongoose.Types.ObjectId(),
-      label,
-      balance: 0,
-
-      date: blockDate,
-      lastMovementDate: blockDate,
-      carverAddressType,
-
-      // for stats
-      valueOut: 0,
-      valueIn: 0,
-      countIn: 0,
-      countOut: 0,
-
-      sequence,
-    });
-    await carverAddress.save();
-  }
-
-  return carverAddress;
-}*/
-
-/**
- * Go through vouts and return all addresses used in vouts (as well as their amount)
- */
-/*
-async function getVoutCarverAddresses(rpcblock, rpctx, sequence) {
-  let addresses = new Set();
-  for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
-    const vout = tx.vout[voutIndex];
-
-    let voutLabel = '';
-    if (vout.scriptPubKey) {
-      switch (vout.scriptPubKey.type) {
-        case 'pubkey':
-        case 'pubkeyhash':
-        case 'scripthash':
-          const addresses = vout.scriptPubKey.addresses;
-          if (addresses.length !== 1) {
-            throw 'ONLY PUBKEYS WITH 1 ADDRESS ARE SUPPORTED FOR NOW';
-          }
-          if (vout.value === undefined) {
-            console.log(vout);
-            console.log(tx);
-            throw 'VOUT WITHOUT VALUE?';
-          }
-
-          voutLabel = addresses[0];
-
-          addresses.add(voutLabel);
-          break;
-        case 'nonstandard':
-          // Don't need to do any movements for this
-          break;
-        case 'zerocoinmint':
-          {
-            if (vout.value === undefined) {
-              console.log(vout);
-              console.log(tx);
-              throw 'ZEROCOIN WITHOUT VALUE?';
-            }
-
-            voutLabel = 'ZEROCOIN';
-
-            addresses.add(voutLabel);
-          }
-          break
-        case 'nulldata':
-          {
-            if (vout.value === undefined) {
-              console.log(vout);
-              console.log(tx);
-              throw 'BURN WITHOUT VALUE?';
-            }
-
-            voutLabel = 'BURN';
-            addresses.add(voutLabel);
-          }
-          break
-        default:
-          console.log(vout);
-          console.log(tx);
-          throw `UNSUPPORTED VOUT SCRIPTPUBKEY TYPE: ${vout.scriptPubKey.type}`;
-      }
-    } else {
-      console.log(vout);
-      throw `UNSUPPORTED VOUT!`;
-    }
-  }
-
-  const txAddress = await getOrCreateCarverAddress(CarverAddressType.Tx, rpctx.txid, blockDate, ++sequence);
-
-  return addresses;
-}*/
-/**
- * Go through vouts and return all addresses used in vouts (as well as their amount)
- */
-//async function getVoutCarverMovements(rpcblock, rpctx, sequence) {
-/* */
-//}
-
-/**
- * Go through vins and return all addresses used in vins (as well as their amount)
- */
-/*
-async function getVinCarverAddresses(rpcblock, rpctx, sequence) {
-  const blockDate = new Date(rpcblock.time * 1000);
-
-  const vinAddresses = new Map();
-  const vinTxInputs = new Set();
-
-  const sumVoutAmount = rpctx.vout.map(vout => vout.value).reduce((prev, curr) => prev + curr, 0);
-
-  const txAddress = await getOrCreateCarverAddress(CarverAddressType.Tx, rpctx.txid, blockDate, ++sequence);
-  vinAddresses.set(rpctx.txid, { address: txAddress, amount: sumVoutAmount });
-
-  for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
-    const vin = rpctx.vin[vinIndex];
-
-    if (vin.coinbase) {
-      const label = 'COINBASE';
-      if (!vinAddresses.has(label)) {
-        const address = await getOrCreateCarverAddress(CarverAddressType.Coinbase, label, blockDate, ++sequence);
-        vinAddresses.set(label, { address, amount: sumVoutAmount });
-      }
-    } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
-      const label = 'ZEROCOIN';
-      if (!vinAddresses.has(label)) {
-        const address = await getOrCreateCarverAddress(CarverAddressType.Zerocoin, label, blockDate, ++sequence);
-        vinAddresses.set(label, { address, amount: sumVoutAmount });
-      }
-    } else if (vin.txid) {
-      const label = `${vin.txid}:${vin.vout}`;
-      vinTxInputs.add(label);
-    }
-  }
-
-  // Vin with txid will point to a specific movement
-  const vinMovements = await CarverMovement.find({ label: { $in: Array.from(vinTxInputs) } }).populate('to');
-  if (vinMovements.length > 0) {
-
-    vinTxInputs.forEach(txInput => {
-      const vinMovement = vinMovements.find(vinMovement => vinMovement.label === txInput);
-      console.log(txInput, vinMovement);
-
-      //const movementLabel = `${vinIndex}:${txid}`; //use vin index + txid as identifier
-      //const 
-
-      throw 'got vin movements!!!!!!'
-    });
-
-    console.log(vinTxInputs);
-    throw 'vinTxInputs!'
-  }
-
-  return vinAddresses;
-}*/
 
 function getVinRequiredMovements(rpctx) {
   let requiredMovements = [];
@@ -210,7 +39,6 @@ function getVinRequiredMovements(rpctx) {
 
       requiredMovements.push({ movementType: CarverMovementType.CoinbaseToTx, label });
     } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
-      //const zerocoinAddress = vinAddresses.get('ZEROCOIN').address;
       requiredMovements.push({ movementType: CarverMovementType.ZerocoinToTx, label });
     } else if (vin.txid) {
       if (vin.vout === undefined) {
@@ -359,7 +187,6 @@ async function parseRequiredMovements(params) {
         vinVoutMovements.set(vinMovements.label, vinMovements);
       })
     }
-    //requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
 
     return vinVoutMovements;
   }
@@ -420,10 +247,6 @@ async function parseRequiredMovements(params) {
         break;
       case CarverMovementType.AddressToTx:
       case CarverMovementType.PosAddressToTx:
-
-        //const coinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
-        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
-
         const vinVoutKey = `${requiredMovement.txid}:${requiredMovement.vout}`;
         const vinVoutMovement = vinVoutMovements.get(vinVoutKey);
 
@@ -452,19 +275,14 @@ async function parseRequiredMovements(params) {
           throw 'VOUT WITHOUT ADDRESS?'
         }
 
-        //const coinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
-        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: voutAddress, amount: requiredMovement.amount });
-        //requiredMovements.push({ movementType, label, amount: vout.value, address });
         break;
       case CarverMovementType.TxToZerocoin:
         const toZerocoinAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'ZEROCOIN');
-        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toZerocoinAddress, amount: requiredMovement.amount });
         break;
       case CarverMovementType.Burn:
         const toBurnAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'BURN');
-        //newMovements.push({ carverMovementType, label: requiredMovement.label, from: coinbaseAddress, to: txAddress, amount: requiredMovement });
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toBurnAddress, amount: requiredMovement.amount });
         break;
     }
@@ -474,9 +292,7 @@ async function parseRequiredMovements(params) {
 }
 
 module.exports = {
-  //getVinMovements,
   getVinRequiredMovements,
   getVoutRequiredMovements,
   parseRequiredMovements,
-  //getMovements
 };

@@ -60,13 +60,6 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   sequence: { unique: true, required: true, type: Number }
 }, { _id: false, versionKey: false }), 'carverMovements');
 
-// This enum was originally a Typescript enum
-const VinType = {
-  Coinbase: 0,
-  TxId: 1,
-  Zerocoin: 2
-}
-
 module.exports = {
   CarverAddressType,
   CarverAddress,
