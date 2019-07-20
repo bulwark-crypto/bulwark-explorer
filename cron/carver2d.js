@@ -111,7 +111,7 @@ function getVoutRequiredMovements(rpctx) {
               throw 'ZEROCOIN WITHOUT VALUE?';
             }
 
-            requiredMovements.push({ movementType: MovementType.TxToZerocoin, label, amount: vout.value });
+            requiredMovements.push({ movementType: CarverMovementType.TxToZerocoin, label, amount: vout.value });
           }
           break
         case 'nulldata':
@@ -122,7 +122,7 @@ function getVoutRequiredMovements(rpctx) {
               throw 'BURN WITHOUT VALUE?';
             }
 
-            requiredMovements.push({ movementType: MovementType.Burn, label, amount: vout.value });
+            requiredMovements.push({ movementType: CarverMovementType.Burn, label, amount: vout.value });
           }
           break
         default:
@@ -143,8 +143,16 @@ function getVoutRequiredMovements(rpctx) {
 async function parseRequiredMovements(params) {
   const blockDate = new Date(params.rpcblock.time * 1000);
 
+  //let addressCache = [];
   const getCarverAddressFromCache = async (carverAddressType, label) => {
     //@todo add caching
+    /*
+    const carverAddressFromCache = addressCache.find(addressCacheItem => addressCacheItem.label === label);
+    if (carverAddressFromCache) {
+      console.log('xx');
+      return carverAddressFromCache;
+    }
+    */
 
     let carverAddress = await CarverAddress.findOne({ label });
     if (!carverAddress) {
@@ -167,6 +175,7 @@ async function parseRequiredMovements(params) {
       });
       await carverAddress.save();
     }
+    //addressCache.push(carverAddress);
 
     return carverAddress;
   }
@@ -203,17 +212,19 @@ async function parseRequiredMovements(params) {
 
     const addressLabels = Array.from(new Set(movementsWithAddress.map(movement => movement.addressLabel))); // Select distinct address labels
 
+    const exisingAddresses = await CarverAddress.find({ label: { $in: addressLabels } });
+
     for (let i = 0; i < addressLabels.length; i++) {
       const addressLabel = addressLabels[i];
 
-      await getCarverAddressFromCache(CarverAddressType.Address, addressLabel)
+      // Try to find this address from existing ones (otherwise create if it's a new address)
+      const existingAddress = exisingAddresses.find(exisingAddress => exisingAddress.label === addressLabel);
+      if (existingAddress) {
+        voutAddresses[addressLabel] = existingAddress;
+      } else {
+        voutAddresses[addressLabel] = await getCarverAddressFromCache(CarverAddressType.Address, addressLabel);
+      }
     }
-
-
-    const addresses = await CarverAddress.find({ label: { $in: addressLabels } });
-    addresses.forEach(address => {
-      voutAddresses[address.label] = address;
-    });
 
     return voutAddresses;
   }

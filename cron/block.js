@@ -46,11 +46,11 @@ async function syncBlocks(start, stop, sequence) {
   */
 
   const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 });
-  const lastAddress = await CarverAddress.findOne().sort({ sequence: -1 });
+  //const lastAddress = await CarverAddress.findOne().sort({ sequence: -1 });
 
   const sequences = {
     movements: lastMovement ? lastMovement.sequence : 0,
-    addresses: lastAddress ? lastAddress.sequence : 0,
+    //addresses: lastAddress ? lastAddress.sequence : 0,
   }
 
   // Instead of fetching addresses each tiem from db we'll store a certain number in cache (this is in config)
@@ -104,7 +104,7 @@ async function syncBlocks(start, stop, sequence) {
 
         // Empty POS txs do not need to be processed
         if (util.isEmptyNonstandardTx(rpctx)) {
-          return;
+          continue;
         }
 
         posTx = await util.addPoS(block, rpctx);
@@ -132,8 +132,9 @@ async function syncBlocks(start, stop, sequence) {
 
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
+        let updatedAddresses = new Map();
+
         let newMovements = [];
-        let updatedAddresses = new Set();
         parsedMovements.forEach(parsedMovement => {
           if (++sequence > sequences.movements) {
             newMovements.push(new CarverMovement({
@@ -153,30 +154,48 @@ async function syncBlocks(start, stop, sequence) {
               carverMovementType: parsedMovement.carverMovementType,
               sequence: sequence
             }));
+          } else {
+            console.log('no movement')
           }
 
-          const from = parsedMovement.from;
-          if (++sequence > sequences.addresses) {
+
+
+          const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
+          if (++sequence > from.sequence) {
             from.countOut++;
             from.balance -= parsedMovement.amount;
             from.valueOut += parsedMovement.amount;
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
-            updatedAddresses.add(from);
-          }
+            updatedAddresses.set(from.label, from);
 
-          const to = parsedMovement.to;
-          if (++sequence > sequences.addresses) {
+            if (Math.abs(from.balance.toFixed(2)) != Math.abs((from.valueIn - from.valueOut).toFixed(2))) {
+              console.log('from balance mismatch', from.balance.toFixed(2), (from.valueIn - from.valueOut).toFixed(2), parsedMovement.carverMovementType);
+            }
+          }/* else {
+            console.log('no save from');
+          }*/
+
+          const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
+          if (++sequence > to.sequence) {
             to.countIn++;
             to.balance += parsedMovement.amount;
             to.valueIn += parsedMovement.amount;
             to.sequence = sequence;
             to.lastMovementDate = blockDate;
-            updatedAddresses.add(to);
-          }
+            updatedAddresses.set(to.label, to);
+
+            if (Math.abs(to.balance.toFixed(2)) != Math.abs((to.valueIn - to.valueOut).toFixed(2))) {
+              console.log('to balance mismatch', to.balance.toFixed(2), (to.valueIn - to.valueOut).toFixed(2), parsedMovement.carverMovementType);
+            }
+          }/* else {
+            console.log('no save to');
+          }*/
         });
 
-        await forEachSeries(Array.from(updatedAddresses), async (updatedAddress) => {
+
+
+        await forEachSeries(Array.from(updatedAddresses.values()), async (updatedAddress) => {
           await updatedAddress.save();
         });
 
