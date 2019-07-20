@@ -115,7 +115,10 @@ async function syncBlocks(start, stop, sequence) {
 
       config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
 
-      // Carver2D
+      /**
+       * Carver2D data analysis:
+       */
+
       // Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
         const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
@@ -154,11 +157,7 @@ async function syncBlocks(start, stop, sequence) {
               carverMovementType: parsedMovement.carverMovementType,
               sequence: sequence
             }));
-          } else {
-            console.log('no movement')
           }
-
-
 
           const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
           if (++sequence > from.sequence) {
@@ -168,13 +167,7 @@ async function syncBlocks(start, stop, sequence) {
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
             updatedAddresses.set(from.label, from);
-
-            if (Math.abs(from.balance.toFixed(2)) != Math.abs((from.valueIn - from.valueOut).toFixed(2))) {
-              console.log('from balance mismatch', from.balance.toFixed(2), (from.valueIn - from.valueOut).toFixed(2), parsedMovement.carverMovementType);
-            }
-          }/* else {
-            console.log('no save from');
-          }*/
+          }
 
           const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
           if (++sequence > to.sequence) {
@@ -184,16 +177,16 @@ async function syncBlocks(start, stop, sequence) {
             to.sequence = sequence;
             to.lastMovementDate = blockDate;
             updatedAddresses.set(to.label, to);
-
-            if (Math.abs(to.balance.toFixed(2)) != Math.abs((to.valueIn - to.valueOut).toFixed(2))) {
-              console.log('to balance mismatch', to.balance.toFixed(2), (to.valueIn - to.valueOut).toFixed(2), parsedMovement.carverMovementType);
-            }
-          }/* else {
-            console.log('no save to');
-          }*/
+          }
         });
 
-
+        // A carver address should be created for each tx (the address label would be txid)
+        const txCarverAddress = updatedAddresses.get(rpctx.txid);
+        if (!txCarverAddress) {
+          console.log(rpctx.txid);
+          throw 'CARVER TX NOT CREATED?'
+        }
+        block.txs.push(txCarverAddress._id);
 
         await forEachSeries(Array.from(updatedAddresses.values()), async (updatedAddress) => {
           await updatedAddress.save();

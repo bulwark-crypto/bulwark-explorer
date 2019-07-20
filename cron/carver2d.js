@@ -143,16 +143,8 @@ function getVoutRequiredMovements(rpctx) {
 async function parseRequiredMovements(params) {
   const blockDate = new Date(params.rpcblock.time * 1000);
 
-  //let addressCache = [];
   const getCarverAddressFromCache = async (carverAddressType, label) => {
-    //@todo add caching
-    /*
-    const carverAddressFromCache = addressCache.find(addressCacheItem => addressCacheItem.label === label);
-    if (carverAddressFromCache) {
-      console.log('xx');
-      return carverAddressFromCache;
-    }
-    */
+    //@todo add caching (to speed up fetching of old addresses)
 
     let carverAddress = await CarverAddress.findOne({ label });
     if (!carverAddress) {
@@ -175,7 +167,6 @@ async function parseRequiredMovements(params) {
       });
       await carverAddress.save();
     }
-    //addressCache.push(carverAddress);
 
     return carverAddress;
   }
