@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
+import config from './../../config'
+import moment from 'moment';
 
 import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
@@ -26,15 +28,18 @@ class Top100 extends Component {
       cols: [
         { key: 'index', title: '#' },
         { key: 'address', title: 'Address' },
-        { key: 'value', title: 'Total' },
+        { key: 'value', title: 'Balance' },
+        { key: 'date', title: 'Age' },
+        { key: 'lastMovementAgo', title: 'Active' },
+        { key: 'transfers', title: 'Movements' },
         { key: 'percent', title: '%' },
       ],
-      wallets: []
+      carverAddresses: []
     };
   };
 
   componentDidMount() {
-    this.props.getTop100().then(wallets => this.setState({ wallets }));
+    this.props.getTop100().then(carverAddresses => this.setState({ carverAddresses }));
   };
 
   render() {
@@ -42,16 +47,19 @@ class Top100 extends Component {
       <div>
         <HorizontalRule title="Top 100" />
         <Table
-          cols={ this.state.cols }
-          data={ this.state.wallets.map((wallet, idx) => ({
-            ...wallet,
+          cols={this.state.cols}
+          data={this.state.carverAddresses.map((carverAddress, idx) => ({
+            ...carverAddress,
             address: (
-              <Link to={ `/address/${ wallet.address }` }>{ wallet.address }</Link>
+              <Link to={`/address/${carverAddress.label}`}>{carverAddress.label}</Link>
             ),
+            date: moment(carverAddress.date).utc().fromNow(true),
+            lastMovementAgo: moment(carverAddress.lastMovementDate).utc().fromNow(),
+            transfers: carverAddress.countIn + carverAddress.countOut,
             index: idx + 1,
-            percent: numeral((wallet.value / this.props.coin.supply) * 100.0).format('0,0.00'),
-            value: numeral(wallet.value).format('0,0.0000')
-          })) } />
+            percent: numeral((carverAddress.value / this.props.coin.supply) * 100.0).format('0,0.00'),
+            value: numeral(carverAddress.balance).format(config.coinDetails.coinNumberFormat)
+          }))} />
       </div>
     );
   };
