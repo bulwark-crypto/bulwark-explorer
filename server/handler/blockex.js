@@ -8,6 +8,7 @@ const cache = require('../lib/cache');
 
 // System models for query and etc.
 const Block = require('../../model/block');
+const { CarverAddress, CarverAddressType } = require('../../model/carver2d');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
@@ -187,15 +188,15 @@ const getBlock = async (req, res) => {
     const query = isNaN(req.params.hash)
       ? { hash: req.params.hash }
       : { height: req.params.hash };
-    const block = await Block.findOne(query);
+    const block = await Block.findOne(query).populate('txs', { lastMovementDate: 0, sequence: 0, valueIn: 0, date: 0, carverAddressType: 0 });
     if (!block) {
       res.status(404).send('Unable to find the block!');
       return;
     }
 
-    const txs = await TX.find({ txId: { $in: block.txs } });
+    //const txs = await TX.find({ txId: { $in: block.txs } });
 
-    res.json({ block, txs });
+    res.json(block);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -444,9 +445,9 @@ const getSupply = async (req, res) => {
 const getTop100 = async (req, res) => {
   try {
     const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
-      return await Rich.find()
+      return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { carverAddressType: 0, sequence: 0 })
         .limit(100)
-        .sort({ value: -1 });
+        .sort({ balance: -1 });
     });
 
     res.json(docs);
