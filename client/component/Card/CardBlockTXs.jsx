@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import numeral from 'numeral';
+import config from './../../../config'
 import Table from '../Table';
 
 export default class CardBlockTXs extends Component {
@@ -21,8 +23,9 @@ export default class CardBlockTXs extends Component {
     this.state = {
       cols: [
         { key: 'txId', title: 'Transaction ID' },
-        { key: 'recipients', title: 'Recipients' },
-        { key: 'createdAt', title: 'Time' },
+        { key: 'inputs', title: 'Inputs' },
+        { key: 'outputs', title: 'Outputs' },
+        { key: 'value', title: 'Value' },
       ]
     };
   };
@@ -30,17 +33,20 @@ export default class CardBlockTXs extends Component {
   render() {
     return (
       <div className="animated fadeIn">
-      <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
-          ...tx,
-          createdAt: dateFormat(tx.createdAt),
-          recipients: tx.vout.length,
-          txId: (
-            <Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>
-          )
-        })) } />
-        </div>
+        <Table
+          cols={this.state.cols}
+          data={this.props.txs.map(tx => ({
+            ...tx,
+            inputs: (tx.countIn),
+            outputs: (tx.countOut),
+            txId: (
+              <Link to={`/tx/${tx.label}`}>{tx.label}</Link>
+            ),
+            value: (
+              <span>{numeral(tx.valueOut).format(config.coinDetails.coinNumberFormat)}</span>
+            )
+          }))} />
+      </div>
     );
   };
 }
