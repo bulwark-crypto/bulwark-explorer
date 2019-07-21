@@ -230,6 +230,8 @@ async function parseRequiredMovements(params) {
 
   let newMovements = [];
 
+  let hasZerocoinInput = false;
+
   for (let i = 0; i < params.requiredMovements.length; i++) {
     const requiredMovement = params.requiredMovements[i];
 
@@ -242,8 +244,13 @@ async function parseRequiredMovements(params) {
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromCoinbaseAddress, to: txAddress, amount: sumTxVoutAmount });
         break;
       case CarverMovementType.ZerocoinToTx:
-        const fromZerocoinAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'ZEROCOIN');
-        newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromZerocoinAddress, to: txAddress, amount: sumTxVoutAmount });
+        // Zerocoin might have multiple inputs in the same tx (ex: tx "d1be21c38e922091e9b4c2c2250be6d4c0d0d801aa3baf984d0351fe4fb39534" on Bulwark Coin)
+        if (!hasZerocoinInput) {
+          const fromZerocoinAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'ZEROCOIN');
+          newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromZerocoinAddress, to: txAddress, amount: sumTxVoutAmount });
+
+          hasZerocoinInput = true;
+        }
         break;
       case CarverMovementType.AddressToTx:
       case CarverMovementType.PosAddressToTx:
@@ -282,7 +289,7 @@ async function parseRequiredMovements(params) {
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toZerocoinAddress, amount: requiredMovement.amount });
         break;
       case CarverMovementType.Burn:
-        const toBurnAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'BURN');
+        const toBurnAddress = await getCarverAddressFromCache(CarverAddressType.Burn, 'BURN');
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toBurnAddress, amount: requiredMovement.amount });
         break;
     }

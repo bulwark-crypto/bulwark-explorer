@@ -135,6 +135,8 @@ async function syncBlocks(start, stop, sequence) {
 
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
+        // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
+        // When we're updating address balances (based on movements) we'll store the address in a map as soon as it's update. That way we can fetch it again by _id
         let updatedAddresses = new Map();
 
         let newMovements = [];
@@ -181,7 +183,7 @@ async function syncBlocks(start, stop, sequence) {
         });
 
         // A carver address should be created for each tx (the address label would be txid)
-        const txCarverAddress = updatedAddresses.get(rpctx.txid);
+        const txCarverAddress = await CarverAddress.findOne({ label: rpctx.txid });//updatedAddresses.get(rpctx.txid);
         if (!txCarverAddress) {
           console.log(rpctx.txid);
           throw 'CARVER TX NOT CREATED?'
