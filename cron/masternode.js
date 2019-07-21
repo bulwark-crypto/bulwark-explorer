@@ -20,6 +20,7 @@ async function syncMasternode() {
   await Masternode.remove({});
 
   // Increase the timeout for masternode.
+  //@todo remove this and properly sync nodes instead
   rpc.timeout(10000); // 10 secs
 
   const mns = await rpc.call('masternode', ['list']);
@@ -57,13 +58,13 @@ async function update() {
   try {
     locker.lock(type);
     await syncMasternode();
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     code = 1;
   } finally {
     try {
       locker.unlock(type);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       code = 1;
     }

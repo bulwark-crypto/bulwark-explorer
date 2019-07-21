@@ -28,7 +28,7 @@ const Block = mongoose.model('Block', new mongoose.Schema({
   // Carver2D 
   sequenceStart: { type: Number },
   sequenceEnd: { type: Number },
-  txs: [{ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
+  txs: [{ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }],
 }, { _id: false, versionKey: false }), 'blocks');
 
 module.exports = Block;
