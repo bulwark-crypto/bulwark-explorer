@@ -7,13 +7,15 @@ const CarverAddressType = {
   Address: 1,
   Coinbase: 2,
   Zerocoin: 3,
-  Burn: 4
+  Burn: 4,
+  Fee: 5
 }
 const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   label: { required: true, unique: true, index: true, type: String },
   balance: { index: true, required: true, type: Number },
 
+  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
   date: { index: true, required: true, type: Date },
   carverAddressType: { index: true, required: true, type: Number },
 
@@ -22,6 +24,14 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   valueIn: { index: true, required: true, type: Number },
   countIn: { index: true, required: true, type: Number },
   countOut: { index: true, required: true, type: Number },
+
+  // Track rewards (CarverAddressType.Address only). That way we can subtract them from countIn/countOut to get number of non-reward txs
+  posCountIn: { index: true, type: Number },
+  posValueIn: { index: true, type: Number },
+  mnCountIn: { index: true, type: Number },
+  mnValueIn: { index: true, type: Number },
+  powCountIn: { index: true, type: Number },
+  powValueIn: { index: true, type: Number },
 
   sequence: { required: true, type: Number },
 }, { _id: false, versionKey: false }), 'carverAddresses');
@@ -40,7 +50,13 @@ const CarverMovementType = {
 
   ZerocoinToTx: 7,
   TxToZerocoin: 8,
-  Burn: 9
+  Burn: 9,
+
+  MasternodeRewardToTx: 10,
+  PosRewardToTx: 11,
+  GovernanceRewardToTx: 12,
+  TxToGovernanceRewardAddress: 13,
+  TxToFee: 14
 }
 const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -50,6 +66,7 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   label: { required: true, unique: true, index: true, type: String },
   amount: { required: true, index: true, type: Number },
 
+  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
   date: { index: true, required: true, type: Date },
   fromBalance: { required: true, type: Number },
   toBalance: { required: true, type: Number },
