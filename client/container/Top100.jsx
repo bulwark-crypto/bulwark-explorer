@@ -31,7 +31,8 @@ class Top100 extends Component {
         { key: 'value', title: 'Balance' },
         { key: 'date', title: 'Age' },
         { key: 'lastMovementAgo', title: 'Active' },
-        { key: 'transfers', title: 'Movements' },
+        { key: 'inputs', title: 'Inputs' },
+        { key: 'outputs', title: 'Outputs' },
         { key: 'percent', title: '%' },
       ],
       carverAddresses: []
@@ -55,7 +56,8 @@ class Top100 extends Component {
             ),
             date: moment(carverAddress.date).utc().fromNow(true),
             lastMovementAgo: moment(carverAddress.lastMovementDate).utc().fromNow(),
-            transfers: carverAddress.countIn + carverAddress.countOut,
+            inputs: carverAddress.countIn,
+            outputs: carverAddress.countOut,
             index: idx + 1,
             percent: numeral((carverAddress.value / this.props.coin.supply) * 100.0).format('0,0.00'),
             value: numeral(carverAddress.balance).format(config.coinDetails.coinNumberFormat)

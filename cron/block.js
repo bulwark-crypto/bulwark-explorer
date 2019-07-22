@@ -8,7 +8,7 @@ const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
-const { CarverMovement, CarverAddress } = require('../model/carver2d');
+const { CarverMovement, CarverAddress, CarverMovementType } = require('../model/carver2d');
 
 // Models.
 const Block = require('../model/block');
@@ -148,7 +148,9 @@ async function syncBlocks(start, stop, sequence) {
               label: parsedMovement.label,
               amount: parsedMovement.amount,
 
+
               date: blockDate,
+              blockHeight: rpcblock.height,
 
               from: parsedMovement.from._id,
               to: parsedMovement.to._id,
@@ -178,6 +180,22 @@ async function syncBlocks(start, stop, sequence) {
             to.valueIn += parsedMovement.amount;
             to.sequence = sequence;
             to.lastMovementDate = blockDate;
+
+            switch (parsedMovement.carverMovementType) {
+              case CarverMovementType.TxToCoinbaseRewardAddress:
+                to.powCountIn++;
+                to.powValueIn += parsedMovement.amount;
+                break;
+              case CarverMovementType.TxToPosAddress:
+                to.posCountIn++;
+                to.posValueIn += parsedMovement.amount;
+                break;
+              case CarverMovementType.TxToMnAddress:
+                to.mnCountIn++;
+                to.mnValueIn += parsedMovement.amount;
+                break;
+            }
+
             updatedAddresses.set(to.label, to);
           }
         });
