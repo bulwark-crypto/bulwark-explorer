@@ -40,10 +40,10 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
 const CarverMovementType = {
   CoinbaseToTx: 0,
 
-  AddressToTx: 1,
+  TxIdVoutToTx: 1,
   TxToAddress: 2,
 
-  PosAddressToTx: 3,
+  PosTxIdVout: 3,
   TxToPosAddress: 4,
   TxToMnAddress: 5,
   TxToCoinbaseRewardAddress: 6,

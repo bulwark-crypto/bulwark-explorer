@@ -48,13 +48,15 @@ function getVinRequiredMovements(rpctx) {
         throw 'VIN TXID WITHOUT VOUT?';
       }
 
-      let movementType = CarverMovementType.AddressToTx;
       if (isPosTx(rpctx)) {
-        movementType = CarverMovementType.PosAddressToTx;
-        throw 'pos time';
+        requiredMovements.push({ movementType: CarverMovementType.PosTxIdVoutToTx, label, txid: vin.txid, vout: vin.vout });
+        requiredMovements.push({ movementType: CarverMovementType.PosRewardToTx });
+        requiredMovements.push({ movementType: CarverMovementType.MasternodeRewardToTx });
+      } else {
+        const movementType = CarverMovementType.TxIdVoutToTx;
+        requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
       }
 
-      requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
     } else {
       console.log(vin);
       throw 'UNSUPPORTED VIN (NOT COINBASE OR TX)';
@@ -89,11 +91,10 @@ function getVoutRequiredMovements(rpctx) {
           let movementType = CarverMovementType.TxToAddress;
 
           if (isPosTx(rpctx)) {
-            if (vout.n === 1) {
+            if (voutIndex === rpctx.vout.length - 1) {
+              movementType = CarverMovementType.TxToMnReward;
+            } else {
               movementType = CarverMovementType.TxToPosAddress;
-            }
-            if (vout.n === 2) {
-              movementType = CarverMovementType.TxToMnAddress;
             }
           }
           if (rpctx.vin.length === 1 && rpctx.vin[0].coinbase) {
@@ -169,6 +170,18 @@ async function parseRequiredMovements(params) {
 
         sequence: 0
       });
+
+      switch (carverAddressType) {
+        case CarverAddressType.Address:
+          carverAddress.posCountIn = 0;
+          carverAddress.posValueIn = 0;
+          carverAddress.mnCountIn = 0;
+          carverAddress.mnValueIn = 0;
+          carverAddress.powCountIn = 0;
+          carverAddress.powValueIn = 0;
+
+          break;
+      }
       await carverAddress.save();
     }
 
@@ -179,8 +192,8 @@ async function parseRequiredMovements(params) {
     const vinVoutMovements = new Map();
 
     const movementsToTx = requiredMovements.filter(requiredMovement =>
-      requiredMovement.movementType == CarverMovementType.AddressToTx ||
-      requiredMovement.movementType == CarverMovementType.PosAddressToTx);
+      requiredMovement.movementType == CarverMovementType.TxIdVoutToTx ||
+      requiredMovement.movementType == CarverMovementType.PosTxIdVoutToTx);
     const vinVouts = movementsToTx.map(movementToTx => `${movementToTx.txid}:${movementToTx.vout}`);
 
     if (vinVouts.length > 0) {
@@ -261,8 +274,8 @@ async function parseRequiredMovements(params) {
           totalInput = sumTxVoutAmount;
         }
         break;
-      case CarverMovementType.AddressToTx:
-      case CarverMovementType.PosAddressToTx:
+      case CarverMovementType.TxIdVoutToTx:
+      case CarverMovementType.PosTxIdVoutToTx:
         const vinVoutKey = `${requiredMovement.txid}:${requiredMovement.vout}`;
         const vinVoutMovement = vinVoutMovements.get(vinVoutKey);
 
@@ -272,7 +285,7 @@ async function parseRequiredMovements(params) {
         }
 
         // POS/MN rewards create extra coins so we'll track these
-        if (carverMovementType === CarverMovementType.PosAddressToTx) {
+        if (carverMovementType === CarverMovementType.PosTxIdVoutToTx) {
           newMovements.push({ carverMovementType: CarverAddressType.PosRewardToTx, label: requiredMovement.label, from: vinVoutMovement.to, to: txAddress, amount: vinVoutMovement.amount });
           console.log(params.rpctx.txid);
           throw 'XX';
