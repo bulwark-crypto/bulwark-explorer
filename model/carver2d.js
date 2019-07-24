@@ -8,7 +8,10 @@ const CarverAddressType = {
   Coinbase: 2,
   Zerocoin: 3,
   Burn: 4,
-  Fee: 5
+  Fee: 5,
+  ProofOfStake: 6,
+  Masternode: 7,
+  Governance: 8
 }
 const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -43,9 +46,9 @@ const CarverMovementType = {
   TxIdVoutToTx: 1,
   TxToAddress: 2,
 
-  PosTxIdVout: 3,
-  TxToPosAddress: 4,
-  TxToMnAddress: 5,
+  PosTxIdVoutToTx: 3,
+  TxToPosAddress: 4, // These are converted from TxToPosOutputAddress 
+  TxToMnAddress: 5, // These are converted from TxToPosOutputAddress 
   TxToCoinbaseRewardAddress: 6,
 
   ZerocoinToTx: 7,
@@ -56,7 +59,13 @@ const CarverMovementType = {
   PosRewardToTx: 11,
   GovernanceRewardToTx: 12,
   TxToGovernanceRewardAddress: 13,
-  TxToFee: 14
+  TxToFee: 14,
+
+  /**
+   * This is a temporary tx in POS output. There are multiple outputs in POS and we'll need to figure out which ones are going to POS address and which one is MN. We'll assume these can be in any order with any number of outputs. (An input is eligible for POS)
+   * In the first pass of tx we don't call any async methods. So we'll say all outputs of POS are this temporary movement and then we'll figure out the actual address later.
+   */
+  TxToPosOutputAddress: 1000
 }
 const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
