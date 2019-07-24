@@ -54,6 +54,12 @@ const config = {
 
     // It's hard to identify governance vs mn rewards in Dash. Add any governance addresses here, any masternode rewards into these addresses will count as governance reward instead of MN rewards
     governanceAddresses: [
+      /**
+       * If you have governance voting in your coin you can add the voting addresses to below.
+       * This is only requried because governance rewards are simply replacing MN block reward (so they are identical on the blockchain)
+       */
+
+      /*
       // 72000 BWK 159ff849ae833c3abd05a7b36c5ecc7c4a808a8f1ef292dad0b02875009e009e
       "bZ1HJB1kEb1KFcVA42viGJPM7896rsRp9x",
 
@@ -80,6 +86,7 @@ const config = {
       // 16500 BWK 9f011213e8b6890ab1ec66f037f1e16f3c8c138289877e0572b498aef31b3020
       // 16500 BWK ac562d3f239b2896d293b3126e83bbf6bef618ce59194657668b1b049dd094ad
       "bTHnr8H5anfhsx222Q5jgE3JjFog7pk5Cd"
+      */
     ]
   },
   // Each address can contain it's own set of widgets and configs for those widgets
