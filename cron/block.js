@@ -36,14 +36,14 @@ console.dateLog = (...log) => {
  * @param {Number} sequence For blockchain sequencing (last sequence of inserted block)
  */
 async function syncBlocks(start, stop, sequence) {
-  /*
-  if (clean) {
-    await Block.remove({ height: { $gt: start, $lte: stop } });
-    await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
-    // await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
-    await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
-  }
-  */
+
+  //if (clean) {
+  await Block.remove({ height: { $gt: start, $lte: stop } });
+  await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
+  // await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
+  await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
+  //}
+
 
   const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 });
   //const lastAddress = await CarverAddress.findOne().sort({ sequence: -1 });
@@ -121,6 +121,8 @@ async function syncBlocks(start, stop, sequence) {
 
       // Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
+        // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
+        // Additionally we also flatten the vins/vouts into an array of movements
         const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
         const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
 
@@ -133,6 +135,7 @@ async function syncBlocks(start, stop, sequence) {
           carverAddressCache
         };
 
+        // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
         // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
@@ -170,6 +173,24 @@ async function syncBlocks(start, stop, sequence) {
             from.valueOut += parsedMovement.amount;
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
+            switch (parsedMovement.carverMovementType) {
+              case CarverMovementType.PosRewardToTx:
+                if (!from.posCountIn) {
+                  from.posValueIn = 0;
+                  from.posCountIn = 0;
+                }
+                from.posCountIn++;
+                from.posValueIn += parsedMovement.amount;
+                break;
+              case CarverMovementType.MasternodeRewardToTx:
+                if (!from.mnCountIn) {
+                  from.mnValueIn = 0;
+                  from.mnCountIn = 0;
+                }
+                from.mnCountIn++;
+                from.mnValueIn += parsedMovement.amount;
+                break;
+            }
             updatedAddresses.set(from.label, from);
           }
 
@@ -185,14 +206,6 @@ async function syncBlocks(start, stop, sequence) {
               case CarverMovementType.TxToCoinbaseRewardAddress:
                 to.powCountIn++;
                 to.powValueIn += parsedMovement.amount;
-                break;
-              case CarverMovementType.TxToPosAddress:
-                to.posCountIn++;
-                to.posValueIn += parsedMovement.amount;
-                break;
-              case CarverMovementType.TxToMnAddress:
-                to.mnCountIn++;
-                to.mnValueIn += parsedMovement.amount;
                 break;
             }
 
