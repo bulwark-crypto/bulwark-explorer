@@ -1,12 +1,14 @@
 
+const config = require('../config');
 require('babel-polyfill');
 const mongoose = require('mongoose');
 const { CarverAddress, CarverMovement, CarverMovementType, CarverAddressType } = require('../model/carver2d');
 
+
 /**
  * Is this a POS transaction?
  */
-function isPosTx(tx) {
+const isPosTx = (tx) => {
 
   return tx.vin.length === 1 &&
     tx.vin[0].txid !== undefined &&
@@ -19,7 +21,10 @@ function isPosTx(tx) {
     tx.vout[0].scriptPubKey.type === 'nonstandard';
 }
 
-function getVinRequiredMovements(rpctx) {
+/**
+ * Create address->tx movement for all inputs in a tx
+ */
+const getVinRequiredMovements = (rpctx) => {
   let requiredMovements = [];
 
   const txid = rpctx.txid;
@@ -50,8 +55,6 @@ function getVinRequiredMovements(rpctx) {
 
       if (isPosTx(rpctx)) {
         requiredMovements.push({ movementType: CarverMovementType.PosTxIdVoutToTx, label, txid: vin.txid, vout: vin.vout });
-        requiredMovements.push({ movementType: CarverMovementType.PosRewardToTx });
-        requiredMovements.push({ movementType: CarverMovementType.MasternodeRewardToTx });
       } else {
         const movementType = CarverMovementType.TxIdVoutToTx;
         requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
@@ -65,7 +68,11 @@ function getVinRequiredMovements(rpctx) {
 
   return requiredMovements;
 }
-function getVoutRequiredMovements(rpctx) {
+
+/**
+ * Create tx->address movement for all outputs in a tx
+ */
+const getVoutRequiredMovements = (rpctx) => {
   const requiredMovements = [];
 
   for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
@@ -91,11 +98,7 @@ function getVoutRequiredMovements(rpctx) {
           let movementType = CarverMovementType.TxToAddress;
 
           if (isPosTx(rpctx)) {
-            if (voutIndex === rpctx.vout.length - 1) {
-              movementType = CarverMovementType.TxToMnReward;
-            } else {
-              movementType = CarverMovementType.TxToPosAddress;
-            }
+            movementType = CarverMovementType.TxToPosOutputAddress;
           }
           if (rpctx.vin.length === 1 && rpctx.vin[0].coinbase) {
             movementType = CarverMovementType.TxToCoinbaseRewardAddress;
@@ -144,9 +147,33 @@ function getVoutRequiredMovements(rpctx) {
 }
 
 
+const getVinVoutMovements = async (requiredMovements) => {
+  const vinVoutMovements = new Map();
+
+  const movementsToTx = requiredMovements.filter(requiredMovement =>
+    requiredMovement.movementType == CarverMovementType.TxIdVoutToTx ||
+    requiredMovement.movementType == CarverMovementType.PosTxIdVoutToTx);
+  const vinVouts = movementsToTx.map(movementToTx => `${movementToTx.txid}:${movementToTx.vout}`);
+
+  if (vinVouts.length > 0) {
+    const vinMovements = await CarverMovement.find({ label: { $in: vinVouts } }).populate('to');
+    vinMovements.forEach(vinMovements => {
+      vinVoutMovements.set(vinMovements.label, vinMovements);
+    })
+  }
+
+  return vinVoutMovements;
+}
+
+/**
+ * Convert required movements into parsed movements
+ */
 async function parseRequiredMovements(params) {
   const blockDate = new Date(params.rpcblock.time * 1000);
 
+  /**
+   * Get or Initialize a new carver address
+   */
   const getCarverAddressFromCache = async (carverAddressType, label) => {
     //@todo add caching (to speed up fetching of old addresses)
 
@@ -188,24 +215,6 @@ async function parseRequiredMovements(params) {
     return carverAddress;
   }
 
-  const getVinVoutMovements = async (requiredMovements) => {
-    const vinVoutMovements = new Map();
-
-    const movementsToTx = requiredMovements.filter(requiredMovement =>
-      requiredMovement.movementType == CarverMovementType.TxIdVoutToTx ||
-      requiredMovement.movementType == CarverMovementType.PosTxIdVoutToTx);
-    const vinVouts = movementsToTx.map(movementToTx => `${movementToTx.txid}:${movementToTx.vout}`);
-
-    if (vinVouts.length > 0) {
-      const vinMovements = await CarverMovement.find({ label: { $in: vinVouts } }).populate('to');
-      vinMovements.forEach(vinMovements => {
-        vinVoutMovements.set(vinMovements.label, vinMovements);
-      })
-    }
-
-    return vinVoutMovements;
-  }
-
   /**
    * Gets all addresses used in required movements (these are vout addresses[0])
    */
@@ -214,8 +223,7 @@ async function parseRequiredMovements(params) {
 
     const movementsWithAddress = requiredMovements.filter(requiredMovement =>
       requiredMovement.movementType == CarverMovementType.TxToAddress ||
-      requiredMovement.movementType == CarverMovementType.TxToPosAddress ||
-      requiredMovement.movementType == CarverMovementType.TxToMnAddress ||
+      requiredMovement.movementType == CarverMovementType.TxToPosOutputAddress ||
       requiredMovement.movementType == CarverMovementType.TxToCoinbaseRewardAddress);
 
     const addressLabels = Array.from(new Set(movementsWithAddress.map(movement => movement.addressLabel))); // Select distinct address labels
@@ -237,9 +245,26 @@ async function parseRequiredMovements(params) {
     return voutAddresses;
   }
 
+  const getPosVinVoutMovement = () => {
+    const txToPosOutputAddressMovement = params.requiredMovements.find(requiredMovement => requiredMovement.movementType === CarverMovementType.PosTxIdVoutToTx);
+    if (!txToPosOutputAddressMovement) {
+      console.log(requiredMovement);
+      throw 'Pos without input movement?'
+    }
+
+    const vinVoutKey = `${txToPosOutputAddressMovement.txid}:${txToPosOutputAddressMovement.vout}`;
+    const posVinVoutMovement = vinVoutMovements.get(vinVoutKey);
+    if (!posVinVoutMovement) {
+      console.log(vinVoutKey);
+      throw 'Could not find POS txid+vout?';
+    }
+    return posVinVoutMovement;
+  }
+
   // Figure out what txid+vout we need to fetch 
   const vinVoutMovements = await getVinVoutMovements(params.requiredMovements);
   const voutAddresses = await getVoutAddresses(params.requiredMovements);
+
 
   const sumTxVoutAmount = params.rpctx.vout.map(vout => vout.value).reduce((prev, curr) => prev + curr, 0);
 
@@ -251,6 +276,9 @@ async function parseRequiredMovements(params) {
 
   let totalInput = 0;
   let totalOutput = 0;
+  let totalPosRewards = 0;
+  let totalMnRewards = 0;
+  let totalGovernanceRewards = 0;
 
   for (let i = 0; i < params.requiredMovements.length; i++) {
     const requiredMovement = params.requiredMovements[i];
@@ -284,23 +312,14 @@ async function parseRequiredMovements(params) {
           throw 'INVALID VIN+VOUT MOVEMENT?';
         }
 
-        // POS/MN rewards create extra coins so we'll track these
-        if (carverMovementType === CarverMovementType.PosTxIdVoutToTx) {
-          newMovements.push({ carverMovementType: CarverAddressType.PosRewardToTx, label: requiredMovement.label, from: vinVoutMovement.to, to: txAddress, amount: vinVoutMovement.amount });
-          console.log(params.rpctx.txid);
-          throw 'XX';
-        }
-
         totalInput += vinVoutMovement.amount;
         newMovements.push({ carverMovementType, label: requiredMovement.label, from: vinVoutMovement.to, to: txAddress, amount: vinVoutMovement.amount });
-
         break;
 
       // TX -> VOUT
       case CarverMovementType.TxToAddress:
-      case CarverMovementType.TxToPosAddress:
-      case CarverMovementType.TxToMnAddress:
       case CarverMovementType.TxToCoinbaseRewardAddress:
+      case CarverMovementType.TxToPosOutputAddress:
         if (!requiredMovement.addressLabel) {
           console.log(requiredMovement);
           throw 'REQUIREDMOVEMENT WITHOUT ADDRESS?';
@@ -312,7 +331,27 @@ async function parseRequiredMovements(params) {
           throw 'VOUT WITHOUT ADDRESS?'
         }
 
-        newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: voutAddress, amount: requiredMovement.amount });
+        let addressMovementType = carverMovementType;
+
+        if (isPosTx(params.rpctx)) {
+          const posVinVoutMovement = getPosVinVoutMovement();
+          const posAddressLabel = posVinVoutMovement.to.label;
+
+          addressMovementType = CarverMovementType.TxToPosAddress;
+          if (requiredMovement.addressLabel !== posAddressLabel) {
+            if (config.community.governanceAddresses[requiredMovement.addressLabel]) {
+              addressMovementType = CarverMovementType.TxToMnAddress;
+              totalMnRewards += requiredMovement.amount;
+            } else {
+              addressMovementType = CarverMovementType.TxToGovernanceRewardAddress;
+              totalGovernanceRewards += requiredMovement.amount;
+            }
+          } else {
+            totalPosRewards += requiredMovement.amount;
+          }
+        }
+
+        newMovements.push({ carverMovementType: addressMovementType, label: requiredMovement.label, from: txAddress, to: voutAddress, amount: requiredMovement.amount });
 
         totalOutput += requiredMovement.amount;
         break;
@@ -328,13 +367,40 @@ async function parseRequiredMovements(params) {
 
         totalOutput += requiredMovement.amount;
         break;
+      default:
+        throw `Unhandled movement type: ${carverMovementType}`;
     }
+  }
+
+  // MN REWARD -> TX
+  if (totalMnRewards > 0) {
+    const addressLabel = 'MN';
+    const fromAddress = await getCarverAddressFromCache(CarverAddressType.Masternode, addressLabel);
+    newMovements.push({ carverMovementType: CarverMovementType.MasternodeRewardToTx, label: `${params.rpctx.txid}:${addressLabel}`, from: fromAddress, to: txAddress, amount: totalMnRewards });
+  }
+
+  // GOVERNANCE REWARD -> TX
+  if (totalGovernanceRewards > 0) {
+    const addressLabel = 'GOVERNANCE';
+    const fromAddress = await getCarverAddressFromCache(CarverAddressType.Governance, addressLabel);
+    newMovements.push({ carverMovementType: CarverMovementType.GovernanceRewardToTx, label: `${params.rpctx.txid}:${addressLabel}`, from: fromAddress, to: txAddress, amount: totalGovernanceRewards });
+  }
+
+  // POS REWARD -> TX
+  if (totalPosRewards > 0) {
+    const posVinVoutMovement = getPosVinVoutMovement();
+
+    const addressLabel = 'POS';
+    const fromAddress = await getCarverAddressFromCache(CarverAddressType.ProofOfStake, addressLabel);
+    newMovements.push({ carverMovementType: CarverMovementType.PosRewardToTx, label: `${params.rpctx.txid}:${addressLabel}`, from: fromAddress, to: txAddress, amount: totalPosRewards - posVinVoutMovement.amount });
+
   }
 
   // Fee
   if (totalInput - totalOutput > 0) {
-    const feeAddress = await getCarverAddressFromCache(CarverAddressType.Fee, 'FEE');
-    newMovements.push({ carverMovementType: CarverMovementType.TxToFee, label: `${params.rpctx.txid}:FEE`, from: txAddress, to: feeAddress, amount: totalInput - totalOutput });
+    const addressLabel = 'FEE';
+    const toAddress = await getCarverAddressFromCache(CarverAddressType.Fee, addressLabel);
+    newMovements.push({ carverMovementType: CarverMovementType.TxToFee, label: `${params.rpctx.txid}:${addressLabel}`, from: txAddress, to: toAddress, amount: totalInput - totalOutput });
   }
 
   return newMovements
