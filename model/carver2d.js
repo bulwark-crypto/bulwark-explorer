@@ -31,6 +31,8 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   // Track rewards (CarverAddressType.Address only). That way we can subtract them from countIn/countOut to get number of non-reward txs
   posCountIn: { index: true, type: Number },
   posValueIn: { index: true, type: Number },
+  posInputsValueIn: { index: true, type: Number }, // We'll store total amount of POS inputs from this address. Then we can divide by posCountIn to get avg POS input size 
+  posBlockDiffSum: { index: true, type: Number }, // Total blocks waited for all POS rewards (so we can divide by posCountIn to get avg block wait)
   posLastBlockHeight: { type: Number }, // Store last time this address received a POS reward (we use this for sequential syncing + data analytics)
 
   mnCountIn: { index: true, type: Number },
@@ -86,6 +88,11 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   from: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   to: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   destinationAddress: { index: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // POS, MN & POW Rewards will also have a destinationAddress
+
+  // For POS rewards store additional info
+  posInputAmount: { index: true, type: Number }, // What was the input amount of the stake
+  posInputBlockHeight: { index: true, type: Number },   // What was the block of the input
+  posInputBlockHeightDiff: { index: true, type: Number }, // blockHeight-posInputBlockHeightDiff
 
   sequence: { unique: true, required: true, type: Number }
 }, { _id: false, versionKey: false }), 'carverMovements');

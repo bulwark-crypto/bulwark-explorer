@@ -13,7 +13,6 @@ const isPosTx = (tx) => {
   return tx.vin.length === 1 &&
     tx.vin[0].txid !== undefined &&
     tx.vin[0].vout !== undefined &&
-    //tx.vout.length === 3 &&
     tx.vout[0].value !== undefined &&
     tx.vout[0].value === 0 &&
     tx.vout[0].n === 0 &&
@@ -202,6 +201,7 @@ async function parseRequiredMovements(params) {
         case CarverAddressType.Address:
           carverAddress.posCountIn = 0;
           carverAddress.posValueIn = 0;
+          carverAddress.posInputsValueIn = 0;
           carverAddress.mnCountIn = 0;
           carverAddress.mnValueIn = 0;
           carverAddress.powCountIn = 0;
@@ -328,7 +328,7 @@ async function parseRequiredMovements(params) {
 
           addressMovementType = CarverMovementType.TxToPosAddress;
           if (requiredMovement.addressLabel !== posAddressLabel) {
-            if (config.community.governanceAddresses[requiredMovement.addressLabel]) {
+            if (!config.community.governanceAddresses.find(governanceAddress => governanceAddress.label === requiredMovement.addressLabel)) {
               addressMovementType = CarverMovementType.TxToMnAddress;
               totalMnRewards += requiredMovement.amount;
             } else {
@@ -393,7 +393,17 @@ async function parseRequiredMovements(params) {
   if (totalPosRewards > 0) {
     const addressLabel = 'POS';
     const fromAddress = await getCarverAddressFromCache(CarverAddressType.ProofOfStake, addressLabel);
-    newVinMovements.push({ carverMovementType: CarverMovementType.PosRewardToTx, label: `${addressLabel}:${params.rpctx.txid}`, from: fromAddress, to: txAddress, amount: totalPosRewards - vinVoutMovement.amount, destinationAddress: posRewardAddress });
+    newVinMovements.push({
+      carverMovementType: CarverMovementType.PosRewardToTx,
+      label: `${addressLabel}:${params.rpctx.txid}`,
+      from: fromAddress,
+      to: txAddress,
+      amount: totalPosRewards - vinVoutMovement.amount,
+      destinationAddress: posRewardAddress,
+      posInputAmount: vinVoutMovement.amount,
+      posInputBlockHeight: vinVoutMovement.blockHeight,
+      posInputBlockHeightDiff: params.rpctx.height - vinVoutMovement.blockHeight
+    });
 
   }
 

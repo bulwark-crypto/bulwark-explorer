@@ -175,6 +175,15 @@ async function syncBlocks(start, stop, sequence) {
             from.valueOut += parsedMovement.amount;
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
+
+            switch (parsedMovement.carverMovementType) {
+              case CarverMovementType.PosRewardToTx:
+                from.posInputAmount = parsedMovement.posInputAmount;
+                from.posInputBlockHeight = parsedMovement.posInputBlockHeight;
+                from.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
+                break;
+            }
+
             updatedAddresses.set(from.label, from);
           }
 
@@ -195,11 +204,37 @@ async function syncBlocks(start, stop, sequence) {
 
                 // Because an output might contain multiple POS outputs we'll only track the first reward as the reward
                 if (!to.posLastBlockHeight || to.posLastBlockHeight != rpcblock.height) {
+                  // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
+                  const posRewardToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosRewardToTx);
+                  if (!posRewardToTx) {
+                    throw 'POS REWARDTOTX NOT FOUND?';
+                  }
+
+                  // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
+                  const posTxIdVoutToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosTxIdVoutToTx);
+                  if (!posTxIdVoutToTx) {
+                    throw 'POS TXID+VOUT NOT FOUND?';
+                  }
+
+
                   to.posCountIn++;
+                  to.posValueIn += posRewardToTx.amount;
+                  if (!to.posInputsValueIn) {
+                    to.posInputsValueIn = 0;
+                    to.posLastBlockHeight = 0;
+                  }
+                  to.posInputsValueIn += posTxIdVoutToTx.amount;
+
+                  if (to.posLastBlockHeight) {
+                    if (!to.posBlockDiffSum) {
+                      to.posBlockDiffSum = 0;
+                    }
+                    to.posBlockDiffSum += rpcblock.height - to.posLastBlockHeight;
+                  }
                   to.posLastBlockHeight = rpcblock.height;
+
                 }
 
-                to.posValueIn += parsedMovement.amount;
                 break;
               case CarverMovementType.TxToMnAddress:
                 to.mnCountIn++;
