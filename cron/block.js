@@ -157,12 +157,14 @@ async function syncBlocks(start, stop, sequence) {
 
               from: parsedMovement.from._id,
               to: parsedMovement.to._id,
+              destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
 
               fromBalance: parsedMovement.from.balance,
               toBalance: parsedMovement.to.balance,
 
               carverMovementType: parsedMovement.carverMovementType,
-              sequence: sequence
+              sequence: sequence,
+
             }));
           }
 
@@ -173,24 +175,6 @@ async function syncBlocks(start, stop, sequence) {
             from.valueOut += parsedMovement.amount;
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
-            switch (parsedMovement.carverMovementType) {
-              case CarverMovementType.PosRewardToTx:
-                if (!from.posCountIn) {
-                  from.posValueIn = 0;
-                  from.posCountIn = 0;
-                }
-                from.posCountIn++;
-                from.posValueIn += parsedMovement.amount;
-                break;
-              case CarverMovementType.MasternodeRewardToTx:
-                if (!from.mnCountIn) {
-                  from.mnValueIn = 0;
-                  from.mnCountIn = 0;
-                }
-                from.mnCountIn++;
-                from.mnValueIn += parsedMovement.amount;
-                break;
-            }
             updatedAddresses.set(from.label, from);
           }
 
@@ -207,6 +191,21 @@ async function syncBlocks(start, stop, sequence) {
                 to.powCountIn++;
                 to.powValueIn += parsedMovement.amount;
                 break;
+              case CarverMovementType.TxToPosAddress:
+
+                // Because an output might contain multiple POS outputs we'll only track the first reward as the reward
+                if (!to.posLastBlockHeight || to.posLastBlockHeight != rpcblock.height) {
+                  to.posCountIn++;
+                  to.posLastBlockHeight = rpcblock.height;
+                }
+
+                to.posValueIn += parsedMovement.amount;
+                break;
+              case CarverMovementType.TxToMnAddress:
+                to.mnCountIn++;
+                to.mnValueIn += parsedMovement.amount;
+                break;
+
             }
 
             updatedAddresses.set(to.label, to);

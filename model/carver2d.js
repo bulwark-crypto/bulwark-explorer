@@ -31,8 +31,11 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   // Track rewards (CarverAddressType.Address only). That way we can subtract them from countIn/countOut to get number of non-reward txs
   posCountIn: { index: true, type: Number },
   posValueIn: { index: true, type: Number },
+  posLastBlockHeight: { type: Number }, // Store last time this address received a POS reward (we use this for sequential syncing + data analytics)
+
   mnCountIn: { index: true, type: Number },
   mnValueIn: { index: true, type: Number },
+
   powCountIn: { index: true, type: Number },
   powValueIn: { index: true, type: Number },
 
@@ -82,6 +85,7 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
 
   from: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   to: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  destinationAddress: { index: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // POS, MN & POW Rewards will also have a destinationAddress
 
   sequence: { unique: true, required: true, type: Number }
 }, { _id: false, versionKey: false }), 'carverMovements');

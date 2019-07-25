@@ -245,22 +245,6 @@ async function parseRequiredMovements(params) {
     return voutAddresses;
   }
 
-  const getPosVinVoutMovement = () => {
-    const txToPosOutputAddressMovement = params.requiredMovements.find(requiredMovement => requiredMovement.movementType === CarverMovementType.PosTxIdVoutToTx);
-    if (!txToPosOutputAddressMovement) {
-      console.log(requiredMovement);
-      throw 'Pos without input movement?'
-    }
-
-    const vinVoutKey = `${txToPosOutputAddressMovement.txid}:${txToPosOutputAddressMovement.vout}`;
-    const posVinVoutMovement = vinVoutMovements.get(vinVoutKey);
-    if (!posVinVoutMovement) {
-      console.log(vinVoutKey);
-      throw 'Could not find POS txid+vout?';
-    }
-    return posVinVoutMovement;
-  }
-
   // Figure out what txid+vout we need to fetch 
   const vinVoutMovements = await getVinVoutMovements(params.requiredMovements);
   const voutAddresses = await getVoutAddresses(params.requiredMovements);
@@ -270,7 +254,9 @@ async function parseRequiredMovements(params) {
 
   const txAddress = await getCarverAddressFromCache(CarverAddressType.Tx, params.rpctx.txid);
 
-  let newMovements = [];
+  // We'll want to preserve order of vins followed by vouts so they'll be added to their own arrays and them merged together
+  let newVinMovements = [];
+  let newVoutMovements = [];
 
   let hasZerocoinInput = false;
 
@@ -278,7 +264,12 @@ async function parseRequiredMovements(params) {
   let totalOutput = 0;
   let totalPosRewards = 0;
   let totalMnRewards = 0;
+  let totalPowRewards = 0;
   let totalGovernanceRewards = 0;
+  let vinVoutMovement = null; // We'll use this for POS & GOVERNANCE identification as well 
+  let powRewardAddress = null;
+  let posRewardAddress = null;
+  let mnRewardAddress = null;
 
   for (let i = 0; i < params.requiredMovements.length; i++) {
     const requiredMovement = params.requiredMovements[i];
@@ -288,15 +279,14 @@ async function parseRequiredMovements(params) {
     switch (carverMovementType) {
       // VIN -> TX
       case CarverMovementType.CoinbaseToTx:
-        const fromCoinbaseAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, 'COINBASE');
-        newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromCoinbaseAddress, to: txAddress, amount: sumTxVoutAmount });
+        totalPowRewards = sumTxVoutAmount;
         totalInput = sumTxVoutAmount;
         break;
       case CarverMovementType.ZerocoinToTx:
         // Zerocoin might have multiple inputs in the same tx (ex: tx "d1be21c38e922091e9b4c2c2250be6d4c0d0d801aa3baf984d0351fe4fb39534" on Bulwark Coin)
         if (!hasZerocoinInput) {
           const fromZerocoinAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'ZEROCOIN');
-          newMovements.push({ carverMovementType, label: requiredMovement.label, from: fromZerocoinAddress, to: txAddress, amount: sumTxVoutAmount });
+          newVinMovements.push({ carverMovementType, label: requiredMovement.label, from: fromZerocoinAddress, to: txAddress, amount: sumTxVoutAmount });
 
           hasZerocoinInput = true;
           totalInput = sumTxVoutAmount;
@@ -305,7 +295,7 @@ async function parseRequiredMovements(params) {
       case CarverMovementType.TxIdVoutToTx:
       case CarverMovementType.PosTxIdVoutToTx:
         const vinVoutKey = `${requiredMovement.txid}:${requiredMovement.vout}`;
-        const vinVoutMovement = vinVoutMovements.get(vinVoutKey);
+        vinVoutMovement = vinVoutMovements.get(vinVoutKey);
 
         if (!vinVoutMovement) {
           console.log(vinVoutKey);
@@ -313,7 +303,7 @@ async function parseRequiredMovements(params) {
         }
 
         totalInput += vinVoutMovement.amount;
-        newMovements.push({ carverMovementType, label: requiredMovement.label, from: vinVoutMovement.to, to: txAddress, amount: vinVoutMovement.amount });
+        newVinMovements.push({ carverMovementType, label: requiredMovement.label, from: vinVoutMovement.to, to: txAddress, amount: vinVoutMovement.amount });
         break;
 
       // TX -> VOUT
@@ -334,8 +324,7 @@ async function parseRequiredMovements(params) {
         let addressMovementType = carverMovementType;
 
         if (isPosTx(params.rpctx)) {
-          const posVinVoutMovement = getPosVinVoutMovement();
-          const posAddressLabel = posVinVoutMovement.to.label;
+          const posAddressLabel = vinVoutMovement.to.label;
 
           addressMovementType = CarverMovementType.TxToPosAddress;
           if (requiredMovement.addressLabel !== posAddressLabel) {
@@ -346,24 +335,31 @@ async function parseRequiredMovements(params) {
               addressMovementType = CarverMovementType.TxToGovernanceRewardAddress;
               totalGovernanceRewards += requiredMovement.amount;
             }
+            mnRewardAddress = vinVoutMovement.to;
           } else {
             totalPosRewards += requiredMovement.amount;
+            posRewardAddress = vinVoutMovement.to;
+          }
+        } else {
+          // POW
+          if (carverMovementType === CarverMovementType.TxToCoinbaseRewardAddress) {
+            powRewardAddress = voutAddress;
           }
         }
 
-        newMovements.push({ carverMovementType: addressMovementType, label: requiredMovement.label, from: txAddress, to: voutAddress, amount: requiredMovement.amount });
+        newVoutMovements.push({ carverMovementType: addressMovementType, label: requiredMovement.label, from: txAddress, to: voutAddress, amount: requiredMovement.amount });
 
         totalOutput += requiredMovement.amount;
         break;
       case CarverMovementType.TxToZerocoin:
         const toZerocoinAddress = await getCarverAddressFromCache(CarverAddressType.Zerocoin, 'ZEROCOIN');
-        newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toZerocoinAddress, amount: requiredMovement.amount });
+        newVoutMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toZerocoinAddress, amount: requiredMovement.amount });
 
         totalOutput += requiredMovement.amount;
         break;
       case CarverMovementType.Burn:
         const toBurnAddress = await getCarverAddressFromCache(CarverAddressType.Burn, 'BURN');
-        newMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toBurnAddress, amount: requiredMovement.amount });
+        newVoutMovements.push({ carverMovementType, label: requiredMovement.label, from: txAddress, to: toBurnAddress, amount: requiredMovement.amount });
 
         totalOutput += requiredMovement.amount;
         break;
@@ -372,38 +368,43 @@ async function parseRequiredMovements(params) {
     }
   }
 
+  // POW REWARD -> TX
+  if (totalPowRewards > 0) {
+    const addressLabel = 'COINBASE';
+    const fromAddress = await getCarverAddressFromCache(CarverAddressType.Coinbase, addressLabel);
+    newVinMovements.push({ carverMovementType: CarverMovementType.CoinbaseToTx, label: `${addressLabel}:${params.rpctx.txid}`, from: fromAddress, to: txAddress, amount: totalPowRewards, destinationAddress: powRewardAddress });
+  }
+
   // MN REWARD -> TX
   if (totalMnRewards > 0) {
     const addressLabel = 'MN';
     const fromAddress = await getCarverAddressFromCache(CarverAddressType.Masternode, addressLabel);
-    newMovements.push({ carverMovementType: CarverMovementType.MasternodeRewardToTx, label: `${params.rpctx.txid}:${addressLabel}`, from: fromAddress, to: txAddress, amount: totalMnRewards });
+    newVinMovements.push({ carverMovementType: CarverMovementType.MasternodeRewardToTx, label: `${addressLabel}:${params.rpctx.txid}`, from: fromAddress, to: txAddress, amount: totalMnRewards, destinationAddress: mnRewardAddress });
   }
 
   // GOVERNANCE REWARD -> TX
   if (totalGovernanceRewards > 0) {
     const addressLabel = 'GOVERNANCE';
     const fromAddress = await getCarverAddressFromCache(CarverAddressType.Governance, addressLabel);
-    newMovements.push({ carverMovementType: CarverMovementType.GovernanceRewardToTx, label: `${params.rpctx.txid}:${addressLabel}`, from: fromAddress, to: txAddress, amount: totalGovernanceRewards });
+    newVinMovements.push({ carverMovementType: CarverMovementType.GovernanceRewardToTx, label: `${addressLabel}:${params.rpctx.txid}`, from: fromAddress, to: txAddress, amount: totalGovernanceRewards, destinationAddress: mnRewardAddress });
   }
 
   // POS REWARD -> TX
   if (totalPosRewards > 0) {
-    const posVinVoutMovement = getPosVinVoutMovement();
-
     const addressLabel = 'POS';
     const fromAddress = await getCarverAddressFromCache(CarverAddressType.ProofOfStake, addressLabel);
-    newMovements.push({ carverMovementType: CarverMovementType.PosRewardToTx, label: `${params.rpctx.txid}:${addressLabel}`, from: fromAddress, to: txAddress, amount: totalPosRewards - posVinVoutMovement.amount });
+    newVinMovements.push({ carverMovementType: CarverMovementType.PosRewardToTx, label: `${addressLabel}:${params.rpctx.txid}`, from: fromAddress, to: txAddress, amount: totalPosRewards - vinVoutMovement.amount, destinationAddress: posRewardAddress });
 
   }
 
-  // Fee
+  // TX - > Fee
   if (totalInput - totalOutput > 0) {
     const addressLabel = 'FEE';
     const toAddress = await getCarverAddressFromCache(CarverAddressType.Fee, addressLabel);
-    newMovements.push({ carverMovementType: CarverMovementType.TxToFee, label: `${params.rpctx.txid}:${addressLabel}`, from: txAddress, to: toAddress, amount: totalInput - totalOutput });
+    newVoutMovements.push({ carverMovementType: CarverMovementType.TxToFee, label: `${params.rpctx.txid}:${addressLabel}`, from: txAddress, to: toAddress, amount: totalInput - totalOutput });
   }
 
-  return newMovements
+  return [...newVinMovements, ...newVoutMovements];
 }
 
 module.exports = {
