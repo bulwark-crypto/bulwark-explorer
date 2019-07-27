@@ -15,7 +15,6 @@ const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
 const BlockRewardDetails = require('../../model/blockRewardDetails');
 const TX = require('../../model/tx');
-const UTXO = require('../../model/utxo');
 
 /**
  * Get transactions and unspent transactions by address.
@@ -52,28 +51,18 @@ const getAddress = async (req, res) => {
       .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
       .allowDiskUse(true)
       .exec();
-    const qutxo = UTXO
-      .aggregate([
-        { $match: { address: req.params.hash } },
-        { $sort: { blockHeight: -1 } }
-      ])
-      .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
-      .allowDiskUse(true)
-      .exec();
 
     const masternodeForAddress = await Masternode.findOne({ addr: req.params.hash });
     const isMasternode = !!masternodeForAddress;
 
     const txs = await qtxs;
-    //const utxo = await qutxo;
-    // const balance = utxo.reduce((acc, tx) => acc + tx.value, 0.0);
-    //const received = txs.reduce((acc, tx) => acc + tx.vout.reduce((a, t) => a + t.value, 0.0), 0.0);
+
 
     //@todo
     const balance = 0;
     const received = 0;
 
-    res.json({ balance, received, txs, utxo, isMasternode });
+    res.json({ balance, received, txs, isMasternode });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -414,18 +403,6 @@ const getSupply = async (req, res) => {
   try {
     let c = 0; // Circulating supply.
     let t = 0; // Total supply.
-
-    /*
-    let supply = await cache.getFromCache("supply", moment().utc().add(1, 'hours').unix(), async () => {
-      const utxo = await UTXO.aggregate([
-        { $group: { _id: 'supply', total: { $sum: '$value' } } }
-      ]);
-
-      t = utxo[0].total;
-      c = t;
-
-      return { c, t };
-    });*/
 
     //@todo
     const supply = { c: 0, t: 0 }

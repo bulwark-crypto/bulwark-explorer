@@ -12,15 +12,13 @@ export default class CardAddress extends Component {
     balance: 0.0,
     received: 0.0,
     txs: [],
-    utxo: []
   };
 
   static propTypes = {
     address: PropTypes.string.isRequired,
     balance: PropTypes.number.isRequired,
     received: PropTypes.number.isRequired,
-    txs: PropTypes.array.isRequired,
-    utxo: PropTypes.array.isRequired
+    txs: PropTypes.array.isRequired
   };
 
   componentDidMount() {
@@ -48,47 +46,47 @@ export default class CardAddress extends Component {
   render() {
     return (
       <div className="animated fadeIn">
-      <div className="row">
-        <div className="col-md-12 col-lg-8">
-          <div className="card--address">
-            <div className="card__row">
-              <span className="card__label card--address-wallet">
-                Wallet Address:
+        <div className="row">
+          <div className="col-md-12 col-lg-8">
+            <div className="card--address">
+              <div className="card__row">
+                <span className="card__label card--address-wallet">
+                  Wallet Address:
               </span>
-              <span className="card__result card--address-hash">
-                { this.props.address }
+                <span className="card__result card--address-hash">
+                  {this.props.address}
+                </span>
+              </div>
+              <div className="card__row">
+                <span className="card__label">
+                  Sent:
               </span>
-            </div>
-            <div className="card__row">
-              <span className="card__label">
-                Sent:
+                <span className="card__result">
+                  -{numeral(this.props.received - this.props.balance).format('0,0.0000')} BWK
               </span>
-              <span className="card__result">
-                -{ numeral(this.props.received - this.props.balance).format('0,0.0000') } BWK
+              </div>
+              <div className="card__row">
+                <span className="card__label">
+                  Received:
               </span>
-            </div>
-            <div className="card__row">
-              <span className="card__label">
-                Received:
+                <span className="card__result">
+                  +{numeral(this.props.received).format('0,0.0000')} BWK
               </span>
-              <span className="card__result">
-                +{ numeral(this.props.received).format('0,0.0000') } BWK
+              </div>
+              <div className="card__row">
+                <span className="card__label">
+                  Balance:
               </span>
-            </div>
-            <div className="card__row">
-              <span className="card__label">
-                Balance:
+                <span className="card__result">
+                  {numeral(this.props.balance).format('0,0.0000')} BWK
               </span>
-              <span className="card__result">
-                { numeral(this.props.balance).format('0,0.0000') } BWK
-              </span>
+              </div>
             </div>
           </div>
+          <div className="col-md-12 col-lg-4 text-right">
+            <canvas id="qr-code" />
+          </div>
         </div>
-        <div className="col-md-12 col-lg-4 text-right">
-          <canvas id="qr-code" />
-        </div>
-      </div>
       </div>
     );
   };

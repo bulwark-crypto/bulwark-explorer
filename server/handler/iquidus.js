@@ -5,7 +5,6 @@ const { rpc } = require('../../lib/cron');
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
 const Rich = require('../../model/rich');
-const UTXO = require('../../model/utxo');
 
 // Get latest coin info helper method.
 const getCoin = async () => Coin.findOne().sort({ createdAt: -1 });
@@ -101,10 +100,6 @@ const getnetworkhashps = async (req, res) => {
 const getmoneysupply = async (req, res) => {
   try {
     //@todo
-    /*
-    const results = await UTXO.aggregate([
-      { $group: { _id: 'supply', total: { $sum: '$value' } } }
-    ]);*/
     const moneySupply = 0;//results.length ? results[0].total : 0'
     res.json(moneySupply);
   } catch (err) {
@@ -126,13 +121,9 @@ const getaddress = blockex.getAddress;
 
 const getbalance = async (req, res) => {
   try {
-    /*
-    const utxo = await UTXO.find({ address: req.params.hash });
-    */
 
     //@todo
     let bal = 0.0;
-    //utxo.forEach(tx => bal += tx.value);
     res.json(bal);
   } catch (err) {
     console.log(err);

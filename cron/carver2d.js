@@ -328,7 +328,7 @@ async function parseRequiredMovements(params) {
 
           addressMovementType = CarverMovementType.TxToPosAddress;
           if (requiredMovement.addressLabel !== posAddressLabel) {
-            if (!config.community.governanceAddresses.find(governanceAddress => governanceAddress.label === requiredMovement.addressLabel)) {
+            if (!config.community.governanceAddresses.find(governanceAddressLabel => governanceAddressLabel === requiredMovement.addressLabel)) {
               addressMovementType = CarverMovementType.TxToMnAddress;
               totalMnRewards += requiredMovement.amount;
             } else {

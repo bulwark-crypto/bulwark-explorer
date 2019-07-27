@@ -13,7 +13,6 @@ const { CarverMovement, CarverAddress, CarverMovementType } = require('../model/
 // Models.
 const Block = require('../model/block');
 const TX = require('../model/tx');
-const UTXO = require('../model/utxo');
 const BlockRewardDetails = require('../model/blockRewardDetails');
 
 /**
@@ -40,7 +39,6 @@ async function syncBlocks(start, stop, sequence) {
   //if (clean) {
   await Block.remove({ height: { $gt: start, $lte: stop } });
   await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
-  // await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });  // We will remove this in next patch
   await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   //}
 

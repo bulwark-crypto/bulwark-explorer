@@ -9,7 +9,6 @@ const Masternode = require('../model/masternode');
 const Peer = require('../model/peer');
 const Rich = require('../model/rich');
 const TX = require('../model/tx');
-const UTXO = require('../model/utxo');
 
 /**
  * Clear database.
@@ -21,7 +20,6 @@ async function clearDatabase() {
   await Peer.remove({});
   await Rich.remove({});
   await TX.remove({});
-  //await UTXO.remove({});
 }
 
 /**
@@ -37,7 +35,6 @@ async function update() {
     locker.lock('peer');
     locker.lock('rich');
     locker.lock('tx');
-    locker.lock('utxo');
     await clearDatabase();
   } catch (err) {
     console.log(err);
@@ -50,7 +47,6 @@ async function update() {
       locker.unlock('peer');
       locker.unlock('rich');
       locker.unlock('tx');
-      locker.unlock('utxo');
     } catch (err) {
       console.log(err);
       code = 1;

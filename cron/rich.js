@@ -4,27 +4,12 @@ const { exit } = require('../lib/cron');
 const locker = require('../lib/locker');
 // Models.
 const Rich = require('../model/rich');
-const UTXO = require('../model/utxo');
 
 /**
  * Build the list of rich addresses from
  * unspent transactions.
  */
 async function syncRich() {
-  //@todo
-  /*
-  await Rich.remove({});
-
-  const addresses = await UTXO.aggregate([
-    { $group: { _id: '$address', sum: { $sum: '$value' } } },
-    { $sort: { sum: -1 } },
-    { $limit: 101 }
-  ]);
-
-  await Rich.insertMany(addresses.filter(addr => addr._id !== 'ZEROCOIN').map(addr => ({
-    address: addr._id,
-    value: addr.sum
-  })));*/
 }
 
 /**

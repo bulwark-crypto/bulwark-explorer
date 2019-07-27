@@ -5,7 +5,6 @@ const config = require('../config');
 const { rpc } = require('../lib/cron');
 const blockchain = require('../lib/blockchain');
 const TX = require('../model/tx');
-const UTXO = require('../model/utxo');
 const BlockRewardDetails = require('../model/blockRewardDetails');
 
 /**
@@ -94,11 +93,6 @@ async function vin(rpctx, blockHeight) {
 
       txIds.add(`${vin.txid}:${vin.vout}`);
     });
-
-    // Remove unspent transactions.
-    if (txIds.size) {
-      //await UTXO.remove({ _id: { $in: Array.from(txIds) } });
-    }
   }
   return txin;
 }
@@ -112,7 +106,6 @@ async function vout(rpctx, blockHeight) {
   // Setup the outputs for the transaction.
   const txout = [];
   if (rpctx.vout) {
-    //const utxo = [];
     rpctx.vout.forEach((vout) => {
       if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
         return;
@@ -140,28 +133,10 @@ async function vout(rpctx, blockHeight) {
         value: vout.value
       };
 
-      // Always add UTXO since we'll be aggregating it in richlist
-      /*utxo.push({
-        ...to,
-        _id: `${rpctx.txid}:${vout.n}`,
-        txId: rpctx.txid
-      });*/
-
       if (toAddress != 'NON_STANDARD') {
         txout.push(to);
       }
     });
-
-    // Insert unspent transactions.
-    /*if (utxo.length) {
-      try {
-        await UTXO.insertMany(utxo);
-      } catch (ex) {
-        console.log(`Failed to insert UTXO on block ${blockHeight}`);
-        console.log(utxo);
-        throw ex;
-      }
-    }*/
   }
   return txout;
 }

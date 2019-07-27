@@ -35,7 +35,6 @@ class Address extends Component {
       page: 1,
       size: 10,
       txs: [],
-      utxo: [],
       isMasternode: false
     };
   };
@@ -56,13 +55,12 @@ class Address extends Component {
       const address = this.props.match.params.hash;
       this.props
         .getAddress({ address })
-        .then(({ balance, received, txs, utxo, isMasternode }) => {
+        .then(({ balance, received, txs, isMasternode }) => {
           this.setState({
             address,
             balance,
             received,
             txs,
-            utxo,
             loading: false,
             pages: Math.ceil(txs.length / this.state.size),
             isMasternode
@@ -125,13 +123,11 @@ class Address extends Component {
           address={this.state.address}
           balance={this.state.balance}
           received={this.state.received}
-          txs={this.state.txs}
-          utxo={this.state.utxo} />
+          txs={this.state.txs} />
         <HorizontalRule select={select} title="Wallet Transactions" />
         <CardAddressTXs
           address={this.state.address}
-          txs={this.state.txs.slice(start, end)}
-          utxo={this.state.utxo} />
+          txs={this.state.txs.slice(start, end)} />
         <Pagination
           current={this.state.page}
           className="float-right"

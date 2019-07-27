@@ -29,10 +29,9 @@ class Top100 extends Component {
         { key: 'index', title: '#' },
         { key: 'address', title: 'Address' },
         { key: 'value', title: 'Balance' },
+        { key: 'posRewards', title: 'Rewards' },
         { key: 'date', title: 'Age' },
         { key: 'lastMovementAgo', title: 'Active' },
-        { key: 'inputs', title: 'Inputs' },
-        { key: 'outputs', title: 'Outputs' },
         { key: 'percent', title: '%' },
       ],
       carverAddresses: []
@@ -56,11 +55,11 @@ class Top100 extends Component {
             ),
             date: moment(carverAddress.date).utc().fromNow(true),
             lastMovementAgo: moment(carverAddress.lastMovementDate).utc().fromNow(),
-            inputs: carverAddress.countIn,
-            outputs: carverAddress.countOut,
+            inputs: carverAddress.countIn - carverAddress.posCountIn,
+            posRewards: numeral(carverAddress.posValueIn + carverAddress.powValueIn).format('0,0.00'),
             index: idx + 1,
             percent: numeral((carverAddress.value / this.props.coin.supply) * 100.0).format('0,0.00'),
-            value: numeral(carverAddress.balance).format(config.coinDetails.coinNumberFormat)
+            value: numeral(carverAddress.balance).format('0,0.00')
           }))} />
       </div>
     );
