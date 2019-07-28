@@ -10,22 +10,23 @@ import Table from '../Table';
 
 export default class CardAddressTXs extends Component {
   static defaultProps = {
-    address: '',
-    txs: []
+    addressId: '',
+    movements: []
   };
 
   static propTypes = {
-    address: PropTypes.string.isRequired,
-    txs: PropTypes.array.isRequired,
+    addressId: PropTypes.string.isRequired,
+    movements: PropTypes.array.isRequired,
   };
 
   constructor(props) {
     super(props);
     this.state = {
       cols: [
+        { key: 'createdAt', title: 'Date' },
         { key: 'txId', title: 'Transaction ID' },
         { key: 'amount', title: 'Amount' },
-        { key: 'createdAt', title: 'Time' },
+        { key: 'balance', title: 'Balance' },
       ]
     };
   };
@@ -36,31 +37,34 @@ export default class CardAddressTXs extends Component {
       <div className="animated fadeIn">
         <Table
           cols={this.state.cols}
-          data={this.props.txs.map((tx) => {
-            let amount = 0.0;
-            let isSpent = false;
-            tx.vout.forEach((vout) => {
-              if (vout.address === this.props.address) {
-                amount += vout.value;
-                isSpent = true;
-              }
-            });
+          data={this.props.movements.map((movement) => {
+
+            const isSpent = movement.from._id == this.props.addressId;
+
+            const balance = isSpent ? movement.fromBalance - movement.amount : movement.toBalance + movement.amount;
+
+            const txId = isSpent ? movement.label.split(':')[1] : movement.from.label;
 
             return ({
-              ...tx,
+              ...movement,
               amount: (
                 <span
                   className={`badge badge-${isSpent ? 'danger' : 'success'}`}>
-                  {isSpent ? '-' : ''}{numeral(amount).format('0,0.0000')} BWK
+                  {isSpent ? '-' : '+'} {numeral(movement.amount).format('0,0.0000')} BWK
+              </span>
+              ),
+              balance: (
+                <span>
+                  {numeral(balance.toFixed(4)).format('0,0.0000')} BWK
               </span>
               ),
               createdAt: (
                 <span className="text-nowrap">
-                  {dateFormat(tx.createdAt)}
+                  {dateFormat(movement.date)}
                 </span>
               ),
               txId: (
-                <Link to={`/tx/${tx.txId}`}>{tx.txId}</Link>
+                <Link to={`/tx/${txId}`}>{txId}</Link>
               )
             });
           })} />

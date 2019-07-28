@@ -8,7 +8,7 @@ const cache = require('../lib/cache');
 
 // System models for query and etc.
 const Block = require('../../model/block');
-const { CarverAddress, CarverAddressType } = require('../../model/carver2d');
+const { CarverAddress, CarverAddressType, CarverMovement } = require('../../model/carver2d');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
@@ -23,46 +23,12 @@ const TX = require('../../model/tx');
  */
 const getAddress = async (req, res) => {
   try {
-    const qtxs = TX
-      .aggregate([
-        { $match: { 'vout.address': req.params.hash } },
-        {
-          $project:
-          {
-            vout:
-            {
-              $filter:
-              {
-                input: '$vout',
-                as: 'v',
-                cond: { $eq: ['$$v.address', req.params.hash] }
-              }
-            },
-            //blockHash: 1,
-            blockHeight: 1,
-            createdAt: 1,
-            txId: 1,
-            version: 1,
-            vin: 1,
-          }
-        },
-        { $sort: { blockHeight: -1 } }
-      ])
-      .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
-      .allowDiskUse(true)
-      .exec();
+    const carverAddress = await CarverAddress.findOne({ label: req.params.hash });
 
     const masternodeForAddress = await Masternode.findOne({ addr: req.params.hash });
     const isMasternode = !!masternodeForAddress;
 
-    const txs = await qtxs;
-
-
-    //@todo
-    const balance = 0;
-    const received = 0;
-
-    res.json({ balance, received, txs, isMasternode });
+    res.json({ ...carverAddress.toObject(), isMasternode });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -75,6 +41,8 @@ const getAddress = async (req, res) => {
  * @param {Object} res The response object.
  */
 const getAvgBlockTime = () => {
+  //@todo move this logic to block sync (so it updates in real time and only when the block syncs)
+
   // When does the cache expire.
   // For now this is hard coded.
   let cache = 90.0;
@@ -124,6 +92,8 @@ const getAvgBlockTime = () => {
  * @param {Object} res The response object.
  */
 const getAvgMNTime = () => {
+  //@todo move this logic to masternode sync (so it updates in real time and only when the masternode syncs)
+
   // When does the cache expire.
   // For now this is hard coded.
   let cache = 24.0;
@@ -308,7 +278,7 @@ const getIsBlock = async (req, res) => {
  */
 const getMasternodes = async (req, res) => {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 1000;
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 100, 1000);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     var query = {};
@@ -485,7 +455,7 @@ const getTX = async (req, res) => {
  */
 const getTXs = async (req, res) => {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     const total = await TX.count();
@@ -501,13 +471,13 @@ const getTXs = async (req, res) => {
 };
 
 /**
- * Return a paginated list of transactions.
+ * Return a paginated list of rewards.
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
 const getRewards = async (req, res) => {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     const total = await BlockRewardDetails.count();
@@ -521,6 +491,31 @@ const getRewards = async (req, res) => {
 };
 
 
+/**
+ * Return a paginated list of Carver2D Movements.
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getMovements = async (req, res) => {
+  try {
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const addressId = req.query.addressId || null;
+
+    let query = {};
+    if (addressId) {
+      query = { $or: [{ from: addressId }, { to: addressId }] };
+    }
+
+    const total = await CarverMovement.count(query);
+    const movements = await CarverMovement.find(query, { _id: 0 }).skip(skip).limit(limit).sort({ sequence: -1 }).populate('to', { label: 1, carverAddressType: 1 }).populate('from', { label: 1, carverAddressType: 1 });
+
+    res.json({ movements, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
 
 /**
  * Return all the transactions for an entire week.
@@ -596,5 +591,6 @@ module.exports = {
   getTX,
   getTXs,
   getRewards,
-  getTXsWeek
+  getTXsWeek,
+  getMovements
 };

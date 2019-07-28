@@ -142,29 +142,6 @@ async function syncBlocks(start, stop, sequence) {
 
         let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
-          if (++sequence > sequences.movements) {
-            newMovements.push(new CarverMovement({
-              _id: new mongoose.Types.ObjectId(),
-
-              label: parsedMovement.label,
-              amount: parsedMovement.amount,
-
-
-              date: blockDate,
-              blockHeight: rpcblock.height,
-
-              from: parsedMovement.from._id,
-              to: parsedMovement.to._id,
-              destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
-
-              fromBalance: parsedMovement.from.balance,
-              toBalance: parsedMovement.to.balance,
-
-              carverMovementType: parsedMovement.carverMovementType,
-              sequence: sequence,
-
-            }));
-          }
 
           const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
           if (++sequence > from.sequence) {
@@ -242,6 +219,30 @@ async function syncBlocks(start, stop, sequence) {
             }
 
             updatedAddresses.set(to.label, to);
+          }
+
+          if (++sequence > sequences.movements) {
+            newMovements.push(new CarverMovement({
+              _id: new mongoose.Types.ObjectId(),
+
+              label: parsedMovement.label,
+              amount: parsedMovement.amount,
+
+
+              date: blockDate,
+              blockHeight: rpcblock.height,
+
+              from: from._id,
+              to: to._id,
+              destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
+
+              fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+              toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+
+              carverMovementType: parsedMovement.carverMovementType,
+              sequence: sequence,
+
+            }));
           }
         });
 

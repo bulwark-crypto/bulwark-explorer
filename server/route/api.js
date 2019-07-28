@@ -21,6 +21,7 @@ router.get('/supply', blockex.getSupply);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
 router.get('/rewards', blockex.getRewards);
+router.get('/movements', blockex.getMovements);
 router.get('/tx/latest', blockex.getTXLatest);
 router.get('/tx/week', blockex.getTXsWeek());
 router.get('/tx/:hash', blockex.getTX);
@@ -34,4 +35,4 @@ router.get('/getblock', iquidus.getblock);
 router.get('/getrawtransaction', iquidus.getrawtransaction);
 router.get('/getnetworkhashps', iquidus.getnetworkhashps);
 
-module.exports =  router;
+module.exports = router;

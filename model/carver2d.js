@@ -94,7 +94,7 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   posInputBlockHeight: { index: true, type: Number },   // What was the block of the input
   posInputBlockHeightDiff: { index: true, type: Number }, // blockHeight-posInputBlockHeightDiff
 
-  sequence: { unique: true, required: true, type: Number }
+  sequence: { unique: true, index: true, required: true, type: Number } // This one is indexed because we'll be sorting by seqence of events
 }, { _id: false, versionKey: false }), 'carverMovements');
 
 module.exports = {

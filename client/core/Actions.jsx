@@ -167,6 +167,27 @@ export const getTXs = (dispatch, query) => {
   });
 };
 
+export const getMovements = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'movements',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: MOVEMENTS });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
 export const getRewards = (dispatch, query) => {
   return new promise((resolve, reject) => {
     return getFromWorker(
@@ -227,5 +248,6 @@ export default {
   setTXs,
   setWatch,
   removeWatch,
-  getRewards
+  getRewards,
+  getMovements
 };
