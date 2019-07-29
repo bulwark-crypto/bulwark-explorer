@@ -135,8 +135,7 @@ class Address extends Component {
           balance={this.state.balance}
           received={this.state.received}
           txs={this.state.txs} />
-        <HorizontalRule select={select} title={`Wallet Transactions (${this.state.carverAddress.countIn + this.state.carverAddress.countOut})`} />
-        <AddressTxs addressId={this.state.carverAddress._id} />
+        <AddressTxs addressId={this.state.carverAddress._id} txCount={this.state.carverAddress.countIn + this.state.carverAddress.countOut} />
         <div className="clearfix" />
         {this.getMasternodeDetails()}
         {this.getMasternodesAddressWidget()}

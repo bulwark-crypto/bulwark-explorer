@@ -15,14 +15,11 @@ export default class CardTX extends Component {
   };
 
   render() {
-    let blockValue = 0.0;
+    const blockValue = this.props.tx.carverAddress.valueOut;
     const confirmValue = this.props.height - this.props.tx.blockHeight;
     const confirmBadgeClass = (confirmValue > 0)
       ? (confirmValue < 6) ? 'warning' : 'success'
       : 'danger';
-    if (this.props.tx.vout && this.props.tx.vout.length) {
-      this.props.tx.vout.forEach(vout => blockValue += vout.value);
-    }
 
     return (
       <div className="animated fadeIn">

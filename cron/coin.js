@@ -15,7 +15,7 @@ const Coin = require('../model/coin');
 async function syncCoin() {
   const date = moment().utc().startOf('minute').toDate();
   // Setup the coinmarketcap.com api url.
-  const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
+  const url = `${config.coinMarketCap.api}${config.coinMarketCap.ticker}`;
 
   const info = await rpc.call('getinfo');
   const masternodes = await rpc.call('getmasternodecount');
@@ -54,13 +54,13 @@ async function update() {
   try {
     locker.lock(type);
     await syncCoin();
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     code = 1;
   } finally {
     try {
       locker.unlock(type);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       code = 1;
     }

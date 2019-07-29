@@ -8,7 +8,7 @@ const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
-const { CarverMovement, CarverAddress, CarverMovementType } = require('../model/carver2d');
+const { CarverMovement, CarverAddress, CarverMovementType, CarverAddressType } = require('../model/carver2d');
 
 // Models.
 const Block = require('../model/block');
@@ -46,6 +46,7 @@ async function syncBlocks(start, stop, sequence) {
   const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 });
   //const lastAddress = await CarverAddress.findOne().sort({ sequence: -1 });
 
+  //@todo Remove this and just delete perform cleaning (similar to above) removing all CarverAddress and CarverMovement with sequence above the syncBlocks(sequence)
   const sequences = {
     movements: lastMovement ? lastMovement.sequence : 0,
     //addresses: lastAddress ? lastAddress.sequence : 0,
@@ -222,6 +223,10 @@ async function syncBlocks(start, stop, sequence) {
           }
 
           if (++sequence > sequences.movements) {
+
+            const targetAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+            const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+
             newMovements.push(new CarverMovement({
               _id: new mongoose.Types.ObjectId(),
 
@@ -242,6 +247,8 @@ async function syncBlocks(start, stop, sequence) {
               carverMovementType: parsedMovement.carverMovementType,
               sequence: sequence,
 
+              targetAddress,
+              targetTx
             }));
           }
         });

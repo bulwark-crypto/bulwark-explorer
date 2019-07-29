@@ -72,7 +72,7 @@ const CarverMovementType = {
    */
   TxToPosOutputAddress: 1000
 }
-const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
+const movementsSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
   carverMovementType: { required: true, index: true, type: Number },
@@ -85,17 +85,30 @@ const CarverMovement = mongoose.model('CarverMovement', new mongoose.Schema({
   fromBalance: { required: true, type: Number },
   toBalance: { required: true, type: Number },
 
-  from: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-  to: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-  destinationAddress: { index: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // POS, MN & POW Rewards will also have a destinationAddress
+  from: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  to: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  destinationAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // POS, MN & POW Rewards will also have a destinationAddress
+
+  // We'll use this for finding movements for specific address/tx (also note the two compound indexes below).
+  // Because all movements are tx->address or address->tx both of these fields are always filled
+  targetAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  targetTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
 
   // For POS rewards store additional info
   posInputAmount: { index: true, type: Number }, // What was the input amount of the stake
   posInputBlockHeight: { index: true, type: Number },   // What was the block of the input
   posInputBlockHeightDiff: { index: true, type: Number }, // blockHeight-posInputBlockHeightDiff
 
-  sequence: { unique: true, index: true, required: true, type: Number } // This one is indexed because we'll be sorting by seqence of events
-}, { _id: false, versionKey: false }), 'carverMovements');
+
+
+  sequence: { unique: true, required: true, type: Number }
+}, { _id: false, versionKey: false });
+
+// When viewing specific address we'll be filtering by from/to and sorting by sequence so we'll need these two compound indexes
+movementsSchema.index({ targetAddress: 1, sequence: 1 }, { unique: true });
+movementsSchema.index({ targetTx: 1, sequence: 1 }, { unique: true });
+
+const CarverMovement = mongoose.model('CarverMovement', movementsSchema, 'carverMovements');
 
 module.exports = {
   CarverAddressType,

@@ -44,7 +44,6 @@ export default class CardAddress extends Component {
   };
 
   render() {
-    console.log('balance:', this.props.balance);
     return (
       <div className="animated fadeIn">
         <div className="row">

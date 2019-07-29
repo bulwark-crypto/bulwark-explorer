@@ -371,11 +371,15 @@ const getPeer = (req, res) => {
  */
 const getSupply = async (req, res) => {
   try {
-    let c = 0; // Circulating supply.
+    let c = 0; // Circulating supply. @todo
     let t = 0; // Total supply.
 
-    //@todo
-    const supply = { c: 0, t: 0 }
+    const totalSupply = await cache.getFromCache("supply", moment().utc().add(1, 'hours').unix(), async () => {
+      const balanceAgregation = await CarverAddress.aggregate([{ $match: { carverAddressType: 1 } }, { $group: { _id: null, total: { $sum: '$balance' } } }]);
+      return balanceAgregation[0].total;
+    });
+
+    const supply = { c: totalSupply, t: totalSupply }
 
     res.json(supply);
   } catch (err) {
@@ -432,16 +436,26 @@ const getTXLatest = async (req, res) => {
  */
 const getTX = async (req, res) => {
   try {
-    const query = isNaN(req.params.hash)
-      ? { txId: req.params.hash }
-      : { height: req.params.hash };
-    const tx = await TX.findOne(query).populate('blockRewardDetails');
+    const hash = req.params.hash;
+
+    const query = isNaN(hash)
+      ? { txId: hash }
+      : { height: hash };
+    const tx = await TX.findOne(query, { vin: 0, vout: 0 }).populate('blockRewardDetails');
     if (!tx) {
       res.status(404).send('Unable to find the transaction!');
       return;
     }
 
-    res.json(tx);
+    const carverAddress = await CarverAddress.findOne({ label: hash });
+    const carverMovements = await CarverMovement.find({ targetTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 }).populate('to', { label: 1, carverAddressType: 1 }).populate('from', { label: 1, carverAddressType: 1 });
+
+
+    res.json({
+      ...tx.toObject(),
+      carverAddress: carverAddress.toObject(),
+      movements: carverMovements.map(carverMovement => carverMovement.toObject())
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -504,7 +518,7 @@ const getMovements = async (req, res) => {
 
     let query = {};
     if (addressId) {
-      query = { $or: [{ from: addressId }, { to: addressId }] };
+      query = { targetAddress: addressId };
     }
 
     const total = await CarverMovement.count(query);

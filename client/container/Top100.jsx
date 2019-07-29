@@ -42,6 +42,7 @@ class Top100 extends Component {
     this.props.getTop100().then(carverAddresses => this.setState({ carverAddresses }));
   };
 
+
   render() {
     return (
       <div>
@@ -58,7 +59,7 @@ class Top100 extends Component {
             inputs: carverAddress.countIn - carverAddress.posCountIn,
             posRewards: numeral(carverAddress.posValueIn + carverAddress.powValueIn).format('0,0.00'),
             index: idx + 1,
-            percent: numeral((carverAddress.value / this.props.coin.supply) * 100.0).format('0,0.00'),
+            percent: numeral((carverAddress.balance / this.props.coin.supply) * 100.0).format('0,0.00'),
             value: numeral(carverAddress.balance).format('0,0.00')
           }))} />
       </div>

@@ -14,11 +14,13 @@ import CardAddressTXs from '../component/Card/CardAddressTXs';
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
+//@todo rename to AddressMovements
 class AddressTxs extends Component {
   static propTypes = {
     getTXs: PropTypes.func.isRequired,
-    setTXs: PropTypes.func.isRequired,
-    addressId: PropTypes.string.isRequired
+    //setTXs: PropTypes.func.isRequired,
+    addressId: PropTypes.string.isRequired,
+    txCount: PropTypes.number.isRequired
   };
 
   constructor(props) {
@@ -89,7 +91,7 @@ class AddressTxs extends Component {
       <div>
         <HorizontalRule
           select={select}
-          title="Movement" />
+          title={`Address Transactions (${this.props.txCount})`} />
         <CardAddressTXs movements={this.state.movements} addressId={this.props.addressId} />
         <Pagination
           current={this.state.page}

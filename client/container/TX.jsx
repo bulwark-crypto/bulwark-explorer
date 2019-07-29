@@ -20,7 +20,7 @@ class TX extends Component {
 
     // Props from mapState() below (only if available)
     //txFromStore: PropTypes.object,
-    //latestTx: PropTypes.object
+    latestTx: PropTypes.object
   };
 
   constructor(props) {
@@ -45,7 +45,7 @@ class TX extends Component {
   }
 
   getTransactionInfo() {
-    const blockHeight = this.state.tx.blockHeight; // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending);
+    const blockHeight = this.props.latestTx ? this.props.latestTx.blockHeight : this.state.tx.blockHeight; // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending);
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
@@ -109,15 +109,17 @@ class TX extends Component {
   }
 
   getTransactionDetails() {
+    const inMovements = this.state.tx.movements.filter(movement => movement.to._id === this.state.tx.carverAddress._id);
+    const outMovements = this.state.tx.movements.filter(movement => movement.from._id === this.state.tx.carverAddress._id);
     return (
       <div className="row">
         <div className="col">
-          <HorizontalRule title={`Inputs (${this.state.tx.vin.length})`} />
-          <CardTXIn txs={this.state.tx.vin} />
+          <HorizontalRule title={`Inputs (${inMovements.length})`} />
+          <CardTXIn txs={inMovements} />
         </div>
         <div className="col">
-          <HorizontalRule title={`Outputs (${this.state.tx.vout.length})`} />
-          <CardTXOut txs={this.state.tx.vout} />
+          <HorizontalRule title={`Outputs (${outMovements.length})`} />
+          <CardTXOut txs={outMovements} />
         </div>
       </div>
     );
@@ -149,11 +151,11 @@ const mapState = (state, ownProps) => {
   // Try to fetch transaction from store, if it exists we don't need to reload it
   //const txForHashFromStore = state.txs.find(tx => tx.txId == ownProps.match.params.hash);
   //const txForHashFromStore = null
-  //const latestTx = state.txs.length > 0 ? state.txs[0] : null; // fetch most recent block from store (if there is one)
+  const latestTx = state.txs.length > 0 ? state.txs[0] : null; // fetch most recent block from store (if there is one)
 
   return {
     //txFromStore: txForHashFromStore,
-    //latestTx: latestTx
+    latestTx: latestTx
   };
 };
 
