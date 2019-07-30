@@ -27,7 +27,7 @@ async function vin(rpctx, blockHeight) {
       }
     });
 
-    const usedTxs = await TX.find({ txId: { $in: Array.from(usedTxIdsInVins) } }, { txId: 1, vout: 1, blockHeight: 1, createdAt: 1 }); // Only include vout, blockHeight & createdAt fields that we need
+    //const usedTxs = await TX.find({ txId: { $in: Array.from(usedTxIdsInVins) } }, { txId: 1, vout: 1, blockHeight: 1, createdAt: 1 }); // Only include vout, blockHeight & createdAt fields that we need
 
     const failTx = async (vin, rpctx) => {
       const vinTxIdBlock = await rpc.call('getblock', [vin.txid]);
