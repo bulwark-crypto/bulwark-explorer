@@ -100,7 +100,7 @@ async function syncBlocks(start, stop, sequence) {
         process.stdout.write("[getTX] ");
       }
 
-      const rpctx = await util.getTX(txhash, false);
+      const rpctx = await util.getTX(txhash, true);
 
       // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
       // When we're updating address balances (based on movements) we'll store the address in a map as soon as it's update. That way we can fetch it again by _id
