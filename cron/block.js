@@ -302,6 +302,14 @@ async function syncBlocks(start, stop, sequence) {
       }
     }
 
+    // After adding the tx we'll scan them and do deep analysis
+    await forEachSeries(addedPosTxs, async (addedPosTx) => {
+      const { rpctx, posTx } = addedPosTx;
+      if (posTx) {
+        await util.performDeepTxAnalysis(block, rpctx, posTx);
+      }
+    });
+
     if (config.verboseCronTx) {
       process.stdout.write("[saveOldTX] ");
     }
@@ -312,13 +320,6 @@ async function syncBlocks(start, stop, sequence) {
       process.stdout.write("[block] ");
     }
 
-    // After adding the tx we'll scan them and do deep analysis
-    await forEachSeries(addedPosTxs, async (addedPosTx) => {
-      const { rpctx, posTx } = addedPosTx;
-      if (posTx) {
-        await util.performDeepTxAnalysis(block, rpctx, posTx);
-      }
-    });
 
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;
