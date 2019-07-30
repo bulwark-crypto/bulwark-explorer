@@ -147,15 +147,20 @@ const getBlock = async (req, res) => {
     const query = isNaN(req.params.hash)
       ? { hash: req.params.hash }
       : { height: req.params.hash };
-    const block = await Block.findOne(query).populate('txs', { lastMovementDate: 0, sequence: 0, valueIn: 0, date: 0, carverAddressType: 0 });
+    const block = await Block.findOne(query);
     if (!block) {
       res.status(404).send('Unable to find the block!');
       return;
     }
 
-    //const txs = await TX.find({ txId: { $in: block.txs } });
+    const txs = await CarverAddress.find({
+      $and: [{ blockHeight: block.height }, { carverAddressType: CarverAddressType.Tx }]
+    }, { countIn: 1, countOut: 1, label: 1, valueOut: 1 });
 
-    res.json(block);
+    res.json({
+      ...block.toObject(),
+      txs: txs.map(tx => tx.toObject())
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);

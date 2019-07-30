@@ -176,43 +176,57 @@ async function parseRequiredMovements(params) {
   const getCarverAddressFromCache = async (carverAddressType, label) => {
     //@todo add caching (to speed up fetching of old addresses)
 
-    let carverAddress = await CarverAddress.findOne({ label });
-    if (!carverAddress) {
-      carverAddress = new CarverAddress({
-        _id: new mongoose.Types.ObjectId(),
-        label,
-        balance: 0,
-
-        blockHeight: params.rpcblock.height,
-        date: blockDate,
-        lastMovementDate: blockDate,
-        carverAddressType,
-
-        // for stats
-        valueOut: 0,
-        valueIn: 0,
-        countIn: 0,
-        countOut: 0,
-
-        sequence: 0
-      });
-
-      switch (carverAddressType) {
-        case CarverAddressType.Address:
-          carverAddress.posCountIn = 0;
-          carverAddress.posValueIn = 0;
-          carverAddress.posInputsValueIn = 0;
-          carverAddress.mnCountIn = 0;
-          carverAddress.mnValueIn = 0;
-          carverAddress.powCountIn = 0;
-          carverAddress.powValueIn = 0;
-
-          break;
-      }
-      await carverAddress.save();
+    const commonAddressFromCache = params.commonAddressCache.get(label);
+    if (commonAddressFromCache) {
+      return commonAddressFromCache;
     }
 
-    return carverAddress;
+    const existingCarverAddress = await CarverAddress.findOne({ label });
+    if (existingCarverAddress) {
+      return existingCarverAddress;
+    }
+    let newCarverAddress = new CarverAddress({
+      _id: new mongoose.Types.ObjectId(),
+      label,
+      balance: 0,
+
+      blockHeight: params.rpcblock.height,
+      date: blockDate,
+      lastMovementDate: blockDate,
+      carverAddressType,
+
+      // for stats
+      valueOut: 0,
+      valueIn: 0,
+      countIn: 0,
+      countOut: 0,
+
+      sequence: 0
+    });
+
+    switch (carverAddressType) {
+      case CarverAddressType.Address:
+        newCarverAddress.posCountIn = 0;
+        newCarverAddress.posValueIn = 0;
+        newCarverAddress.posInputsValueIn = 0;
+        newCarverAddress.mnCountIn = 0;
+        newCarverAddress.mnValueIn = 0;
+        newCarverAddress.powCountIn = 0;
+        newCarverAddress.powValueIn = 0;
+        break;
+      case CarverAddressType.Tx:
+        break;
+      default:
+        // all other types of address will be saved to commonAddressCache
+        params.commonAddressCache.set(label, newCarverAddress);
+        break;
+    }
+    // Txs are saved later
+    if (carverAddressType !== CarverAddressType.Tx) {
+      await newCarverAddress.save();
+    }
+
+    return newCarverAddress;
   }
 
   /**

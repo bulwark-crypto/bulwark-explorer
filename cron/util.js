@@ -171,7 +171,7 @@ async function addPoS(block, rpctx) {
   };
 
   // Save tx first then we'll scan it later (as the same )
-  return await TX.create(txDetails);
+  return txDetails; //await TX.create(txDetails);
 }
 
 /**
@@ -242,9 +242,9 @@ async function performDeepTxAnalysis(block, rpctx, txDetails) {
       await blockRewardDetails.save();
     }
   }
+  return txDetails;
 
-
-  await txDetails.save();
+  //await txDetails.save();
 }
 
 /**
@@ -268,8 +268,8 @@ async function addPoW(block, rpctx) {
     vout: txout
   };
 
-
-  await TX.create(txDetails);
+  return txDetails;
+  //await TX.create(txDetails);
 }
 
 /**

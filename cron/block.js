@@ -53,14 +53,13 @@ async function syncBlocks(start, stop, sequence) {
   }
 
   // Instead of fetching addresses each tiem from db we'll store a certain number in cache (this is in config)
-  let carverAddressCache = [];
+  const commonAddressCache = new Map();
 
   let block;
   for (let height = start + 1; height <= stop; height++) {
 
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
-
     const blockDate = new Date(rpcblock.time * 1000);
     block = new Block({
       _id: new mongoose.Types.ObjectId(),
@@ -87,18 +86,23 @@ async function syncBlocks(start, stop, sequence) {
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
     let addedPosTxs = [];
-
+    let newTxs = [];
 
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
 
-      const rpctx = await util.getTX(txhash, true);
+      const rpctx = await util.getTX(txhash, false);
+
+      // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
+      // When we're updating address balances (based on movements) we'll store the address in a map as soon as it's update. That way we can fetch it again by _id
+      let updatedAddresses = new Map();
 
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
 
+      //@todo remove this entirely (we can construct movements/latest txs on carver movements alone)
       if (blockchain.isPoS(block)) {
 
         // Empty POS txs do not need to be processed
@@ -106,13 +110,13 @@ async function syncBlocks(start, stop, sequence) {
           continue;
         }
 
-        posTx = await util.addPoS(block, rpctx);
+        const posTx = await util.addPoS(block, rpctx);
         addedPosTxs.push({ rpctx, posTx });
+        newTxs.push(posTx);
       } else {
-        await util.addPoW(block, rpctx);
+        const powTx = await util.addPoW(block, rpctx);
+        newTxs.push(powTx);
       }
-
-      config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
 
       /**
        * Carver2D data analysis:
@@ -131,15 +135,13 @@ async function syncBlocks(start, stop, sequence) {
 
           requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
-          carverAddressCache
+          commonAddressCache,
+          updatedAddresses
         };
 
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-        // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
-        // When we're updating address balances (based on movements) we'll store the address in a map as soon as it's update. That way we can fetch it again by _id
-        let updatedAddresses = new Map();
 
         let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
@@ -254,20 +256,25 @@ async function syncBlocks(start, stop, sequence) {
         });
 
         // A carver address should be created for each tx (the address label would be txid)
-        const txCarverAddress = await CarverAddress.findOne({ label: rpctx.txid });//updatedAddresses.get(rpctx.txid);
+        /*const txCarverAddress = /*await CarverAddress.findOne({ label: rpctx.txid });//updatedAddresses.get(rpctx.txid);
         if (!txCarverAddress) {
           console.log(rpctx.txid);
           throw 'CARVER TX NOT CREATED?'
         }
-        block.txs.push(txCarverAddress._id);
+        block.txs.push(txCarverAddress._id);*/
 
+
+        // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
+        await CarverMovement.insertMany(newMovements);
         await forEachSeries(Array.from(updatedAddresses.values()), async (updatedAddress) => {
           await updatedAddress.save();
         });
-
-        await CarverMovement.insertMany(newMovements);
       }
     }
+
+    await TX.insertMany(newTxs);
+
+
 
     // After adding the tx we'll scan them and do deep analysis
     await forEachSeries(addedPosTxs, async (addedPosTx) => {
