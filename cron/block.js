@@ -296,7 +296,7 @@ async function syncBlocks(start, stop, sequence) {
 
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
         await CarverMovement.insertMany(newMovements);
-        await forEachSeries(Array.from(updatedAddresses.values()), async (updatedAddress) => {
+        Array.from(updatedAddresses.values()).forEach(async (updatedAddress) => {
           await updatedAddress.save();
         });
       }
