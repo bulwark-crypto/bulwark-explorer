@@ -58,6 +58,10 @@ async function syncBlocks(start, stop, sequence) {
   let block;
   for (let height = start + 1; height <= stop; height++) {
 
+    if (config.verboseCronTx) {
+      process.stdout.write("[block] ");
+    }
+
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
     const blockDate = new Date(rpcblock.time * 1000);
@@ -78,6 +82,7 @@ async function syncBlocks(start, stop, sequence) {
       ver: rpcblock.version
     });
 
+
     const sequenceStart = sequence;
 
     // Count how many inputs/outputs are in each block
@@ -91,6 +96,10 @@ async function syncBlocks(start, stop, sequence) {
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
 
+      if (config.verboseCronTx) {
+        process.stdout.write("[getTX] ");
+      }
+
       const rpctx = await util.getTX(txhash, false);
 
       // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
@@ -101,6 +110,10 @@ async function syncBlocks(start, stop, sequence) {
 
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
+
+      if (config.verboseCronTx) {
+        process.stdout.write("[oldSync] ");
+      }
 
       //@todo remove this entirely (we can construct movements/latest txs on carver movements alone)
       if (blockchain.isPoS(block)) {
@@ -118,12 +131,18 @@ async function syncBlocks(start, stop, sequence) {
         newTxs.push(powTx);
       }
 
+
       /**
        * Carver2D data analysis:
        */
 
       // Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
+
+        if (config.verboseCronTx) {
+          process.stdout.write("[parse1] ");
+        }
+
         // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
         // Additionally we also flatten the vins/vouts into an array of movements
         const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
@@ -139,9 +158,16 @@ async function syncBlocks(start, stop, sequence) {
           updatedAddresses
         };
 
+        if (config.verboseCronTx) {
+          process.stdout.write("[parse2] ");
+        }
+
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
+        if (config.verboseCronTx) {
+          process.stdout.write("[update] ");
+        }
 
         let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
@@ -264,6 +290,10 @@ async function syncBlocks(start, stop, sequence) {
         block.txs.push(txCarverAddress._id);*/
 
 
+        if (config.verboseCronTx) {
+          process.stdout.write("[save] ");
+        }
+
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
         await CarverMovement.insertMany(newMovements);
         await forEachSeries(Array.from(updatedAddresses.values()), async (updatedAddress) => {
@@ -272,9 +302,15 @@ async function syncBlocks(start, stop, sequence) {
       }
     }
 
+    if (config.verboseCronTx) {
+      process.stdout.write("[saveOldTX] ");
+    }
     await TX.insertMany(newTxs);
 
 
+    if (config.verboseCronTx) {
+      process.stdout.write("[block] ");
+    }
 
     // After adding the tx we'll scan them and do deep analysis
     await forEachSeries(addedPosTxs, async (addedPosTx) => {
