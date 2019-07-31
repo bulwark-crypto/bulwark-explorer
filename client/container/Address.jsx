@@ -66,7 +66,7 @@ class Address extends Component {
             carverAddress,
             pages: (carverAddress.countIn + carverAddress.countOut) / this.state.size,
             balance: carverAddress.balance,
-            received: carverAddress.valueIn - (carverAddress.posInputsValueIn || 0),
+            received: carverAddress.valueIn - (carverAddress.posValueIn || 0),
             /*
             address,
             balance,

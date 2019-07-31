@@ -208,7 +208,6 @@ async function parseRequiredMovements(params) {
       case CarverAddressType.Address:
         newCarverAddress.posCountIn = 0;
         newCarverAddress.posValueIn = 0;
-        newCarverAddress.posInputsValueIn = 0;
         newCarverAddress.mnCountIn = 0;
         newCarverAddress.mnValueIn = 0;
         newCarverAddress.powCountIn = 0;

@@ -220,21 +220,9 @@ async function syncBlocks(start, stop, sequence) {
                     throw 'POS TXID+VOUT NOT FOUND?';
                   }
 
-
                   to.posCountIn++;
                   to.posValueIn += posRewardToTx.amount;
-                  if (!to.posInputsValueIn) {
-                    to.posInputsValueIn = 0;
-                    to.posLastBlockHeight = 0;
-                  }
-                  to.posInputsValueIn += posTxIdVoutToTx.amount;
 
-                  if (to.posLastBlockHeight) {
-                    if (!to.posBlockDiffSum) {
-                      to.posBlockDiffSum = 0;
-                    }
-                    to.posBlockDiffSum += rpcblock.height - to.posLastBlockHeight;
-                  }
                   to.posLastBlockHeight = rpcblock.height;
 
                 }
@@ -295,7 +283,7 @@ async function syncBlocks(start, stop, sequence) {
         }
 
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
-        await CarverMovement.insertMany(newMovements);
+        await CarverMovement.insertMany(newMovements, { ordered: false }); // Doesn't matter how they're ordered because they'll be sorted by sequence
         Array.from(updatedAddresses.values()).forEach(async (updatedAddress) => {
           await updatedAddress.save();
         });
@@ -373,6 +361,9 @@ async function update() {
       console.dateLog(`No Sync Required!`);
       return;
     }
+
+    // Until we verify blocks properly we'll lag behind 10 blocks (This is a temporary fix)
+    rpcHeight -= 10;
 
     config.verboseCron && console.dateLog(`Sync Started!`);
     await syncBlocks(dbHeight, rpcHeight, sequence);
