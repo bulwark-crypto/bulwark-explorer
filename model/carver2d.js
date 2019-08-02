@@ -18,7 +18,7 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   label: { required: true, unique: true, index: true, type: String },
   balance: { index: true, required: true, type: Number },
 
-  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
+  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know WHEN this address was created (Technically, it could have been created during invalid block as well)
   date: { index: true, required: true, type: Date },
   carverAddressType: { index: true, required: true, type: Number },
 
@@ -39,7 +39,7 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   powCountIn: { index: true, type: Number },
   powValueIn: { index: true, type: Number },
 
-  sequence: { required: true, type: Number },
+  sequence: { required: true, type: Number }
 }, { _id: false, versionKey: false }), 'carverAddresses');
 
 // This enum was originally a Typescript enum
@@ -96,8 +96,6 @@ const movementsSchema = new mongoose.Schema({
   posInputAmount: { index: true, type: Number }, // What was the input amount of the stake
   posInputBlockHeight: { index: true, type: Number },   // What was the block of the input
   posInputBlockHeightDiff: { index: true, type: Number }, // blockHeight-posInputBlockHeightDiff
-
-
 
   sequence: { unique: true, required: true, type: Number }
 }, { _id: false, versionKey: false });

@@ -173,9 +173,10 @@ const config = {
   ///////////////////////////////
   /// Misc & Logging
   ///////////////////////////////
-  verboseCron: true,      // If set to true there are extra logging details in cron scripts
-  verboseCronTx: false,   // If set to true there are extra tx logging details in cron scripts (Not recommended)
-  splitRewardsData: true, // Set to true to extract POS & MN data
+  blockConfirmations: 10,         // We will re-check block "merkleroot" this many blocks back. If they differ we will then start unwinding carver movements one block at a time until correct block is found. (This is like min confirmations)
+  verboseCron: true,              // If set to true there are extra logging details in cron scripts
+  verboseCronTx: false,           // If set to true there are extra tx logging details in cron scripts (Not recommended)
+  splitRewardsData: true,         // Set to true to extract POS & MN data
 };
 
 module.exports = config;

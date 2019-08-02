@@ -38,8 +38,8 @@ async function syncBlocks(start, stop, sequence) {
 
   //if (clean) {
   await Block.remove({ height: { $gt: start, $lte: stop } });
-  await TX.remove({ blockHeight: { $gt: start, $lte: stop } });
-  await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
+  await TX.remove({ blockHeight: { $gt: start, $lte: stop } }); //@todo this will be removed soon
+  await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } }); //@todo this will be removed soon
   //}
 
 
@@ -57,11 +57,6 @@ async function syncBlocks(start, stop, sequence) {
 
   let block;
   for (let height = start + 1; height <= stop; height++) {
-
-    if (config.verboseCronTx) {
-      process.stdout.write("[block] ");
-    }
-
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
     const blockDate = new Date(rpcblock.time * 1000);
@@ -79,7 +74,8 @@ async function syncBlocks(start, stop, sequence) {
       size: rpcblock.size,
       //txs: rpcblock.tx ? rpcblock.tx : [],
       txs: [],
-      ver: rpcblock.version
+      ver: rpcblock.version,
+      isConfirmed: rpcblock.confirmations > config.blockConfirmations // We can instantly confirm a block if it reached the required number of confirmations (that way we don't have to reconfirm it later)
     });
 
 
@@ -95,11 +91,6 @@ async function syncBlocks(start, stop, sequence) {
 
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
-
-      if (config.verboseCronTx) {
-        process.stdout.write("[getTX] ");
-      }
-
       const rpctx = await util.getTX(txhash, true);
 
       // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
@@ -110,10 +101,6 @@ async function syncBlocks(start, stop, sequence) {
 
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
-
-      if (config.verboseCronTx) {
-        process.stdout.write("[oldSync] ");
-      }
 
       //@todo remove this entirely (we can construct movements/latest txs on carver movements alone)
       if (blockchain.isPoS(block)) {
@@ -138,11 +125,6 @@ async function syncBlocks(start, stop, sequence) {
 
       // Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
-
-        if (config.verboseCronTx) {
-          process.stdout.write("[parse1] ");
-        }
-
         // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
         // Additionally we also flatten the vins/vouts into an array of movements
         const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
@@ -158,22 +140,15 @@ async function syncBlocks(start, stop, sequence) {
           updatedAddresses
         };
 
-        if (config.verboseCronTx) {
-          process.stdout.write("[parse2] ");
-        }
-
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-        if (config.verboseCronTx) {
-          process.stdout.write("[update] ");
-        }
-
         let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
+          sequence++;
 
           const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-          if (++sequence > from.sequence) {
+          if (sequence > from.sequence) {
             from.countOut++;
             from.balance -= parsedMovement.amount;
             from.valueOut += parsedMovement.amount;
@@ -192,7 +167,7 @@ async function syncBlocks(start, stop, sequence) {
           }
 
           const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-          if (++sequence > to.sequence) {
+          if (sequence > to.sequence) {
             to.countIn++;
             to.balance += parsedMovement.amount;
             to.valueIn += parsedMovement.amount;
@@ -224,7 +199,6 @@ async function syncBlocks(start, stop, sequence) {
                   to.posValueIn += posRewardToTx.amount;
 
                   to.posLastBlockHeight = rpcblock.height;
-
                 }
 
                 break;
@@ -232,13 +206,12 @@ async function syncBlocks(start, stop, sequence) {
                 to.mnCountIn++;
                 to.mnValueIn += parsedMovement.amount;
                 break;
-
             }
 
             updatedAddresses.set(to.label, to);
           }
 
-          if (++sequence > sequences.movements) {
+          if (sequence > sequences.movements) {
 
             const targetAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
             const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
@@ -248,7 +221,6 @@ async function syncBlocks(start, stop, sequence) {
 
               label: parsedMovement.label,
               amount: parsedMovement.amount,
-
 
               date: blockDate,
               blockHeight: rpcblock.height,
@@ -269,24 +241,12 @@ async function syncBlocks(start, stop, sequence) {
           }
         });
 
-        // A carver address should be created for each tx (the address label would be txid)
-        /*const txCarverAddress = /*await CarverAddress.findOne({ label: rpctx.txid });//updatedAddresses.get(rpctx.txid);
-        if (!txCarverAddress) {
-          console.log(rpctx.txid);
-          throw 'CARVER TX NOT CREATED?'
-        }
-        block.txs.push(txCarverAddress._id);*/
-
-
-        if (config.verboseCronTx) {
-          process.stdout.write("[save] ");
-        }
-
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
         await CarverMovement.insertMany(newMovements, { ordered: false }); // Doesn't matter how they're ordered because they'll be sorted by sequence
-        Array.from(updatedAddresses.values()).forEach(async (updatedAddress) => {
-          await updatedAddress.save();
-        });
+        await Promise.all([...updatedAddresses.values()].map(
+          async (updatedAddress) => {
+            await updatedAddress.save();
+          }));
       }
     }
 
@@ -298,16 +258,7 @@ async function syncBlocks(start, stop, sequence) {
       }
     });
 
-    if (config.verboseCronTx) {
-      process.stdout.write("[saveOldTX] ");
-    }
     await TX.insertMany(newTxs);
-
-
-    if (config.verboseCronTx) {
-      process.stdout.write("[block] ");
-    }
-
 
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;
@@ -319,6 +270,152 @@ async function syncBlocks(start, stop, sequence) {
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
+  }
+}
+/**
+ * Unwind all movements in a block and delete the block & all movements / addresses created in this block
+ */
+async function undoCarverBlockMovements(height) {
+  console.dateLog(`Undoing block ${height}`);
+  const block = await Block.findOne({ height });
+  if (!block) {
+    console.dateLog(`Can't undo block ${height} (not found)`);
+    return;
+  }
+
+  let sequence = block.sequenceEnd;
+
+  const addressTxs = await CarverAddress.find({ blockHeight: block.height, carverAddressType: CarverAddressType.Tx }).sort({ sequence: -1 });
+
+  for (var txIndex = 0; txIndex < addressTxs.length; txIndex++) {
+    const tx = addressTxs[txIndex];
+
+    let updatedAddresses = new Map();
+
+    const parsedMovements = await CarverMovement.find({ targetTx: tx._id }).sort({ sequence: -1 }).populate('from').populate('to');
+
+    //@todo this is almost identical to moving and should be moved into a single function. We can then use a multiplier of -1 to achieve same functionality
+    parsedMovements.forEach(parsedMovement => {
+      sequence--;
+
+      const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
+      if (sequence < from.sequence) {
+        from.countOut--;
+        from.balance += parsedMovement.amount;
+        from.valueOut -= parsedMovement.amount;
+
+        from.sequence = sequence;
+        updatedAddresses.set(from.label, from);
+      }
+
+      const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
+      if (sequence < to.sequence) {
+        to.countIn--;
+        to.balance -= parsedMovement.amount;
+        to.valueIn -= parsedMovement.amount;
+
+        switch (parsedMovement.carverMovementType) {
+          case CarverMovementType.TxToCoinbaseRewardAddress:
+            to.powCountIn--;
+            to.powValueIn -= parsedMovement.amount;
+            break;
+          case CarverMovementType.TxToPosAddress:
+            if (to.posLastBlockHeight === height) {
+              // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
+              const posRewardToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosRewardToTx);
+              if (!posRewardToTx) {
+                throw 'POS REWARDTOTX NOT FOUND?';
+              }
+
+              // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
+              const posTxIdVoutToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosTxIdVoutToTx);
+              if (!posTxIdVoutToTx) {
+                throw 'POS TXID+VOUT NOT FOUND?';
+              }
+
+              to.posCountIn--;
+              to.posValueIn -= posRewardToTx.amount;
+
+              to.posLastBlockHeight = height - 1;
+            }
+
+            break;
+          case CarverMovementType.TxToMnAddress:
+            to.mnCountIn--;
+            to.mnValueIn -= parsedMovement.amount;
+            break;
+        }
+
+        to.sequence = sequence;
+        updatedAddresses.set(to.label, to);
+      }
+    });
+
+    // Save addresses in parallel
+    await Promise.all([...updatedAddresses.values()].map(
+      async (updatedAddress) => {
+        await updatedAddress.save();
+      }));
+  }
+
+  // Finally after unwinding we can remove all addresses and movements
+  await CarverMovement.remove({ blockHeight: { $gte: height } });
+  await CarverAddress.remove({ blockHeight: { $gte: height } });
+
+  // Remove non-carver data for this block
+  await BlockRewardDetails.remove({ blockHeight: { $gte: height } });
+  await TX.remove({ blockHeight: { $gte: height } });
+  await Block.remove({ height: { $gte: height } });
+
+}
+/**
+ * Recursive Sequential Blockchain Unreconciliation (Undo carver movements on last block if merkle roots don't match and re-run confirmations again otherwise confirm block)
+ */
+async function confirmBlocks(rpcHeight) {
+  let startHeight = 1;
+
+  const lastBlock = await Block.findOne().sort({ height: -1 });
+
+  // Find most recently confirmed block (there might not be any)
+  const lastConfirmedBlock = await Block.findOne({ isConfirmed: true }).sort({ height: -1 });
+  if (lastConfirmedBlock) {
+    startHeight = lastConfirmedBlock.height + 1;
+  }
+  if (startHeight >= rpcHeight) {
+    console.dateLog(`No block confirmations required (All previous blocks have been confirmed)`);
+    return;
+  }
+  console.dateLog(`Confirming Blocks (${startHeight} to ${rpcHeight})`);
+
+  // Go through each block and ensure merkle root matches (if above config.blockConfirmations)
+  for (var height = startHeight; height <= rpcHeight; height++) {
+    config.verboseCron && console.dateLog(`Confirming block ${height}/${rpcHeight}...`);
+
+    const block = await Block.findOne({ height });
+    if (!block) {
+      console.dateLog(`Block ${height} doesn't exist...`);
+      return;
+    }
+
+    const hashOfBlockToConfirm = await rpc.call('getblockhash', [block.height]);
+    const rpcBlockToConfirm = await rpc.call('getblock', [hashOfBlockToConfirm]);
+
+    if (rpcBlockToConfirm.confirmations < config.blockConfirmations) {
+      console.dateLog(`Stopping confirmations at block ${height}. Not enough confirmations. (${rpcBlockToConfirm.confirmations}/${config.blockConfirmations})`)
+      break;
+    } else {
+      if (block.merkle != rpcBlockToConfirm.merkleroot) {
+        console.log('Undoing last block...');
+
+        await undoCarverBlockMovements(lastBlock.height);
+
+        await confirmBlocks(rpcHeight); // Re-run block conifrms again to see if we need to undo another block
+        return;
+      } else {
+        block.isConfirmed = true;
+        await block.save();
+      }
+    }
   }
 }
 
@@ -342,29 +439,26 @@ async function update() {
     let sequence = block ? block.sequenceEnd : 0;
 
     let clean = true;
-    let dbHeight = block && block.height ? block.height : 0; // Height + 1 because block is the last item inserted. If we have the block that means all data for that block exists
+    let dbHeight = block && block.height ? block.height : 0;
     let rpcHeight = info.blocks;
 
-    // If heights provided then use them instead.
+    // If you pass in a parameter into the sync script then we will assume that this is the current tip
+    // All blocks after this will be dirty and will be removed
     if (!isNaN(process.argv[2])) {
       clean = true;
-      dbHeight = parseInt(process.argv[2], 10);
+      rpcHeight = parseInt(process.argv[2], 10);
     }
-    if (!isNaN(process.argv[3])) {
-      clean = true;
-      rpcHeight = parseInt(process.argv[3], 10);
-    }
+
     console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"})`);
 
-    // If nothing to do then exit.
+    // Before syncing we'll confirm merkle root of X blocks back
+    await confirmBlocks(rpcHeight);
+
+    // If last db block matches rpc block (or forced rpc block number) then no syncing is required
     if (dbHeight >= rpcHeight) {
       console.dateLog(`No Sync Required!`);
       return;
     }
-
-    // Until we verify blocks properly we'll lag behind 10 blocks (This is a temporary fix)
-    rpcHeight -= 10;
-
     config.verboseCron && console.dateLog(`Sync Started!`);
     await syncBlocks(dbHeight, rpcHeight, sequence);
     config.verboseCron && console.dateLog(`Sync Finished!`);

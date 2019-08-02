@@ -25,6 +25,8 @@ const Block = mongoose.model('Block', new mongoose.Schema({
   vinsCount: { required: true, type: Number },
   voutsCount: { required: true, type: Number },
 
+  isConfirmed: { required: true, type: Boolean }, // Block was confirmed after config.blockConfirmations
+
   // Carver2D 
   sequenceStart: { type: Number },
   sequenceEnd: { type: Number },
