@@ -312,7 +312,7 @@ async function parseRequiredMovements(params) {
 
         if (!vinVoutMovement) {
           console.log(vinVoutKey);
-          throw `INVALID VIN+VOUT MOVEMENT ON BLOCK ${params.rpctx.height}`;
+          throw `INVALID VIN+VOUT MOVEMENT ON BLOCK ${params.rpcblock.height}`;
         }
 
         totalInput += vinVoutMovement.amount;
@@ -415,7 +415,7 @@ async function parseRequiredMovements(params) {
       destinationAddress: posRewardAddress,
       posInputAmount: vinVoutMovement.amount,
       posInputBlockHeight: vinVoutMovement.blockHeight,
-      posInputBlockHeightDiff: params.rpctx.height - vinVoutMovement.blockHeight
+      posInputBlockHeightDiff: params.rpcblock.height - vinVoutMovement.blockHeight
     });
 
   }
