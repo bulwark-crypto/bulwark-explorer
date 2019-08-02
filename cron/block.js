@@ -403,7 +403,7 @@ async function confirmBlocks(rpcHeight) {
     if (rpcBlockToConfirm.confirmations < config.blockConfirmations) {
       console.dateLog(`Stopping confirmations at block ${height}. Not enough confirmations. (${rpcBlockToConfirm.confirmations}/${config.blockConfirmations})`)
       break;
-    } else {
+    } else if (block) {
       if (block.merkle != rpcBlockToConfirm.merkleroot) {
         console.log('Undoing last block...');
 
@@ -435,6 +435,10 @@ async function update() {
     hasAcquiredLocked = true;
 
     const info = await rpc.call('getinfo');
+
+    // Before syncing we'll confirm merkle root of X blocks back
+    await confirmBlocks(info.blocks);
+
     const block = await Block.findOne().sort({ height: -1 });
     let sequence = block ? block.sequenceEnd : 0;
 
@@ -450,9 +454,6 @@ async function update() {
     }
 
     console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"})`);
-
-    // Before syncing we'll confirm merkle root of X blocks back
-    await confirmBlocks(rpcHeight);
 
     // If last db block matches rpc block (or forced rpc block number) then no syncing is required
     if (dbHeight >= rpcHeight) {
