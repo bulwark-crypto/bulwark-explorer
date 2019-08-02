@@ -312,7 +312,7 @@ async function parseRequiredMovements(params) {
 
         if (!vinVoutMovement) {
           console.log(vinVoutKey);
-          throw 'INVALID VIN+VOUT MOVEMENT?';
+          throw `INVALID VIN+VOUT MOVEMENT ON BLOCK ${params.rpctx.height}`;
         }
 
         totalInput += vinVoutMovement.amount;

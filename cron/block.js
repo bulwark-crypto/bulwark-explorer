@@ -394,7 +394,7 @@ async function confirmBlocks(rpcHeight) {
     const block = await Block.findOne({ height });
     if (!block) {
       console.dateLog(`Block ${height} doesn't exist...`);
-      continue;
+      break;
     }
 
     const hashOfBlockToConfirm = await rpc.call('getblockhash', [block.height]);
