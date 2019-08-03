@@ -100,7 +100,12 @@ const getAvgMNTime = () => {
   let cutOff = moment().utc().add(5, 'minutes').unix();
   let loading = true;
 
-  // Generate the average.
+  /**
+   * Get average payout for running a masternode (in seconds)
+   * 
+   * Current implementation: 
+   * Because each block gives exactly 1 masternode reward we can calculate how many blocks we've created in past 24 hours
+   */
   const getAvg = async () => {
     loading = true;
 
@@ -401,7 +406,7 @@ const getSupply = async (req, res) => {
 const getTop100 = async (req, res) => {
   try {
     const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
-      return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { carverAddressType: 0, sequence: 0 })
+      return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { sequence: 0 })
         .limit(100)
         .sort({ balance: -1 });
     });

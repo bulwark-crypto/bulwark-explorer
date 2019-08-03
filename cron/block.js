@@ -155,14 +155,6 @@ async function syncBlocks(start, stop, sequence) {
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
 
-            switch (parsedMovement.carverMovementType) {
-              case CarverMovementType.PosRewardToTx:
-                from.posInputAmount = parsedMovement.posInputAmount;
-                from.posInputBlockHeight = parsedMovement.posInputBlockHeight;
-                from.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
-                break;
-            }
-
             updatedAddresses.set(from.label, from);
           }
 
@@ -216,7 +208,7 @@ async function syncBlocks(start, stop, sequence) {
             const targetAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
             const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
 
-            newMovements.push(new CarverMovement({
+            let newCarverMovement = new CarverMovement({
               _id: new mongoose.Types.ObjectId(),
 
               label: parsedMovement.label,
@@ -237,7 +229,18 @@ async function syncBlocks(start, stop, sequence) {
 
               targetAddress,
               targetTx
-            }));
+            });
+
+            switch (parsedMovement.carverMovementType) {
+              case CarverMovementType.PosRewardToTx:
+                newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
+                newCarverMovement.posInputBlockHeight = parsedMovement.posInputBlockHeight;
+                newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
+                break;
+            }
+
+            newMovements.push(newCarverMovement);
+
           }
         });
 
