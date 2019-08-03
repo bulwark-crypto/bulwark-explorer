@@ -45,10 +45,12 @@ class CoinSummary extends Component {
       if (!config.community) {
         return null;
       }
+
+      const featuredAddresses = config.community.highlightedAddresses.filter(highlightedAddress => highlightedAddress.isFeatured);
       return (
         <CardHighlightedAddresses
           title="Community Addresses"
-          addresses={config.community.highlightedAddresses}
+          addresses={featuredAddresses}
           onSearch={this.props.onSearch}
         />
       );

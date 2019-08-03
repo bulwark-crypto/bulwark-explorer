@@ -5,7 +5,6 @@ import config from '../../../config'
 
 /**
  * Adds ability to format a transaction value
- * @todo move to FormattedValues folder
  */
 const PosRestakeIndicator = ({ reward, includeShortName = false, showStakeRewardAmount = false }) => {
 
