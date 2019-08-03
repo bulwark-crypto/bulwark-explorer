@@ -26,6 +26,7 @@ const config = {
   coinDetails: {
     name: 'Bulwark',
     shortName: 'BWK',
+    displayDecimals: 2,
     longName: 'Bulwark Cryptocurrency',
     coinNumberFormat: '0,0.0000',
     websiteUrl: 'https://bulwarkcrypto.com/'
@@ -47,9 +48,8 @@ const config = {
   ///////////////////////////////
   community: {
     // If you comment out all of these addresses the 'Community Addresses' section will not show up on the homepage. You can add as many addresses to highlight as you wish.
-    // isFeatured: If set to true the address appears as a "featured address" on top right of the homepage
     highlightedAddresses: [
-      //{ label: 'Community Donations', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX', isFeatured: true }, // Uncomment and replace with your coin address to highlight an address
+      //{ label: 'Community Donations', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight an address
       //{ label: 'Community Funding', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight any other address
     ],
 
@@ -104,7 +104,42 @@ const config = {
           'XXXXXXXXXXXXXXXXXXXXXXXXXXX',
         ]
       }
-    }
+    },
+    'FEE': {
+      // Adds a new label metadata address
+      carverAddressLabelWidget: {
+        label: 'Transaction Fee ⌚',
+        title: 'A small portion of a transaction will be sent to this address. Referred to as "Transaction Fee".'
+      }
+    },
+    'COINBASE': {
+      // Adds a new label metadata address
+      carverAddressLabelWidget: {
+        label: 'Coinbase (POW & MN) 💎',
+        title: 'This address was active during Proof Of Work (POW) phase to distribute rewards to miners & masternode owners. Currently both of these rewards only count as POW Rewards.'
+      }
+    },
+    'MN': {
+      // Adds a new label metadata address
+      carverAddressLabelWidget: {
+        label: 'Masternode Rewards 💎',
+        title: 'Each block contains a small portion that is awarded to masternode operators that lock 5000 BWK. Masternodes contribute to the network by handling certain coin oeprations within the network.'
+      }
+    },
+    'POW': {
+      // Adds a new label metadata address
+      carverAddressLabelWidget: {
+        label: 'Proof Of Work Rewards 💎',
+        title: 'Bulwark started as a Proof Of Work & Masternode coin. Blocks would be mined by powerful computers and be rewarded for keeping up the network.'
+      }
+    },
+    'POS': {
+      // Adds a new label metadata address
+      carverAddressLabelWidget: {
+        label: 'Proof Of Stake Rewards 💎',
+        title: 'Inputs that are over 100 BWK can participate in network upkeep. Each block (~90 seconds) one of these inputs is rewarded for keeping up the network.'
+      }
+    },
   },
 
   ///////////////////////////////
