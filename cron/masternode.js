@@ -15,17 +15,15 @@ const Masternode = require('../model/masternode');
  * from freegeopip.net.
  */
 async function syncMasternode() {
-  const date = moment().utc().startOf('minute').toDate();
-
-  await Masternode.remove({});
-
   // Increase the timeout for masternode.
   //@todo remove this and properly sync nodes instead
   rpc.timeout(10000); // 10 secs
 
+  const date = moment().utc().startOf('minute').toDate();
+
   const mns = await rpc.call('masternode', ['list']);
-  const inserts = [];
-  await forEach(mns, async (mn) => {
+  const newMasternodes = [];
+  for (let mn of mns) {
     const masternode = new Masternode({
       active: mn.activetime,
       addr: mn.addr,
@@ -40,11 +38,12 @@ async function syncMasternode() {
       ver: mn.version
     });
 
-    inserts.push(masternode);
-  });
+    newMasternodes.push(masternode);
+  }
 
-  if (inserts.length) {
-    await Masternode.insertMany(inserts);
+  if (newMasternodes.length) {
+    await Masternode.remove({});
+    await Masternode.insertMany(newMasternodes);
   }
 }
 
