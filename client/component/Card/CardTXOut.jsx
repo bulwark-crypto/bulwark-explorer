@@ -9,6 +9,8 @@ import React from 'react';
 import Table from '../Table';
 import config from '../../../config'
 
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabeWidget'
+
 //@todo this is wrong name for this card, it should be CardVouts
 export default class CardTXOut extends Component {
   static defaultProps = {
@@ -36,7 +38,7 @@ export default class CardTXOut extends Component {
         data={this.props.txs.map(tx => ({
           ...tx,
           address: (
-            <Link to={`/address/${tx.to.label}`}>{tx.to.label}</Link>
+            <Link to={`/address/${tx.to.label}`}><CarverAddressLabelWidget carverAddress={tx.to} /></Link>
           ),
           value: (
             <span className="badge badge-success">

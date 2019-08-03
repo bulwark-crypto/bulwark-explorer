@@ -67,15 +67,6 @@ class Address extends Component {
             pages: (carverAddress.countIn + carverAddress.countOut) / this.state.size,
             balance: carverAddress.balance,
             received: carverAddress.valueIn - (carverAddress.posValueIn || 0),
-            /*
-            address,
-            balance,
-            received,
-            txs,
-            loading: false,
-            pages: Math.ceil(txs.length / this.state.size),
-            isMasternode
-            */
           });
         })
         .catch(error => this.setState({ error, loading: false }));
@@ -115,26 +106,12 @@ class Address extends Component {
     } else if (this.state.loading) {
       return this.renderLoading();
     }
-    const selectOptions = PAGINATION_PAGE_SIZE;
 
-    const select = (
-      <Select
-        onChange={value => this.handleSize(value)}
-        selectedValue={this.state.size}
-        options={selectOptions} />
-    );
-
-    // Setup internal pagination.
-    let start = (this.state.page - 1) * this.state.size;
-    let end = start + this.state.size;
     return (
       <div>
         <HorizontalRule title="Wallet Info" />
         <CardAddress
-          address={this.state.address}
-          balance={this.state.balance}
-          received={this.state.received}
-          txs={this.state.txs} />
+          carverAddress={this.state.carverAddress} />
         <AddressTxs addressId={this.state.carverAddress._id} txCount={this.state.carverAddress.countIn + this.state.carverAddress.countOut} />
         <div className="clearfix" />
         {this.getMasternodeDetails()}

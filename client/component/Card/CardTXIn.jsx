@@ -1,10 +1,10 @@
 
 import Component from '../../core/Component';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabeWidget'
 
 import Table from '../Table';
 import config from '../../../config'
@@ -46,7 +46,7 @@ export default class CardTXIn extends Component {
         cols={this.state.cols}
         data={this.props.txs.map(tx => ({
           ...tx,
-          address: (<Link to={`/address/${tx.from.label}`}>{tx.from.label}</Link>),
+          address: (<Link to={`/address/${tx.from.label}`}><CarverAddressLabelWidget carverAddress={tx.from} /></Link>),
           //age: tx.relatedVout
           //  ? (<Link to={`/address/${tx.relatedVout.address}`}>{(tx.relatedVout.age / 60 / 60).toFixed(2)}h</Link>)
           //  : '',
@@ -56,7 +56,7 @@ export default class CardTXIn extends Component {
           value:
             (
               <span className="badge badge-danger">
-                -{numeral(tx.amount).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+                - {numeral(tx.amount).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
               </span>
             )
         }))} />

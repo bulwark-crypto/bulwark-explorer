@@ -46,7 +46,7 @@ class CoinSummary extends Component {
         return null;
       }
 
-      const featuredAddresses = config.community.highlightedAddresses.filter(highlightedAddress => highlightedAddress.isFeatured);
+      const featuredAddresses = config.community.highlightedAddresses;
       return (
         <CardHighlightedAddresses
           title="Community Addresses"

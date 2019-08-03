@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
+import config from '../../../config'
 
 import Table from '../Table';
 
@@ -32,13 +33,11 @@ export default class CardAddressTXs extends Component {
   };
 
   render() {
-
     return (
       <div className="animated fadeIn">
         <Table
           cols={this.state.cols}
           data={this.props.movements.map((movement) => {
-
             const isSpent = movement.from._id == this.props.addressId;
 
             const balance = isSpent ? movement.fromBalance - movement.amount : movement.toBalance + movement.amount;
@@ -50,12 +49,12 @@ export default class CardAddressTXs extends Component {
               amount: (
                 <span
                   className={`badge badge-${isSpent ? 'danger' : 'success'}`}>
-                  {isSpent ? '-' : '+'} {numeral(movement.amount).format('0,0.0000')} BWK
+                  {isSpent ? '-' : '+'} {numeral(movement.amount).format(config.coinDetails.coinNumberFormat)} BWK
               </span>
               ),
               balance: (
                 <span>
-                  {numeral(balance.toFixed(4)).format('0,0.0000')} BWK
+                  {numeral(balance.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} BWK
               </span>
               ),
               createdAt: (

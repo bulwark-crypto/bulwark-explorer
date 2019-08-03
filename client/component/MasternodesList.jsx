@@ -27,9 +27,9 @@ class MasternodesList extends Component {
     super(props);
     this.state = {
       cols: [
-        { key: 'lastPaidAt', title: 'Last Paid' },
-        { key: 'active', title: 'Active' },
         { key: 'addr', title: 'Address' },
+        { key: 'active', title: 'Active' },
+        { key: 'lastPaidAt', title: 'Last Paid' },
         { key: 'txHash', title: 'Collateral TX' },
         { key: 'txOutIdx', title: 'Index' },
         { key: 'ver', title: 'Version' },
@@ -146,7 +146,7 @@ class MasternodesList extends Component {
 
             return {
               ...mn,
-              active: moment().subtract(mn.active, 'seconds').utc().fromNow(),
+              active: moment().subtract(mn.active, 'seconds').utc().fromNow(true),
               addr: (
                 <Link to={`/address/${mn.addr}`}>
                   {`${mn.addr.substr(0, 20)}...`}

@@ -8,7 +8,7 @@ import config from '../../../config'
  * @todo move to FormattedValues folder
  */
 const TransactionValue = (tx, blockValue) => {
-  const formattedBlockValue = (numeral(blockValue).format('0,0.0000'));
+  const formattedBlockValue = (numeral(blockValue).format(config.coinDetails.coinNumberFormat));
 
   const getTransactionTitle = (tx) => {
     let blockRewardTitle = 'Block Reward for POS & Masternode';
@@ -18,7 +18,7 @@ const TransactionValue = (tx, blockValue) => {
       const inputAgeHours = (tx.blockRewardDetails.stake.input.age / 60 / 60).toFixed(2);
       const inputConfirmations = tx.blockRewardDetails.stake.input.confirmations;
 
-      blockRewardTitle=`${blockRewardTitle} (Input: ${inputAgeHours} hours, ${inputConfirmations} confirmations)`
+      blockRewardTitle = `${blockRewardTitle} (Input: ${inputAgeHours} hours, ${inputConfirmations} confirmations)`
     }
     return blockRewardTitle;
   };

@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import config from './../../config'
 import moment from 'moment';
+import CarverAddressLabelWidget from '../component/AddressWidgets/CarverAddressLabeWidget'
 
 import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
@@ -52,7 +53,7 @@ class Top100 extends Component {
           data={this.state.carverAddresses.map((carverAddress, idx) => ({
             ...carverAddress,
             address: (
-              <Link to={`/address/${carverAddress.label}`}>{carverAddress.label}</Link>
+              <Link to={`/address/${carverAddress.label}`}><CarverAddressLabelWidget carverAddress={carverAddress} /></Link>
             ),
             date: moment(carverAddress.date).utc().fromNow(true),
             lastMovementAgo: moment(carverAddress.lastMovementDate).utc().fromNow(),
