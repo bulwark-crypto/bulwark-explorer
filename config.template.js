@@ -47,8 +47,9 @@ const config = {
   ///////////////////////////////
   community: {
     // If you comment out all of these addresses the 'Community Addresses' section will not show up on the homepage. You can add as many addresses to highlight as you wish.
+    // isFeatured: If set to true the address appears as a "featured address" on top right of the homepage
     highlightedAddresses: [
-      //{ label: 'Community Donations', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight an address
+      //{ label: 'Community Donations', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX', isFeatured: true }, // Uncomment and replace with your coin address to highlight an address
       //{ label: 'Community Funding', address: 'XXXXXXXXXXXXXXXXXXXXXXXXXXX' }, // Uncomment and replace with your coin address to highlight any other address
     ],
 
@@ -173,10 +174,11 @@ const config = {
   ///////////////////////////////
   /// Misc & Logging
   ///////////////////////////////
-  blockConfirmations: 10,         // We will re-check block "merkleroot" this many blocks back. If they differ we will then start unwinding carver movements one block at a time until correct block is found. (This is like min confirmations)
-  verboseCron: true,              // If set to true there are extra logging details in cron scripts
-  verboseCronTx: false,           // If set to true there are extra tx logging details in cron scripts (Not recommended)
-  splitRewardsData: true,         // Set to true to extract POS & MN data
+  blockConfirmations: 10,           // We will re-check block "merkleroot" this many blocks back. If they differ we will then start unwinding carver movements one block at a time until correct block is found. (This is like min confirmations)
+  verboseCron: true,                // If set to true there are extra logging details in cron scripts
+  verboseCronTx: false,             // If set to true there are extra tx logging details in cron scripts (Not recommended)
+  splitRewardsData: true,           // Set to true to extract POS & MN data
+  desktopMenuExpanded: true         // If set to true the website will have opened navigation bar on load
 };
 
 module.exports = config;

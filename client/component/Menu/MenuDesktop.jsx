@@ -2,6 +2,7 @@
 import Component from 'core/Component';
 import PropTypes from 'prop-types';
 import React from 'react';
+import config from '../../../config'
 
 import { Link } from 'react-router-dom';
 
@@ -19,8 +20,15 @@ export default class MenuDesktop extends Component {
   constructor(props) {
     super(props);
 
+    // By default meun is open
+    let isOpen = config.desktopMenuExpanded;
+    const menuIsOpen = JSON.parse(localStorage.getItem('menuIsOpen'));
+    if (menuIsOpen === false) {
+      isOpen = false;
+    }
+
     this.state = {
-      isOpen: false
+      isOpen
     }
   }
 
@@ -33,15 +41,15 @@ export default class MenuDesktop extends Component {
 
       return (
         <Link
-          key={ idx }
-          className={ `menu-desktop__item ${ isActive? 'menu-desktop__item--is-active' : '' }` }
-          to={ i.href }>
+          key={idx}
+          className={`menu-desktop__item ${isActive ? 'menu-desktop__item--is-active' : ''}`}
+          to={i.href}>
           <img
-            alt={ i.label }
+            alt={i.label}
             className="menu-desktop__item-icon"
-            src={ iconSource }
-            title={ this.state.isOpen ? null : i.label } />
-          <span className="menu-desktop__item-label" >{ i.label }</span>
+            src={iconSource}
+            title={this.state.isOpen ? null : i.label} />
+          <span className="menu-desktop__item-label" >{i.label}</span>
           <Icon name="caret-left" className="menu-desktop__item-indicator" />
         </Link>
       )
@@ -49,20 +57,25 @@ export default class MenuDesktop extends Component {
     )
   };
 
-  handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
+  handleToggle = () => {
+    const isOpen = !this.state.isOpen;
+    this.setState({ isOpen });
+
+    // Persist menu state in storage
+    localStorage.setItem('menuIsOpen', JSON.stringify(isOpen));
+  };
 
   render() {
     return (
-      <div className={ `menu-desktop ${ this.state.isOpen ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
+      <div className={`menu-desktop ${this.state.isOpen ? 'menu-desktop--open' : 'menu-desktop--close'}`}>
         <div className="menu-desktop__content-wrapper">
           <div className="menu-desktop__header">
             <img src="/img/whitelogo.svg" className="menu-desktop__logo" />
-            <a onClick={ this.handleToggle } >
-              <Icon name="bars" className="menu-desktop__toggle" onClick={ this.handleToggle } />
+            <a onClick={this.handleToggle} >
+              <Icon name="bars" className="menu-desktop__toggle" onClick={this.handleToggle} />
             </a>
           </div>
-          <p className="menu-desktop__title">MENU</p>
-          { this.getLinks() }
+          {this.getLinks()}
         </div>
       </div>
     )
