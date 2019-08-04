@@ -2,7 +2,8 @@
 const config = require('../config');
 require('babel-polyfill');
 const mongoose = require('mongoose');
-const { CarverAddress, CarverMovement, CarverMovementType, CarverAddressType } = require('../model/carver2d');
+const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
+const { CarverAddress, CarverMovement } = require('../model/carver2d');
 
 
 /**

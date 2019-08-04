@@ -8,7 +8,8 @@ const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
-const { CarverMovement, CarverAddress, CarverMovementType, CarverAddressType } = require('../model/carver2d');
+const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
+const { CarverMovement, CarverAddress } = require('../model/carver2d');
 
 // Models.
 const Block = require('../model/block');

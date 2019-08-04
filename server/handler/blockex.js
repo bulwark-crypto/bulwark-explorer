@@ -24,6 +24,9 @@ const TX = require('../../model/tx');
 const getAddress = async (req, res) => {
   try {
     const carverAddress = await CarverAddress.findOne({ label: req.params.hash });
+    if (!carverAddress) {
+      throw 'Address Not Found';
+    }
 
     const masternodeForAddress = await Masternode.findOne({ addr: req.params.hash });
     const isMasternode = !!masternodeForAddress;
