@@ -123,7 +123,7 @@ const config = {
       // Adds a new label metadata address
       carverAddressLabelWidget: {
         label: 'Masternode Rewards 💎',
-        title: 'Each block contains a small portion that is awarded to masternode operators that lock 5000 BWK. Masternodes contribute to the network by handling certain coin oeprations within the network.'
+        title: 'Each block contains a small portion that is awarded to masternode operators that lock 5000 BWK. Masternodes contribute to the network by handling certain coin operations within the network.'
       }
     },
     'POW': {

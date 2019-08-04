@@ -144,6 +144,7 @@ async function syncBlocks(start, stop, sequence) {
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
+        let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
         let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
           sequence++;
@@ -155,12 +156,13 @@ async function syncBlocks(start, stop, sequence) {
             from.valueOut += parsedMovement.amount;
             from.sequence = sequence;
             from.lastMovementDate = blockDate;
+            canFlowSameAddress = true;
 
             updatedAddresses.set(from.label, from);
           }
 
           const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-          if (sequence > to.sequence) {
+          if (sequence > to.sequence || canFlowSameAddress && from === to) {
             to.countIn++;
             to.balance += parsedMovement.amount;
             to.valueIn += parsedMovement.amount;
@@ -246,7 +248,9 @@ async function syncBlocks(start, stop, sequence) {
         });
 
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
-        await CarverMovement.insertMany(newMovements, { ordered: false }); // Doesn't matter how they're ordered because they'll be sorted by sequence
+        await CarverMovement.insertMany(newMovements, { ordered: true }); // Explicit ordered flag. These need to be saved in order in case of power outage
+
+        // However we don't have to save addresses in order. Because if we get to this step we have all the movements saved in order so we can resume from hard fail
         await Promise.all([...updatedAddresses.values()].map(
           async (updatedAddress) => {
             await updatedAddress.save();
@@ -302,6 +306,7 @@ async function undoCarverBlockMovements(height) {
     parsedMovements.forEach(parsedMovement => {
       sequence--;
 
+      let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
       const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
       if (sequence < from.sequence) {
         from.countOut--;
@@ -309,11 +314,12 @@ async function undoCarverBlockMovements(height) {
         from.valueOut -= parsedMovement.amount;
 
         from.sequence = sequence;
+        canFlowSameAddress = true;
         updatedAddresses.set(from.label, from);
       }
 
       const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-      if (sequence < to.sequence) {
+      if (sequence < to.sequence || canFlowSameAddress && from === to) {
         to.countIn--;
         to.balance -= parsedMovement.amount;
         to.valueIn -= parsedMovement.amount;
@@ -353,17 +359,34 @@ async function undoCarverBlockMovements(height) {
         to.sequence = sequence;
         updatedAddresses.set(to.label, to);
       }
+
     });
 
-    // Save addresses in parallel
+    /**
+     * First we will ensure we save all addresses with the updated sequence.
+     * If we fail anywhere here it's ok because we can resume without any errors.
+     */
     await Promise.all([...updatedAddresses.values()].map(
       async (updatedAddress) => {
         await updatedAddress.save();
       }));
+
+    /**
+     * Remove the movements carefully in order of sequence
+     * 
+     * We want to remove movements carefully by their sequence to avoid any Perfect Ledger discrepancies.
+     * Because parsed movements are ordered in descending order we can be sure they are removed by order they were executed in.
+     * @todo For larger collections this could technically be changed to mongodb .findAndModify() with sort by sequence
+     */
+    for (var parsedMovementIndex = 0; parsedMovementIndex < parsedMovements.length; parsedMovementIndex++) {
+      const parsedMovement = parsedMovements[parsedMovementIndex];
+
+      await parsedMovement.remove();
+    }
+
   }
 
-  // Finally after unwinding we can remove all addresses and movements
-  await CarverMovement.remove({ blockHeight: { $gte: height } });
+  // Finally after unwinding we can remove all addresses
   await CarverAddress.remove({ blockHeight: { $gte: height } });
 
   // Remove non-carver data for this block
