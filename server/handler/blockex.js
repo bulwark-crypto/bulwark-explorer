@@ -8,7 +8,9 @@ const cache = require('../lib/cache');
 
 // System models for query and etc.
 const Block = require('../../model/block');
-const { CarverAddress, CarverAddressType, CarverMovement } = require('../../model/carver2d');
+
+const { CarverAddressType } = require('../../lib/carver2d');
+const { CarverAddress, CarverMovement } = require('../../model/carver2d');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import config from './../../config'
 import moment from 'moment';
-import CarverAddressLabelWidget from '../component/AddressWidgets/CarverAddressLabeWidget'
+import CarverAddressLabelWidget from '../component/AddressWidgets/CarverAddressLabelWidget'
 
 import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';

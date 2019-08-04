@@ -9,7 +9,7 @@ import React from 'react';
 import Table from '../Table';
 import config from '../../../config'
 
-import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabeWidget'
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabelWidget'
 
 //@todo this is wrong name for this card, it should be CardVouts
 export default class CardTXOut extends Component {

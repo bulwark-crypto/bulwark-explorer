@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
-import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabeWidget'
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabelWidget'
 
 import Table from '../Table';
 import config from '../../../config'

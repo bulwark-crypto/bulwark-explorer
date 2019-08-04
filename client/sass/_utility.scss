@@ -76,3 +76,16 @@
 		box-shadow: 0 0 0 0 rgba(44, 169, 204, 0);
 	}
 }
+
+.address-badge {
+	padding:2px 4px;
+	border-radius: 5px;
+	&.address-badge-info {
+		background: $blue;
+		color: $white;
+	}
+	&.address-badge-danger {
+		background: $red;
+		color: $white;
+	}
+}
