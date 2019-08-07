@@ -24,11 +24,11 @@ class Overview extends Component {
     this.state = {
       cols: [
         {title: 'Height', key: 'blockHeight'},
-        {title: 'Transaction Hash', key: 'txId'},
-        {title: 'Value', key: 'vout'},
-        {title: 'Inputs', key: 'inputs'},
-        {title: 'Outputs', key: 'outputs'},
-        {title: 'Created', key: 'createdAt'},
+        {title: 'Transaction Hash', key: 'label'},
+        {title: 'Value', key: 'valueOut'},
+        {title: 'Inputs', key: 'countIn'},
+        {title: 'Outputs', key: 'countOut'},
+        {title: 'Created', key: 'date'},
       ]
     };
   };
@@ -36,12 +36,8 @@ class Overview extends Component {
   render() {
     // Setup the list of transactions with age since created.
     const txs = this.props.txs.map(tx => {
-      const createdAt = moment(tx.createdAt).utc();
-      const diffSeconds = moment().utc().diff(createdAt, 'seconds');
-      let blockValue = 0.0;
-      if (tx.vout && tx.vout.length) {
-        tx.vout.forEach(vout => blockValue += vout.value);
-      }
+      const date = moment(tx.date).utc();
+      const diffSeconds = moment().utc().diff(date, 'seconds');
 
       return ({
         ...tx,
@@ -50,29 +46,29 @@ class Overview extends Component {
             {tx.blockHeight}
           </Link>
         ),
-        txId: (
-          <Link to={`/tx/${tx.txId}`}>
-            {tx.txId}
+        label: (
+          <Link to={`/tx/${tx.label}`}>
+            {tx.label}
           </Link>
         ),
-        vout: (
-          <Link to={`/tx/${tx.txId}`}>
-            {TransactionValue(tx, blockValue)}
+        valueOut: (
+          <Link to={`/tx/${tx.label}`}>
+            {TransactionValue(tx, tx.valueOut)}
           </Link>
         ),
-        inputs: (
-          <Link to={`/tx/${tx.txId}`}>
-            {tx.vin.length}
+        countIn: (
+          <Link to={`/tx/${tx.label}`}>
+            {tx.countIn}
           </Link>
         ),
-        outputs: (
-          <Link to={`/tx/${tx.txId}`}>
-            {tx.vout.length}
+        countOut: (
+          <Link to={`/tx/${tx.label}`}>
+            {tx.countOut}
           </Link>
         ),
-        createdAt: (
-          <Link to={`/tx/${tx.txId}`} className="text-nowrap">
-            {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
+        date: (
+          <Link to={`/tx/${tx.label}`} className="text-nowrap">
+            {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
           </Link>
         ),
       });

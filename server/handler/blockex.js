@@ -9,7 +9,7 @@ const cache = require('../lib/cache');
 // System models for query and etc.
 const Block = require('../../model/block');
 
-const { CarverAddressType } = require('../../lib/carver2d');
+const { CarverAddressType, CarverMovementType } = require('../../lib/carver2d');
 const { CarverAddress, CarverMovement } = require('../../model/carver2d');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
@@ -430,14 +430,17 @@ const getTop100 = async (req, res) => {
  */
 const getTXLatest = async (req, res) => {
   try {
+    const latestMovements = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).sort({ sequence: -1 }).limit(10);
+    /*
     const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
+
       return await TX.find({})
         .populate('blockRewardDetails')
         .limit(10)
         .sort({ blockHeight: -1 });
-    });
+    });*/
 
-    res.json(docs);
+    res.json(latestMovements);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -456,18 +459,19 @@ const getTX = async (req, res) => {
     const query = isNaN(hash)
       ? { txId: hash }
       : { height: hash };
-    const tx = await TX.findOne(query, { vin: 0, vout: 0 }).populate('blockRewardDetails');
-    if (!tx) {
+    
+    //const tx = await TX.findOne(query, { vin: 0, vout: 0 }).populate('blockRewardDetails');
+
+    const carverAddress = await CarverAddress.findOne({ label: hash });
+    if (!carverAddress) {
       res.status(404).send('Unable to find the transaction!');
       return;
     }
-
-    const carverAddress = await CarverAddress.findOne({ label: hash });
     const carverMovements = await CarverMovement.find({ targetTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 }).populate('to', { label: 1, carverAddressType: 1 }).populate('from', { label: 1, carverAddressType: 1 });
 
 
     res.json({
-      ...tx.toObject(),
+      //...tx.toObject(),
       carverAddress: carverAddress.toObject(),
       movements: carverMovements.map(carverMovement => carverMovement.toObject())
     });
@@ -487,8 +491,9 @@ const getTXs = async (req, res) => {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const total = await TX.count();
-    const txs = await TX.find({}).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const total = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }).count();
+    const txs = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ date: -1 });
+    //const txs = await TX.find({}).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
 
     //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
 

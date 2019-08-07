@@ -26,11 +26,11 @@ export default class CardTXs extends Component {
     this.state = {
       cols: [
         { key: 'blockHeight', title: 'Height' },
-        { key: 'txId', title: 'Transaction Hash' },
-        { key: 'vout', title: 'Value' },
-        { key: 'inputs', title: 'Inputs' },
-        { key: 'outputs', title: 'Outputs' },
-        { key: 'createdAt', title: 'Created' },
+        { key: 'label', title: 'Transaction Hash' },
+        { key: 'valueOut', title: 'Value' },
+        { key: 'countIn', title: 'Inputs' },
+        { key: 'countOut', title: 'Outputs' },
+        { key: 'date', title: 'Created' },
       ]
     };
   };
@@ -40,12 +40,10 @@ export default class CardTXs extends Component {
       <Table
         cols={this.state.cols}
         data={this.props.txs.map(tx => {
-          const createdAt = moment(tx.createdAt).utc();
-          const diffSeconds = moment().utc().diff(createdAt, 'seconds');
-          let blockValue = 0.0;
-          if (tx.vout && tx.vout.length) {
-            tx.vout.forEach(vout => blockValue += vout.value);
-          }
+          const date = moment(tx.date).utc();
+          const diffSeconds = moment().utc().diff(date, 'seconds');
+          let blockValue = tx.valueOut;
+         
           let spanClassName = ``;
           if (this.props.addBadgeClassToValue) {
             spanClassName = `badge badge-${blockValue < 0 ? 'danger' : 'success'}`;
@@ -58,31 +56,31 @@ export default class CardTXs extends Component {
                 {tx.blockHeight}
               </Link>
             ),
-            txId: (
-              <Link to={`/tx/${tx.txId}`}>
-                {tx.txId}
+            label: (
+              <Link to={`/tx/${tx.label}`}>
+                {tx.label}
               </Link>
             ),
-            vout: (
+            valueOut: (
               <span className={spanClassName}>
-                <Link to={`/tx/${tx.txId}`}>
+                <Link to={`/tx/${tx.label}`}>
                   {TransactionValue(tx, blockValue)}
                 </Link>
               </span>
             ),
-            inputs: (
-              <Link to={`/tx/${tx.txId}`}>
-                {tx.vin.length}
+            countIn: (
+              <Link to={`/tx/${tx.label}`}>
+                {tx.countIn}
               </Link>
             ),
-            outputs: (
-              <Link to={`/tx/${tx.txId}`}>
-                {tx.vout.length}
+            countOut: (
+              <Link to={`/tx/${tx.label}`}>
+                {tx.countOut}
               </Link>
             ),
-            createdAt: (
-              <Link to={`/tx/${tx.txId}`} className="text-nowrap">
-                {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
+            date: (
+              <Link to={`/tx/${tx.date}`} className="text-nowrap">
+                {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
               </Link>
             ),
           });

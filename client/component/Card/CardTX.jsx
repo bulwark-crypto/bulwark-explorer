@@ -16,7 +16,7 @@ export default class CardTX extends Component {
 
   render() {
     const blockValue = this.props.tx.carverAddress.valueOut;
-    const confirmValue = this.props.height - this.props.tx.blockHeight;
+    const confirmValue = this.props.height - this.props.tx.carverAddress.blockHeight;
     const confirmBadgeClass = (confirmValue > 0)
       ? (confirmValue < 6) ? 'warning' : 'success'
       : 'danger';
@@ -26,7 +26,7 @@ export default class CardTX extends Component {
         <div className="card--block">
           <div className="card__row">
             <span className="card__label">TXID:</span>
-            <span className="card__result">{this.props.tx.txId}</span>
+            <span className="card__result">{this.props.tx.carverAddress.label}</span>
           </div>
           <div className="card__row">
             <span className="card__label">Confirmations:</span>
@@ -43,18 +43,18 @@ export default class CardTX extends Component {
           </div>
           <div className="card__row">
             <span className="card__label">Block Value:</span>
-            <span className="card__result"><Link to={`/block/${this.props.tx.blockHeight}`}>{numeral(blockValue).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</Link></span>
+            <span className="card__result"><Link to={`/block/${this.props.tx.carverAddress.blockHeight}`}>{numeral(blockValue).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</Link></span>
           </div>
           <div className="card__row">
             <span className="card__label">Block Height:</span>
             <span className="card__result">
-              <Link to={`/block/${this.props.tx.blockHeight}`}>{this.props.tx.blockHeight}</Link>
+              <Link to={`/block/${this.props.tx.carverAddress.blockHeight}`}>{this.props.tx.carverAddress.blockHeight}</Link>
             </span>
           </div>
           <div className="card__row">
             <span className="card__label">Timestamp:</span>
             <span className="card__result">
-              {dateFormat(this.props.tx.createdAt)}
+              {dateFormat(this.props.tx.carverAddress.date)}
             </span>
           </div>
         </div>

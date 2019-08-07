@@ -88,7 +88,7 @@ async function syncBlocks(start, stop, sequence) {
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
     let addedPosTxs = [];
-    let newTxs = [];
+    //let newTxs = [];
 
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
@@ -104,7 +104,7 @@ async function syncBlocks(start, stop, sequence) {
       voutsCount += rpctx.vout.length;
 
       //@todo remove this entirely (we can construct movements/latest txs on carver movements alone)
-      if (blockchain.isPoS(block)) {
+      /*if (blockchain.isPoS(block)) {
 
         // Empty POS txs do not need to be processed
         if (util.isEmptyNonstandardTx(rpctx)) {
@@ -117,7 +117,7 @@ async function syncBlocks(start, stop, sequence) {
       } else {
         const powTx = await util.addPoW(block, rpctx);
         newTxs.push(powTx);
-      }
+      }*/
 
 
       /**
@@ -259,14 +259,14 @@ async function syncBlocks(start, stop, sequence) {
     }
 
     // After adding the tx we'll scan them and do deep analysis
-    await forEachSeries(addedPosTxs, async (addedPosTx) => {
+    /*await forEachSeries(addedPosTxs, async (addedPosTx) => {
       const { rpctx, posTx } = addedPosTx;
       if (posTx) {
         await util.performDeepTxAnalysis(block, rpctx, posTx);
       }
-    });
+    });*/
 
-    await TX.insertMany(newTxs);
+    //await TX.insertMany(newTxs);
 
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;

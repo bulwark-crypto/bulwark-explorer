@@ -55,7 +55,7 @@ const txs = (state = [], action) => {
 
     // Merge state with the new payload
     action.payload.forEach((tx, index) => {
-      let matchingTx = state.find(stateTx => stateTx.txId == tx.txId);
+      let matchingTx = state.find(stateTx => stateTx.label == tx.label);
       if (matchingTx) {
         Object.assign(matchingTx, tx); // Copy new payload data to exisiting object
         
@@ -66,7 +66,7 @@ const txs = (state = [], action) => {
 
     // Ensure the transactions are ordered with most recent blocks first
     state.sort((tx1, tx2) => {
-      return tx2.blockHeight - tx1.blockHeight;
+      return tx2.sequence - tx1.sequence;
     });
   }
   return state;
