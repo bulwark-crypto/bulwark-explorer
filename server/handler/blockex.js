@@ -431,15 +431,7 @@ const getTop100 = async (req, res) => {
 const getTXLatest = async (req, res) => {
   try {
     const latestMovements = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).sort({ sequence: -1 }).limit(10);
-    /*
-    const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
-
-      return await TX.find({})
-        .populate('blockRewardDetails')
-        .limit(10)
-        .sort({ blockHeight: -1 });
-    });*/
-
+    
     res.json(latestMovements);
   } catch (err) {
     console.log(err);

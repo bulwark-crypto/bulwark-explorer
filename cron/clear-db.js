@@ -19,7 +19,7 @@ async function clearDatabase() {
   await Masternode.remove({});
   await Peer.remove({});
   await Rich.remove({});
-  await TX.remove({});
+  //await TX.remove({});
 }
 
 /**

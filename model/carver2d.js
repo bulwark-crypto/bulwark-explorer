@@ -64,6 +64,10 @@ const movementsSchema = new mongoose.Schema({
 movementsSchema.index({ targetAddress: 1, sequence: 1 }, { unique: true });
 movementsSchema.index({ targetTx: 1, sequence: 1 }, { unique: true });
 
+// We'll be doing a lot of sorting on type + sequence so let's create an index on that as well
+movementsSchema.index({ carverAddressType: 1, sequence: 1 }, { unique: true });
+
+
 const CarverMovement = mongoose.model('CarverMovement', movementsSchema, 'carverMovements');
 
 module.exports = {

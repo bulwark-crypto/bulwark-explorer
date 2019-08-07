@@ -36,21 +36,13 @@ console.dateLog = (...log) => {
  * @param {Number} sequence For blockchain sequencing (last sequence of inserted block)
  */
 async function syncBlocks(start, stop, sequence) {
-
-  //if (clean) {
   await Block.remove({ height: { $gt: start, $lte: stop } });
-  await TX.remove({ blockHeight: { $gt: start, $lte: stop } }); //@todo this will be removed soon
-  await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } }); //@todo this will be removed soon
-  //}
+  await CarverMovement.remove({ sequence: { $gt: sequence } }); // Remove any movements that were created after last block synced (in case of hard crash during sync)
 
+  const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 }); // Finds last sequence from last block (because we removed all other movements)
 
-  const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 });
-  //const lastAddress = await CarverAddress.findOne().sort({ sequence: -1 });
-
-  //@todo Remove this and just delete perform cleaning (similar to above) removing all CarverAddress and CarverMovement with sequence above the syncBlocks(sequence)
   const sequences = {
-    movements: lastMovement ? lastMovement.sequence : 0,
-    //addresses: lastAddress ? lastAddress.sequence : 0,
+    movements: lastMovement ? lastMovement.sequence : 0
   }
 
   // Instead of fetching addresses each tiem from db we'll store a certain number in cache (this is in config)
@@ -144,11 +136,11 @@ async function syncBlocks(start, stop, sequence) {
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-        let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
         let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
           sequence++;
 
+          let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
           const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
           if (sequence > from.sequence) {
             from.countOut++;
@@ -170,6 +162,12 @@ async function syncBlocks(start, stop, sequence) {
             to.lastMovementDate = blockDate;
 
             switch (parsedMovement.carverMovementType) {
+              case CarverMovementType.PosRewardToTx:
+                to.posMovement = parsedMovement._id;
+                break;
+              case CarverMovementType.MasternodeRewardToTx:
+                to.mnMovement = parsedMovement._id;
+                break;
               case CarverMovementType.TxToCoinbaseRewardAddress:
                 to.powCountIn++;
                 to.powValueIn += parsedMovement.amount;
@@ -197,10 +195,14 @@ async function syncBlocks(start, stop, sequence) {
                 }
 
                 break;
-              case CarverMovementType.TxToMnAddress:
-                to.mnCountIn++;
-                to.mnValueIn += parsedMovement.amount;
-                break;
+                case CarverMovementType.TxToMnAddress:
+                  to.mnCountIn++;
+                  to.mnValueIn += parsedMovement.amount;
+                  break;
+                case CarverMovementType.TxToPowAddress:
+                  to.powCountIn++;
+                  to.powValueIn += parsedMovement.amount;
+                  break;
             }
 
             updatedAddresses.set(to.label, to);
@@ -248,9 +250,9 @@ async function syncBlocks(start, stop, sequence) {
         });
 
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
-        await CarverMovement.insertMany(newMovements, { ordered: true }); // Explicit ordered flag. These need to be saved in order in case of power outage
+        await CarverMovement.insertMany(newMovements); // Explicit ordered flag. These need to be saved in order in case of power outage
 
-        // However we don't have to save addresses in order. Because if we get to this step we have all the movements saved in order so we can resume from hard fail
+        // If we get to this step we have all the movements saved in order so we can resume from hard fail
         await Promise.all([...updatedAddresses.values()].map(
           async (updatedAddress) => {
             await updatedAddress.save();
@@ -281,7 +283,7 @@ async function syncBlocks(start, stop, sequence) {
   }
 }
 /**
- * Unwind all movements in a block and delete the block & all movements / addresses created in this block
+ * Unwind all movements in a block and delete the block & all movements / addresses created in this block (or after this block)
  */
 async function undoCarverBlockMovements(height) {
   console.dateLog(`Undoing block ${height}`);
@@ -291,20 +293,30 @@ async function undoCarverBlockMovements(height) {
     return;
   }
 
-  let sequence = block.sequenceEnd;
-
-  const addressTxs = await CarverAddress.find({ blockHeight: block.height, carverAddressType: CarverAddressType.Tx }).sort({ sequence: -1 });
-
-  for (var txIndex = 0; txIndex < addressTxs.length; txIndex++) {
-    const tx = addressTxs[txIndex];
+  let sequence = 0;
+  
+  // Iterate over movements 1000 at a time backwards through most recent movements that were created
+  // These could be partial (if we failed saving some during last sync in case of hard reset)
+  while (true) {
 
     let updatedAddresses = new Map();
 
-    const parsedMovements = await CarverMovement.find({ targetTx: tx._id }).sort({ sequence: -1 }).populate('from').populate('to');
+    const parsedMovements = await CarverMovement.find({ blockHeight: { $gte: height } }).sort({ sequence: -1 }).limit(1000).populate('from').populate('to');
+    if (parsedMovements.length === 0) {
+      break;
+    }
 
-    //@todo this is almost identical to moving and should be moved into a single function. We can then use a multiplier of -1 to achieve same functionality
     parsedMovements.forEach(parsedMovement => {
-      sequence--;
+      if (!parsedMovement.from || !parsedMovement.to) {
+        // Quick unreconciliation check: Address for this movement was already undo (both ways) but we'll want to ensure that matching "from/to" address was updated.
+        // This should never fail
+        if (parsedMovement.from && parsedMovement.from.sequence >= parsedMovement.sequence || parsedMovement.to && parsedMovement.to.sequence >= parsedMovement.sequence) {
+          throw 'UNRECONCILIATION FAILURE'
+        }
+        return;
+      }
+
+      sequence = parsedMovement.sequence;      
 
       let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
       const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
@@ -354,6 +366,10 @@ async function undoCarverBlockMovements(height) {
             to.mnCountIn--;
             to.mnValueIn -= parsedMovement.amount;
             break;
+          case CarverMovementType.TxToPowAddress:
+            to.powCountIn--;
+            to.powValueIn -= parsedMovement.amount;
+            break;
         }
 
         to.sequence = sequence;
@@ -371,27 +387,16 @@ async function undoCarverBlockMovements(height) {
         await updatedAddress.save();
       }));
 
-    /**
-     * Remove the movements carefully in order of sequence
-     * 
-     * We want to remove movements carefully by their sequence to avoid any Perfect Ledger discrepancies.
-     * Because parsed movements are ordered in descending order we can be sure they are removed by order they were executed in.
-     * @todo For larger collections this could technically be changed to mongodb .findAndModify() with sort by sequence
-     */
-    for (var parsedMovementIndex = 0; parsedMovementIndex < parsedMovements.length; parsedMovementIndex++) {
-      const parsedMovement = parsedMovements[parsedMovementIndex];
-
-      await parsedMovement.remove();
-    }
-
+    // Remove the movements carefully in order of sequence
+    await CarverMovement.deleteMany({ sequence: { $gte: sequence } });
   }
 
-  // Finally after unwinding we can remove all addresses
+  // Finally after unwinding we can remove all addresses that were created in/after this block
   await CarverAddress.remove({ blockHeight: { $gte: height } });
 
   // Remove non-carver data for this block
-  await BlockRewardDetails.remove({ blockHeight: { $gte: height } });
-  await TX.remove({ blockHeight: { $gte: height } });
+  //await BlockRewardDetails.remove({ blockHeight: { $gte: height } });
+  //await TX.remove({ blockHeight: { $gte: height } });
   await Block.remove({ height: { $gte: height } });
 
 }
@@ -456,11 +461,25 @@ async function update() {
 
   config.verboseCron && console.dateLog(`Block Sync Started`)
   try {
+    
+    if (!isNaN(process.argv[2])) {
+      const undoHeight = parseInt(process.argv[2], 10);
+      console.dateLog(`[CLEANUP] UNDOING all carver movements height >= ${undoHeight}`);
+      await undoCarverBlockMovements(undoHeight); // Uncomment this to test unreconciling a bunch of blocks
+      console.dateLog(`[CLEANUP] All movements unreconciled successfully!`);
+
+      // Silently fail unlocking failure (worst case when you re-run normal version you will get same error and you can rm the file manually)
+      try {
+        locker.unlock(type);
+      } catch (ex) { }
+
+      return;
+    }
+
     // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
     // Notice how we moved the cron lock on top so we lock before block height is fetched otherwise collisions could occur
     locker.lock(type);
     hasAcquiredLocked = true;
-
     const info = await rpc.call('getinfo');
 
     // Before syncing we'll confirm merkle root of X blocks back
@@ -475,9 +494,11 @@ async function update() {
 
     // If you pass in a parameter into the sync script then we will assume that this is the current tip
     // All blocks after this will be dirty and will be removed
-    if (!isNaN(process.argv[2])) {
+    
+
+    if (!isNaN(process.argv[3])) {
       clean = true;
-      rpcHeight = parseInt(process.argv[2], 10);
+      rpcHeight = parseInt(process.argv[3], 10);
     }
 
     console.dateLog(`DB Height: ${dbHeight}, RPC Height: ${rpcHeight}, Clean Start: (${clean ? "YES" : "NO"})`);
