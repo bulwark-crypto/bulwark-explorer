@@ -101,7 +101,7 @@ const getVoutRequiredMovements = (rpctx) => {
             movementType = CarverMovementType.TxToPosOutputAddress;
           }
           if (rpctx.vin.length === 1 && rpctx.vin[0].coinbase) {
-            movementType = CarverMovementType.TxToCoinbaseRewardAddress;
+            movementType = voutIndex === 0 ? CarverMovementType.TxToCoinbaseRewardAddress : CarverMovementType.TxToMnAddress;
           }
 
           const addressLabel = addresses[0];
@@ -238,7 +238,8 @@ async function parseRequiredMovements(params) {
     const movementsWithAddress = requiredMovements.filter(requiredMovement =>
       requiredMovement.movementType == CarverMovementType.TxToAddress ||
       requiredMovement.movementType == CarverMovementType.TxToPosOutputAddress ||
-      requiredMovement.movementType == CarverMovementType.TxToCoinbaseRewardAddress);
+      requiredMovement.movementType == CarverMovementType.TxToCoinbaseRewardAddress ||
+      requiredMovement.movementType == CarverMovementType.TxToMnAddress);
 
     const addressLabels = Array.from(new Set(movementsWithAddress.map(movement => movement.addressLabel))); // Select distinct address labels
 
@@ -293,7 +294,6 @@ async function parseRequiredMovements(params) {
     switch (carverMovementType) {
       // VIN -> TX
       case CarverMovementType.CoinbaseToTx:
-        totalPowRewards = sumTxVoutAmount;
         totalInput = sumTxVoutAmount;
         break;
       case CarverMovementType.ZerocoinToTx:
@@ -323,6 +323,7 @@ async function parseRequiredMovements(params) {
       // TX -> VOUT
       case CarverMovementType.TxToAddress:
       case CarverMovementType.TxToCoinbaseRewardAddress:
+      case CarverMovementType.TxToMnAddress:
       case CarverMovementType.TxToPosOutputAddress:
         if (!requiredMovement.addressLabel) {
           console.log(requiredMovement);
@@ -343,7 +344,7 @@ async function parseRequiredMovements(params) {
           addressMovementType = CarverMovementType.TxToPosAddress;
           if (requiredMovement.addressLabel !== posAddressLabel) {
             if (!config.community.governanceAddresses.find(governanceAddressLabel => governanceAddressLabel === requiredMovement.addressLabel)) {
-              addressMovementType = i === 0 ? CarverMovementType.TxToMnAddress : CarverMovementType.TxToCoinbaseRewardAddress; // Assume first output of mn/pow coin is masternode reward (to analyise)
+              addressMovementType = CarverMovementType.TxToMnAddress;
               totalMnRewards += requiredMovement.amount;
             } else {
               addressMovementType = CarverMovementType.TxToGovernanceRewardAddress;
@@ -355,9 +356,12 @@ async function parseRequiredMovements(params) {
             posRewardAddress = vinVoutMovement.to;
           }
         } else {
-          // POW
+          // MN/POW
           if (carverMovementType === CarverMovementType.TxToCoinbaseRewardAddress) {
+            totalPowRewards += requiredMovement.amount;
             powRewardAddress = voutAddress;
+          } else if (carverMovementType === CarverMovementType.TxToMnAddress) {
+            totalMnRewards += requiredMovement.amount;
           }
         }
 

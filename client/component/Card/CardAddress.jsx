@@ -139,6 +139,18 @@ export default class CardAddress extends Component {
         </span>
       </div>
     }
+    const getMnRewards = () => {
+      if (!carverAddress.mnValueIn) {
+        return null;
+      }
+
+      return <div className="card__row">
+        <span className="card__label">MN Rewards ({carverAddress.mnCountIn}x💎):</span>
+        <span className="card__result">
+          +{numeral(carverAddress.mnValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+        </span>
+      </div>
+    }
 
     const getSent = () => {
       if (!carverAddress.valueOut) {
@@ -176,6 +188,7 @@ export default class CardAddress extends Component {
                 {getReceived()}
                 {getPowRewards()}
                 {getPosRewards()}
+                {getMnRewards()}
                 {getSent()}
 
                 <div className="card__row border-top mt-1 font-weight-500">

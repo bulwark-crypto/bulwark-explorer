@@ -115,8 +115,8 @@ const config = {
     'COINBASE': {
       // Adds a new label metadata address
       carverAddressLabelWidget: {
-        label: 'Coinbase (POW & MN) 💎',
-        title: 'This address was active during Proof Of Work (POW) phase to distribute rewards to miners & masternode owners. Currently both of these rewards only count as POW Rewards.'
+        label: 'Coinbase (Premine & POW) 💎',
+        title: 'This address was active during Proof Of Work (POW) phase to distribute rewards to miners & masternode owners.'
       }
     },
     'MN': {
