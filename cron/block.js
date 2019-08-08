@@ -92,7 +92,7 @@ async function syncBlocks(start, stop, sequence) {
       let updatedAddresses = new Map();
 
       // When going through parsed movements we'll store the actual POS amount here (so we can fetch it later)
-      let posRewardAmount = null; 
+      let posRewardAmount = null;
 
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
@@ -181,8 +181,7 @@ async function syncBlocks(start, stop, sequence) {
                 // This gets set set in PosRewardToTx above (one per tx)
                 if (posRewardAmount) {
                   to.posCountIn++;
-                  parsedMovement
-                  to.posValueIn += posRewardToTx.amount;
+                  to.posValueIn += posRewardAmount;
                 }
                 break;
               case CarverMovementType.TxToMnAddress:
@@ -282,7 +281,7 @@ async function undoCarverBlockMovements(height) {
   await Block.remove({ height: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
 
   let sequence = 0;
-  
+
   // Iterate over movements 1000 at a time backwards through most recent movements that were created
   // These could be partial (if we failed saving some during last sync in case of hard reset)
   while (true) {
@@ -304,7 +303,7 @@ async function undoCarverBlockMovements(height) {
         return;
       }
 
-      sequence = parsedMovement.sequence;      
+      sequence = parsedMovement.sequence;
 
       let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
       const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
@@ -314,6 +313,7 @@ async function undoCarverBlockMovements(height) {
         from.valueOut -= parsedMovement.amount;
 
         from.sequence = sequence;
+        from.lastMovementDate = parsedMovement.date;
         canFlowSameAddress = true;
         updatedAddresses.set(from.label, from);
       }
@@ -343,6 +343,7 @@ async function undoCarverBlockMovements(height) {
         }
 
         to.sequence = sequence;
+        to.lastMovementDate = parsedMovement.date;
         updatedAddresses.set(to.label, to);
       }
 
@@ -425,7 +426,7 @@ async function update() {
 
   config.verboseCron && console.dateLog(`Block Sync Started`)
   try {
-    
+
     if (!isNaN(process.argv[2])) {
       const undoHeight = parseInt(process.argv[2], 10);
       console.dateLog(`[CLEANUP] UNDOING all carver movements height >= ${undoHeight}`);
@@ -461,9 +462,9 @@ async function update() {
       }
     } else {
       console.dateLog("[CLEANUP] No blocks found, erasing all carver movements");
-      await undoCarverBlockMovements(1); 
+      await undoCarverBlockMovements(1);
     }
-  
+
 
     let sequence = block ? block.sequenceEnd : 0;
 
@@ -473,7 +474,7 @@ async function update() {
 
     // If you pass in a parameter into the sync script then we will assume that this is the current tip
     // All blocks after this will be dirty and will be removed
-    
+
 
     if (!isNaN(process.argv[3])) {
       clean = true;
