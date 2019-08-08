@@ -36,8 +36,8 @@ console.dateLog = (...log) => {
  * @param {Number} sequence For blockchain sequencing (last sequence of inserted block)
  */
 async function syncBlocks(start, stop, sequence) {
-  await Block.remove({ height: { $gt: start, $lte: stop } });
-  await CarverMovement.remove({ sequence: { $gt: sequence } }); // Remove any movements that were created after last block synced (in case of hard crash during sync)
+  //await Block.remove({ height: { $gt: start, $lte: stop } });
+  //await CarverMovement.remove({ sequence: { $gt: sequence } }); // Remove any movements that were created after last block synced (in case of hard crash during sync)
 
   const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 }); // Finds last sequence from last block (because we removed all other movements)
 
@@ -82,6 +82,7 @@ async function syncBlocks(start, stop, sequence) {
     let addedPosTxs = [];
     //let newTxs = [];
 
+
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
       const rpctx = await util.getTX(txhash, true);
@@ -89,6 +90,9 @@ async function syncBlocks(start, stop, sequence) {
       // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
       // When we're updating address balances (based on movements) we'll store the address in a map as soon as it's update. That way we can fetch it again by _id
       let updatedAddresses = new Map();
+
+      // When going through parsed movements we'll store the actual POS amount here (so we can fetch it later)
+      let posRewardAmount = null; 
 
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
@@ -164,6 +168,7 @@ async function syncBlocks(start, stop, sequence) {
             switch (parsedMovement.carverMovementType) {
               case CarverMovementType.PosRewardToTx:
                 to.posMovement = parsedMovement._id;
+                posRewardAmount = parsedMovement.amount; // Notice we're setting tx-wide pos reward
                 break;
               case CarverMovementType.MasternodeRewardToTx:
                 to.mnMovement = parsedMovement._id;
@@ -173,36 +178,22 @@ async function syncBlocks(start, stop, sequence) {
                 to.powValueIn += parsedMovement.amount;
                 break;
               case CarverMovementType.TxToPosAddress:
-
-                // Because an output might contain multiple POS outputs we'll only track the first reward as the reward
-                if (!to.posLastBlockHeight || to.posLastBlockHeight != rpcblock.height) {
-                  // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
-                  const posRewardToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosRewardToTx);
-                  if (!posRewardToTx) {
-                    throw 'POS REWARDTOTX NOT FOUND?';
-                  }
-
-                  // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
-                  const posTxIdVoutToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosTxIdVoutToTx);
-                  if (!posTxIdVoutToTx) {
-                    throw 'POS TXID+VOUT NOT FOUND?';
-                  }
-
+                // This gets set set in PosRewardToTx above (one per tx)
+                if (posRewardAmount) {
                   to.posCountIn++;
+                  parsedMovement
                   to.posValueIn += posRewardToTx.amount;
-
-                  to.posLastBlockHeight = rpcblock.height;
                 }
-
                 break;
-                case CarverMovementType.TxToMnAddress:
-                  to.mnCountIn++;
-                  to.mnValueIn += parsedMovement.amount;
-                  break;
-                case CarverMovementType.TxToPowAddress:
-                  to.powCountIn++;
-                  to.powValueIn += parsedMovement.amount;
-                  break;
+              case CarverMovementType.TxToMnAddress:
+                to.mnCountIn++;
+                to.mnValueIn += parsedMovement.amount;
+                break;
+            }
+
+            // Erase the amount after first encounter (so we only set it once)
+            if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
+              posRewardAmount = null;
             }
 
             updatedAddresses.set(to.label, to);
@@ -233,7 +224,8 @@ async function syncBlocks(start, stop, sequence) {
               sequence: sequence,
 
               targetAddress,
-              targetTx
+              targetTx,
+              posRewardAmount: parsedMovement.posRewardAmount
             });
 
             switch (parsedMovement.carverMovementType) {
@@ -287,11 +279,7 @@ async function syncBlocks(start, stop, sequence) {
  */
 async function undoCarverBlockMovements(height) {
   console.dateLog(`Undoing block ${height}`);
-  const block = await Block.findOne({ height });
-  if (!block) {
-    console.dateLog(`Can't undo block ${height} (not found)`);
-    return;
-  }
+  await Block.remove({ height: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
 
   let sequence = 0;
   
@@ -311,7 +299,7 @@ async function undoCarverBlockMovements(height) {
         // Quick unreconciliation check: Address for this movement was already undo (both ways) but we'll want to ensure that matching "from/to" address was updated.
         // This should never fail
         if (parsedMovement.from && parsedMovement.from.sequence >= parsedMovement.sequence || parsedMovement.to && parsedMovement.to.sequence >= parsedMovement.sequence) {
-          throw 'UNRECONCILIATION FAILURE'
+          throw 'UNRECONCILIATION FAILURE : From/To not found'
         }
         return;
       }
@@ -342,33 +330,15 @@ async function undoCarverBlockMovements(height) {
             to.powValueIn -= parsedMovement.amount;
             break;
           case CarverMovementType.TxToPosAddress:
-            if (to.posLastBlockHeight === height) {
-              // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
-              const posRewardToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosRewardToTx);
-              if (!posRewardToTx) {
-                throw 'POS REWARDTOTX NOT FOUND?';
-              }
-
-              // We already calculated total POS amount in PosRewardToTx. So we can just use that as the sum of all rewards
-              const posTxIdVoutToTx = parsedMovements.find(parsedMovement => parsedMovement.carverMovementType === CarverMovementType.PosTxIdVoutToTx);
-              if (!posTxIdVoutToTx) {
-                throw 'POS TXID+VOUT NOT FOUND?';
-              }
-
+            // One of the POS movements to POS reward address will have this property
+            if (parsedMovement.posRewardAmount) {
               to.posCountIn--;
-              to.posValueIn -= posRewardToTx.amount;
-
-              to.posLastBlockHeight = height - 1;
+              to.posValueIn -= parsedMovement.posRewardAmount;
             }
-
             break;
           case CarverMovementType.TxToMnAddress:
             to.mnCountIn--;
             to.mnValueIn -= parsedMovement.amount;
-            break;
-          case CarverMovementType.TxToPowAddress:
-            to.powCountIn--;
-            to.powValueIn -= parsedMovement.amount;
             break;
         }
 
@@ -393,12 +363,6 @@ async function undoCarverBlockMovements(height) {
 
   // Finally after unwinding we can remove all addresses that were created in/after this block
   await CarverAddress.remove({ blockHeight: { $gte: height } });
-
-  // Remove non-carver data for this block
-  //await BlockRewardDetails.remove({ blockHeight: { $gte: height } });
-  //await TX.remove({ blockHeight: { $gte: height } });
-  await Block.remove({ height: { $gte: height } });
-
 }
 /**
  * Recursive Sequential Blockchain Unreconciliation (Undo carver movements on last block if merkle roots don't match and re-run confirmations again otherwise confirm block)
@@ -486,6 +450,21 @@ async function update() {
     await confirmBlocks(info.blocks);
 
     const block = await Block.findOne().sort({ height: -1 });
+
+    // Find any address/movement with sequence afer this block (so we can properly undo corrupt data)
+    if (block) {
+      const lastCarverMovement = await CarverMovement.findOne().sort({ sequence: -1 });
+      const lastCarverAddress = await CarverAddress.findOne().sort({ sequence: -1 });
+      if (lastCarverMovement && lastCarverMovement.sequence > block.sequenceEnd || lastCarverAddress && lastCarverAddress.sequence > block.sequenceEnd) {
+        console.dateLog("[CLEANUP] Partial block entry found, removing corrupt sync data");
+        await undoCarverBlockMovements(block.height + 1);
+      }
+    } else {
+      console.dateLog("[CLEANUP] No blocks found, erasing all carver movements");
+      await undoCarverBlockMovements(1); 
+    }
+  
+
     let sequence = block ? block.sequenceEnd : 0;
 
     let clean = true;

@@ -343,7 +343,7 @@ async function parseRequiredMovements(params) {
           addressMovementType = CarverMovementType.TxToPosAddress;
           if (requiredMovement.addressLabel !== posAddressLabel) {
             if (!config.community.governanceAddresses.find(governanceAddressLabel => governanceAddressLabel === requiredMovement.addressLabel)) {
-              addressMovementType = i === 0 ? CarverMovementType.TxToMnAddress : CarverMovementType.TxToPowAddress; // Assume first output of mn/pow coin is masternode reward (to analyise)
+              addressMovementType = i === 0 ? CarverMovementType.TxToMnAddress : CarverMovementType.TxToCoinbaseRewardAddress; // Assume first output of mn/pow coin is masternode reward (to analyise)
               totalMnRewards += requiredMovement.amount;
             } else {
               addressMovementType = CarverMovementType.TxToGovernanceRewardAddress;

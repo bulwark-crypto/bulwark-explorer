@@ -19,7 +19,6 @@ const CarverAddress = mongoose.model('CarverAddress', new mongoose.Schema({
   // Track rewards (CarverAddressType.Address only). That way we can subtract them from countIn/countOut to get number of non-reward txs
   posCountIn: { index: true, type: Number },
   posValueIn: { index: true, type: Number },
-  posLastBlockHeight: { type: Number }, // Store last time this address received a POS reward (we use this for sequential syncing + data analytics)
 
   mnCountIn: { index: true, type: Number },
   mnValueIn: { index: true, type: Number },
@@ -56,6 +55,7 @@ const movementsSchema = new mongoose.Schema({
   posInputAmount: { index: true, type: Number }, // What was the input amount of the stake
   posInputBlockHeight: { index: true, type: Number },   // What was the block of the input
   posInputBlockHeightDiff: { index: true, type: Number }, // blockHeight-posInputBlockHeightDiff
+  posRewardAmount: { type: Number }, // Because POS TX can have multiple outputs we'll need to assign it to one of these outputs (for unreconciliation)
 
   sequence: { unique: true, required: true, type: Number }
 }, { _id: false, versionKey: false });
