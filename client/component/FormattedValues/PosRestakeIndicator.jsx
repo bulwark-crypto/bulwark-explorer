@@ -9,13 +9,13 @@ import config from '../../../config'
 const PosRestakeIndicator = ({ reward, includeShortName = false, showStakeRewardAmount = false }) => {
 
   const getRestakeIcon = (reward) => {
-    if (!reward.stake.input.isRestake) {
+    if (reward.from.carverAddressType === 6) {
       return null;
     }
     return <Icon name="recycle" className="fas pl-1 text-primary align-middle" />;
   }
   const getTitle = (reward) => {
-    if (!reward.stake.input.isRestake) {
+    if (reward.from.carverAddressType === 6) {
       return null;
     }
     return "Restake (Stake of Previously Staked Output)";
@@ -31,9 +31,9 @@ const PosRestakeIndicator = ({ reward, includeShortName = false, showStakeReward
     return amountFormatted;
   }
 
-  let amount = reward.stake.input.value;
+  let amount = reward.posInputAmount;
   if (showStakeRewardAmount) {
-    amount = reward.stake.reward;
+    amount = reward.amount;
   }
 
   return (

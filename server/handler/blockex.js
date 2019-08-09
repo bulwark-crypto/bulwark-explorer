@@ -431,7 +431,7 @@ const getTop100 = async (req, res) => {
 const getTXLatest = async (req, res) => {
   try {
     const latestMovements = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).sort({ sequence: -1 }).limit(10);
-    
+
     res.json(latestMovements);
   } catch (err) {
     console.log(err);
@@ -451,7 +451,7 @@ const getTX = async (req, res) => {
     const query = isNaN(hash)
       ? { txId: hash }
       : { height: hash };
-    
+
     //const tx = await TX.findOne(query, { vin: 0, vout: 0 }).populate('blockRewardDetails');
 
     const carverAddress = await CarverAddress.findOne({ label: hash });
@@ -484,7 +484,7 @@ const getTXs = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
     const total = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }).count();
-    const txs = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ date: -1 });
+    const txs = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ sequence: -1 });
     //const txs = await TX.find({}).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
 
     //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
@@ -506,8 +506,11 @@ const getRewards = async (req, res) => {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const total = await BlockRewardDetails.count();
-    const rewards = await BlockRewardDetails.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
+    const query = { carverMovementType: CarverMovementType.PosRewardToTx };
+
+    const total = await CarverMovement.count(query);
+    const rewards = await CarverMovement.find(query, { label: 0, carverMovementType: 0, fromBalance: 0, toBalance: 0 }).skip(skip).limit(limit).sort({ sequence: -1 }).populate('from', { carverAddressType: 1 }).populate('to', { label: 1 }).populate('destinationAddress');
+
 
     res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

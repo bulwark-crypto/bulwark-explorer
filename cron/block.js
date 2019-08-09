@@ -36,9 +36,6 @@ console.dateLog = (...log) => {
  * @param {Number} sequence For blockchain sequencing (last sequence of inserted block)
  */
 async function syncBlocks(start, stop, sequence) {
-  //await Block.remove({ height: { $gt: start, $lte: stop } });
-  //await CarverMovement.remove({ sequence: { $gt: sequence } }); // Remove any movements that were created after last block synced (in case of hard crash during sync)
-
   const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 }); // Finds last sequence from last block (because we removed all other movements)
 
   const sequences = {
@@ -65,23 +62,16 @@ async function syncBlocks(start, stop, sequence) {
       nonce: rpcblock.nonce,
       prev: (rpcblock.height == 1) ? 'GENESIS' : rpcblock.previousblockhash ? rpcblock.previousblockhash : 'UNKNOWN',
       size: rpcblock.size,
-      //txs: rpcblock.tx ? rpcblock.tx : [],
       txs: [],
       ver: rpcblock.version,
       isConfirmed: rpcblock.confirmations > config.blockConfirmations // We can instantly confirm a block if it reached the required number of confirmations (that way we don't have to reconfirm it later)
     });
-
 
     const sequenceStart = sequence;
 
     // Count how many inputs/outputs are in each block
     let vinsCount = 0;
     let voutsCount = 0;
-
-    // Notice how we're ensuring to only use a single rpc call with forEachSeries()
-    let addedPosTxs = [];
-    //let newTxs = [];
-
 
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
@@ -99,28 +89,7 @@ async function syncBlocks(start, stop, sequence) {
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
 
-      //@todo remove this entirely (we can construct movements/latest txs on carver movements alone)
-      /*if (blockchain.isPoS(block)) {
-
-        // Empty POS txs do not need to be processed
-        if (util.isEmptyNonstandardTx(rpctx)) {
-          continue;
-        }
-
-        const posTx = await util.addPoS(block, rpctx);
-        addedPosTxs.push({ rpctx, posTx });
-        newTxs.push(posTx);
-      } else {
-        const powTx = await util.addPoW(block, rpctx);
-        newTxs.push(powTx);
-      }*/
-
-
-      /**
-       * Carver2D data analysis:
-       */
-
-      // Empty POS txs do not need to be processed
+      // Start Carver2D Data Analysis. Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
         // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
         // Additionally we also flatten the vins/vouts into an array of movements
@@ -230,7 +199,6 @@ async function syncBlocks(start, stop, sequence) {
             switch (parsedMovement.carverMovementType) {
               case CarverMovementType.PosRewardToTx:
                 newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
-                newCarverMovement.posInputBlockHeight = parsedMovement.posInputBlockHeight;
                 newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
                 break;
             }
@@ -250,16 +218,6 @@ async function syncBlocks(start, stop, sequence) {
           }));
       }
     }
-
-    // After adding the tx we'll scan them and do deep analysis
-    /*await forEachSeries(addedPosTxs, async (addedPosTx) => {
-      const { rpctx, posTx } = addedPosTx;
-      if (posTx) {
-        await util.performDeepTxAnalysis(block, rpctx, posTx);
-      }
-    });*/
-
-    //await TX.insertMany(newTxs);
 
     block.vinsCount = vinsCount;
     block.voutsCount = voutsCount;
@@ -474,8 +432,6 @@ async function update() {
 
     // If you pass in a parameter into the sync script then we will assume that this is the current tip
     // All blocks after this will be dirty and will be removed
-
-
     if (!isNaN(process.argv[3])) {
       clean = true;
       rpcHeight = parseInt(process.argv[3], 10);

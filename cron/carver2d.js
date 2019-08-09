@@ -397,6 +397,7 @@ async function parseRequiredMovements(params) {
   if (totalMnRewards > 0) {
     const addressLabel = 'MN';
     const fromAddress = await getCarverAddressFromCache(CarverAddressType.Masternode, addressLabel);
+    //const roi = totalMnRewards / config.coinDetails.masternodeCollateral;
     newVinMovements.push({ carverMovementType: CarverMovementType.MasternodeRewardToTx, label: `${addressLabel}:${params.rpctx.txid}`, from: fromAddress, to: txAddress, amount: totalMnRewards, destinationAddress: mnRewardAddress });
   }
 
@@ -419,7 +420,6 @@ async function parseRequiredMovements(params) {
       amount: totalPosRewards - vinVoutMovement.amount,
       destinationAddress: posRewardAddress,
       posInputAmount: vinVoutMovement.amount,
-      posInputBlockHeight: vinVoutMovement.blockHeight,
       posInputBlockHeightDiff: params.rpcblock.height - vinVoutMovement.blockHeight
     });
 

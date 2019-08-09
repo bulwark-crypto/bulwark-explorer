@@ -30,10 +30,10 @@ const PosProfitabilityScore = ({ reward, includeTitle = true }) => {
   }
 
   const getProfitabilityWeight = (reward) => {
-    const profitPercent = (reward.stake.reward / reward.stake.input.value) * 100;
-    const timeCostOfStake = (reward.stake.input.confirmations / profitPercent);
+    const profitPercent = (reward.amount / reward.posInputAmount) * 100;
+    const timeCostOfStake = (reward.posInputBlockHeightDiff / profitPercent);
     const profitabilityWeight = (timeCostOfStake * config.profitabilityScore.weightMultiplier);
-  
+
     return profitabilityWeight;
   }
 

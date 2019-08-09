@@ -16,7 +16,7 @@ export default class CardBlockRewardDetailsStaking extends Component {
     const posRestakeIndicator = <PosRestakeIndicator reward={reward} includeShortName={true} showStakeRewardAmount={true} />;
 
     // Link to the previous stake if this is a restake
-    if (reward.stake.input.isRestake) {
+    if (reward.from.carverAddressType === 6) {
       return (
         <Link to={`/tx/${reward.stake.input.txId}`}>
           {posRestakeIndicator}
