@@ -60,7 +60,7 @@ const carverMovementsSchema = new mongoose.Schema({
   // We'll use this for finding movements for specific address/tx (also note the two compound indexes below).
   // Because all movements are tx->address or address->tx both of these fields are always filled
   targetAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-  targetTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  targetTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, //@todo rename to targetMovement (this would make more sense if a blockchain doesn't use tx for example)
 
   // For POS rewards store additional info
   posInputAmount: { index: true, type: Number }, // What was the input amount of the stake
@@ -75,7 +75,7 @@ carverMovementsSchema.index({ targetAddress: 1, sequence: 1 }, { unique: true })
 carverMovementsSchema.index({ targetTx: 1, sequence: 1 }, { unique: true });
 
 // We'll be doing a lot of sorting on type + sequence so let's create an index on that as well
-carverMovementsSchema.index({ carverAddressType: 1, sequence: 1 }, { unique: true });
+carverMovementsSchema.index({ carverMovementType: 1, sequence: 1 }, { unique: true });
 
 
 const CarverMovement = mongoose.model('CarverMovement', carverMovementsSchema, 'carverMovements');

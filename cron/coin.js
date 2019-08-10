@@ -7,12 +7,15 @@ const locker = require('../lib/locker');
 const moment = require('moment');
 // Models.
 const Coin = require('../model/coin');
+const { CarverAddress, CarverMovement } = require('../model/carver2d');
 
 /**
  * Get the coin related information including things
  * like price coinmarketcap.com data.
  */
 async function syncCoin() {
+  console.log('Syncing coin details');
+
   const date = moment().utc().startOf('minute').toDate();
   // Setup the coinmarketcap.com api url.
   const url = `${config.coinMarketCap.api}${config.coinMarketCap.ticker}`;
@@ -26,6 +29,10 @@ async function syncCoin() {
     market = market.length ? market[0] : {};
   }
 
+  const countCarverAddresses = await CarverAddress.count();
+  const countCarverMovements = await CarverMovement.count();
+
+
   const coin = new Coin({
     cap: market.market_cap_usd,
     createdAt: date,
@@ -38,10 +45,14 @@ async function syncCoin() {
     peers: info.connections,
     status: 'Online',
     supply: market.available_supply, // TODO: change to actual count from db.
-    usd: market.price_usd
+    usd: market.price_usd,
+    countCarverAddresses,
+    countCarverMovements
   });
 
   await coin.save();
+
+  console.log('Syncing complete');
 }
 
 /**
