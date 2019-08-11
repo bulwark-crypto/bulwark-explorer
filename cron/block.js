@@ -241,6 +241,7 @@ async function syncBlocks(start, stop, sequence) {
 
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
+    /*
     if (Math.floor((Math.random() * 100) + 1) < 5) {
       var dropNumBlocks = Math.floor((Math.random() * 10) + 1);
       console.log(`Dropping ${dropNumBlocks} blocks`)
@@ -248,6 +249,7 @@ async function syncBlocks(start, stop, sequence) {
       height -= dropNumBlocks;
       commonAddressCache.clear(); // Clear cache because the addresses could now be invalid
     }
+    */
   }
 }
 /**
