@@ -29,7 +29,8 @@ const config = {
     displayDecimals: 2,
     longName: 'Bulwark Cryptocurrency',
     coinNumberFormat: '0,0.0000',
-    websiteUrl: 'https://bulwarkcrypto.com/'
+    websiteUrl: 'https://bulwarkcrypto.com/',
+    masternodeCollateral: 5000 // MN ROI% gets based on this number. If your coin has multi-tiered masternodes then set this to lowest tier (ROI% will simply be higher for bigger tiers)
   },
 
   ///////////////////////////////
@@ -213,7 +214,8 @@ const config = {
   verboseCron: true,                // If set to true there are extra logging details in cron scripts
   verboseCronTx: false,             // If set to true there are extra tx logging details in cron scripts (Not recommended)
   splitRewardsData: true,           // Set to true to extract POS & MN data
-  desktopMenuExpanded: true         // If set to true the website will have opened navigation bar on load
+  desktopMenuExpanded: true,        // If set to true the website will have opened navigation bar on load
+  blockSyncAddressCacheLimit: 50000 // How many addresses to keep in memory during block syncing (When this number is reached the entire cache is flushed and filled again from beginning)
 };
 
 module.exports = config;

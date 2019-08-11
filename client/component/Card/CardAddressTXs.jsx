@@ -40,8 +40,8 @@ export default class CardAddressTXs extends Component {
           return "Proof Of Work Block Reward"
         case CarverMovementType.TxToMnAddress:
           return "Masternode Block Reward"
-        case CarverMovementType.TxToPosAddress:
-          return "Proof Of Stake Block Reward"
+        case CarverMovementType.PosTxIdVoutToTx:
+          return "This input received Proof Of Stake Reward"
       }
       return null;
     }
@@ -49,7 +49,7 @@ export default class CardAddressTXs extends Component {
       switch (movement.carverMovementType) {
         case CarverMovementType.TxToCoinbaseRewardAddress:
         case CarverMovementType.TxToMnAddress:
-        case CarverMovementType.TxToPosAddress:
+        case CarverMovementType.PosTxIdVoutToTx:
           return <span class="ml-1">💎</span>
       }
       return null;

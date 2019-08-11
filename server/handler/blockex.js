@@ -482,12 +482,21 @@ const getTXs = async (req, res) => {
   try {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const sort = req.query.sort === 'sequence' ? 'sequence' : 'valueOut';
 
-    const total = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }).count();
-    const txs = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ sequence: -1 });
-    //const txs = await TX.find({}).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
+    let query = { carverAddressType: CarverAddressType.Tx };
 
-    //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
+    // Optional date range
+    if (req.query.date) {
+      const ticksDifference = Number.parseInt(req.query.date);
+      if (ticksDifference) {
+        const minDate = moment().subtract(ticksDifference, 'seconds').toDate();
+        query.date = { $gte: minDate }
+      }
+    }
+
+    const total = await CarverAddress.find(query).count();
+    const txs = await CarverAddress.find(query, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ [sort]: -1 });
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

@@ -67,19 +67,24 @@ async function syncBlocks(start, stop, sequence) {
       isConfirmed: rpcblock.confirmations > config.blockConfirmations // We can instantly confirm a block if it reached the required number of confirmations (that way we don't have to reconfirm it later)
     });
 
+    // Flush cache every 10000 addresses
+    if (commonAddressCache.size > config.blockSyncAddressCacheLimit) {
+      commonAddressCache.clear();
+    }
+
     const sequenceStart = sequence;
 
     // Count how many inputs/outputs are in each block
     let vinsCount = 0;
     let voutsCount = 0;
 
+
     for (let txIndex = 0; txIndex < rpcblock.tx.length; txIndex++) {
       const txhash = rpcblock.tx[txIndex];
-      const rpctx = await util.getTX(txhash, true);
+      const rpctx = await util.getTX(txhash, false);
 
-      // Mongoose does not treat relationships as unique objects so when you perform comparsion on CarverAddress === CarverAddress you would get false even if they havee same _id
-      // When we're updating address balances (based on movements) we'll store the address in a map as soon as it's update. That way we can fetch it again by _id
       let updatedAddresses = new Map();
+      let newMovements = [];
 
       // When going through parsed movements we'll store the actual POS amount here (so we can fetch it later)
       let posRewardAmount = null;
@@ -109,7 +114,6 @@ async function syncBlocks(start, stop, sequence) {
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-        let newMovements = [];
         parsedMovements.forEach(parsedMovement => {
           sequence++;
 
@@ -209,11 +213,16 @@ async function syncBlocks(start, stop, sequence) {
         });
 
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
-        await CarverMovement.insertMany(newMovements); // Explicit ordered flag. These need to be saved in order in case of power outage
+        await CarverMovement.insertMany(newMovements);
 
         // If we get to this step we have all the movements saved in order so we can resume from hard fail
         await Promise.all([...updatedAddresses.values()].map(
           async (updatedAddress) => {
+
+            // Don't forget to update our cache with new address data
+            if (commonAddressCache.has(updatedAddress.label)) {
+              commonAddressCache.set(updatedAddress.label, updatedAddress);
+            }
             await updatedAddress.save();
           }));
       }
@@ -228,7 +237,17 @@ async function syncBlocks(start, stop, sequence) {
     await block.save();
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
-    console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
+    console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${rpcblock.tx.length} Vins: ${vinsCount} Vouts: ${voutsCount} Cache: ${commonAddressCache.size}`);
+
+
+    // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
+    if (Math.floor((Math.random() * 100) + 1) < 5) {
+      var dropNumBlocks = Math.floor((Math.random() * 10) + 1);
+      console.log(`Dropping ${dropNumBlocks} blocks`)
+      await undoCarverBlockMovements(height - dropNumBlocks + 1);
+      height -= dropNumBlocks;
+      commonAddressCache.clear(); // Clear cache because the addresses could now be invalid
+    }
   }
 }
 /**
@@ -248,61 +267,62 @@ async function undoCarverBlockMovements(height) {
 
     const parsedMovements = await CarverMovement.find({ blockHeight: { $gte: height } }).sort({ sequence: -1 }).limit(1000).populate('from').populate('to');
     if (parsedMovements.length === 0) {
+      console.log(`No more movements for block: ${height}`)
       break;
     }
+    console.log(`Undoing ${parsedMovements.length} movements. Sequences ${parsedMovements[parsedMovements.length - 1].sequence} to ${parsedMovements[0].sequence}`)
 
     parsedMovements.forEach(parsedMovement => {
-      if (!parsedMovement.from || !parsedMovement.to) {
-        // Quick unreconciliation check: Address for this movement was already undo (both ways) but we'll want to ensure that matching "from/to" address was updated.
-        // This should never fail
-        if (parsedMovement.from && parsedMovement.from.sequence >= parsedMovement.sequence || parsedMovement.to && parsedMovement.to.sequence >= parsedMovement.sequence) {
-          throw 'UNRECONCILIATION FAILURE : From/To not found'
-        }
-        return;
-      }
-
       sequence = parsedMovement.sequence;
-
       let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
-      const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-      if (sequence < from.sequence) {
-        from.countOut--;
-        from.balance += parsedMovement.amount;
-        from.valueOut -= parsedMovement.amount;
+      let from = null;
 
-        from.sequence = sequence;
-        from.lastMovementDate = parsedMovement.date;
-        canFlowSameAddress = true;
-        updatedAddresses.set(from.label, from);
+      // Notice that we check if .from and .to exist. It is possible to insert a new movement, update one address and the other one fails to save (ex: new address)
+      // We can still undo the partial movement that was performed
+      if (parsedMovement.from) {
+        from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
+        if (sequence < from.sequence) {
+          from.countOut--;
+          from.balance += parsedMovement.amount;
+          from.valueOut -= parsedMovement.amount;
+
+          canFlowSameAddress = true;
+
+          from.sequence = sequence;
+          from.lastMovementDate = parsedMovement.date;
+          updatedAddresses.set(from.label, from);
+        }
       }
 
-      const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-      if (sequence < to.sequence || canFlowSameAddress && from === to) {
-        to.countIn--;
-        to.balance -= parsedMovement.amount;
-        to.valueIn -= parsedMovement.amount;
+      if (parsedMovement.to) {
+        const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
+        if (sequence < to.sequence || canFlowSameAddress && from === to) {
+          to.countIn--;
+          to.balance -= parsedMovement.amount;
+          to.valueIn -= parsedMovement.amount;
 
-        switch (parsedMovement.carverMovementType) {
-          case CarverMovementType.TxToCoinbaseRewardAddress:
-            to.powCountIn--;
-            to.powValueIn -= parsedMovement.amount;
-            break;
-          case CarverMovementType.TxToPosAddress:
-            // One of the POS movements to POS reward address will have this property
-            if (parsedMovement.posRewardAmount) {
-              to.posCountIn--;
-              to.posValueIn -= parsedMovement.posRewardAmount;
-            }
-            break;
-          case CarverMovementType.TxToMnAddress:
-            to.mnCountIn--;
-            to.mnValueIn -= parsedMovement.amount;
-            break;
+          switch (parsedMovement.carverMovementType) {
+            case CarverMovementType.TxToCoinbaseRewardAddress:
+              to.powCountIn--;
+              to.powValueIn -= parsedMovement.amount;
+              break;
+            case CarverMovementType.TxToPosAddress:
+              // One of the POS movements to POS reward address will have this property
+              if (parsedMovement.posRewardAmount) {
+                to.posCountIn--;
+                to.posValueIn -= parsedMovement.posRewardAmount;
+              }
+              break;
+            case CarverMovementType.TxToMnAddress:
+              to.mnCountIn--;
+              to.mnValueIn -= parsedMovement.amount;
+              break;
+          }
+
+          to.sequence = sequence;
+          to.lastMovementDate = parsedMovement.date;
+          updatedAddresses.set(to.label, to);
         }
-
-        to.sequence = sequence;
-        to.lastMovementDate = parsedMovement.date;
-        updatedAddresses.set(to.label, to);
       }
 
     });
@@ -317,7 +337,9 @@ async function undoCarverBlockMovements(height) {
       }));
 
     // Remove the movements carefully in order of sequence
-    await CarverMovement.deleteMany({ sequence: { $gte: sequence } });
+    if (sequence > 0) {
+      await CarverMovement.deleteMany({ sequence: { $gte: sequence } });
+    }
   }
 
   // Finally after unwinding we can remove all addresses that were created in/after this block

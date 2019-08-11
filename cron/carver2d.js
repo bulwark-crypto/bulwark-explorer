@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
 const { CarverAddress, CarverMovement } = require('../model/carver2d');
 
+//@todo Move this file to lib/carver2d
 
 /**
  * Is this a POS transaction?
@@ -175,8 +176,6 @@ async function parseRequiredMovements(params) {
    * Get or Initialize a new carver address
    */
   const getCarverAddressFromCache = async (carverAddressType, label) => {
-    //@todo add caching (to speed up fetching of old addresses)
-
     const commonAddressFromCache = params.commonAddressCache.get(label);
     if (commonAddressFromCache) {
       return commonAddressFromCache;
@@ -184,6 +183,7 @@ async function parseRequiredMovements(params) {
 
     const existingCarverAddress = await CarverAddress.findOne({ label });
     if (existingCarverAddress) {
+      params.commonAddressCache.set(label, existingCarverAddress);
       return existingCarverAddress;
     }
     let newCarverAddress = new CarverAddress({
@@ -217,13 +217,10 @@ async function parseRequiredMovements(params) {
       case CarverAddressType.Tx:
         break;
       default:
-        // all other types of address will be saved to commonAddressCache
-        params.commonAddressCache.set(label, newCarverAddress);
         break;
     }
-    // Txs are saved later
-    if (carverAddressType !== CarverAddressType.Tx) {
-      await newCarverAddress.save();
+    if (carverAddressType != CarverAddressType.Tx) {
+      params.commonAddressCache.set(label, existingCarverAddress);
     }
 
     return newCarverAddress;

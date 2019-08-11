@@ -10,6 +10,7 @@ import CardTXs from '../component/Card/CardTXs';
 import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Select from '../component/Select';
+import { CarverMovementType } from '../../lib/carver2d'
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
@@ -28,7 +29,9 @@ class Movement extends Component {
       pages: 0,
       page: 1,
       size: 10,
-      txs: []
+      txs: [],
+      sort: 'sequence',
+      date: '0',
     };
 
     //This is a new, better implementation of debouncing. The problem with old approach is that the initial request will be delayed by 800ms. 
@@ -37,7 +40,9 @@ class Movement extends Component {
       this.props
         .getTXs({
           limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
+          skip: (this.state.page - 1) * this.state.size,
+          sort: this.state.sort,
+          date: this.state.date
         })
         .then(({ pages, txs }) => {
           this.setState({ pages, txs, loading: false }, () => {
@@ -68,6 +73,10 @@ class Movement extends Component {
 
   handleSize = size => this.setState({ size, page: 1 }, this.getTXs);
 
+  handleSort = sort => this.setState({ sort, page: 1 }, this.getTXs);
+
+  handleDate = date => this.setState({ date, page: 1 }, this.getTXs);
+
   render() {
     if (!!this.state.error) {
       return this.renderError(this.state.error);
@@ -76,18 +85,61 @@ class Movement extends Component {
     }
     const selectOptions = PAGINATION_PAGE_SIZE;
 
-    const select = (
-      <Select
-        onChange={value => this.handleSize(value)}
-        selectedValue={this.state.size}
-        options={selectOptions} />
-    );
+    const getDateDropdown = () => {
+      // Caver movement types
+      const sortOptions = [
+        { label: 'Since Genesis', value: '0' },
+
+        { label: 'Last Hour', value: (60 * 60).toString() },
+        { label: 'Last 2 Hours', value: (60 * 60 * 2).toString() },
+        { label: 'Last 4 Hours', value: (60 * 60 * 4).toString() },
+        { label: 'Last 8 Hours', value: (60 * 60 * 8).toString() },
+        { label: 'Last 24 Hours', value: (60 * 60 * 24).toString() },
+        { label: 'Last 48 Hours', value: (60 * 60 * 24 * 2).toString() },
+        { label: 'Last Week', value: (60 * 60 * 24 * 7).toString() },
+        { label: 'Last Month', value: (60 * 60 * 24 * 31).toString() },
+        { label: 'Last Year', value: (60 * 60 * 24 * 365).toString() },
+        { label: 'Last 2 Years', value: (60 * 60 * 24 * 365 * 2).toString() },
+      ];
+      return <label>
+        Date Range
+          <Select
+          onChange={value => this.handleDate(value)}
+          selectedValue={this.state.date}
+          options={sortOptions} />
+      </label>
+    }
+    const getFilterDropdown = () => {
+      // Caver movement types
+      const sortOptions = [
+        { label: 'Date', value: 'sequence' },
+        { label: 'Value', value: 'valueOut' },
+      ];
+      return <label>
+        Sort By
+          <Select
+          onChange={value => this.handleSort(value)}
+          selectedValue={this.state.sort}
+          options={sortOptions} />
+      </label>
+    }
+    const getPaginationDropdown = () => {
+      return <label>
+        Per Page
+          <Select
+          onChange={value => this.handleSize(value)}
+          selectedValue={this.state.size}
+          options={selectOptions} />
+      </label>
+    }
 
     return (
       <div>
         <HorizontalRule
-          select={select}
-          title="Movement" />
+          dateSelect={getDateDropdown()}
+          select={getPaginationDropdown()}
+          filterSelect={getFilterDropdown()}
+          title="Movements" />
         <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
         <Pagination
           current={this.state.page}
