@@ -111,11 +111,13 @@ async function syncBlocks(start, stop, sequence) {
         const parsedMovements = await carver2d.parseRequiredMovements(params);
 
         parsedMovements.forEach(parsedMovement => {
+          const newCarverMovementId = new mongoose.Types.ObjectId();
+
           sequence++;
 
           //let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
           const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-          const lastFromSequence = from.sequence;
+          const lastFromMovement = from.lastMovement;
 
           if (from.sequence >= sequence) {
             throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
@@ -125,15 +127,15 @@ async function syncBlocks(start, stop, sequence) {
           from.balance -= parsedMovement.amount;
           from.valueOut += parsedMovement.amount;
           from.sequence = sequence;
-          from.lastMovementDate = blockDate;
+          from.lastMovement = newCarverMovementId;
           canFlowSameAddress = true;
 
           updatedAddresses.set(from.label, from);
 
           const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-          let lastToSequence = lastFromSequence;
+          let lastToMovement = lastFromMovement;
           if (from !== to) {
-            lastToSequence = to.sequence;
+            lastToMovement = to.lastMovement;
           }
 
           if (to.sequence >= sequence && from !== to) {
@@ -144,7 +146,7 @@ async function syncBlocks(start, stop, sequence) {
           to.balance += parsedMovement.amount;
           to.valueIn += parsedMovement.amount;
           to.sequence = sequence;
-          to.lastMovementDate = blockDate;
+          to.lastMovement = newCarverMovementId;
 
           switch (parsedMovement.carverMovementType) {
             case CarverMovementType.PosRewardToTx:
@@ -176,7 +178,7 @@ async function syncBlocks(start, stop, sequence) {
           const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
 
           let newCarverMovement = new CarverMovement({
-            _id: new mongoose.Types.ObjectId(),
+            _id: newCarverMovementId,
 
             label: parsedMovement.label,
             amount: parsedMovement.amount,
@@ -193,8 +195,8 @@ async function syncBlocks(start, stop, sequence) {
 
             carverMovementType: parsedMovement.carverMovementType,
             sequence,
-            lastFromSequence,
-            lastToSequence,
+            lastFromMovement,
+            lastToMovement,
 
             targetAddress,
             targetTx,
@@ -271,7 +273,7 @@ async function undoCarverBlockMovements(height) {
 
     let updatedAddresses = new Map();
 
-    const parsedMovements = await CarverMovement.find({ blockHeight: { $gte: height } }).sort({ sequence: -1 }).limit(1000).populate('from').populate('to');
+    const parsedMovements = await CarverMovement.find({ blockHeight: { $gte: height } }).sort({ sequence: -1 }).limit(1000).populate('from').populate('to').populate('lastFromMovement', { date: 1, sequence: 1 }).populate('lastToMovement', { date: 1, sequence: 1 });
     if (parsedMovements.length === 0) {
       console.log(`No more movements for block: ${height}`)
       break;
@@ -294,8 +296,13 @@ async function undoCarverBlockMovements(height) {
           from.valueOut -= parsedMovement.amount;
           canFlowSameAddress = true;
 
-          from.sequence = parsedMovement.lastFromSequence;
-          from.lastMovementDate = parsedMovement.date;
+          if (parsedMovement.lastFromMovement) {
+            from.lastMovement = parsedMovement.lastFromMovement._id;
+            from.sequence = parsedMovement.lastFromMovement.sequence;
+          } else {
+            from.lastMovement = null;
+            from.sequence = 0;
+          }
 
           updatedAddresses.set(from.label, from);
         } else if (from.sequence > sequence) {
@@ -328,8 +335,15 @@ async function undoCarverBlockMovements(height) {
               break;
           }
 
-          to.sequence = parsedMovement.lastToSequence;
-          to.lastMovementDate = parsedMovement.date;
+
+          if (parsedMovement.lastToMovement) {
+            to.lastMovement = parsedMovement.lastToMovement._id;
+            to.sequence = parsedMovement.lastToMovement.sequence;
+          } else {
+            to.lastMovement = null;
+            to.sequence = 0;
+          }
+
           updatedAddresses.set(to.label, to);
         } else if (to.sequence > sequence) {
           throw `UNRECONCILIATION ERROR: Out-of-sequence from movement: ${to.sequence}>${sequence}`;

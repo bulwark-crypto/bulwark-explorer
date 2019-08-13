@@ -25,7 +25,7 @@ const TX = require('../../model/tx');
  */
 const getAddress = async (req, res) => {
   try {
-    const carverAddress = await CarverAddress.findOne({ label: req.params.hash });
+    const carverAddress = await CarverAddress.findOne({ label: req.params.hash }).populate("lastMovement", { date: 1 });
     if (!carverAddress) {
       throw 'Address Not Found';
     }
@@ -413,7 +413,7 @@ const getTop100 = async (req, res) => {
     const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
       return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { sequence: 0 })
         .limit(100)
-        .sort({ balance: -1 });
+        .sort({ balance: -1 }).populate("lastMovement", { date: 1 });
     });
 
     res.json(docs);
@@ -430,7 +430,7 @@ const getTop100 = async (req, res) => {
  */
 const getTXLatest = async (req, res) => {
   try {
-    const latestMovements = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).sort({ sequence: -1 }).limit(10);
+    const latestMovements = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovement: 0, valueIn: 0 }).sort({ sequence: -1 }).limit(10);
 
     res.json(latestMovements);
   } catch (err) {
@@ -496,7 +496,7 @@ const getTXs = async (req, res) => {
     }
 
     const total = await CarverAddress.find(query).count();
-    const txs = await CarverAddress.find(query, { balance: 0, carverAddressType: 0, lastMovementDate: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ [sort]: -1 });
+    const txs = await CarverAddress.find(query, { balance: 0, carverAddressType: 0, lastMovement: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ [sort]: -1 });
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

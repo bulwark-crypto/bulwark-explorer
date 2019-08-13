@@ -88,14 +88,14 @@ export default class CardAddress extends Component {
     }
 
     const getLastMovement = () => {
-      if (carverAddress.date === carverAddress.lastMovementDate) {
+      if (carverAddress.date === carverAddress.lastMovement.date) {
         return null;
       }
 
       return <div className="card__row mb-4">
         <span className="card__label">Last Active:</span>
         <span className="card__result">
-          {moment(carverAddress.lastMovementDate).utc().format('YYYY-MM-DD HH:mm')} ({moment(carverAddress.lastMovementDate).utc().fromNow()})
+          {moment(carverAddress.lastMovement.date).utc().format('YYYY-MM-DD HH:mm')} ({moment(carverAddress.lastMovement.date).utc().fromNow()})
         </span>
       </div>
     }

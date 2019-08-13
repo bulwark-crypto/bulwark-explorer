@@ -19,7 +19,7 @@ const carverAddressSchema = new mongoose.Schema({
   date: { required: true, type: Date },
   carverAddressType: { required: true, type: Number },
 
-  lastMovementDate: { required: true, type: Date /*, index: true Possible Analytics Examples: Sort by last active wallets, Last active wallets, Last time POW was used, First Time POS was used, Last 100 distributed rewards*/ },
+  lastMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
   valueOut: { required: true, type: Number /*, index: true Possible Analytics Examples: Sort by wallets with most/least funds out)*/ },
   valueIn: { required: true, type: Number/*, index: true*/ },
   countIn: { required: true, type: Number/*, index: true*/ },
@@ -72,8 +72,8 @@ const carverMovementsSchema = new mongoose.Schema({
   sequence: { unique: true, required: true, type: Number },
 
   // These two fields are required for unreconciliation. When we undo a carver movement we set the from/to address sequences back to what they were before the movement happened.
-  lastFromSequence: { required: true, type: Number },
-  lastToSequence: { required: true, type: Number },
+  lastFromMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
+  lastToMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
 
   // For POS rewards store additional info
   //@todo Remove all of these (in favor of new address type TxReward). From there we can figure out all of this data
