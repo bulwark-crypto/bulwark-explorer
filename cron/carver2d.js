@@ -193,7 +193,6 @@ async function parseRequiredMovements(params) {
 
       blockHeight: params.rpcblock.height,
       date: blockDate,
-      lastMovementDate: blockDate,
       carverAddressType,
 
       // for stats

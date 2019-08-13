@@ -36,16 +36,11 @@ console.dateLog = (...log) => {
  * @param {Number} sequence For blockchain sequencing (last sequence of inserted block)
  */
 async function syncBlocks(start, stop, sequence) {
-  const lastMovement = await CarverMovement.findOne().sort({ sequence: -1 }); // Finds last sequence from last block (because we removed all other movements)
+  let block = null;
 
-  const sequences = {
-    movements: lastMovement ? lastMovement.sequence : 0
-  }
-
-  // Instead of fetching addresses each tiem from db we'll store a certain number in cache (this is in config)
+  // Instead of fetching addresses each time from db we'll store a certain number in cache (this is in config)
   const commonAddressCache = new Map();
 
-  let block;
   for (let height = start + 1; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
@@ -66,6 +61,7 @@ async function syncBlocks(start, stop, sequence) {
       ver: rpcblock.version,
       isConfirmed: rpcblock.confirmations > config.blockConfirmations // We can instantly confirm a block if it reached the required number of confirmations (that way we don't have to reconfirm it later)
     });
+
 
     // Flush cache every 10000 addresses
     if (commonAddressCache.size > config.blockSyncAddressCacheLimit) {
@@ -117,98 +113,106 @@ async function syncBlocks(start, stop, sequence) {
         parsedMovements.forEach(parsedMovement => {
           sequence++;
 
-          let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
+          //let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
           const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-          if (sequence > from.sequence) {
-            from.countOut++;
-            from.balance -= parsedMovement.amount;
-            from.valueOut += parsedMovement.amount;
-            from.sequence = sequence;
-            from.lastMovementDate = blockDate;
-            canFlowSameAddress = true;
+          const lastFromSequence = from.sequence;
 
-            updatedAddresses.set(from.label, from);
+          if (from.sequence >= sequence) {
+            throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
           }
+
+          from.countOut++;
+          from.balance -= parsedMovement.amount;
+          from.valueOut += parsedMovement.amount;
+          from.sequence = sequence;
+          from.lastMovementDate = blockDate;
+          canFlowSameAddress = true;
+
+          updatedAddresses.set(from.label, from);
 
           const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-          if (sequence > to.sequence || canFlowSameAddress && from === to) {
-            to.countIn++;
-            to.balance += parsedMovement.amount;
-            to.valueIn += parsedMovement.amount;
-            to.sequence = sequence;
-            to.lastMovementDate = blockDate;
-
-            switch (parsedMovement.carverMovementType) {
-              case CarverMovementType.PosRewardToTx:
-                to.posMovement = parsedMovement._id;
-                posRewardAmount = parsedMovement.amount; // Notice we're setting tx-wide pos reward
-                break;
-              case CarverMovementType.MasternodeRewardToTx:
-                to.mnMovement = parsedMovement._id;
-                break;
-              case CarverMovementType.TxToCoinbaseRewardAddress:
-                to.powCountIn++;
-                to.powValueIn += parsedMovement.amount;
-                break;
-              case CarverMovementType.TxToPosAddress:
-                // This gets set set in PosRewardToTx above (one per tx)
-                if (posRewardAmount) {
-                  to.posCountIn++;
-                  to.posValueIn += posRewardAmount;
-                }
-                break;
-              case CarverMovementType.TxToMnAddress:
-                to.mnCountIn++;
-                to.mnValueIn += parsedMovement.amount;
-                break;
-            }
-
-            // Erase the amount after first encounter (so we only set it once)
-            if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
-              posRewardAmount = null;
-            }
-
-            updatedAddresses.set(to.label, to);
+          let lastToSequence = lastFromSequence;
+          if (from !== to) {
+            lastToSequence = to.sequence;
           }
 
-          if (sequence > sequences.movements) {
+          if (to.sequence >= sequence && from !== to) {
+            throw `RECONCILIATION ERROR: Out-of-sequence to movement: ${to.sequence}>${sequence}`;
+          }
 
-            const targetAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
-            const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+          to.countIn++;
+          to.balance += parsedMovement.amount;
+          to.valueIn += parsedMovement.amount;
+          to.sequence = sequence;
+          to.lastMovementDate = blockDate;
 
-            let newCarverMovement = new CarverMovement({
-              _id: new mongoose.Types.ObjectId(),
+          switch (parsedMovement.carverMovementType) {
+            case CarverMovementType.PosRewardToTx:
+              to.posMovement = parsedMovement._id;
+              posRewardAmount = parsedMovement.amount; // Notice we're setting tx-wide pos reward
+              break;
+            case CarverMovementType.MasternodeRewardToTx:
+              to.mnMovement = parsedMovement._id;
+              break;
+            case CarverMovementType.TxToCoinbaseRewardAddress:
+              to.powCountIn++;
+              to.powValueIn += parsedMovement.amount;
+              break;
+            case CarverMovementType.TxToPosAddress:
+              // This gets set set in PosRewardToTx above (one per tx)
+              if (posRewardAmount) {
+                to.posCountIn++;
+                to.posValueIn += posRewardAmount;
+              }
+              break;
+            case CarverMovementType.TxToMnAddress:
+              to.mnCountIn++;
+              to.mnValueIn += parsedMovement.amount;
+              break;
+          }
+          updatedAddresses.set(to.label, to);
 
-              label: parsedMovement.label,
-              amount: parsedMovement.amount,
+          const targetAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+          const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
 
-              date: blockDate,
-              blockHeight: rpcblock.height,
+          let newCarverMovement = new CarverMovement({
+            _id: new mongoose.Types.ObjectId(),
 
-              from: from._id,
-              to: to._id,
-              destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
+            label: parsedMovement.label,
+            amount: parsedMovement.amount,
 
-              fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
-              toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+            date: blockDate,
+            blockHeight: rpcblock.height,
 
-              carverMovementType: parsedMovement.carverMovementType,
-              sequence: sequence,
+            from: from._id,
+            to: to._id,
+            destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
 
-              targetAddress,
-              targetTx,
-              posRewardAmount: parsedMovement.posRewardAmount
-            });
+            fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+            toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
 
-            switch (parsedMovement.carverMovementType) {
-              case CarverMovementType.PosRewardToTx:
-                newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
-                newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
-                break;
-            }
+            carverMovementType: parsedMovement.carverMovementType,
+            sequence,
+            lastFromSequence,
+            lastToSequence,
 
-            newMovements.push(newCarverMovement);
+            targetAddress,
+            targetTx,
+            posRewardAmount: parsedMovement.posRewardAmount
+          });
 
+          switch (parsedMovement.carverMovementType) {
+            case CarverMovementType.PosRewardToTx:
+              newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
+              newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
+              break;
+          }
+
+          newMovements.push(newCarverMovement);
+
+          // Erase the amount after first encounter (so we only set it once)
+          if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
+            posRewardAmount = null;
           }
         });
 
@@ -241,7 +245,7 @@ async function syncBlocks(start, stop, sequence) {
 
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
-    /*
+
     if (Math.floor((Math.random() * 100) + 1) < 5) {
       var dropNumBlocks = Math.floor((Math.random() * 10) + 1);
       console.log(`Dropping ${dropNumBlocks} blocks`)
@@ -249,7 +253,7 @@ async function syncBlocks(start, stop, sequence) {
       height -= dropNumBlocks;
       commonAddressCache.clear(); // Clear cache because the addresses could now be invalid
     }
-    */
+
   }
 }
 /**
@@ -276,6 +280,7 @@ async function undoCarverBlockMovements(height) {
 
     parsedMovements.forEach(parsedMovement => {
       sequence = parsedMovement.sequence;
+
       let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
       let from = null;
 
@@ -283,22 +288,24 @@ async function undoCarverBlockMovements(height) {
       // We can still undo the partial movement that was performed
       if (parsedMovement.from) {
         from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-        if (sequence < from.sequence) {
+        if (sequence === from.sequence) {
           from.countOut--;
           from.balance += parsedMovement.amount;
           from.valueOut -= parsedMovement.amount;
-
           canFlowSameAddress = true;
 
-          from.sequence = sequence;
+          from.sequence = parsedMovement.lastFromSequence;
           from.lastMovementDate = parsedMovement.date;
+
           updatedAddresses.set(from.label, from);
+        } else if (from.sequence > sequence) {
+          throw `UNRECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
         }
       }
 
       if (parsedMovement.to) {
         const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-        if (sequence < to.sequence || canFlowSameAddress && from === to) {
+        if (sequence === to.sequence || canFlowSameAddress && from === to) {
           to.countIn--;
           to.balance -= parsedMovement.amount;
           to.valueIn -= parsedMovement.amount;
@@ -321,9 +328,11 @@ async function undoCarverBlockMovements(height) {
               break;
           }
 
-          to.sequence = sequence;
+          to.sequence = parsedMovement.lastToSequence;
           to.lastMovementDate = parsedMovement.date;
           updatedAddresses.set(to.label, to);
+        } else if (to.sequence > sequence) {
+          throw `UNRECONCILIATION ERROR: Out-of-sequence from movement: ${to.sequence}>${sequence}`;
         }
       }
 

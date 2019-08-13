@@ -71,6 +71,10 @@ const carverMovementsSchema = new mongoose.Schema({
 
   sequence: { unique: true, required: true, type: Number },
 
+  // These two fields are required for unreconciliation. When we undo a carver movement we set the from/to address sequences back to what they were before the movement happened.
+  lastFromSequence: { required: true, type: Number },
+  lastToSequence: { required: true, type: Number },
+
   // For POS rewards store additional info
   //@todo Remove all of these (in favor of new address type TxReward). From there we can figure out all of this data
   destinationAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // POS, MN & POW Rewards will also have a destinationAddress
@@ -78,6 +82,8 @@ const carverMovementsSchema = new mongoose.Schema({
   posInputBlockHeightDiff: { type: Number }, // blockHeight-posInputBlockHeightDiff
   posRewardAmount: { type: Number } // Because POS TX can have multiple outputs we'll need to assign it to one of these outputs (for unreconciliation)
 }, { _id: false, versionKey: false });
+
+carverMovementsSchema.index({ blockHeight: 1, sequence: 1 }, { unique: true }); // For unreconciliation query (blockHeight: gte, order by sequence)
 
 // When viewing specific address we'll be filtering by from/to and sorting by sequence so we'll need these two compound indexes
 carverMovementsSchema.index({ targetAddress: 1, sequence: 1 }, { unique: true });
