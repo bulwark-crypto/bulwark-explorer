@@ -448,18 +448,17 @@ const getTX = async (req, res) => {
   try {
     const hash = req.params.hash;
 
-    const query = isNaN(hash)
-      ? { txId: hash }
-      : { height: hash };
-
-    //const tx = await TX.findOne(query, { vin: 0, vout: 0 }).populate('blockRewardDetails');
-
     const carverAddress = await CarverAddress.findOne({ label: hash });
     if (!carverAddress) {
       res.status(404).send('Unable to find the transaction!');
       return;
     }
-    const carverMovements = await CarverMovement.find({ targetTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 }).populate('to', { label: 1, carverAddressType: 1 }).populate('from', { label: 1, carverAddressType: 1 });
+    const carverMovements = await CarverMovement
+      .find({ targetTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 })
+      .populate('to', { label: 1, carverAddressType: 1 })
+      .populate('from', { label: 1, carverAddressType: 1 })
+      .sort({ sequence: -1 })
+      .hint({ targetTx: 1, sequence: 1 }); // Index hinting
 
 
     res.json({
@@ -546,7 +545,13 @@ const getMovements = async (req, res) => {
     }
 
     const total = await CarverMovement.count(query);
-    const movements = await CarverMovement.find(query, { _id: 0 }).skip(skip).limit(limit).sort({ sequence: -1 }).populate('to', { label: 1, carverAddressType: 1 }).populate('from', { label: 1, carverAddressType: 1 });
+    const movements = await CarverMovement
+      .find(query, { _id: 0 })
+      .skip(skip)
+      .limit(limit)
+      .sort({ sequence: -1 })
+      .populate('to', { label: 1, carverAddressType: 1 })
+      .populate('from', { label: 1, carverAddressType: 1 });
 
     res.json({ movements, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

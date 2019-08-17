@@ -35,16 +35,13 @@ const carverAddressSchema = new mongoose.Schema({
   powCountIn: { type: Number/*, index: true*/ },
   powValueIn: { type: Number/*, index: true*/ },
 
-  sequence: { required: true, type: Number }
+  sequence: { index: true, required: true, type: Number } // Not unique because two addresses can have same sequence
 }, { _id: false, versionKey: false });
 
 carverAddressSchema.index({ carverAddressType: 1, sequence: 1 }); // Important compound index as we're doing a lot of find()+sort by carverAddresType/sequence
 carverAddressSchema.index({ carverAddressType: 1, valueOut: 1 }); // Since we have new Sort By "Value"
 
-carverAddressSchema.index({ carverAddressType: 1, date: 1, sequence: 1 }); // For date ranged movements (order by date)
-carverAddressSchema.index({ carverAddressType: 1, date: 1, valueOut: 1 }); // For date ranged movements (order by value)
-
-carverAddressSchema.index({ carverAddressType: 1, balance: 1 }); // For rich list
+carverAddressSchema.index({ carverAddressType: 1, balance: 1 }); // For rich list (@todo, add condition for address)
 
 const CarverAddress = mongoose.model('CarverAddress', carverAddressSchema, 'carverAddresses');
 
@@ -69,7 +66,7 @@ const carverMovementsSchema = new mongoose.Schema({
   targetAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   targetTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, //@todo rename to targetMovement (this would make more sense if a blockchain doesn't use tx for example)
 
-  sequence: { unique: true, required: true, type: Number },
+  sequence: { index: true, unique: true, required: true, type: Number },
 
   // These two fields are required for unreconciliation. When we undo a carver movement we set the from/to address sequences back to what they were before the movement happened.
   lastFromMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },

@@ -4,6 +4,7 @@ require('babel-polyfill');
 const mongoose = require('mongoose');
 const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
 const { CarverAddress, CarverMovement } = require('../model/carver2d');
+const { UTXO } = require('../model/utxo');
 
 //@todo Move this file to lib/carver2d
 
@@ -21,6 +22,33 @@ const isPosTx = (tx) => {
     tx.vout[0].scriptPubKey &&
     tx.vout[0].scriptPubKey.type === 'nonstandard';
 }
+
+const getVinUtxos = async (rpctx) => {
+  const utxoLabels = [];
+
+  for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
+    const vin = rpctx.vin[vinIndex];
+
+    if (vin.txid) {
+      if (vin.vout === undefined) {
+        console.log(vin);
+        throw 'VIN TXID WITHOUT VOUT?';
+      }
+
+      const label = `${vin.txid}:${vin.vout}`;
+      utxoLabels.push(label);
+    }
+  }
+
+
+  const utxos = await UTXO.find({ label: { $in: utxoLabels } }).populate('carverAddress');
+  if (utxos.length !== utxoLabels.length) {
+    throw 'UTXO count mismatch'
+  }
+
+  return utxos;
+}
+
 
 /**
  * Create address->tx movement for all inputs in a tx
@@ -435,4 +463,5 @@ module.exports = {
   getVinRequiredMovements,
   getVoutRequiredMovements,
   parseRequiredMovements,
+  getVinUtxos
 };

@@ -13,7 +13,6 @@ const { CarverMovement, CarverAddress } = require('../model/carver2d');
 
 // Models.
 const Block = require('../model/block');
-const TX = require('../model/tx');
 const BlockRewardDetails = require('../model/blockRewardDetails');
 
 /**
@@ -92,6 +91,11 @@ async function syncBlocks(start, stop, sequence) {
 
       // Start Carver2D Data Analysis. Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
+        //
+        const txUtxos = await carver2d.getVinUtxos(rpctx);
+        console.log('utxos:', txUtxos);
+        throw 'xx';
+
         // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
         // Additionally we also flatten the vins/vouts into an array of movements
         const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
@@ -273,7 +277,16 @@ async function undoCarverBlockMovements(height) {
 
     let updatedAddresses = new Map();
 
-    const parsedMovements = await CarverMovement.find({ blockHeight: { $gte: height } }).sort({ sequence: -1 }).limit(1000).populate('from').populate('to').populate('lastFromMovement', { date: 1, sequence: 1 }).populate('lastToMovement', { date: 1, sequence: 1 });
+    const parsedMovements = await CarverMovement
+      .find({ blockHeight: { $gte: height } })
+      .sort({ sequence: -1 })
+      .limit(1000)
+      .populate('from')
+      .populate('to')
+      .populate('lastFromMovement', { date: 1, sequence: 1 })
+      .populate('lastToMovement', { date: 1, sequence: 1 })
+      .hint({ blockHeight: 1 }); // give indexing hint (otherwise blockHeight index might be picked instead and it's much slower as sorting is required)
+
     if (parsedMovements.length === 0) {
       console.log(`No more movements for block: ${height}`)
       break;
