@@ -37,8 +37,10 @@ console.dateLog = (...log) => {
 async function syncBlocks(start, stop, sequence) {
   let block = null;
 
-  // Instead of fetching addresses each time from db we'll store a certain number in cache (this is in config)
+  // Addresses like COINBASE, FEE, MN, POS, ZEROCOIN will be stored in common address cache (this cache is not cleared during sync as these are common addresses)
   const commonAddressCache = new Map();
+  // Instead of fetching addresses each time from db we'll store a certain number in cache (this is in config)
+  const normalAddressCache = new Map();
 
   for (let height = start + 1; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
@@ -63,8 +65,8 @@ async function syncBlocks(start, stop, sequence) {
 
 
     // Flush cache every 10000 addresses
-    if (commonAddressCache.size > config.blockSyncAddressCacheLimit) {
-      commonAddressCache.clear();
+    if (normalAddressCache.size > config.blockSyncAddressCacheLimit) {
+      normalAddressCache.clear();
     }
 
     const sequenceStart = sequence;
@@ -91,21 +93,28 @@ async function syncBlocks(start, stop, sequence) {
 
       // Start Carver2D Data Analysis. Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
-        // Get all tx inputs that have txid+vout with carver address relationship
+        // Get UTXOS for all inputs that have txid+vout
         const vinUtxos = await carver2d.getVinUtxos(rpctx);
+
         const params = {
           rpcblock,
           rpctx,
 
           //requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
-          commonAddressCache,
+          //commonAddressCache,
+          //normalAddressCache,
           vinUtxos
         };
 
         // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
         // Additionally we also flatten the vins/vouts into an array of movements
-        const parsedMovements = await carver2d.getVinRequiredMovements(params);
+        const requiredMovements = carver2d.getRequiredMovements(params);
+
+        const parsedMovements = [];
+
+
+
         //const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
 
 
@@ -158,7 +167,7 @@ async function syncBlocks(start, stop, sequence) {
             case CarverMovementType.MasternodeRewardToTx:
               to.mnMovement = parsedMovement._id;
               break;
-            case CarverMovementType.TxToCoinbaseRewardAddress:
+            case CarverMovementType.TxToPowAddress:
               to.powCountIn++;
               to.powValueIn += parsedMovement.amount;
               break;
@@ -329,7 +338,7 @@ async function undoCarverBlockMovements(height) {
           to.valueIn -= parsedMovement.amount;
 
           switch (parsedMovement.carverMovementType) {
-            case CarverMovementType.TxToCoinbaseRewardAddress:
+            case CarverMovementType.TxToPowAddress:
               to.powCountIn--;
               to.powValueIn -= parsedMovement.amount;
               break;
