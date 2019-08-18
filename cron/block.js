@@ -91,28 +91,26 @@ async function syncBlocks(start, stop, sequence) {
 
       // Start Carver2D Data Analysis. Empty POS txs do not need to be processed
       if (!util.isEmptyNonstandardTx(rpctx)) {
-        //
-        const txUtxos = await carver2d.getVinUtxos(rpctx);
-        console.log('utxos:', txUtxos);
-        throw 'xx';
-
-        // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
-        // Additionally we also flatten the vins/vouts into an array of movements
-        const vinRequiredMovements = carver2d.getVinRequiredMovements(rpctx);
-        const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
-
+        // Get all tx inputs that have txid+vout with carver address relationship
+        const vinUtxos = await carver2d.getVinUtxos(rpctx);
         const params = {
           rpcblock,
           rpctx,
 
-          requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
+          //requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
           commonAddressCache,
-          updatedAddresses
+          vinUtxos
         };
 
+        // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
+        // Additionally we also flatten the vins/vouts into an array of movements
+        const parsedMovements = await carver2d.getVinRequiredMovements(params);
+        //const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
+
+
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
-        const parsedMovements = await carver2d.parseRequiredMovements(params);
+        //const parsedMovements = await carver2d.parseRequiredMovements(params);
 
         parsedMovements.forEach(parsedMovement => {
           const newCarverMovementId = new mongoose.Types.ObjectId();
@@ -178,8 +176,8 @@ async function syncBlocks(start, stop, sequence) {
           }
           updatedAddresses.set(to.label, to);
 
-          const targetAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
-          const targetTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+          const contextAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+          const contextTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
 
           let newCarverMovement = new CarverMovement({
             _id: newCarverMovementId,
@@ -202,8 +200,8 @@ async function syncBlocks(start, stop, sequence) {
             lastFromMovement,
             lastToMovement,
 
-            targetAddress,
-            targetTx,
+            contextAddress,
+            contextTx,
             posRewardAmount: parsedMovement.posRewardAmount
           });
 

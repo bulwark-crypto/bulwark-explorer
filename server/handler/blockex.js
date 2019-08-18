@@ -454,11 +454,11 @@ const getTX = async (req, res) => {
       return;
     }
     const carverMovements = await CarverMovement
-      .find({ targetTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 })
+      .find({ contextTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 })
       .populate('to', { label: 1, carverAddressType: 1 })
       .populate('from', { label: 1, carverAddressType: 1 })
       .sort({ sequence: -1 })
-      .hint({ targetTx: 1, sequence: 1 }); // Index hinting
+      .hint({ contextTx: 1, sequence: 1 }); // Index hinting
 
 
     res.json({
@@ -541,7 +541,7 @@ const getMovements = async (req, res) => {
 
     let query = {};
     if (addressId) {
-      query = { targetAddress: addressId };
+      query = { contextAddress: addressId };
     }
 
     const total = await CarverMovement.count(query);

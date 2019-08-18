@@ -25,7 +25,7 @@ async function syncPeer() {
       return;
     }
 
-    const url = `${ config.freegeoip.api }${ parts[0] }`;
+    const url = `${config.freegeoip.api}${parts[0]}`;
     let geoip = await fetch(url);
 
     const p = new Peer({
@@ -61,13 +61,13 @@ async function update() {
   try {
     locker.lock(type);
     await syncPeer();
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     code = 1;
   } finally {
     try {
       locker.unlock(type);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       code = 1;
     }

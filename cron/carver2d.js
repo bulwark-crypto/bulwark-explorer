@@ -2,7 +2,7 @@
 const config = require('../config');
 require('babel-polyfill');
 const mongoose = require('mongoose');
-const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
+const { CarverAddressType, CarverMovementType, CarverTxType } = require('../lib/carver2d');
 const { CarverAddress, CarverMovement } = require('../model/carver2d');
 const { UTXO } = require('../model/utxo');
 
@@ -41,7 +41,7 @@ const getVinUtxos = async (rpctx) => {
   }
 
 
-  const utxos = await UTXO.find({ label: { $in: utxoLabels } }).populate('carverAddress');
+  const utxos = await UTXO.find({ label: { $in: utxoLabels } }, { label: 1, addressLabel: 1 });
   if (utxos.length !== utxoLabels.length) {
     throw 'UTXO count mismatch'
   }
@@ -53,10 +53,19 @@ const getVinUtxos = async (rpctx) => {
 /**
  * Create address->tx movement for all inputs in a tx
  */
-const getVinRequiredMovements = (rpctx) => {
+const getVinRequiredMovements = (rpctx, vinUtxos) => {
   let requiredMovements = [];
 
-  const txid = rpctx.txid;
+  var carverTxType = CarverTxType.BasicTx;
+  var consolidatedAddressAmounts = new Map();
+
+  const addToAddress = (addressLabel, amount) => {
+    if (!consolidatedAddressAmounts.has(addressLabel)) {
+      consolidatedAddressAmounts.set(addressLabel, 0);
+    }
+    const consolidatedAddressAmount = consolidatedAddressAmounts.get(addressLabel);
+    consolidatedAddressAmounts.set(addressLabel, consolidatedAddressAmount + amount);
+  }
 
   for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
     const vin = rpctx.vin[vinIndex];
@@ -65,7 +74,7 @@ const getVinRequiredMovements = (rpctx) => {
       throw 'VIN WITH VALUE?';
     }
 
-    const label = `${vinIndex}:${txid}`;
+    //const label = `${vinIndex}:${txid}`;
 
     if (vin.coinbase) {
       if (rpctx.vin.length != 1) {
@@ -73,9 +82,14 @@ const getVinRequiredMovements = (rpctx) => {
         throw "COINBASE WITH >1 VIN?";
       }
 
-      requiredMovements.push({ movementType: CarverMovementType.CoinbaseToTx, label });
+      // Identify that this is a POW or POW/MN tx
+      carverTxType = CarverTxType.Coinbase;
+
+      //requiredMovements.push({ movementType: CarverMovementType.CoinbaseToTx, label });
+
     } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
-      requiredMovements.push({ movementType: CarverMovementType.ZerocoinToTx, label });
+      carverTxType = CarverTxType.ZerocoinSpend;
+      //requiredMovements.push({ movementType: CarverMovementType.ZerocoinToTx, label });
     } else if (vin.txid) {
       if (vin.vout === undefined) {
         console.log(vin);
@@ -83,17 +97,128 @@ const getVinRequiredMovements = (rpctx) => {
       }
 
       if (isPosTx(rpctx)) {
-        requiredMovements.push({ movementType: CarverMovementType.PosTxIdVoutToTx, label, txid: vin.txid, vout: vin.vout });
-      } else {
-        const movementType = CarverMovementType.TxIdVoutToTx;
-        requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
+        carverTxType = CarverTxType.ProofOfStake;
+        //  requiredMovements.push({ movementType: CarverMovementType.PosTxIdVoutToTx, label, txid: vin.txid, vout: vin.vout });
       }
 
+      const utxoLabel = `${vin.txid}:${vin.vout}`;
+
+      const vinUtxo = vinUtxos.find(vinUtxo => vinUtxo.label === utxoLabel);
+      if (!vinUtxo) {
+        throw `UTXO not found: ${utxoLabel}`;
+      }
+      addToAddress(vinUtxo.addressLabel, -vinUtxo.amount);
+
+      /*else {
+        const movementType = CarverMovementType.TxIdVoutToTx;
+        requiredMovements.push({ movementType, label, txid: vin.txid, vout: vin.vout });
+      }*/
     } else {
       console.log(vin);
       throw 'UNSUPPORTED VIN (NOT COINBASE OR TX)';
     }
   }
+
+
+  for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
+    const vout = rpctx.vout[voutIndex];
+
+    //const label = `${rpctx.txid}:${vout.n}`; //use txid+vout as identifier for these transactions
+
+    if (vout.scriptPubKey) {
+      switch (vout.scriptPubKey.type) {
+        case 'pubkey':
+        case 'pubkeyhash':
+        case 'scripthash':
+
+          const addresses = vout.scriptPubKey.addresses;
+          if (addresses.length !== 1) {
+            throw 'ONLY PUBKEYS WITH 1 ADDRESS ARE SUPPORTED FOR NOW';
+          }
+          if (vout.value === undefined) {
+            console.log(vout);
+            console.log(tx);
+            throw 'VOUT WITHOUT VALUE?';
+          }
+
+          /*let movementType = CarverMovementType.TxToAddress;
+
+          if (isPosTx(rpctx)) {
+            movementType = CarverMovementType.TxToPosOutputAddress;
+          }
+          if (rpctx.vin.length === 1 && rpctx.vin[0].coinbase) {
+            movementType = voutIndex === 0 ? CarverMovementType.TxToCoinbaseRewardAddress : CarverMovementType.TxToMnAddress;
+          }
+          */
+
+          const addressLabel = addresses[0];
+          addToAddress(addressLabel, vout.value);
+          //requiredMovements.push({ movementType, label, amount: vout.value, addressLabel });
+          break;
+        case 'nonstandard':
+          // Don't need to do any movements for this
+          break;
+        case 'zerocoinmint':
+          {
+            if (vout.value === undefined) {
+              console.log(vout);
+              console.log(tx);
+              throw 'ZEROCOIN WITHOUT VALUE?';
+            }
+            addToAddress('ZEROCOIN', vout.value);
+
+            //@todo
+
+            //requiredMovements.push({ movementType: CarverMovementType.TxToZerocoin, label, amount: vout.value });
+          }
+          break
+        case 'nulldata':
+          {
+            if (vout.value === undefined) {
+              console.log(vout);
+              console.log(tx);
+              throw 'BURN WITHOUT VALUE?';
+            }
+            addToAddress('BURN', vout.value);
+
+            //@todo
+            // requiredMovements.push({ movementType: CarverMovementType.Burn, label, amount: vout.value });
+          }
+          break
+        default:
+          console.log(vout);
+          console.log(tx);
+          throw `UNSUPPORTED VOUT SCRIPTPUBKEY TYPE: ${vout.scriptPubKey.type}`;
+      }
+    } else {
+      console.log(vout);
+      throw `UNSUPPORTED VOUT!`;
+    }
+  }
+
+  const finalConsolidatedAddressAmounts = Array.from(consolidatedAddressAmounts);
+
+  finalConsolidatedAddressAmounts.forEach((finalConsolidatedAddressAmount, index) => {
+    const address = TxToCoinbaseRewardAddress[0];
+    const amount = TxToCoinbaseRewardAddress[1];
+
+    const label = `${index}:${rpctx.txid}`;
+    switch (carverTxType) {
+      case CarverTxType.BasicTx:
+        requiredMovements.push({ movementType: finalConsolidatedAddressAmount < 0 ? CarverMovementType.AddressToTx : CarverMovementType.TxToAddress, label, amount: finalConsolidatedAddressAmount });
+        break;
+      case CarverTxType.Coinbase:
+        requiredMovements.push({ movementType: index > 0 ? CarverMovementType.TxToMnAddress : CarverMovementType.TxToCoinbaseRewardAddress, label, amount: finalConsolidatedAddressAmount });
+        break;
+      case CarverTxType.ProofOfStake:
+        break;
+      case CarverTxType.ZerocoinSpend:
+        break;
+    }
+  })
+
+  console.log("test:", carverTxType, finalConsolidatedAddressAmounts, requiredMovements);
+  throw 'yy';
 
   return requiredMovements;
 }
@@ -103,6 +228,7 @@ const getVinRequiredMovements = (rpctx) => {
  */
 const getVoutRequiredMovements = (rpctx) => {
   const requiredMovements = [];
+  return requiredMovements;
 
   for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
     const vout = rpctx.vout[voutIndex];
@@ -234,6 +360,7 @@ async function parseRequiredMovements(params) {
 
     switch (carverAddressType) {
       case CarverAddressType.Address:
+        //@todo these will all be moved to address-specific rewards
         newCarverAddress.posCountIn = 0;
         newCarverAddress.posValueIn = 0;
         newCarverAddress.mnCountIn = 0;
@@ -266,7 +393,6 @@ async function parseRequiredMovements(params) {
       requiredMovement.movementType == CarverMovementType.TxToMnAddress);
 
     const addressLabels = Array.from(new Set(movementsWithAddress.map(movement => movement.addressLabel))); // Select distinct address labels
-
     const exisingAddresses = await CarverAddress.find({ label: { $in: addressLabels } });
 
     for (let i = 0; i < addressLabels.length; i++) {

@@ -37,7 +37,7 @@ const config = {
   // API & Social configurations
   ///////////////////////////////
   freegeoip: {
-    api: 'https://extreme-ip-lookup.com/json/'
+    api: 'https://extreme-ip-lookup.com/json/' //@todo need to find new geoip service as the limits are too small now (hitting limits) 
   },
   coinMarketCap: {
     api: 'http://api.coinmarketcap.com/v1/ticker/',

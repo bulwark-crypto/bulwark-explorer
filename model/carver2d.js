@@ -63,8 +63,8 @@ const carverMovementsSchema = new mongoose.Schema({
 
   // We'll use this for finding movements for specific address/tx (also note the two compound indexes below).
   // Because all movements are tx->address or address->tx both of these fields are always filled
-  targetAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-  targetTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, //@todo rename to targetMovement (this would make more sense if a blockchain doesn't use tx for example)
+  contextAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // What address does this movement belong to? (ex: when looking at movements for specific address)
+  contextTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // What tx does this movement belong to?
 
   sequence: { index: true, unique: true, required: true, type: Number },
 
@@ -83,8 +83,8 @@ const carverMovementsSchema = new mongoose.Schema({
 carverMovementsSchema.index({ blockHeight: 1, sequence: 1 }, { unique: true }); // For unreconciliation query (blockHeight: gte, order by sequence)
 
 // When viewing specific address we'll be filtering by from/to and sorting by sequence so we'll need these two compound indexes
-carverMovementsSchema.index({ targetAddress: 1, sequence: 1 }, { unique: true });
-carverMovementsSchema.index({ targetTx: 1, sequence: 1 }, { unique: true });
+carverMovementsSchema.index({ contextAddress: 1, sequence: 1 }, { unique: true });
+carverMovementsSchema.index({ contextTx: 1, sequence: 1 }, { unique: true });
 
 // We'll be doing a lot of sorting on type + sequence so let's create an index on that as well
 // At the moment we only use this for reward breakdown, after that moves to new address type we could remove this
