@@ -102,18 +102,15 @@ async function syncBlocks(start, stop, sequence) {
 
           //requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
-          //commonAddressCache,
-          //normalAddressCache,
+          commonAddressCache,
+          normalAddressCache,
           vinUtxos
         };
 
         // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
         // Additionally we also flatten the vins/vouts into an array of movements
         const requiredMovements = carver2d.getRequiredMovements(params);
-
-        const parsedMovements = [];
-
-
+        const parsedMovements = await carver2d.parseNewRequiredMovements(params, requiredMovements);
 
         //const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
 
@@ -167,7 +164,7 @@ async function syncBlocks(start, stop, sequence) {
             case CarverMovementType.MasternodeRewardToTx:
               to.mnMovement = parsedMovement._id;
               break;
-            case CarverMovementType.TxToPowAddress:
+            case CarverMovementType.PowAddressReward:
               to.powCountIn++;
               to.powValueIn += parsedMovement.amount;
               break;
@@ -235,10 +232,12 @@ async function syncBlocks(start, stop, sequence) {
         // If we get to this step we have all the movements saved in order so we can resume from hard fail
         await Promise.all([...updatedAddresses.values()].map(
           async (updatedAddress) => {
-
             // Don't forget to update our cache with new address data
             if (commonAddressCache.has(updatedAddress.label)) {
               commonAddressCache.set(updatedAddress.label, updatedAddress);
+            }
+            if (normalAddressCache.has(updatedAddress.label)) {
+              normalAddressCache.set(updatedAddress.label, updatedAddress);
             }
             await updatedAddress.save();
           }));
@@ -338,7 +337,7 @@ async function undoCarverBlockMovements(height) {
           to.valueIn -= parsedMovement.amount;
 
           switch (parsedMovement.carverMovementType) {
-            case CarverMovementType.TxToPowAddress:
+            case CarverMovementType.PowAddressReward:
               to.powCountIn--;
               to.powValueIn -= parsedMovement.amount;
               break;
