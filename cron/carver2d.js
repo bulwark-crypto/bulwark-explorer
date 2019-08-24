@@ -49,14 +49,14 @@ const getVinUtxos = async (rpctx) => {
   return utxos;
 }
 
-const fillAddressCache = async (params) => {
 
-  const blockDate = new Date(params.rpcblock.time * 1000);
+/**
+ * Get or Initialize a new carver address
+ * usedAddresses = Map<addressLabel,CarverAddressType>
+ */
+const fillAddressCache = async (params, usedAddresses) => {
 
-  /**
-   * Get or Initialize a new carver address
-   */
-  const getCarverAddressFromCache = async (carverAddressType, label) => {
+  const isCarverAddressCached = (label) => {
     const commonAddressFromCache = params.commonAddressCache.get(label);
     if (commonAddressFromCache) {
       return commonAddressFromCache;
@@ -65,9 +65,26 @@ const fillAddressCache = async (params) => {
     if (normalAddressFromCache) {
       return normalAddressFromCache;
     }
+    return null;
+  }
+  /*
+    const getCarverAddressFromCache = async (label) => {
+      const commonAddressFromCache = params.commonAddressCache.get(label);
+      if (commonAddressFromCache) {
+        return commonAddressFromCache;
+      }
+      const normalAddressFromCache = params.normalAddressCache.get(label);
+      if (normalAddressFromCache) {
+        return normalAddressFromCache;
+      }
+      return null;
+    }*/
+
+  const createCarverAddress = (carverAddressType, label) => {
+    const blockDate = new Date(params.rpcblock.time * 1000);
 
     let newCarverAddress = new CarverAddress({
-      _id: new mongoose.Types.ObjectId(),
+      _id: null, // Notice how the _id is null here. This is on purpose to identify which addresses are new (and will need to be inserted). 
       label,
       balance: 0,
 
@@ -93,7 +110,17 @@ const fillAddressCache = async (params) => {
         newCarverAddress.mnValueIn = 0;
         newCarverAddress.powCountIn = 0;
         newCarverAddress.powValueIn = 0;
-        params.normalAddressCache.set(label, newCarverAddress);
+        break;
+    }
+
+    return newCarverAddress;
+  }
+
+  const addAddressToCache = (carverAddress) => {
+
+    switch (carverAddress.carverAddressType) {
+      case CarverAddressType.Address:
+        params.normalAddressCache.set(carverAddress.label, carverAddress);
         break;
 
       // We don't need to store txs in cache (as they're only used once per sync)
@@ -101,12 +128,35 @@ const fillAddressCache = async (params) => {
       case CarverAddressType.RewardTx:
         break;
       default:
-        params.commonAddressCache.set(label, newCarverAddress);
+        params.commonAddressCache.set(carverAddress.label, carverAddress);
         break;
     }
-
-    return newCarverAddress;
   }
+
+  // Figure out which addresses are already cached. If they are not cached we'll fetch them from db
+  const addressesToFetch = new Set();
+  usedAddresses.forEach((carverAddressType, label) => {
+    if (!isCarverAddressCached(label)) {
+      addressesToFetch.add(label);
+    }
+  });
+
+  // Fetch uncached addresses from db
+  const allAddressesToFetch = Array.from(addressesToFetch);
+  const carverAddresses = await CarverAddress.find({ label: { $in: allAddressesToFetch } });
+
+  // Find the cache with results (or make new addresses)
+  allAddressesToFetch.forEach(label => {
+    const carverAddress = carverAddresses.find(carverResult => carverResult.label === label);
+
+    // Carver address was not in cache, add it to cache
+    if (!carverAddress) {
+      const carverAddressType = usedAddresses[label];
+      const newCarverAddress = createCarverAddress(carverAddressType, label)
+
+      addAddressToCache(newCarverAddress);
+    }
+  })
 }
 
 
@@ -236,13 +286,13 @@ const getRequiredMovements = (params) => {
             case CarverTxType.Coinbase:
               if (rpctx.vout.length > 2) {
                 console.log(rpctx.vout);
-                throw 'Coinbase with >2 outputs?';
+                throw 'coinbase tx with >2 outputs?';
               }
 
               if (voutIndex === 0) {
                 // Proof of Work Reward / Premine 
                 //@todo right now premine will count as POW reward
-                requiredMovements.push({ movementType: CarverMovementType.PowAddressReward, from: { addressLabel: `${addressLabel}:POW` }, to: { addressLabel } });
+                requiredMovements.push({ movementType: CarverMovementType.PowAddressReward, from: { addressLabel: `${addressLabel}:POW`, }, to: { addressLabel } });
               } else {
                 // Masternode Reward / Governance 
                 requiredMovements.push({ movementType: CarverMovementType.MasternodeReward, from: { addressLabel: `${addressLabel}:MN` }, to: { addressLabel } });
@@ -369,7 +419,24 @@ const getRequiredMovements = (params) => {
 
 
 const parseNewRequiredMovements = async (params, requiredMovements) => {
-  console.log('requiredMovements:', requiredMovements);
+
+  // Find all addresses that are used in a movement. We'll want to fill the address cache with these addresses
+  const usedAddresses = new Map();
+  requiredMovements.forEach(requiredMovement => {
+    switch (requiredMovement.movementType) {
+      case CarverMovementType.PowAddressReward:
+        usedAddresses.set(requiredMovement.from.addressLabel, CarverAddressType.ProofOfWork);
+        usedAddresses.set(requiredMovement.to.addressLabel, CarverAddressType.Address);
+        break;
+    }
+  });
+
+  // Now that we know all used address, let's ensure they're in cache. We'll go through cache, find any addresses not in cache and then fill them from db.
+  // If these adddresses do not exist in db create them and fill the cache with new entries. This ensures the addresses used in the movements are all ready to be fetched from cache.
+  await fillAddressCache(params, usedAddresses);
+
+  console.log('requiredMovements:', requiredMovements, allUsedAddresses);
+
   throw 'xx';
 }
 
