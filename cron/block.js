@@ -42,6 +42,22 @@ async function syncBlocks(start, stop, sequence) {
   // Instead of fetching addresses each time from db we'll store a certain number in cache (this is in config)
   const normalAddressCache = new Map();
 
+  /**
+   * Fetches address from one of the caches above (we could potentially have more cache types in the future)
+   */
+  const getCarverAddressFromCache = (label) => {
+    const commonAddressFromCache = commonAddressCache.get(label);
+    if (commonAddressFromCache) {
+      return commonAddressFromCache;
+    }
+
+    const normalAddressFromCache = normalAddressCache.get(label);
+    if (normalAddressFromCache) {
+      return normalAddressFromCache;
+    }
+    return null;
+  }
+
   for (let height = start + 1; height <= stop; height++) {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
@@ -63,11 +79,11 @@ async function syncBlocks(start, stop, sequence) {
       isConfirmed: rpcblock.confirmations > config.blockConfirmations // We can instantly confirm a block if it reached the required number of confirmations (that way we don't have to reconfirm it later)
     });
 
-
-    // Flush cache every 10000 addresses
+    // Flush cache every X addresses (set in config)
     if (normalAddressCache.size > config.blockSyncAddressCacheLimit) {
       normalAddressCache.clear();
     }
+
 
     const sequenceStart = sequence;
 
@@ -80,7 +96,10 @@ async function syncBlocks(start, stop, sequence) {
       const txhash = rpcblock.tx[txIndex];
       const rpctx = await util.getTX(txhash, false);
 
-      let updatedAddresses = new Map();
+      sequence++;
+
+      let updatedAddresses = new Map(); // @todo this could be a Set<CarverAddress> instead of Map<addressLabel,CarverAddress>
+
       let newMovements = [];
 
       // When going through parsed movements we'll store the actual POS amount here (so we can fetch it later)
@@ -99,6 +118,7 @@ async function syncBlocks(start, stop, sequence) {
         const params = {
           rpcblock,
           rpctx,
+          //txCarverAddress,
 
           //requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
@@ -107,10 +127,16 @@ async function syncBlocks(start, stop, sequence) {
           vinUtxos
         };
 
-        // In the first sweep we'll analyze the "required movements". These should give us an idea of what addresses need to be loaded (so we don't have to do one address at a time)
-        // Additionally we also flatten the vins/vouts into an array of movements
-        const requiredMovements = carver2d.getRequiredMovements(params);
-        const parsedMovements = await carver2d.parseNewRequiredMovements(params, requiredMovements);
+        // Convert 
+        const parsedMovement = await carver2d.getRequiredMovement(params);
+        parsedMovement.sequence = sequence;
+
+
+        // Go through required movements and ensure all the caches are set for saving the movements
+        //const parsedMovement = await carver2d.parseNewRequiredMovement(params, requiredMovement);
+
+
+        console.log('parsedMovement', parsedMovement);
 
         //const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
 
@@ -118,113 +144,115 @@ async function syncBlocks(start, stop, sequence) {
         // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
         //const parsedMovements = await carver2d.parseRequiredMovements(params);
 
-        parsedMovements.forEach(parsedMovement => {
-          const newCarverMovementId = new mongoose.Types.ObjectId();
+        //parsedMovements.forEach(parsedMovement => {
+        const newCarverMovementId = new mongoose.Types.ObjectId();
 
-          sequence++;
+        //let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
+        //const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
+        const from = getCarverAddressFromCache(parsedMovement.from.label);
+        const lastFromMovement = from.lastMovement;
 
-          //let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
-          const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-          const lastFromMovement = from.lastMovement;
+        if (from.sequence >= sequence) {
+          throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
+        }
 
-          if (from.sequence >= sequence) {
-            throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
-          }
+        from.countOut++;
+        from.balance -= parsedMovement.amount;
+        from.valueOut += parsedMovement.amount;
+        from.sequence = sequence;
+        from.lastMovement = newCarverMovementId;
+        canFlowSameAddress = true;
 
-          from.countOut++;
-          from.balance -= parsedMovement.amount;
-          from.valueOut += parsedMovement.amount;
-          from.sequence = sequence;
-          from.lastMovement = newCarverMovementId;
-          canFlowSameAddress = true;
+        updatedAddresses.set(from.label, from);
 
-          updatedAddresses.set(from.label, from);
+        //const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
+        const to = getCarverAddressFromCache(parsedMovement.to.label);
+        let lastToMovement = lastFromMovement;
+        if (from !== to) {
+          lastToMovement = to.lastMovement;
+        }
 
-          const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-          let lastToMovement = lastFromMovement;
-          if (from !== to) {
-            lastToMovement = to.lastMovement;
-          }
+        if (to.sequence >= sequence && from !== to) {
+          throw `RECONCILIATION ERROR: Out-of-sequence to movement: ${to.sequence}>${sequence}`;
+        }
 
-          if (to.sequence >= sequence && from !== to) {
-            throw `RECONCILIATION ERROR: Out-of-sequence to movement: ${to.sequence}>${sequence}`;
-          }
+        to.countIn++;
+        to.balance += parsedMovement.amount;
+        to.valueIn += parsedMovement.amount;
+        to.sequence = sequence;
+        to.lastMovement = newCarverMovementId;
 
-          to.countIn++;
-          to.balance += parsedMovement.amount;
-          to.valueIn += parsedMovement.amount;
-          to.sequence = sequence;
-          to.lastMovement = newCarverMovementId;
+        /*
+        switch (parsedMovement.carverMovementType) {
+          case CarverMovementType.PosRewardToTx:
+            to.posMovement = parsedMovement._id;
+            posRewardAmount = parsedMovement.amount; // Notice we're setting tx-wide pos reward
+            break;
+          case CarverMovementType.MasternodeRewardToTx:
+            to.mnMovement = parsedMovement._id;
+            break;
+          case CarverMovementType.PowAddressReward:
+            to.powCountIn++;
+            to.powValueIn += parsedMovement.amount;
+            break;
+          case CarverMovementType.TxToPosAddress:
+            // This gets set set in PosRewardToTx above (one per tx)
+            if (posRewardAmount) {
+              to.posCountIn++;
+              to.posValueIn += posRewardAmount;
+            }
+            break;
+          case CarverMovementType.TxToMnAddress:
+            to.mnCountIn++;
+            to.mnValueIn += parsedMovement.amount;
+            break;
+        }*/
 
-          switch (parsedMovement.carverMovementType) {
-            case CarverMovementType.PosRewardToTx:
-              to.posMovement = parsedMovement._id;
-              posRewardAmount = parsedMovement.amount; // Notice we're setting tx-wide pos reward
-              break;
-            case CarverMovementType.MasternodeRewardToTx:
-              to.mnMovement = parsedMovement._id;
-              break;
-            case CarverMovementType.PowAddressReward:
-              to.powCountIn++;
-              to.powValueIn += parsedMovement.amount;
-              break;
-            case CarverMovementType.TxToPosAddress:
-              // This gets set set in PosRewardToTx above (one per tx)
-              if (posRewardAmount) {
-                to.posCountIn++;
-                to.posValueIn += posRewardAmount;
-              }
-              break;
-            case CarverMovementType.TxToMnAddress:
-              to.mnCountIn++;
-              to.mnValueIn += parsedMovement.amount;
-              break;
-          }
-          updatedAddresses.set(to.label, to);
+        updatedAddresses.set(to.label, to);
 
-          const contextAddress = from.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
-          const contextTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+        const contextAddress = to.carverAddressType === CarverAddressType.Address ? to._id : from._id;
+        //const contextTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
 
-          let newCarverMovement = new CarverMovement({
-            _id: newCarverMovementId,
+        let newCarverMovement = new CarverMovement({
+          _id: newCarverMovementId,
 
-            label: parsedMovement.label,
-            amount: parsedMovement.amount,
+          label: parsedMovement.label,
+          amount: parsedMovement.amount,
 
-            date: blockDate,
-            blockHeight: rpcblock.height,
+          date: blockDate,
+          blockHeight: rpcblock.height,
 
-            from: from._id,
-            to: to._id,
-            destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
+          from: from._id,
+          to: to._id,
+          destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
 
-            fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
-            toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+          fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+          toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
 
-            carverMovementType: parsedMovement.carverMovementType,
-            sequence,
-            lastFromMovement,
-            lastToMovement,
+          carverMovementType: parsedMovement.carverMovementType,
+          sequence,
+          lastFromMovement,
+          lastToMovement,
 
-            contextAddress,
-            contextTx,
-            posRewardAmount: parsedMovement.posRewardAmount
-          });
-
-          switch (parsedMovement.carverMovementType) {
-            case CarverMovementType.PosRewardToTx:
-              newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
-              newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
-              break;
-          }
-
-          newMovements.push(newCarverMovement);
-
-          // Erase the amount after first encounter (so we only set it once)
-          if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
-            posRewardAmount = null;
-          }
+          contextAddress,
+          //contextTx,
+          posRewardAmount: parsedMovement.posRewardAmount
         });
+
+        switch (parsedMovement.carverMovementType) {
+          case CarverMovementType.PosRewardToTx:
+            newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
+            newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
+            break;
+        }
+
+        newMovements.push(newCarverMovement);
+
+        // Erase the amount after first encounter (so we only set it once)
+        if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
+          posRewardAmount = null;
+        }
+        //});
 
         // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
         await CarverMovement.insertMany(newMovements);

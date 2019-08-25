@@ -50,38 +50,13 @@ const getVinUtxos = async (rpctx) => {
 }
 
 
+
 /**
  * Get or Initialize a new carver address
  * usedAddresses = Map<addressLabel,CarverAddressType>
  */
 const fillAddressCache = async (params, usedAddresses) => {
-
-  const isCarverAddressCached = (label) => {
-    const commonAddressFromCache = params.commonAddressCache.get(label);
-    if (commonAddressFromCache) {
-      return commonAddressFromCache;
-    }
-    const normalAddressFromCache = params.normalAddressCache.get(label);
-    if (normalAddressFromCache) {
-      return normalAddressFromCache;
-    }
-    return null;
-  }
-  /*
-    const getCarverAddressFromCache = async (label) => {
-      const commonAddressFromCache = params.commonAddressCache.get(label);
-      if (commonAddressFromCache) {
-        return commonAddressFromCache;
-      }
-      const normalAddressFromCache = params.normalAddressCache.get(label);
-      if (normalAddressFromCache) {
-        return normalAddressFromCache;
-      }
-      return null;
-    }*/
-
-  const createCarverAddress = (carverAddressType, label) => {
-    const blockDate = new Date(params.rpcblock.time * 1000);
+  const createCarverAddress = (carverAddressType, label, date) => {
 
     let newCarverAddress = new CarverAddress({
       _id: null, // Notice how the _id is null here. This is on purpose to identify which addresses are new (and will need to be inserted). 
@@ -89,7 +64,7 @@ const fillAddressCache = async (params, usedAddresses) => {
       balance: 0,
 
       blockHeight: params.rpcblock.height,
-      date: blockDate,
+      date,
       carverAddressType,
 
       // for stats
@@ -116,6 +91,18 @@ const fillAddressCache = async (params, usedAddresses) => {
     return newCarverAddress;
   }
 
+  const isCarverAddressCached = (addressLabel) => {
+    const commonAddressFromCache = params.commonAddressCache.get(addressLabel);
+    if (commonAddressFromCache) {
+      return commonAddressFromCache;
+    }
+    const normalAddressFromCache = params.normalAddressCache.get(addressLabel);
+    if (normalAddressFromCache) {
+      return normalAddressFromCache;
+    }
+    return null;
+  }
+
   const addAddressToCache = (carverAddress) => {
 
     switch (carverAddress.carverAddressType) {
@@ -135,9 +122,9 @@ const fillAddressCache = async (params, usedAddresses) => {
 
   // Figure out which addresses are already cached. If they are not cached we'll fetch them from db
   const addressesToFetch = new Set();
-  usedAddresses.forEach((carverAddressType, label) => {
-    if (!isCarverAddressCached(label)) {
-      addressesToFetch.add(label);
+  usedAddresses.forEach(usedAddress => {
+    if (!isCarverAddressCached(usedAddress.label)) {
+      addressesToFetch.add(usedAddress.label);
     }
   });
 
@@ -146,15 +133,17 @@ const fillAddressCache = async (params, usedAddresses) => {
   const carverAddresses = await CarverAddress.find({ label: { $in: allAddressesToFetch } });
 
   // Find the cache with results (or make new addresses)
+  const blockDate = new Date(params.rpcblock.time * 1000);
   allAddressesToFetch.forEach(label => {
     const carverAddress = carverAddresses.find(carverResult => carverResult.label === label);
 
     // Carver address was not in cache, add it to cache
     if (!carverAddress) {
-      const carverAddressType = usedAddresses[label];
-      const newCarverAddress = createCarverAddress(carverAddressType, label)
+      const carverAddressMovement = usedAddresses.get(label);
+      const newCarverAddress = createCarverAddress(carverAddressMovement.addressType, carverAddressMovement.label, blockDate)
 
       addAddressToCache(newCarverAddress);
+      console.log('cache:', newCarverAddress);
     }
   })
 }
@@ -163,27 +152,32 @@ const fillAddressCache = async (params, usedAddresses) => {
 /**
  * Create address->tx movement for all inputs in a tx
  */
-const getRequiredMovements = (params) => {
-
+const getRequiredMovement = async (params) => {
+  const blockDate = new Date(params.rpcblock.time * 1000);
 
   const rpctx = params.rpctx;
   const vinUtxos = params.vinUtxos;
 
-  let requiredMovements = [];
+  var carverTxType = null; // By default we don't know the tx type
 
-  var carverTxType = CarverTxType.BasicTx;
+  // We'll keep a tally of all inputs/outputs summed by address
   var consolidatedAddressAmounts = new Map();
-
-  const addToAddress = (addressLabel, addressType, amount) => {
-    if (!consolidatedAddressAmounts.has(addressLabel)) {
-      consolidatedAddressAmounts.set(addressLabel, 0);
+  const addToAddress = (addressType, label, amount) => {
+    if (!consolidatedAddressAmounts.has(label)) {
+      consolidatedAddressAmounts.set(label, { label, addressType, amount: 0 });
     }
-    const consolidatedAddressAmount = consolidatedAddressAmounts.get(addressLabel);
-    consolidatedAddressAmounts.set(addressLabel, consolidatedAddressAmount + amount);
+
+    let consolidatedAddressAmount = consolidatedAddressAmounts.get(label);
+    consolidatedAddressAmount.amount += amount;
   }
 
+
   let newUtxos = [];
-  let posAddressLabel = null; // This will be filled with the 
+
+  // These address labels will be filled during vin/vout scan
+  let posAddressLabel = null;
+  let powAddressLabel = null;
+  let mnAddressLabel = null;
 
   for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
     const vin = rpctx.vin[vinIndex];
@@ -201,12 +195,12 @@ const getRequiredMovements = (params) => {
       }
 
       // Identify that this is a POW or POW/MN tx
-      carverTxType = CarverTxType.Coinbase;
+      carverTxType = CarverTxType.ProofOfWork;
 
       //requiredMovements.push({ movementType: CarverMovementType.CoinbaseToTx, label });
 
     } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
-      carverTxType = CarverTxType.ZerocoinSpend;
+      carverTxType = CarverTxType.Zerocoin;
       //requiredMovements.push({ movementType: CarverMovementType.ZerocoinToTx, label });
     } else if (vin.txid) {
       if (vin.vout === undefined) {
@@ -216,7 +210,6 @@ const getRequiredMovements = (params) => {
 
 
       const utxoLabel = `${vin.txid}:${vin.vout}`;
-
       const vinUtxo = vinUtxos.find(vinUtxo => vinUtxo.label === utxoLabel);
       if (!vinUtxo) {
         throw `UTXO not found: ${utxoLabel}`;
@@ -224,7 +217,10 @@ const getRequiredMovements = (params) => {
       if (isPosTx(rpctx)) {
         carverTxType = CarverTxType.ProofOfStake;
         posAddressLabel = vinUtxo.addressLabel;
+
         //  requiredMovements.push({ movementType: CarverMovementType.PosTxIdVoutToTx, label, txid: vin.txid, vout: vin.vout });
+      } else {
+
       }
 
       //addToAddress(vinUtxo.addressLabel, -vinUtxo.amount);
@@ -238,6 +234,9 @@ const getRequiredMovements = (params) => {
       throw 'UNSUPPORTED VIN (NOT COINBASE OR TX)';
     }
   }
+
+  //const carverTxAddressType = carverTxType === CarverTxType.Coinbase || carverTxType === CarverTxType.ProofOfStake;
+  //createCarverAddress(CarverAddressType.Tx)
 
 
   for (let voutIndex = 0; voutIndex < rpctx.vout.length; voutIndex++) {
@@ -271,6 +270,50 @@ const getRequiredMovements = (params) => {
           */
 
           const addressLabel = addresses[0];
+          addToAddress(CarverAddressType.Address, addressLabel, vout.value);
+
+          if (carverTxType) {
+            switch (carverTxType) {
+              /*
+              case CarverTxType.BasicTx:
+                addToAddress(addressLabel, CarverAddressType.Address, vout.value);
+                break;*/
+              case CarverTxType.ProofOfWork:
+                if (rpctx.vout.length > 2) {
+                  console.log(rpctx.vout);
+                  throw 'coinbase tx with >2 outputs?';
+                }
+
+                if (voutIndex === 0) {
+                  powAddressLabel = addressLabel;
+                  // Proof of Work Reward / Premine 
+                  //@todo right now premine will count as POW reward
+                  //requiredMovements.push({ movementType: CarverMovementType.PowAddressReward, from: { addressLabel: `${addressLabel}:POW`, }, to: { addressLabel } });
+                } else {
+                  mnAddressLabel = addressLabel;
+                  // Masternode Reward / Governance 
+                  //requiredMovements.push({ movementType: CarverMovementType.MasternodeReward, from: { addressLabel: `${addressLabel}:MN` }, to: { addressLabel } });
+                }
+                /*
+                let sourceLabel = voutIndex === 0 ? 'POW' : 'MN';
+                let sourceCarverAddressType = voutIndex === 0 ? CarverAddressType.ProofOfWork : CarverAddressType.Masternode;
+  
+                if (params.rpcblock.height === 1) {
+                  sourceLabel = 'PREMINE';
+                  sourceCarverAddressType = CarverAddressType.Premine;
+                }
+  
+                addToAddress(sourceLabel, sourceCarverAddressType, -vout.value);
+                addToAddress(addressLabel, vout.value);*/
+                break;
+              default:
+                console.log(carverTxType)
+                throw 'Unhandled carverTxType!';
+              //               
+              ///addToAddress(addressLabel, vout.value);
+              // break;
+            }
+          }
 
           newUtxos.push(new UTXO({
             label: `${rpctx.txid}:${vout.n}`,
@@ -278,44 +321,6 @@ const getRequiredMovements = (params) => {
             amount: vout.value,
             addressLabel
           }));
-
-          switch (carverTxType) {
-            case CarverTxType.BasicTx:
-              addToAddress(addressLabel, CarverAddressType.Address, vout.value);
-              break;
-            case CarverTxType.Coinbase:
-              if (rpctx.vout.length > 2) {
-                console.log(rpctx.vout);
-                throw 'coinbase tx with >2 outputs?';
-              }
-
-              if (voutIndex === 0) {
-                // Proof of Work Reward / Premine 
-                //@todo right now premine will count as POW reward
-                requiredMovements.push({ movementType: CarverMovementType.PowAddressReward, from: { addressLabel: `${addressLabel}:POW`, }, to: { addressLabel } });
-              } else {
-                // Masternode Reward / Governance 
-                requiredMovements.push({ movementType: CarverMovementType.MasternodeReward, from: { addressLabel: `${addressLabel}:MN` }, to: { addressLabel } });
-              }
-              /*
-              let sourceLabel = voutIndex === 0 ? 'POW' : 'MN';
-              let sourceCarverAddressType = voutIndex === 0 ? CarverAddressType.ProofOfWork : CarverAddressType.Masternode;
-
-              if (params.rpcblock.height === 1) {
-                sourceLabel = 'PREMINE';
-                sourceCarverAddressType = CarverAddressType.Premine;
-              }
-
-              addToAddress(sourceLabel, sourceCarverAddressType, -vout.value);
-              addToAddress(addressLabel, vout.value);*/
-              break;
-            default:
-              console.log(carverTxType)
-              throw 'Unhandled carverTxType!';
-            //               
-            ///addToAddress(addressLabel, vout.value);
-            // break;
-          }
 
           //@todo reward breakout
           /*
@@ -344,7 +349,7 @@ const getRequiredMovements = (params) => {
               console.log(tx);
               throw 'ZEROCOIN WITHOUT VALUE?';
             }
-            addToAddress('ZEROCOIN', vout.value);
+            addToAddress(CarverAddressType.Zerocoin, 'ZEROCOIN', vout.value);
 
             //@todo
 
@@ -358,7 +363,7 @@ const getRequiredMovements = (params) => {
               console.log(tx);
               throw 'BURN WITHOUT VALUE?';
             }
-            addToAddress('BURN', vout.value);
+            addToAddress(CarverAddressType.Burn, 'BURN', vout.value);
 
             //@todo
             // requiredMovements.push({ movementType: CarverMovementType.Burn, label, amount: vout.value });
@@ -375,18 +380,53 @@ const getRequiredMovements = (params) => {
     }
   }
 
-  switch (carverTxType) {
-    case CarverTxType.BasicTx:
-      break;
+  const consolidatedAddressAmountsArray = Array.from(consolidatedAddressAmounts);
+
+  const totalTxAmount = consolidatedAddressAmountsArray.reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount[1].amount, 0);
+
+  let newCarverMovement = {
+    _id: new mongoose.Types.ObjectId(),
+    txId: params.rpctx.txid,
+    txType: carverTxType,
+    amount: totalTxAmount,
+    blockHeight: params.rpcblock.height,
+    date: blockDate,
+    from: [],
+    to: []
   }
 
-  const usedAddresses = Array.from(consolidatedAddressAmounts.keys());
-  if (usedAddresses.length > 0) {
-    console.log('addresses:', usedAddresses);
-    console.log('utxos:', newUtxos);
-    console.log('requiredMovements:', requiredMovements);
-    throw 'xx'
-  }
+
+  await fillAddressCache(params, consolidatedAddressAmounts);
+
+  const fromConsolidatedAddressAmounts = consolidatedAddressAmountsArray.filter(consolidatedAddressAmount => consolidatedAddressAmount[1].amount < 0);
+  const toConsolidatedAddressAmounts = consolidatedAddressAmountsArray.filter(consolidatedAddressAmount => consolidatedAddressAmount[1].amount >= 0);
+
+  fromConsolidatedAddressAmounts.forEach(consolidatedAddressAmount => {
+    newCarverMovement.from.push(consolidatedAddressAmount[1])
+  });
+  toConsolidatedAddressAmounts.forEach(consolidatedAddressAmount => {
+    newCarverMovement.to.push(consolidatedAddressAmount[1])
+  });
+
+  /*
+  
+    console.log('consolidatedAddressAmounts:', newCarverMovement);
+    throw 'yy';
+  
+    switch (carverTxType) {
+      case CarverTxType.BasicTx:
+        break;
+    }
+  
+    const usedAddresses = Array.from(consolidatedAddressAmounts.keys());
+    if (usedAddresses.length > 0) {
+      console.log('addresses:', usedAddresses);
+      console.log('utxos:', newUtxos);
+      console.log('requiredMovements:', requiredMovements);
+      throw 'xx'
+    }
+  
+  */
 
   /*
   
@@ -414,11 +454,12 @@ const getRequiredMovements = (params) => {
     console.log("test:", carverTxType, finalConsolidatedAddressAmounts, requiredMovements);
     throw 'yy';*/
 
-  return requiredMovements;
+  return newCarverMovement;
 }
 
 
 const parseNewRequiredMovements = async (params, requiredMovements) => {
+  //const txCarverAddress = carver2d.createCarverAddress(CarverAddressType.Tx, rpctx.txid, blockDate);
 
   // Find all addresses that are used in a movement. We'll want to fill the address cache with these addresses
   const usedAddresses = new Map();
@@ -435,9 +476,11 @@ const parseNewRequiredMovements = async (params, requiredMovements) => {
   // If these adddresses do not exist in db create them and fill the cache with new entries. This ensures the addresses used in the movements are all ready to be fetched from cache.
   await fillAddressCache(params, usedAddresses);
 
+  return requiredMovements;/*
+
   console.log('requiredMovements:', requiredMovements, allUsedAddresses);
 
-  throw 'xx';
+  throw 'xx';*/
 }
 
 /**
@@ -803,7 +846,7 @@ async function parseRequiredMovements(params) {
 }
 
 module.exports = {
-  getRequiredMovements,
+  getRequiredMovement,
   getVoutRequiredMovements,
   parseRequiredMovements,
   parseNewRequiredMovements,
