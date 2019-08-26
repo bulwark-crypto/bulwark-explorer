@@ -3,7 +3,7 @@ const config = require('../config');
 require('babel-polyfill');
 const mongoose = require('mongoose');
 const { CarverAddressType, CarverMovementType, CarverTxType } = require('../lib/carver2d');
-const { CarverAddress, CarverMovement } = require('../model/carver2d');
+const { CarverAddress, CarverMovement, CarverAddressMovement } = require('../model/carver2d');
 const { UTXO } = require('../model/utxo');
 
 //@todo Move this file to lib/carver2d
@@ -143,14 +143,13 @@ const fillAddressCache = async (params, usedAddresses) => {
       const newCarverAddress = createCarverAddress(carverAddressMovement.addressType, carverAddressMovement.label, blockDate)
 
       addAddressToCache(newCarverAddress);
-      console.log('cache:', newCarverAddress);
     }
   })
 }
 
 
 /**
- * Create address->tx movement for all inputs in a tx
+ * Analyze a tx and return raw CarverMovement object data (to be finalized after)
  */
 const getRequiredMovement = async (params) => {
   const blockDate = new Date(params.rpcblock.time * 1000);
@@ -380,33 +379,49 @@ const getRequiredMovement = async (params) => {
     }
   }
 
-  const consolidatedAddressAmountsArray = Array.from(consolidatedAddressAmounts);
+  // If we haven't figured out what carver tx type this is yet then it's basic movements (we'll jsut need to figure out if it's one to one, one to many, many to one or many to many based on number of used from/to addresses)
+  if (!carverTxType) {
+    throw 'no carver tx type';
+  }
 
-  const totalTxAmount = consolidatedAddressAmountsArray.reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount[1].amount, 0);
+  switch (carverTxType) {
+    case CarverTxType.ProofOfWork:
+      const powRewardAmount = consolidatedAddressAmounts.get(powAddressLabel);
+      if (!powRewardAmount) {
+        throw 'POW reward not found?';
+      }
+      addToAddress(CarverAddressType.ProofOfWork, `${powAddressLabel}:POW`, -powRewardAmount.amount);
 
+      if (mnAddressLabel) {
+        const mnRewardAmount = consolidatedAddressAmounts.get(mnAddressLabel);
+        if (!mnRewardAmount) {
+          throw 'POW reward not found?';
+        }
+        addToAddress(CarverAddressType.Masternode, `${powAddressLabel}:MN`, -mnRewardAmount.amount);
+      }
+      break;
+    default:
+      console.log(carverTxType);
+      throw 'carverTxType not found'
+  }
+
+
+  const consolidatedAddresses = Array.from(consolidatedAddressAmounts.values());
+
+  // Finally create our new movement
+  const totalAmountOut = consolidatedAddresses.filter(consolidatedAddressAmount => consolidatedAddressAmount.mount > 0).reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amount, 0);
   let newCarverMovement = {
     _id: new mongoose.Types.ObjectId(),
     txId: params.rpctx.txid,
     txType: carverTxType,
-    amount: totalTxAmount,
+    amount: totalAmountOut,
     blockHeight: params.rpcblock.height,
     date: blockDate,
-    from: [],
-    to: []
+    carverAddressMovements: [],
+
+    // Store the temporary movements here. We'll fill the from/to CarverAddressMovements outside of this method
+    consolidatedAddressMovements: consolidatedAddressAmounts,
   }
-
-
-  await fillAddressCache(params, consolidatedAddressAmounts);
-
-  const fromConsolidatedAddressAmounts = consolidatedAddressAmountsArray.filter(consolidatedAddressAmount => consolidatedAddressAmount[1].amount < 0);
-  const toConsolidatedAddressAmounts = consolidatedAddressAmountsArray.filter(consolidatedAddressAmount => consolidatedAddressAmount[1].amount >= 0);
-
-  fromConsolidatedAddressAmounts.forEach(consolidatedAddressAmount => {
-    newCarverMovement.from.push(consolidatedAddressAmount[1])
-  });
-  toConsolidatedAddressAmounts.forEach(consolidatedAddressAmount => {
-    newCarverMovement.to.push(consolidatedAddressAmount[1])
-  });
 
   /*
   
@@ -458,30 +473,6 @@ const getRequiredMovement = async (params) => {
 }
 
 
-const parseNewRequiredMovements = async (params, requiredMovements) => {
-  //const txCarverAddress = carver2d.createCarverAddress(CarverAddressType.Tx, rpctx.txid, blockDate);
-
-  // Find all addresses that are used in a movement. We'll want to fill the address cache with these addresses
-  const usedAddresses = new Map();
-  requiredMovements.forEach(requiredMovement => {
-    switch (requiredMovement.movementType) {
-      case CarverMovementType.PowAddressReward:
-        usedAddresses.set(requiredMovement.from.addressLabel, CarverAddressType.ProofOfWork);
-        usedAddresses.set(requiredMovement.to.addressLabel, CarverAddressType.Address);
-        break;
-    }
-  });
-
-  // Now that we know all used address, let's ensure they're in cache. We'll go through cache, find any addresses not in cache and then fill them from db.
-  // If these adddresses do not exist in db create them and fill the cache with new entries. This ensures the addresses used in the movements are all ready to be fetched from cache.
-  await fillAddressCache(params, usedAddresses);
-
-  return requiredMovements;/*
-
-  console.log('requiredMovements:', requiredMovements, allUsedAddresses);
-
-  throw 'xx';*/
-}
 
 /**
  * Create tx->address movement for all outputs in a tx
@@ -618,6 +609,7 @@ async function parseRequiredMovements(params) {
       sequence: 0
     });
 
+    /*
     switch (carverAddressType) {
       case CarverAddressType.Address:
         //@todo these will all be moved to address-specific rewards
@@ -633,6 +625,8 @@ async function parseRequiredMovements(params) {
       default:
         break;
     }
+    */
+
     if (carverAddressType != CarverAddressType.Tx) {
       params.commonAddressCache.set(label, existingCarverAddress);
     }
@@ -849,6 +843,6 @@ module.exports = {
   getRequiredMovement,
   getVoutRequiredMovements,
   parseRequiredMovements,
-  parseNewRequiredMovements,
-  getVinUtxos
+  getVinUtxos,
+  fillAddressCache
 };

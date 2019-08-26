@@ -100,10 +100,6 @@ async function syncBlocks(start, stop, sequence) {
 
       let updatedAddresses = new Map(); // @todo this could be a Set<CarverAddress> instead of Map<addressLabel,CarverAddress>
 
-      let newMovements = [];
-
-      // When going through parsed movements we'll store the actual POS amount here (so we can fetch it later)
-      let posRewardAmount = null;
 
       config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
@@ -118,17 +114,19 @@ async function syncBlocks(start, stop, sequence) {
         const params = {
           rpcblock,
           rpctx,
-          //txCarverAddress,
-
-          //requiredMovements: vinRequiredMovements.concat(voutRequiredMovements),
 
           commonAddressCache,
           normalAddressCache,
           vinUtxos
         };
 
-        // Convert 
+        // Convert tx into new pending CarverMovement object
         const parsedMovement = await carver2d.getRequiredMovement(params);
+
+        // Go through all used addresses in this tx and make sure they're loaded in cache (we will access the cache outside and we want all addresses to be there)
+        await carver2d.fillAddressCache(params, parsedMovement.consolidatedAddressMovements);
+
+
         parsedMovement.sequence = sequence;
 
 
@@ -136,7 +134,6 @@ async function syncBlocks(start, stop, sequence) {
         //const parsedMovement = await carver2d.parseNewRequiredMovement(params, requiredMovement);
 
 
-        console.log('parsedMovement', parsedMovement);
 
         //const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
 
@@ -145,11 +142,87 @@ async function syncBlocks(start, stop, sequence) {
         //const parsedMovements = await carver2d.parseRequiredMovements(params);
 
         //parsedMovements.forEach(parsedMovement => {
-        const newCarverMovementId = new mongoose.Types.ObjectId();
+        const newCarverMovementId = parsedMovement._id;
 
         //let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
         //const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-        const from = getCarverAddressFromCache(parsedMovement.from.label);
+
+        parsedMovement.consolidatedAddressMovements.forEach(movementData => {
+          const addressFromCache = getCarverAddressFromCache(movementData.label);
+
+          if (movementData.amount < 0) {
+            const from = addressFromCache;
+
+            /*if (from.sequence > sequence) {
+              throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
+            }*/
+
+            from.countOut++;
+            from.balance -= movementData.amount;
+            from.valueOut += movementData.amount;
+            from.sequence = sequence;
+            from.lastMovement = newCarverMovementId;
+            //canFlowSameAddress = true;
+          } else {
+            const to = addressFromCache;
+
+            to.countIn++;
+            to.balance += movementData.amount;
+            to.valueIn += movementData.amount;
+            to.sequence = sequence;
+            to.lastMovement = newCarverMovementId;
+            //canFlowSameAddress = true;
+          }
+
+          updatedAddresses.set(addressFromCache.label, addressFromCache);
+
+          console.log(movementData);
+
+          /*
+          @todo create carverAddressMovement
+          */
+
+        });
+        throw 'zz';
+
+        /*
+                parsedMovement.to.forEach(movementData => {
+                  const to = getCarverAddressFromCache(movementData.label);
+        
+                  /*if (from.sequence > sequence) {
+                    throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
+                  }*/
+        /*
+                  to.countIn++;
+                  to.balance += movementData.amount;
+                  to.valueIn += movementData.amount;
+                  to.sequence = sequence;
+                  to.lastMovement = newCarverMovementId;
+                  //canFlowSameAddress = true;
+        
+                  updatedAddresses.set(to.label, to);
+                });*/
+
+        const allUpdatedAddresses = Array.from(updatedAddresses);
+
+        // Find and insert all new addresses (if syncing fails here it's ok because cleanup will catch it and remove these addresses)
+        const carverAddressesToInsert = allUpdatedAddresses.filter(updatedAddress => updatedAddress[1]._id === null).map(updatedAddress => updatedAddress[1]);
+        /*carverAddressesToInsert.forEach(carverAddressToInsert => {
+          // Assign new ids
+          carverAddressToInsert._id = new mongoose.Types.ObjectId();
+        });*/
+        await CarverAddress.insertMany(carverAddressesToInsert);
+
+        // Create our carver movement
+        console.log(parsedMovement);
+        throw 'zz';
+        const newCarverMovement = new CarverMovement(parsedMovement);
+        await newCarverMovement.save();
+
+        console.log('allUpdatedAddresses', newCarverMovement);
+
+        throw 'xx';
+
         const lastFromMovement = from.lastMovement;
 
         if (from.sequence >= sequence) {
@@ -212,63 +285,65 @@ async function syncBlocks(start, stop, sequence) {
 
         const contextAddress = to.carverAddressType === CarverAddressType.Address ? to._id : from._id;
         //const contextTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
+        /*
+                let newCarverMovement = new CarverMovement({
+                  _id: newCarverMovementId,
+        
+                  label: parsedMovement.label,
+                  amount: parsedMovement.amount,
+        
+                  date: blockDate,
+                  blockHeight: rpcblock.height,
+        
+                  from: from._id,
+                  to: to._id,
+                  destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
+        
+                  fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+                  toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
+        
+                  carverMovementType: parsedMovement.carverMovementType,
+                  sequence,
+                  lastFromMovement,
+                  lastToMovement,
+        
+                  contextAddress,
+                  //contextTx,
+                  posRewardAmount: parsedMovement.posRewardAmount
+                });
+        
+                switch (parsedMovement.carverMovementType) {
+                  case CarverMovementType.PosRewardToTx:
+                    newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
+                    newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
+                    break;
+                }
+        
+                newMovements.push(newCarverMovement);
+        
+                // Erase the amount after first encounter (so we only set it once)
+                if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
+                  posRewardAmount = null;
+                }
+                //});
+        
+                // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
+                await CarverMovement.insertMany(newMovements);
+        
+                // If we get to this step we have all the movements saved in order so we can resume from hard fail
+                await Promise.all([...updatedAddresses.values()].map(
+                  async (updatedAddress) => {
+                    // Don't forget to update our cache with new address data
+                    if (commonAddressCache.has(updatedAddress.label)) {
+                      commonAddressCache.set(updatedAddress.label, updatedAddress);
+                    }
+                    if (normalAddressCache.has(updatedAddress.label)) {
+                      normalAddressCache.set(updatedAddress.label, updatedAddress);
+                    }
+                    await updatedAddress.save();
+                  }));
+        */
 
-        let newCarverMovement = new CarverMovement({
-          _id: newCarverMovementId,
-
-          label: parsedMovement.label,
-          amount: parsedMovement.amount,
-
-          date: blockDate,
-          blockHeight: rpcblock.height,
-
-          from: from._id,
-          to: to._id,
-          destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
-
-          fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
-          toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
-
-          carverMovementType: parsedMovement.carverMovementType,
-          sequence,
-          lastFromMovement,
-          lastToMovement,
-
-          contextAddress,
-          //contextTx,
-          posRewardAmount: parsedMovement.posRewardAmount
-        });
-
-        switch (parsedMovement.carverMovementType) {
-          case CarverMovementType.PosRewardToTx:
-            newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
-            newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
-            break;
-        }
-
-        newMovements.push(newCarverMovement);
-
-        // Erase the amount after first encounter (so we only set it once)
-        if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
-          posRewardAmount = null;
-        }
-        //});
-
-        // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
-        await CarverMovement.insertMany(newMovements);
-
-        // If we get to this step we have all the movements saved in order so we can resume from hard fail
-        await Promise.all([...updatedAddresses.values()].map(
-          async (updatedAddress) => {
-            // Don't forget to update our cache with new address data
-            if (commonAddressCache.has(updatedAddress.label)) {
-              commonAddressCache.set(updatedAddress.label, updatedAddress);
-            }
-            if (normalAddressCache.has(updatedAddress.label)) {
-              normalAddressCache.set(updatedAddress.label, updatedAddress);
-            }
-            await updatedAddress.save();
-          }));
       }
     }
 

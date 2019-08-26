@@ -26,14 +26,14 @@ const carverAddressSchema = new mongoose.Schema({
   countOut: { required: true, type: Number/*, index: true*/ },
 
   // Track rewards (CarverAddressType.Address only). That way we can subtract them from countIn/countOut to get number of non-reward txs
-  posCountIn: { type: Number,/*, index: true*/ },
-  posValueIn: { type: Number/*, index: true*/ },
+  //posCountIn: { type: Number,/*, index: true*/ },
+  //posValueIn: { type: Number/*, index: true*/ },
 
-  mnCountIn: { type: Number/*, index: true*/ },
-  mnValueIn: { type: Number/*, index: true*/ },
+  //mnCountIn: { type: Number/*, index: true*/ },
+  //mnValueIn: { type: Number/*, index: true*/ },
 
-  powCountIn: { type: Number/*, index: true*/ },
-  powValueIn: { type: Number/*, index: true*/ },
+  //powCountIn: { type: Number/*, index: true*/ },
+  //powValueIn: { type: Number/*, index: true*/ },
 
   sequence: { index: true, required: true, type: Number } // Not unique because two addresses can have same sequence
 }, { _id: false, versionKey: false });
@@ -61,16 +61,17 @@ const carverMovementsSchema = new mongoose.Schema({
   //fromBalance: { required: true, type: Number },
   //toBalance: { required: true, type: Number },
 
-  from: [
+
+  /**
+   * Think of CarverMovement = TX andd CarverAddressMovements is all +/- to addresses inside a tx.
+   */
+  carverAddressMovements: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' }
+    /*
     {
       carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
       amount: { required: true, type: Number }
-    }],
-  to: [
-    {
-      carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-      amount: { required: true, type: Number }
-    }],
+    }*/],
+
 
   // We'll use this for finding movements for specific address/tx (also note the two compound indexes below).
   // Because all movements are tx->address or address->tx both of these fields are always filled
@@ -101,10 +102,27 @@ carverMovementsSchema.index({ contextTx: 1, sequence: 1 }, { unique: true });
 // At the moment we only use this for reward breakdown, after that moves to new address type we could remove this
 carverMovementsSchema.index({ carverMovementType: 1, sequence: 1 }, { unique: true });
 
-
 const CarverMovement = mongoose.model('CarverMovement', carverMovementsSchema, 'carverMovements');
+
+
+const carverAddressMovementSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
+
+  //date: { required: true, type: Date },
+  carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  carverMovement: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
+
+  amount: { required: true, type: Number },
+  balance: { required: true, type: Number },
+
+  sequence: { index: true, required: true, type: Number }, // Not unique because two addresses can have same sequence
+}, { _id: false, versionKey: false });
+carverAddressMovementSchema.index({ carverAddress: 1, sequence: 1 }, { unique: true });
+
+const CarverAddressMovement = mongoose.model('CarverAddressMovement', carverAddressMovementSchema, 'carverAddressMovements');
 
 module.exports = {
   CarverAddress,
-  CarverMovement
+  CarverMovement,
+  CarverAddressMovement
 }
