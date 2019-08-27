@@ -65,12 +65,12 @@ const carverMovementsSchema = new mongoose.Schema({
   /**
    * Think of CarverMovement = TX andd CarverAddressMovements is all +/- to addresses inside a tx.
    */
-  carverAddressMovements: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' }
-    /*
-    {
-      carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-      amount: { required: true, type: Number }
-    }*/],
+  //carverAddressMovements: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' }
+  /*
+  {
+    carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+    amount: { required: true, type: Number }
+  }*///],
 
 
   // We'll use this for finding movements for specific address/tx (also note the two compound indexes below).

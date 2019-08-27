@@ -9,7 +9,8 @@ const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
 const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
-const { CarverMovement, CarverAddress } = require('../model/carver2d');
+const { CarverMovement, CarverAddress, CarverAddressMovement } = require('../model/carver2d');
+const { UTXO } = require('../model/utxo');
 
 // Models.
 const Block = require('../model/block');
@@ -129,26 +130,18 @@ async function syncBlocks(start, stop, sequence) {
 
         parsedMovement.sequence = sequence;
 
-
-        // Go through required movements and ensure all the caches are set for saving the movements
-        //const parsedMovement = await carver2d.parseNewRequiredMovement(params, requiredMovement);
-
-
-
-        //const voutRequiredMovements = carver2d.getVoutRequiredMovements(rpctx);
-
-
-        // We'll convert "required movements" into actual movements. (required movements = no async calls, parsing = async calls)
-        //const parsedMovements = await carver2d.parseRequiredMovements(params);
+        let newCarverAddressMovements = [];
+        let carverAddressesToInsert = [];
+        let carverAddressesToUpdate = [];
 
         //parsedMovements.forEach(parsedMovement => {
         const newCarverMovementId = parsedMovement._id;
 
-        //let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
-        //const from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-
         parsedMovement.consolidatedAddressMovements.forEach(movementData => {
           const addressFromCache = getCarverAddressFromCache(movementData.label);
+          if (!addressFromCache) {
+            throw `Could not find address: ${movementData.label}`
+          }
 
           if (movementData.amount < 0) {
             const from = addressFromCache;
@@ -158,8 +151,8 @@ async function syncBlocks(start, stop, sequence) {
             }*/
 
             from.countOut++;
-            from.balance -= movementData.amount;
-            from.valueOut += movementData.amount;
+            from.balance -= -movementData.amount;
+            from.valueOut += -movementData.amount;
             from.sequence = sequence;
             from.lastMovement = newCarverMovementId;
             //canFlowSameAddress = true;
@@ -174,47 +167,52 @@ async function syncBlocks(start, stop, sequence) {
             //canFlowSameAddress = true;
           }
 
+          // Do we need to insert or update this address? (if _id is null then add to batch insert otherwise batch updates)
+          if (!addressFromCache._id) {
+            addressFromCache._id = new mongoose.Types.ObjectId();
+            addressFromCache.isNew = false; // Mark this mongoose document as not new (we're batch insert it outselves and next time we're calling .save() on it we want it to update instead of trying to insert)
+            carverAddressesToInsert.push(addressFromCache);
+          } else {
+            carverAddressesToUpdate.push(addressFromCache);
+          }
+
           updatedAddresses.set(addressFromCache.label, addressFromCache);
 
-          console.log(movementData);
+          let newCarverAddressMovement = new CarverAddressMovement({
+            _id: new mongoose.Types.ObjectId(),
+            carverAddress: addressFromCache._id,
+            carverMovement: newCarverMovementId,
+            amount: movementData.amount,
+            balance: addressFromCache.balance,
+            sequence
+          })
 
-          /*
-          @todo create carverAddressMovement
-          */
-
+          newCarverAddressMovements.push(newCarverAddressMovement);
         });
-        throw 'zz';
 
-        /*
-                parsedMovement.to.forEach(movementData => {
-                  const to = getCarverAddressFromCache(movementData.label);
-        
-                  /*if (from.sequence > sequence) {
-                    throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
-                  }*/
-        /*
-                  to.countIn++;
-                  to.balance += movementData.amount;
-                  to.valueIn += movementData.amount;
-                  to.sequence = sequence;
-                  to.lastMovement = newCarverMovementId;
-                  //canFlowSameAddress = true;
-        
-                  updatedAddresses.set(to.label, to);
-                });*/
+        await UTXO.insertMany(parsedMovement.newUtxos);
 
-        const allUpdatedAddresses = Array.from(updatedAddresses);
+        //console.log(parsedMovement.newUtxos);
+        //throw 'zz';
 
-        // Find and insert all new addresses (if syncing fails here it's ok because cleanup will catch it and remove these addresses)
-        const carverAddressesToInsert = allUpdatedAddresses.filter(updatedAddress => updatedAddress[1]._id === null).map(updatedAddress => updatedAddress[1]);
-        /*carverAddressesToInsert.forEach(carverAddressToInsert => {
-          // Assign new ids
-          carverAddressToInsert._id = new mongoose.Types.ObjectId();
-        });*/
+
+        // Insert any new addresses that were used in this tx
         await CarverAddress.insertMany(carverAddressesToInsert);
 
+        // Update all addresses in parallel
+        await Promise.all(carverAddressesToUpdate.map(
+          async (updatedAddress) => {
+            await updatedAddress.save();
+          }));
+
+        // Insert ledger movements for address
+        await CarverAddressMovement.insertMany(newCarverAddressMovements);
+
+        //throw 'done!';
+
+        /*
+
         // Create our carver movement
-        console.log(parsedMovement);
         throw 'zz';
         const newCarverMovement = new CarverMovement(parsedMovement);
         await newCarverMovement.save();
@@ -254,7 +252,7 @@ async function syncBlocks(start, stop, sequence) {
         to.valueIn += parsedMovement.amount;
         to.sequence = sequence;
         to.lastMovement = newCarverMovementId;
-
+*/
         /*
         switch (parsedMovement.carverMovementType) {
           case CarverMovementType.PosRewardToTx:
@@ -281,9 +279,9 @@ async function syncBlocks(start, stop, sequence) {
             break;
         }*/
 
-        updatedAddresses.set(to.label, to);
+        //updatedAddresses.set(to.label, to);
 
-        const contextAddress = to.carverAddressType === CarverAddressType.Address ? to._id : from._id;
+        //const contextAddress = to.carverAddressType === CarverAddressType.Address ? to._id : from._id;
         //const contextTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
         /*
                 let newCarverMovement = new CarverMovement({
@@ -360,14 +358,14 @@ async function syncBlocks(start, stop, sequence) {
 
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
-
-    if (Math.floor((Math.random() * 100) + 1) < 5) {
-      var dropNumBlocks = Math.floor((Math.random() * 10) + 1);
-      console.log(`Dropping ${dropNumBlocks} blocks`)
-      await undoCarverBlockMovements(height - dropNumBlocks + 1);
-      height -= dropNumBlocks;
-      commonAddressCache.clear(); // Clear cache because the addresses could now be invalid
-    }
+    /*
+        if (Math.floor((Math.random() * 100) + 1) < 5) {
+          var dropNumBlocks = Math.floor((Math.random() * 10) + 1);
+          console.log(`Dropping ${dropNumBlocks} blocks`)
+          await undoCarverBlockMovements(height - dropNumBlocks + 1);
+          height -= dropNumBlocks;
+          commonAddressCache.clear(); // Clear cache because the addresses could now be invalid
+        }*/
 
   }
 }
@@ -393,8 +391,8 @@ async function undoCarverBlockMovements(height) {
       .populate('from')
       .populate('to')
       .populate('lastFromMovement', { date: 1, sequence: 1 })
-      .populate('lastToMovement', { date: 1, sequence: 1 })
-      .hint({ blockHeight: 1 }); // give indexing hint (otherwise blockHeight index might be picked instead and it's much slower as sorting is required)
+      .populate('lastToMovement', { date: 1, sequence: 1 });
+    //.hint({ blockHeight: 1 }); // give indexing hint (otherwise blockHeight index might be picked instead and it's much slower as sorting is required)
 
     if (parsedMovements.length === 0) {
       console.log(`No more movements for block: ${height}`)
