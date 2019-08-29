@@ -41,8 +41,10 @@ const getVinUtxos = async (rpctx) => {
   }
 
 
-  const utxos = await UTXO.find({ label: { $in: utxoLabels } }, { label: 1, addressLabel: 1 });
+  const utxos = await UTXO.find({ label: { $in: utxoLabels } }, { label: 1, addressLabel: 1, amount: 1 });
   if (utxos.length !== utxoLabels.length) {
+    console.log(utxoLabels);
+    console.log(utxos);
     throw 'UTXO count mismatch'
   }
 
@@ -138,12 +140,15 @@ const fillAddressCache = async (params, usedAddresses) => {
   allAddressesToFetch.forEach(label => {
     const carverAddress = carverAddresses.find(carverResult => carverResult.label === label);
 
-    // Carver address was not in cache, add it to cache
+
+    // Carver address was not in db, add it to cache
     if (!carverAddress) {
       const carverAddressMovement = usedAddresses.get(label);
       const newCarverAddress = createCarverAddress(carverAddressMovement.addressType, label, blockDate)
 
       addAddressToCache(newCarverAddress);
+    } else {
+      addAddressToCache(carverAddress);
     }
   })
 }
@@ -207,6 +212,7 @@ const getRequiredMovement = async (params) => {
       if (!vinUtxo) {
         throw `UTXO not found: ${utxoLabel}`;
       }
+      addToAddress(CarverAddressType.Address, vinUtxo.addressLabel, -vinUtxo.amount);
 
       if (isPosTx(rpctx)) {
         carverTxType = CarverTxType.ProofOfStake;
@@ -258,16 +264,12 @@ const getRequiredMovement = async (params) => {
                 }
                 break;
               case CarverTxType.ProofOfStake:
-                if (rpctx.vout.length === 1) {
-                  posAddressLabel = addressLabel;
+                if (voutIndex === rpctx.vout.length - 1) { // Assume last tx is always masternode reward
+                  // Masternode Reward / Governance 
+                  mnAddressLabel = addressLabel;
                 } else {
-                  if (voutIndex === rpctx.vout.length - 1) { // Assume last tx is always masternode reward
-                    // Masternode Reward / Governance 
-                    mnAddressLabel = addressLabel;
-                  } else {
-                    // Proof of Stake Reward
-                    posAddressLabel = addressLabel;
-                  }
+                  // Proof of Stake Reward
+                  posAddressLabel = addressLabel;
                 }
                 break;
               default:
@@ -275,13 +277,14 @@ const getRequiredMovement = async (params) => {
                 throw 'Unhandled carverTxType!';
             }
           }
-
-          newUtxos.push(new UTXO({
-            label: `${rpctx.txid}:${vout.n}`,
-            blockHeight: params.rpcblock.height,
-            amount: vout.value,
-            addressLabel
-          }));
+          if (vout.value > 0) {
+            newUtxos.push(new UTXO({
+              label: `${rpctx.txid}:${vout.n}`,
+              blockHeight: params.rpcblock.height,
+              amount: vout.value,
+              addressLabel
+            }));
+          }
           break;
         case 'nonstandard':
           // Don't need to do any movements for this
@@ -294,10 +297,6 @@ const getRequiredMovement = async (params) => {
               throw 'ZEROCOIN WITHOUT VALUE?';
             }
             addToAddress(CarverAddressType.Zerocoin, 'ZEROCOIN', vout.value);
-
-            //@todo
-
-            //requiredMovements.push({ movementType: CarverMovementType.TxToZerocoin, label, amount: vout.value });
           }
           break
         case 'nulldata':
@@ -308,9 +307,6 @@ const getRequiredMovement = async (params) => {
               throw 'BURN WITHOUT VALUE?';
             }
             addToAddress(CarverAddressType.Burn, 'BURN', vout.value);
-
-            //@todo
-            // requiredMovements.push({ movementType: CarverMovementType.Burn, label, amount: vout.value });
           }
           break
         default:
@@ -337,7 +333,7 @@ const getRequiredMovement = async (params) => {
       if (!posAddressAmount) {
         throw 'POS reward not found?';
       }
-      addToAddress(CarverAddressType.ProofOfWork, `${posAddressLabel}:POS`, -posAddressAmount.amount);
+      addToAddress(CarverAddressType.ProofOfStake, `${posAddressLabel}:POS`, -posAddressAmount.amount);
       break;
     case CarverTxType.ProofOfWork:
       const powRewardAmount = consolidatedAddressAmounts.get(powAddressLabel);
@@ -368,7 +364,7 @@ const getRequiredMovement = async (params) => {
 
   // Finally create our new movement
   const totalAmountOut = consolidatedAddresses.filter(consolidatedAddressAmount => consolidatedAddressAmount.mount > 0).reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amount, 0);
-  let newCarverMovement = {
+  return {
     _id: new mongoose.Types.ObjectId(),
     txId: params.rpctx.txid,
     txType: carverTxType,
@@ -380,9 +376,7 @@ const getRequiredMovement = async (params) => {
     // Store the temporary movements here. We'll fill the from/to CarverAddressMovements outside of this method
     consolidatedAddressMovements: consolidatedAddressAmounts,
     newUtxos
-  }
-
-  return newCarverMovement;
+  };
 }
 
 
@@ -500,9 +494,9 @@ async function parseRequiredMovements(params) {
 
     const existingCarverAddress = await CarverAddress.findOne({ label });
     if (existingCarverAddress) {
-      params.commonAddressCache.set(label, existingCarverAddress);
       return existingCarverAddress;
     }
+
     let newCarverAddress = new CarverAddress({
       _id: new mongoose.Types.ObjectId(),
       label,
@@ -521,26 +515,15 @@ async function parseRequiredMovements(params) {
       sequence: 0
     });
 
-    /*
     switch (carverAddressType) {
       case CarverAddressType.Address:
-        //@todo these will all be moved to address-specific rewards
-        newCarverAddress.posCountIn = 0;
-        newCarverAddress.posValueIn = 0;
-        newCarverAddress.mnCountIn = 0;
-        newCarverAddress.mnValueIn = 0;
-        newCarverAddress.powCountIn = 0;
-        newCarverAddress.powValueIn = 0;
+        params.normalAddressCache.set(label, newCarverAddress);
         break;
       case CarverAddressType.Tx:
         break;
       default:
+        params.commonAddressCache.set(label, newCarverAddress);
         break;
-    }
-    */
-
-    if (carverAddressType != CarverAddressType.Tx) {
-      params.commonAddressCache.set(label, existingCarverAddress);
     }
 
     return newCarverAddress;

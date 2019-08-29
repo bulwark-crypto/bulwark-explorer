@@ -354,7 +354,7 @@ async function syncBlocks(start, stop, sequence) {
     await block.save();
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
-    console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${rpcblock.tx.length} Vins: ${vinsCount} Vouts: ${voutsCount} Cache: ${commonAddressCache.size}`);
+    console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${rpcblock.tx.length} Vins: ${vinsCount} Vouts: ${voutsCount} Caches: ${normalAddressCache.size} (addresses)/${commonAddressCache.size} (common)`);
 
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
