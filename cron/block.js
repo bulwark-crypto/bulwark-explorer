@@ -143,6 +143,8 @@ async function syncBlocks(start, stop, sequence) {
             throw `Could not find address: ${movementData.label}`
           }
 
+          //carver2d.fillAddressFriends(addressFromCache, parsedMovement.consolidatedAddressMovements); //@todo friend addresses
+
           if (movementData.amount < 0) {
             const from = addressFromCache;
 
@@ -375,6 +377,7 @@ async function syncBlocks(start, stop, sequence) {
 async function undoCarverBlockMovements(height) {
   console.dateLog(`Undoing block ${height}`);
   await Block.remove({ height: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
+  await UTXO.remove({ blockHeight: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
 
   let sequence = 0;
 

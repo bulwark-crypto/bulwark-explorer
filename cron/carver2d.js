@@ -29,6 +29,11 @@ const getVinUtxos = async (rpctx) => {
   for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
     const vin = rpctx.vin[vinIndex];
 
+    // Zerocoin doesn't need any vins
+    if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
+      return utxoLabels;
+    }
+
     if (vin.txid) {
       if (vin.vout === undefined) {
         console.log(vin);
@@ -45,6 +50,7 @@ const getVinUtxos = async (rpctx) => {
   if (utxos.length !== utxoLabels.length) {
     console.log(utxoLabels);
     console.log(utxos);
+    console.log(rpctx);
     throw 'UTXO count mismatch'
   }
 
@@ -110,6 +116,8 @@ const fillAddressCache = async (params, usedAddresses) => {
 
     switch (carverAddress.carverAddressType) {
       case CarverAddressType.Address:
+      case CarverAddressType.ProofOfWork:
+      case CarverAddressType.ProofOfStake:
         params.normalAddressCache.set(carverAddress.label, carverAddress);
         break;
 
@@ -183,6 +191,7 @@ const getRequiredMovement = async (params) => {
   let posAddressLabel = null;
   let powAddressLabel = null;
   let mnAddressLabel = null;
+  let zerocoinOutAmount = 0;
 
   for (let vinIndex = 0; vinIndex < rpctx.vin.length; vinIndex++) {
     const vin = rpctx.vin[vinIndex];
@@ -272,6 +281,9 @@ const getRequiredMovement = async (params) => {
                   posAddressLabel = addressLabel;
                 }
                 break;
+              case CarverTxType.Zerocoin:
+                zerocoinOutAmount += vout.value;
+                break;
               default:
                 console.log(carverTxType);
                 throw 'Unhandled carverTxType!';
@@ -343,6 +355,9 @@ const getRequiredMovement = async (params) => {
       addToAddress(CarverAddressType.ProofOfWork, `${powAddressLabel}:POW`, -powRewardAmount.amount);
       break;
     case CarverTxType.TransferManyToMany:
+      break;
+    case CarverTxType.Zerocoin:
+      addToAddress(CarverAddressType.Zerocoin, `ZEROCOIN`, -zerocoinOutAmount);
       break;
     default:
       console.log(carverTxType);
