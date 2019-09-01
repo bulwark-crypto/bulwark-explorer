@@ -59,6 +59,7 @@ async function syncBlocks(start, stop, clean = false) {
       bits: rpcblock.bits,
       confirmations: rpcblock.confirmations,
       createdAt: new Date(rpcblock.time * 1000),
+      timeEpoch: rpcblock.time,
       diff: rpcblock.difficulty,
       merkle: rpcblock.merkleroot,
       nonce: rpcblock.nonce,
