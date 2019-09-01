@@ -40,10 +40,18 @@ async function syncBlocks(start, stop, clean = false) {
     await BlockRewardDetails.remove({ blockHeight: { $gt: start, $lte: stop } });
   }
 
+  let blockSyncing = false;
+
   let block;
   for (let height = start + 1; height <= stop; height++) {
+
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
+
+    if (blockSyncing) {
+      throw "Block-overrun detected Only a single block should be running";
+    }
+    blockSyncing = true;
 
     block = new Block({
       hash,
@@ -65,16 +73,39 @@ async function syncBlocks(start, stop, clean = false) {
     let voutsCount = 0;
 
     // Notice how we're ensuring to only use a single rpc call with forEachSeries()
+    let addedPosTxs = []
+    let txSyncing = false;
     await forEachSeries(block.txs, async (txhash) => {
+
+      if (txSyncing) {
+        throw "TX-overrun detected Only a single block should be running";
+      }
+      txSyncing = true;
+
       const rpctx = await util.getTX(txhash, true);
+      config.verboseCronTx && console.log(`txId: ${rpctx.txid}`);
 
       vinsCount += rpctx.vin.length;
       voutsCount += rpctx.vout.length;
 
+      let postTx = null;
       if (blockchain.isPoS(block)) {
-        await util.addPoS(block, rpctx);
+        posTx = await util.addPoS(block, rpctx);
+        addedPosTxs.push({ rpctx, posTx });
       } else {
         await util.addPoW(block, rpctx);
+      }
+
+      config.verboseCronTx && console.log(`tx added:(txid:${rpctx.txid}, id: ${posTx ? posTx._id : '*NO rpctx*'})\n`);
+
+      txSyncing = false;
+    });
+
+    // After adding the tx we'll scan them and do deep analysis
+    await forEachSeries(addedPosTxs, async (addedPosTx) => {
+      const { rpctx, posTx } = addedPosTx;
+      if (posTx) {
+        await util.performDeepTxAnalysis(block, rpctx, posTx);
       }
     });
 
@@ -86,6 +117,8 @@ async function syncBlocks(start, stop, clean = false) {
 
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${block.txs.length} Vins: ${vinsCount} Vouts: ${voutsCount}`);
+
+    blockSyncing = false;
   }
 
   // Post an update to slack incoming webhook if url is

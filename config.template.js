@@ -3,51 +3,51 @@
  */
 const config = {
   api: {
-    'host': 'https://explorer.bulwarkcrypto.com',
-    'port': '3000',
-    'portWorker': '443',
-    'prefix': '/api',
-    'timeout': '5s'
+    host: 'https://explorer.bulwarkcrypto.com',
+    port: '3000',
+    portWorker: '443',
+    prefix: '/api',
+    timeout: '5s'
   },
   db: {
-    'host': '127.0.0.1',
-    'port': '27017',
-    'name': 'blockex',
-    'user': 'blockexuser',
-    'pass': 'Explorer!1'
+    host: '127.0.0.1',
+    port: '27017',
+    name: 'blockex',
+    user: 'blockexuser',
+    pass: 'Explorer!1'
   },
   rpc: {
-    'host': '127.0.0.1',
-    'port': '52541',
-    'user': 'bulwarkrpc',
-    'pass': 'someverysafepassword',
-    'timeout': 8000, // 8 seconds
+    host: '127.0.0.1',
+    port: '52541',
+    user: 'bulwarkrpc',
+    pass: 'someverysafepassword',
+    timeout: 8000, // 8 seconds
   },
-  verboseCron: true, // If set to true there are extra logging details in cron scripts
   coinDetails: {
     name: 'Bulwark',
     shortName: 'BWK',
-    coinNumberFormat: '0,0.0000'
+    longName: 'Bulwark Cryptocurrency',
+    coinNumberFormat: '0,0.0000',
+    websiteUrl: 'https://bulwarkcrypto.com/'
   },
-  splitRewardsData: true, // Set to true to extract POS & MN data
 
   ///////////////////////////////
   // API & Social configurations
   ///////////////////////////////
   freegeoip: {
-    'api': 'https://extreme-ip-lookup.com/json/'
+    api: 'https://extreme-ip-lookup.com/json/'
   },
   coinMarketCap: {
-    'api': 'http://api.coinmarketcap.com/v1/ticker/',
-    'ticker': 'bulwark'
+    api: 'http://api.coinmarketcap.com/v1/ticker/',
+    ticker: 'bulwark'
   },
   slack: {
-    'url': 'https://hooks.slack.com/services/A00000000/B00000000/somekindofhashhere',
+    url: 'https://hooks.slack.com/services/A00000000/B00000000/somekindofhashhere',
     //'channel': '#general',
     //'username': 'Block Report',
     //'icon_emoji': ':bwk:'
   },
-  
+
   ///////////////////////////////
   // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
   ///////////////////////////////
@@ -69,45 +69,45 @@ const config = {
     scoreStyles: [
       // Best case
       {
-        color: "#72f87b",
-        title: "Rank 1/10 - Excellent!!!"
+        color: '#72f87b',
+        title: 'Rank 1/10 - Excellent!!!'
       },
       {
-        color: "#84f771",
-        title: "Rank 2/10 - Excellent!"
+        color: '#84f771',
+        title: 'Rank 2/10 - Excellent!'
       },
       {
-        color: "#a0f771",
-        title: "Rank 3/10 - Excellent"
+        color: '#a0f771',
+        title: 'Rank 3/10 - Excellent'
       },
       {
-        color: "#bcf671",
-        title: "Rank 4/10 - Very Good"
+        color: '#bcf671',
+        title: 'Rank 4/10 - Very Good'
       },
       {
-        color: "#d8f671",
-        title: "Rank 5/10 - Above Average"
+        color: '#d8f671',
+        title: 'Rank 5/10 - Above Average'
       },
       {
-        color: "#f3f671",
-        title: "Rank 6/10 - Average"
+        color: '#f3f671',
+        title: 'Rank 6/10 - Average'
       },
       {
-        color: "#f5dc71",
-        title: "Rank 7/10 - Below Average"
+        color: '#f5dc71',
+        title: 'Rank 7/10 - Below Average'
       },
       {
-        color: "#f5c071",
-        title: "Rank 8/10 - Not Optimal"
+        color: '#f5c071',
+        title: 'Rank 8/10 - Not Optimal'
       },
       {
-        color: "#f4a471",
-        title: "Rank 9/10 - Not Optimal!"
+        color: '#f4a471',
+        title: 'Rank 9/10 - Not Optimal!'
       },
       // Worst case (default)
       {
-        color: "#f48871",
-        title: "Rank 10/10 - Not Optimal!!!"
+        color: '#f48871',
+        title: 'Rank 10/10 - Not Optimal!!!'
       }
     ]
   },
@@ -137,7 +137,14 @@ const config = {
         ]
       }
     }
-  }
+  },
+
+  ///////////////////////////////
+  /// Misc & Logging
+  ///////////////////////////////
+  verboseCron: true,      // If set to true there are extra logging details in cron scripts
+  verboseCronTx: false,   // If set to true there are extra tx logging details in cron scripts (Not recommended)
+  splitRewardsData: true, // Set to true to extract POS & MN data
 };
 
 module.exports = config;
