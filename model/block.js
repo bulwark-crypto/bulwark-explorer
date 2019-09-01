@@ -12,6 +12,7 @@ const Block = mongoose.model('Block', new mongoose.Schema({
   bits: { required: true, type: String },
   confirmations: { required: true, type: Number },
   createdAt: { index: true, required: true, type: Date },
+  timeEpoch: { index: true, required: true, type: Number },
   diff: { required: true, type: String },
   hash: { index: true, required: true, type: String, unique: true },
   height: { index: true, required: true, type: Number },
