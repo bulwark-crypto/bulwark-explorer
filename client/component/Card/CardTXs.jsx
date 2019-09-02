@@ -57,29 +57,29 @@ export default class CardTXs extends Component {
               </Link>
             ),
             txId: (
-              <Link to={`/tx/${tx.label}`}>
+              <Link to={`/tx/${tx.txId}`}>
                 {tx.txId}
               </Link>
             ),
             amount: (
               <span className={spanClassName}>
-                <Link to={`/tx/${tx.label}`}>
+                <Link to={`/tx/${tx.txId}`}>
                   {TransactionValue(tx, amount)}
                 </Link>
               </span>
             ),
             addressesIn: (
-              <Link to={`/tx/${tx.label}`}>
+              <Link to={`/tx/${tx.txId}`}>
                 {tx.addressesIn}
               </Link>
             ),
             addressesOut: (
-              <Link to={`/tx/${tx.label}`}>
+              <Link to={`/tx/${tx.txId}`}>
                 {tx.addressesOut}
               </Link>
             ),
             date: (
-              <Link to={`/tx/${tx.date}`} className="text-nowrap">
+              <Link to={`/tx/${tx.txId}`} className="text-nowrap">
                 {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
               </Link>
             ),

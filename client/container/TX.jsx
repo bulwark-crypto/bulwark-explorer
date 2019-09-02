@@ -109,16 +109,17 @@ class TX extends Component {
   }
 
   getTransactionDetails() {
-    const inMovements = this.state.tx.movements.filter(movement => movement.to._id === this.state.tx.carverAddress._id);
-    const outMovements = this.state.tx.movements.filter(movement => movement.from._id === this.state.tx.carverAddress._id);
+    const inMovements = this.state.tx.carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.amount < 0).sort((a, b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
+    const outMovements = this.state.tx.carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.amount >= 0).sort((b, a) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
+
     return (
       <div className="row">
         <div className="col">
-          <HorizontalRule title={`Inputs (${inMovements.length})`} />
+          <HorizontalRule title={`Source Addresses (${inMovements.length})`} />
           <CardTXIn txs={inMovements} />
         </div>
         <div className="col">
-          <HorizontalRule title={`Outputs (${outMovements.length})`} />
+          <HorizontalRule title={`Recepients (${outMovements.length})`} />
           <CardTXOut txs={outMovements} />
         </div>
       </div>

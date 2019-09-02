@@ -449,23 +449,25 @@ const getTX = async (req, res) => {
   try {
     const hash = req.params.hash;
 
-    const carverAddress = await CarverAddress.findOne({ label: hash });
-    if (!carverAddress) {
+    const carverMovement = await CarverMovement.findOne({ txId: hash }, { sequence: 0 });
+    if (!carverMovement) {
       res.status(404).send('Unable to find the transaction!');
       return;
     }
-    const carverMovements = await CarverMovement
-      .find({ contextTx: carverAddress._id }, { _id: 0, amount: 1, to: 1, from: 1 })
-      .populate('to', { label: 1, carverAddressType: 1 })
-      .populate('from', { label: 1, carverAddressType: 1 })
-      .sort({ sequence: -1 })
-      .hint({ contextTx: 1, sequence: 1 }); // Index hinting
+    const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: carverMovement._id }, { sequence: 0 }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
+
+
+    //.populate('to', { label: 1, carverAddressType: 1 })
+    //.populate('from', { label: 1, carverAddressType: 1 })
+    //.sort({ sequence: -1 })
+    //.hint({ contextTx: 1, sequence: 1 }); // Index hinting
 
 
     res.json({
-      //...tx.toObject(),
-      carverAddress: carverAddress.toObject(),
-      movements: carverMovements.map(carverMovement => carverMovement.toObject())
+      ...carverMovement.toObject(),
+      carverAddressMovements
+      //carverAddress: carverAddress.toObject(),
+      //movements: carverMovements.map(carverMovement => carverMovement.toObject())
     });
   } catch (err) {
     console.log(err);
@@ -507,15 +509,16 @@ const getTXs = async (req, res) => {
       }
     });
 
-    const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: { $in: carverMovementIdsToFetch } }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
+    //@todo new movements layout can have more details
+    //const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: { $in: carverMovementIdsToFetch } }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
 
     const txsWithMovements = txs.map(tx => {
-      const txCarverAddressMovements = carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.carverMovement.toString() === tx._id.toString()); // Find all matching movements for this tx. Notice .toString() because we're comparing mongoose.Schema.Types.ObjectId
+      //const txCarverAddressMovements = carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.carverMovement.toString() === tx._id.toString()); // Find all matching movements for this tx. Notice .toString() because we're comparing mongoose.Schema.Types.ObjectId
 
       return {
         ...tx.toObject(),
-        from: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount < 0),
-        to: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount >= 0)
+        //from: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount < 0),
+        //to: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount >= 0)
       }
     });
 

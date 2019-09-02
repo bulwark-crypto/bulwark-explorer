@@ -38,7 +38,7 @@ export default class CardTXOut extends Component {
         data={this.props.txs.map(tx => ({
           ...tx,
           address: (
-            <Link to={`/address/${tx.to.label}`}><CarverAddressLabelWidget carverAddress={tx.to} /></Link>
+            <Link to={`/address/${tx.label}`}><CarverAddressLabelWidget carverAddress={tx.carverAddress} /></Link>
           ),
           value: (
             <span className="badge badge-success">
