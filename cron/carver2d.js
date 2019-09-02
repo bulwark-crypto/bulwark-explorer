@@ -378,9 +378,8 @@ const getRequiredMovement = async (params) => {
   const consolidatedAddresses = Array.from(consolidatedAddressAmounts.values());
 
   // Finally create our new movement
-  const totalAmountOut = consolidatedAddresses.filter(consolidatedAddressAmount => consolidatedAddressAmount.mount > 0).reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amount, 0);
+  const totalAmountOut = consolidatedAddresses.filter(consolidatedAddressAmount => consolidatedAddressAmount.amount > 0).reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amount, 0);
   return {
-    _id: new mongoose.Types.ObjectId(),
     txId: params.rpctx.txid,
     txType: carverTxType,
     amount: totalAmountOut,

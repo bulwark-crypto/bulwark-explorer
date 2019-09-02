@@ -25,6 +25,8 @@ const carverAddressSchema = new mongoose.Schema({
   countIn: { required: true, type: Number/*, index: true*/ },
   countOut: { required: true, type: Number/*, index: true*/ },
 
+  //tags: [{ type, count }], //@todo add daily address-based tags (ex: most pos rewards in day, biggest movement of day, most movements in day)
+
   // Track rewards (CarverAddressType.Address only). That way we can subtract them from countIn/countOut to get number of non-reward txs
   //posCountIn: { type: Number,/*, index: true*/ },
   //posValueIn: { type: Number/*, index: true*/ },
@@ -48,7 +50,7 @@ const CarverAddress = mongoose.model('CarverAddress', carverAddressSchema, 'carv
 const carverMovementsSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
-  carverMovementType: { required: true, type: Number },
+  //carverMovementType: { required: true, type: Number },
 
   txId: { required: true, unique: true, index: true, type: String },
   txType: { required: true, type: Number },
@@ -58,6 +60,10 @@ const carverMovementsSchema = new mongoose.Schema({
 
   blockHeight: { index: true, required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
   date: { required: true, type: Date/*, index: true*/ },
+
+  addressesIn: { required: true, type: Number/*, index: true*/ },
+  addressesOut: { required: true, type: Number/*, index: true*/ },
+
   //fromBalance: { required: true, type: Number },
   //toBalance: { required: true, type: Number },
 
@@ -92,15 +98,13 @@ const carverMovementsSchema = new mongoose.Schema({
   //posRewardAmount: { type: Number } // Because POS TX can have multiple outputs we'll need to assign it to one of these outputs (for unreconciliation)
 }, { _id: false, versionKey: false });
 
-carverMovementsSchema.index({ blockHeight: 1, sequence: 1 }, { unique: true }); // For unreconciliation query (blockHeight: gte, order by sequence)
+//carverMovementsSchema.index({ blockHeight: 1, sequence: 1 }, { unique: true }); // For unreconciliation query (blockHeight: gte, order by sequence)
 
 // When viewing specific address we'll be filtering by from/to and sorting by sequence so we'll need these two compound indexes
-carverMovementsSchema.index({ contextAddress: 1, sequence: 1 }, { unique: true });
-carverMovementsSchema.index({ contextTx: 1, sequence: 1 }, { unique: true });
 
 // We'll be doing a lot of sorting on type + sequence so let's create an index on that as well
 // At the moment we only use this for reward breakdown, after that moves to new address type we could remove this
-carverMovementsSchema.index({ carverMovementType: 1, sequence: 1 }, { unique: true });
+//carverMovementsSchema.index({ carverMovementType: 1, sequence: 1 }, { unique: true });
 
 const CarverMovement = mongoose.model('CarverMovement', carverMovementsSchema, 'carverMovements');
 

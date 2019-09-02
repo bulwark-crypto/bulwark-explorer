@@ -10,13 +10,14 @@ const cache = require('../lib/cache');
 const Block = require('../../model/block');
 
 const { CarverAddressType, CarverMovementType } = require('../../lib/carver2d');
-const { CarverAddress, CarverMovement } = require('../../model/carver2d');
+const { CarverAddress, CarverMovement, CarverAddressMovement } = require('../../model/carver2d');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
 const BlockRewardDetails = require('../../model/blockRewardDetails');
 const TX = require('../../model/tx');
+const config = require('../../config')
 
 /**
  * Get transactions and unspent transactions by address.
@@ -169,7 +170,7 @@ const getBlock = async (req, res) => {
 
     res.json({
       ...block.toObject(),
-      txs: txs.map(tx => tx.toObject())
+      txs: txs.map(tx => tx.toObject()),
     });
   } catch (err) {
     console.log(err);
@@ -481,23 +482,44 @@ const getTXs = async (req, res) => {
   try {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-    const sort = req.query.sort === 'sequence' ? 'sequence' : 'valueOut';
+    const sort = 'sequence';//req.query.sort === 'sequence' ? 'sequence' : 'valueOut';
 
-    let query = { carverAddressType: CarverAddressType.Tx };
+    let query = { /*carverAddressType: CarverAddressType.Tx*/ };
 
     // Optional date range
     if (req.query.date) {
-      const ticksDifference = Number.parseInt(req.query.date);
+      /*const ticksDifference = Number.parseInt(req.query.date);
       if (ticksDifference) {
         const minDate = moment().subtract(ticksDifference, 'seconds').toDate();
         query.date = { $gte: minDate }
-      }
+      }*/
     }
 
-    const total = await CarverAddress.find(query).count();
-    const txs = await CarverAddress.find(query, { balance: 0, carverAddressType: 0, lastMovement: 0, valueIn: 0 }).skip(skip).limit(limit).sort({ [sort]: -1 });
+    const total = await CarverMovement.find(query).count();
+    const txs = await CarverMovement.find(query).skip(skip).limit(limit).sort({ [sort]: -1 });
 
-    res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+    let carverMovementIdsToFetch = [];
+    txs.forEach(tx => {
+      const totalAddresses = tx.addressesIn + tx.addressesOut;
+
+      if (totalAddresses <= config.maxMovementsAddressesToFetch) {
+        carverMovementIdsToFetch.push(tx._id);
+      }
+    });
+
+    const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: { $in: carverMovementIdsToFetch } }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
+
+    const txsWithMovements = txs.map(tx => {
+      const txCarverAddressMovements = carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.carverMovement.toString() === tx._id.toString()); // Find all matching movements for this tx. Notice .toString() because we're comparing mongoose.Schema.Types.ObjectId
+
+      return {
+        ...tx.toObject(),
+        from: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount < 0),
+        to: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount >= 0)
+      }
+    });
+
+    res.json({ txs: txsWithMovements, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);

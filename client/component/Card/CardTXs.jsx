@@ -26,11 +26,11 @@ export default class CardTXs extends Component {
     this.state = {
       cols: [
         { key: 'blockHeight', title: 'Height' },
-        { key: 'label', title: 'Transaction Hash' },
-        { key: 'valueOut', title: 'Value' },
-        { key: 'countIn', title: 'Inputs' },
-        { key: 'countOut', title: 'Outputs' },
-        { key: 'date', title: 'Created' },
+        { key: 'txId', title: 'Transaction Hash' },
+        { key: 'amount', title: 'Amount' },
+        { key: 'addressesIn', title: 'Addresses In' },
+        { key: 'addressesOut', title: 'Addresses Out' },
+        { key: 'date', title: 'Date' },
       ]
     };
   };
@@ -42,11 +42,11 @@ export default class CardTXs extends Component {
         data={this.props.txs.map(tx => {
           const date = moment(tx.date).utc();
           const diffSeconds = moment().utc().diff(date, 'seconds');
-          let blockValue = tx.valueOut;
-         
+          let amount = tx.amount;
+
           let spanClassName = ``;
           if (this.props.addBadgeClassToValue) {
-            spanClassName = `badge badge-${blockValue < 0 ? 'danger' : 'success'}`;
+            spanClassName = `badge badge-${amount < 0 ? 'danger' : 'success'}`;
           }
 
           return ({
@@ -56,26 +56,26 @@ export default class CardTXs extends Component {
                 {tx.blockHeight}
               </Link>
             ),
-            label: (
+            txId: (
               <Link to={`/tx/${tx.label}`}>
-                {tx.label}
+                {tx.txId}
               </Link>
             ),
-            valueOut: (
+            amount: (
               <span className={spanClassName}>
                 <Link to={`/tx/${tx.label}`}>
-                  {TransactionValue(tx, blockValue)}
+                  {TransactionValue(tx, amount)}
                 </Link>
               </span>
             ),
-            countIn: (
+            addressesIn: (
               <Link to={`/tx/${tx.label}`}>
-                {tx.countIn}
+                {tx.addressesIn}
               </Link>
             ),
-            countOut: (
+            addressesOut: (
               <Link to={`/tx/${tx.label}`}>
-                {tx.countOut}
+                {tx.addressesOut}
               </Link>
             ),
             date: (

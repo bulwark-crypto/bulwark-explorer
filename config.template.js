@@ -45,6 +45,12 @@ const config = {
   },
 
   ///////////////////////////////
+  /// Explorer Customization
+  ///////////////////////////////
+  desktopMenuExpanded: true,        // If set to true the website will have opened navigation bar on load
+  maxMovementsAddressesToFetch: 10, // Total unique addresses per tx that will be preloaded on movements page. Ex: 3 addresses -> 1 address = 4 total addresses. If number of addresses exceeds this 
+
+  ///////////////////////////////
   /// Community & Address Related
   ///////////////////////////////
   community: {
@@ -208,13 +214,12 @@ const config = {
   },
 
   ///////////////////////////////
-  /// Misc & Logging
+  /// Cron & Syncing
   ///////////////////////////////
   blockConfirmations: 10,           // We will re-check block "merkleroot" this many blocks back. If they differ we will then start unwinding carver movements one block at a time until correct block is found. (This is like min confirmations)
   verboseCron: true,                // If set to true there are extra logging details in cron scripts
   verboseCronTx: false,             // If set to true there are extra tx logging details in cron scripts (Not recommended)
   splitRewardsData: true,           // Set to true to extract POS & MN data
-  desktopMenuExpanded: true,        // If set to true the website will have opened navigation bar on load
   blockSyncAddressCacheLimit: 50000 // How many addresses to keep in memory during block syncing (When this number is reached the entire cache is flushed and filled again from beginning)
 };
 

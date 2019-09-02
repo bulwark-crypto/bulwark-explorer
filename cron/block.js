@@ -127,15 +127,13 @@ async function syncBlocks(start, stop, sequence) {
         // Go through all used addresses in this tx and make sure they're loaded in cache (we will access the cache outside and we want all addresses to be there)
         await carver2d.fillAddressCache(params, parsedMovement.consolidatedAddressMovements);
 
-
-        parsedMovement.sequence = sequence;
-
         let newCarverAddressMovements = [];
         let carverAddressesToInsert = [];
         let carverAddressesToUpdate = [];
+        let addressesIn = 0;
+        let addressesOut = 0;
 
-        //parsedMovements.forEach(parsedMovement => {
-        const newCarverMovementId = parsedMovement._id;
+        const newCarverMovementId = new mongoose.Types.ObjectId();
 
         parsedMovement.consolidatedAddressMovements.forEach(movementData => {
           const addressFromCache = getCarverAddressFromCache(movementData.label);
@@ -157,6 +155,7 @@ async function syncBlocks(start, stop, sequence) {
             from.valueOut += -movementData.amount;
             from.sequence = sequence;
             from.lastMovement = newCarverMovementId;
+            addressesIn++;
             //canFlowSameAddress = true;
           } else {
             const to = addressFromCache;
@@ -166,6 +165,7 @@ async function syncBlocks(start, stop, sequence) {
             to.valueIn += movementData.amount;
             to.sequence = sequence;
             to.lastMovement = newCarverMovementId;
+            addressesOut++;
             //canFlowSameAddress = true;
           }
 
@@ -185,14 +185,27 @@ async function syncBlocks(start, stop, sequence) {
             carverAddress: addressFromCache._id,
             carverMovement: newCarverMovementId,
             amount: movementData.amount,
-            balance: addressFromCache.balance,
+            balance: addressFromCache.balance - movementData.amount,
             sequence
-          })
-
+          });
           newCarverAddressMovements.push(newCarverAddressMovement);
         });
 
         await UTXO.insertMany(parsedMovement.newUtxos);
+
+        const newCarverMovement = new CarverMovement({
+          _id: newCarverMovementId,
+          txId: parsedMovement.txId,
+          txType: parsedMovement.txType,
+          amount: parsedMovement.amount,
+          blockHeight: parsedMovement.blockHeight,
+          date: parsedMovement.date,
+          sequence,
+          addressesIn,
+          addressesOut,
+          //@todo predictedAddressIn, predictedAddressOut
+        });
+        await newCarverMovement.save();
 
         //console.log(parsedMovement.newUtxos);
         //throw 'zz';
