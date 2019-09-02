@@ -15,7 +15,7 @@ const carverAddressSchema = new mongoose.Schema({
   label: { required: true, unique: true, index: true, type: String },
   balance: { required: true, type: Number },
 
-  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know WHEN this address was created (Technically, it could have been created during invalid block as well)
+  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know WHEN this address was created
   date: { required: true, type: Date },
   carverAddressType: { required: true, type: Number },
 
@@ -63,6 +63,7 @@ const carverMovementsSchema = new mongoose.Schema({
 
   addressesIn: { required: true, type: Number/*, index: true*/ },
   addressesOut: { required: true, type: Number/*, index: true*/ },
+  isReward: { required: true, type: Boolean },
 
   //fromBalance: { required: true, type: Number },
   //toBalance: { required: true, type: Number },
@@ -84,7 +85,7 @@ const carverMovementsSchema = new mongoose.Schema({
   //contextAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // What address does this movement belong to? (ex: when looking at movements for specific address)
   //contextTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // What tx does this movement belong to?
 
-  sequence: { index: true, unique: true, required: true, type: Number },
+  sequence: { unique: true, required: true, type: Number },
 
   // These two fields are required for unreconciliation. When we undo a carver movement we set the from/to address sequences back to what they were before the movement happened.
   //lastFromMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
@@ -97,6 +98,8 @@ const carverMovementsSchema = new mongoose.Schema({
   //posInputBlockHeightDiff: { type: Number }, // blockHeight-posInputBlockHeightDiff
   //posRewardAmount: { type: Number } // Because POS TX can have multiple outputs we'll need to assign it to one of these outputs (for unreconciliation)
 }, { _id: false, versionKey: false });
+
+carverMovementsSchema.index({ isReward: 1, sequence: 1 }, { unique: true }); // For Movements and rewards sorting
 
 //carverMovementsSchema.index({ blockHeight: 1, sequence: 1 }, { unique: true }); // For unreconciliation query (blockHeight: gte, order by sequence)
 

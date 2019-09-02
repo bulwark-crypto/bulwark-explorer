@@ -484,7 +484,7 @@ const getTXs = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const sort = 'sequence';//req.query.sort === 'sequence' ? 'sequence' : 'valueOut';
 
-    let query = { /*carverAddressType: CarverAddressType.Tx*/ };
+    let query = { isReward: false /*carverAddressType: CarverAddressType.Tx*/ };
 
     // Optional date range
     if (req.query.date) {

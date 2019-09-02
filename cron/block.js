@@ -8,7 +8,7 @@ const { forEachSeries } = require('p-iteration');
 const locker = require('../lib/locker');
 const util = require('./util');
 const carver2d = require('./carver2d');
-const { CarverAddressType, CarverMovementType } = require('../lib/carver2d');
+const { CarverAddressType, CarverMovementType, CarverTxType } = require('../lib/carver2d');
 const { CarverMovement, CarverAddress, CarverAddressMovement } = require('../model/carver2d');
 const { UTXO } = require('../model/utxo');
 
@@ -193,6 +193,8 @@ async function syncBlocks(start, stop, sequence) {
 
         await UTXO.insertMany(parsedMovement.newUtxos);
 
+        const isReward = parsedMovement.txType === CarverTxType.ProofOfWork || parsedMovement.txType === CarverTxType.ProofOfStake;
+
         const newCarverMovement = new CarverMovement({
           _id: newCarverMovementId,
           txId: parsedMovement.txId,
@@ -203,6 +205,7 @@ async function syncBlocks(start, stop, sequence) {
           sequence,
           addressesIn,
           addressesOut,
+          isReward
           //@todo predictedAddressIn, predictedAddressOut
         });
         await newCarverMovement.save();
