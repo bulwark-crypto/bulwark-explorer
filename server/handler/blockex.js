@@ -30,11 +30,17 @@ const getAddress = async (req, res) => {
     if (!carverAddress) {
       throw 'Address Not Found';
     }
+    const carverRewardAddresses = await CarverAddress.find({ label: { $in: [`${req.params.hash}:POW`, `${req.params.hash}:POS`, `${req.params.hash}:MN`] } }).populate("lastMovement", { date: 1 });
+
 
     const masternodeForAddress = await Masternode.findOne({ addr: req.params.hash });
     const isMasternode = !!masternodeForAddress;
 
-    res.json({ ...carverAddress.toObject(), isMasternode });
+    res.json({
+      ...carverAddress.toObject(),
+      isMasternode,
+      carverRewardAddresses
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
@@ -566,17 +572,16 @@ const getMovements = async (req, res) => {
 
     let query = {};
     if (addressId) {
-      query = { contextAddress: addressId };
+      query = { carverAddress: addressId };
     }
 
-    const total = await CarverMovement.count(query);
-    const movements = await CarverMovement
-      .find(query, { _id: 0 })
+    const total = await CarverAddressMovement.count(query);
+    const movements = await CarverAddressMovement
+      .find(query, { sequence: 0 })
       .skip(skip)
       .limit(limit)
       .sort({ sequence: -1 })
-      .populate('to', { label: 1, carverAddressType: 1 })
-      .populate('from', { label: 1, carverAddressType: 1 });
+      .populate('carverMovement', { sequence: 0 });
 
     res.json({ movements, pages: total <= limit ? 1 : Math.ceil(total / limit) });
   } catch (err) {

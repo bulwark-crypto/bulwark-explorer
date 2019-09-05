@@ -17,7 +17,7 @@ const carverAddressSchema = new mongoose.Schema({
 
   blockHeight: { index: true, required: true, type: Number }, // By storing block height we know WHEN this address was created
   date: { required: true, type: Date },
-  carverAddressType: { required: true, type: Number },
+  carverAddressType: { required: true, type: Number }, //@todo refactor to remove "carverAddress" prefix(too verbose)
 
   lastMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
   valueOut: { required: true, type: Number /*, index: true Possible Analytics Examples: Sort by wallets with most/least funds out)*/ },
@@ -117,7 +117,7 @@ const carverAddressMovementSchema = new mongoose.Schema({
 
   //date: { required: true, type: Date },
   carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
-  carverMovement: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
+  carverMovement: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
 
   amount: { required: true, type: Number },
   balance: { required: true, type: Number },

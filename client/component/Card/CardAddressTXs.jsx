@@ -6,7 +6,7 @@ import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 import config from '../../../config'
-import { CarverMovementType } from '../../../lib/carver2d'
+import { CarverMovementType, CarverTxType } from '../../../lib/carver2d'
 
 import Table from '../Table';
 
@@ -35,22 +35,14 @@ export default class CardAddressTXs extends Component {
 
   render() {
     const getMovementTitle = (movement) => {
-      switch (movement.carverMovementType) {
-        case CarverMovementType.PowAddressReward:
-          return "Proof Of Work Block Reward"
-        case CarverMovementType.TxToMnAddress:
-          return "Masternode Block Reward"
-        case CarverMovementType.PosTxIdVoutToTx:
-          return "This input received Proof Of Stake Reward"
+      if (movement.carverMovement.isReward) {
+        return "Block Reward"
       }
       return null;
     }
     const getMovementIcon = (movement) => {
-      switch (movement.carverMovementType) {
-        case CarverMovementType.PowAddressReward:
-        case CarverMovementType.TxToMnAddress:
-        case CarverMovementType.PosTxIdVoutToTx:
-          return <span class="ml-1">💎</span>
+      if (movement.carverMovement.isReward) {
+        return <span class="ml-1">💎</span>
       }
       return null;
     }
@@ -59,18 +51,18 @@ export default class CardAddressTXs extends Component {
         <Table
           cols={this.state.cols}
           data={this.props.movements.map((movement) => {
-            const isSpent = movement.from._id == this.props.addressId;
+            const isSpent = movement.amount < 0;
 
-            const balance = isSpent ? movement.fromBalance - movement.amount : movement.toBalance + movement.amount;
+            const balance = isSpent ? movement.balance - movement.amount : movement.balance + movement.amount;
 
-            const txId = isSpent ? movement.label.split(':')[1] : movement.from.label;
+            const txId = movement.carverMovement.txId;//isSpent ? movement.label.split(':')[1] : movement.from.label;
 
             return ({
               ...movement,
               amount: (<span>
                 <span
                   className={`badge badge-${isSpent ? 'danger' : 'success'}`} title={getMovementTitle(movement)}>
-                  {isSpent ? '-' : '+'} {numeral(movement.amount).format(config.coinDetails.coinNumberFormat)} BWK
+                  {isSpent ? '-' : '+'} {numeral(movement.amount * (isSpent ? -1 : 1)).format(config.coinDetails.coinNumberFormat)} BWK
                 </span>
                 {getMovementIcon(movement)}
               </span>
