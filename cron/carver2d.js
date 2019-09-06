@@ -162,11 +162,18 @@ const getRequiredMovement = async (params) => {
   var consolidatedAddressAmounts = new Map();
   const addToAddress = (addressType, label, amount) => {
     if (!consolidatedAddressAmounts.has(label)) {
-      consolidatedAddressAmounts.set(label, { label, addressType, amount: 0 });
+      consolidatedAddressAmounts.set(label, { label, addressType, amountIn: 0, amountOut: 0, amount: 0 });
     }
 
     let consolidatedAddressAmount = consolidatedAddressAmounts.get(label);
     consolidatedAddressAmount.amount += amount;
+
+    if (amount < 0) {
+      consolidatedAddressAmount.amountOut += -amount;
+    }
+    if (amount > 0) {
+      consolidatedAddressAmount.amountIn += amount;
+    }
   }
 
 
@@ -248,12 +255,12 @@ const getRequiredMovement = async (params) => {
                   // Proof of Work Reward / Premine 
                   powAddressLabel = addressLabel;
                 } else {
-                  if (voutIndex === rpctx.vout.length - 1) { // Assume last tx is always masternode reward
-                    // Masternode Reward / Governance 
-                    mnAddressLabel = addressLabel;
-                  } else {
+                  if (voutIndex === rpctx.vout.length - 1) { // Assume last tx is always POW reward
                     // Proof of Work Reward
                     powAddressLabel = addressLabel;
+                  } else {
+                    // Masternode Reward / Governance 
+                    mnAddressLabel = addressLabel;
                   }
                 }
                 break;

@@ -109,8 +109,16 @@ class TX extends Component {
   }
 
   getTransactionDetails() {
-    const inMovements = this.state.tx.carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.amount < 0).sort((a, b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
-    const outMovements = this.state.tx.carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.amount >= 0).sort((b, a) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
+
+    const inMovements = this.state.tx.carverAddressMovements
+      .filter(carverAddressMovement => carverAddressMovement.amountOut > 0)
+      .sort((b, a) => (a.amountOut > b.amountOut) ? 1 : ((b.amountOut > a.amountOut) ? -1 : 0))
+      .map(carverAddressMovement => ({ ...carverAddressMovement, amount: -carverAddressMovement.amountOut }));
+
+    const outMovements = this.state.tx.carverAddressMovements
+      .filter(carverAddressMovement => carverAddressMovement.amountIn > 0)
+      .sort((b, a) => (a.amountIn > b.amountIn) ? 1 : ((b.amountIn > a.amountIn) ? -1 : 0))
+      .map(carverAddressMovement => ({ ...carverAddressMovement, amount: carverAddressMovement.amountIn }));
 
     return (
       <div className="row">

@@ -8,6 +8,7 @@ import React from 'react';
 import moment from 'moment';
 import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabelWidget'
 import CarverAddressBadgeWidget from '../AddressWidgets/CarverAddressBadgeWidget'
+import { CarverAddressType } from '../../../lib/carver2d'
 
 export default class CardAddress extends Component {
   static defaultProps = {
@@ -42,6 +43,22 @@ export default class CardAddress extends Component {
 
   render() {
     const carverAddress = this.props.carverAddress;
+
+    // Proof Of Work Rewards
+    const powAddress = carverAddress.carverRewardAddresses.find(carverRewardAddresses => carverRewardAddresses.carverAddressType === CarverAddressType.ProofOfWork);
+    const powValueIn = powAddress ? powAddress.valueOut : 0;
+    const powCountIn = powAddress ? powAddress.countOut : 0;
+
+    // Masternode Rewards
+    const masternodeAddress = carverAddress.carverRewardAddresses.find(carverRewardAddresses => carverRewardAddresses.carverAddressType === CarverAddressType.Masternode);
+    const mnValueIn = masternodeAddress ? masternodeAddress.valueOut : 0;
+    const mnCountIn = masternodeAddress ? masternodeAddress.countOut : 0;
+
+    // POS Rewards
+    const posAddress = carverAddress.carverRewardAddresses.find(carverRewardAddresses => carverRewardAddresses.carverAddressType === CarverAddressType.ProofOfStake);
+    const posValueIn = posAddress ? posAddress.valueOut : 0;
+    const posCountIn = posAddress ? posAddress.countOut : 0;
+
 
     const getAdressWidget = () => {
       const addressWidgets = config.addressWidgets[carverAddress.label];
@@ -101,7 +118,7 @@ export default class CardAddress extends Component {
     }
 
     const getReceived = () => {
-      const received = (carverAddress.valueIn - carverAddress.powValueIn - carverAddress.posValueIn);
+      const received = (carverAddress.valueIn - powValueIn - posValueIn);
       if (!received) {
         return null;
       }
@@ -115,39 +132,39 @@ export default class CardAddress extends Component {
     }
 
     const getPowRewards = () => {
-      if (!carverAddress.powValueIn) {
+      if (!powValueIn) {
         return null;
       }
 
       return <div className="card__row">
-        <span className="card__label">POW Rewards ({carverAddress.powCountIn}x💎):</span>
+        <span className="card__label">POW Rewards ({powCountIn}x💎):</span>
         <span className="card__result">
-          +{numeral(carverAddress.powValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+          +{numeral(powValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
       </div>
     }
 
     const getPosRewards = () => {
-      if (!carverAddress.posValueIn) {
+      if (!posValueIn) {
         return null;
       }
 
       return <div className="card__row">
-        <span className="card__label">POS Rewards ({carverAddress.posCountIn}x💎):</span>
+        <span className="card__label">POS Rewards ({posCountIn}x💎):</span>
         <span className="card__result">
-          +{numeral(carverAddress.posValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+          +{numeral(posValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
       </div>
     }
     const getMnRewards = () => {
-      if (!carverAddress.mnValueIn) {
+      if (!mnValueIn) {
         return null;
       }
 
       return <div className="card__row">
-        <span className="card__label">MN Rewards ({carverAddress.mnCountIn}x💎):</span>
+        <span className="card__label">MN Rewards ({mnCountIn}x💎):</span>
         <span className="card__result">
-          +{numeral(carverAddress.mnValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+          +{numeral(mnValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
       </div>
     }

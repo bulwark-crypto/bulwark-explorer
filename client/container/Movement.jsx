@@ -139,7 +139,7 @@ class Movement extends Component {
           dateSelect={getDateDropdown()}
           select={getPaginationDropdown()}
           filterSelect={getFilterDropdown()}
-          title="Movements" />
+          title={`Transactions (${this.state.pages})`} />
         <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
         <Pagination
           current={this.state.page}

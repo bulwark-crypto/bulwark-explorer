@@ -41,10 +41,10 @@ export default class CardTXOut extends Component {
             <Link to={`/address/${tx.carverAddress.label}`}><CarverAddressLabelWidget carverAddress={tx.carverAddress} /></Link>
           ),
           value: (
-            <span className="badge badge-success">
+            <span className="badge badge-success" title={`${numeral(tx.amount).format(config.coinDetails.coinTooltipNumberFormat)} ${config.coinDetails.shortName}`}>
               {numeral(tx.amount).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
             </span>
-          )
+          ) // @todo Move these badges to a component
         }))} />
     );
   };

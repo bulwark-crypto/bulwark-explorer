@@ -528,7 +528,7 @@ const getTXs = async (req, res) => {
       }
     });
 
-    res.json({ txs: txsWithMovements, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+    res.json({ txs: txsWithMovements, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);

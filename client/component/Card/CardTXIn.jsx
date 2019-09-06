@@ -55,10 +55,10 @@ export default class CardTXIn extends Component {
           //  : '',
           value:
             (
-              <span className="badge badge-danger">
+              <span className="badge badge-danger" title={`${numeral(tx.amount).format(config.coinDetails.coinTooltipNumberFormat)} ${config.coinDetails.shortName}`}>
                 - {numeral(tx.amount * -1).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
               </span>
-            )
+            ) // @todo Move these badges to a component
         }))} />
     );
   };

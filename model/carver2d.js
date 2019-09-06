@@ -119,7 +119,8 @@ const carverAddressMovementSchema = new mongoose.Schema({
   carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   carverMovement: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
 
-  amount: { required: true, type: Number },
+  amountIn: { required: true, type: Number },
+  amountOut: { required: true, type: Number },
   balance: { required: true, type: Number },
 
   sequence: { index: true, required: true, type: Number }, // Not unique because two addresses can have same sequence

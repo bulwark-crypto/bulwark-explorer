@@ -46,26 +46,48 @@ export default class CardAddressTXs extends Component {
       }
       return null;
     }
+    const getAmountBadge = (movement, isOut) => {
+
+      // We can 
+      let amountModifier = 0;
+      if (movement.carverMovement.txType === CarverTxType.ProofOfStake) {
+        if (isOut) {
+          return null;
+        } else {
+          amountModifier = movement.amountOut;
+        }
+      }
+
+      const amount = (isOut ? -movement.amountOut : movement.amountIn) - amountModifier;
+      if (amount === 0) {
+        return null;
+      }
+
+      return <span>
+        <span
+          className={`badge badge-${isOut ? 'danger' : 'success'}`} title={getMovementTitle(movement)}>
+          {isOut ? '-' : '+'} {numeral(amount * (isOut ? -1 : 1)).format(config.coinDetails.coinNumberFormat)} BWK
+        </span>
+        {getMovementIcon(movement)}
+      </span>
+    }
     return (
       <div className="animated fadeIn">
         <Table
           cols={this.state.cols}
           data={this.props.movements.map((movement) => {
-            const isSpent = movement.amount < 0;
 
-            const balance = isSpent ? movement.balance - movement.amount : movement.balance + movement.amount;
+            const balance = movement.balance + movement.amountIn - movement.amountOut;
 
-            const txId = movement.carverMovement.txId;//isSpent ? movement.label.split(':')[1] : movement.from.label;
+            const txId = movement.carverMovement.txId;
 
             return ({
               ...movement,
-              amount: (<span>
-                <span
-                  className={`badge badge-${isSpent ? 'danger' : 'success'}`} title={getMovementTitle(movement)}>
-                  {isSpent ? '-' : '+'} {numeral(movement.amount * (isSpent ? -1 : 1)).format(config.coinDetails.coinNumberFormat)} BWK
+              amount: (
+                <span>
+                  {getAmountBadge(movement, false)}
+                  {getAmountBadge(movement, true)}
                 </span>
-                {getMovementIcon(movement)}
-              </span>
               ),
               balance: (
                 <span>
@@ -74,7 +96,7 @@ export default class CardAddressTXs extends Component {
               ),
               createdAt: (
                 <span className="text-nowrap">
-                  {dateFormat(movement.date)}
+                  {dateFormat(movement.carverMovement.date)}
                 </span>
               ),
               txId: (

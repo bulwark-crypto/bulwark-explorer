@@ -143,31 +143,31 @@ async function syncBlocks(start, stop, sequence) {
 
           //carver2d.fillAddressFriends(addressFromCache, parsedMovement.consolidatedAddressMovements); //@todo friend addresses
 
-          if (movementData.amount < 0) {
+          /*if (from.sequence > sequence) {
+            throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
+          }*/
+
+          if (movementData.amountOut > 0) {
             const from = addressFromCache;
 
-            /*if (from.sequence > sequence) {
-              throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
-            }*/
-
             from.countOut++;
-            from.balance -= -movementData.amount;
-            from.valueOut += -movementData.amount;
-            from.sequence = sequence;
+            from.balance -= movementData.amountOut;
+            from.valueOut += movementData.amountOut;
             from.lastMovement = newCarverMovementId;
             addressesIn++;
-            //canFlowSameAddress = true;
-          } else {
+          }
+
+          if (movementData.amountIn > 0) {
             const to = addressFromCache;
 
             to.countIn++;
-            to.balance += movementData.amount;
-            to.valueIn += movementData.amount;
-            to.sequence = sequence;
-            to.lastMovement = newCarverMovementId;
+            to.balance += movementData.amountIn;
+            to.valueIn += movementData.amountIn;
             addressesOut++;
-            //canFlowSameAddress = true;
           }
+
+          addressFromCache.sequence = sequence;
+          addressFromCache.lastMovement = newCarverMovementId;
 
           // Do we need to insert or update this address? (if _id is null then add to batch insert otherwise batch updates)
           if (!addressFromCache._id) {
@@ -184,7 +184,8 @@ async function syncBlocks(start, stop, sequence) {
             _id: new mongoose.Types.ObjectId(),
             carverAddress: addressFromCache._id,
             carverMovement: newCarverMovementId,
-            amount: movementData.amount,
+            amountIn: movementData.amountIn,
+            amountOut: movementData.amountOut,
             balance: addressFromCache.balance - movementData.amount,
             sequence
           });
@@ -206,13 +207,9 @@ async function syncBlocks(start, stop, sequence) {
           addressesIn,
           addressesOut,
           isReward
-          //@todo predictedAddressIn, predictedAddressOut
+          //@todo friends
         });
         await newCarverMovement.save();
-
-        //console.log(parsedMovement.newUtxos);
-        //throw 'zz';
-
 
         // Insert any new addresses that were used in this tx
         await CarverAddress.insertMany(carverAddressesToInsert);
@@ -225,141 +222,6 @@ async function syncBlocks(start, stop, sequence) {
 
         // Insert ledger movements for address
         await CarverAddressMovement.insertMany(newCarverAddressMovements);
-
-        //throw 'done!';
-
-        /*
-
-        // Create our carver movement
-        throw 'zz';
-        const newCarverMovement = new CarverMovement(parsedMovement);
-        await newCarverMovement.save();
-
-        console.log('allUpdatedAddresses', newCarverMovement);
-
-        throw 'xx';
-
-        const lastFromMovement = from.lastMovement;
-
-        if (from.sequence >= sequence) {
-          throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
-        }
-
-        from.countOut++;
-        from.balance -= parsedMovement.amount;
-        from.valueOut += parsedMovement.amount;
-        from.sequence = sequence;
-        from.lastMovement = newCarverMovementId;
-        canFlowSameAddress = true;
-
-        updatedAddresses.set(from.label, from);
-
-        //const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-        const to = getCarverAddressFromCache(parsedMovement.to.label);
-        let lastToMovement = lastFromMovement;
-        if (from !== to) {
-          lastToMovement = to.lastMovement;
-        }
-
-        if (to.sequence >= sequence && from !== to) {
-          throw `RECONCILIATION ERROR: Out-of-sequence to movement: ${to.sequence}>${sequence}`;
-        }
-
-        to.countIn++;
-        to.balance += parsedMovement.amount;
-        to.valueIn += parsedMovement.amount;
-        to.sequence = sequence;
-        to.lastMovement = newCarverMovementId;
-*/
-        /*
-        switch (parsedMovement.carverMovementType) {
-          case CarverMovementType.PosRewardToTx:
-            to.posMovement = parsedMovement._id;
-            posRewardAmount = parsedMovement.amount; // Notice we're setting tx-wide pos reward
-            break;
-          case CarverMovementType.MasternodeRewardToTx:
-            to.mnMovement = parsedMovement._id;
-            break;
-          case CarverMovementType.PowAddressReward:
-            to.powCountIn++;
-            to.powValueIn += parsedMovement.amount;
-            break;
-          case CarverMovementType.TxToPosAddress:
-            // This gets set set in PosRewardToTx above (one per tx)
-            if (posRewardAmount) {
-              to.posCountIn++;
-              to.posValueIn += posRewardAmount;
-            }
-            break;
-          case CarverMovementType.TxToMnAddress:
-            to.mnCountIn++;
-            to.mnValueIn += parsedMovement.amount;
-            break;
-        }*/
-
-        //updatedAddresses.set(to.label, to);
-
-        //const contextAddress = to.carverAddressType === CarverAddressType.Address ? to._id : from._id;
-        //const contextTx = to.carverAddressType === CarverAddressType.Tx ? to._id : from._id;
-        /*
-                let newCarverMovement = new CarverMovement({
-                  _id: newCarverMovementId,
-        
-                  label: parsedMovement.label,
-                  amount: parsedMovement.amount,
-        
-                  date: blockDate,
-                  blockHeight: rpcblock.height,
-        
-                  from: from._id,
-                  to: to._id,
-                  destinationAddress: parsedMovement.destinationAddress ? parsedMovement.destinationAddress._id : null,
-        
-                  fromBalance: from.balance + parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
-                  toBalance: to.balance - parsedMovement.amount, // (store previous value before movement happened for perfect ledger)
-        
-                  carverMovementType: parsedMovement.carverMovementType,
-                  sequence,
-                  lastFromMovement,
-                  lastToMovement,
-        
-                  contextAddress,
-                  //contextTx,
-                  posRewardAmount: parsedMovement.posRewardAmount
-                });
-        
-                switch (parsedMovement.carverMovementType) {
-                  case CarverMovementType.PosRewardToTx:
-                    newCarverMovement.posInputAmount = parsedMovement.posInputAmount;
-                    newCarverMovement.posInputBlockHeightDiff = parsedMovement.posInputBlockHeightDiff;
-                    break;
-                }
-        
-                newMovements.push(newCarverMovement);
-        
-                // Erase the amount after first encounter (so we only set it once)
-                if (parsedMovement.carverMovementType === CarverMovementType.TxToPosAddress) {
-                  posRewardAmount = null;
-                }
-                //});
-        
-                // Insert movements first then update the addresses (that way the balances are correct on movements even if there is a crash during movements saving)
-                await CarverMovement.insertMany(newMovements);
-        
-                // If we get to this step we have all the movements saved in order so we can resume from hard fail
-                await Promise.all([...updatedAddresses.values()].map(
-                  async (updatedAddress) => {
-                    // Don't forget to update our cache with new address data
-                    if (commonAddressCache.has(updatedAddress.label)) {
-                      commonAddressCache.set(updatedAddress.label, updatedAddress);
-                    }
-                    if (normalAddressCache.has(updatedAddress.label)) {
-                      normalAddressCache.set(updatedAddress.label, updatedAddress);
-                    }
-                    await updatedAddress.save();
-                  }));
-        */
-
       }
     }
 
