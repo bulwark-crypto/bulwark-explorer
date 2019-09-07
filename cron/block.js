@@ -141,35 +141,22 @@ async function syncBlocks(start, stop, sequence) {
             throw `Could not find address: ${movementData.label}`
           }
 
-
-          //@todo sequence
-          /*if (from.sequence > sequence) {
-            throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
-          }*/
-
-
           if (movementData.amountOut > 0) {
-            const from = addressFromCache;
-
-            from.countOut++;
-            from.balance -= movementData.amountOut;
-            from.valueOut += movementData.amountOut;
-            from.lastMovement = newCarverMovementId;
+            addressFromCache.countOut++;
+            addressFromCache.balance -= movementData.amountOut;
+            addressFromCache.valueOut += movementData.amountOut;
             addressesIn++;
-
           }
 
           if (movementData.amountIn > 0) {
-            const to = addressFromCache;
-
-            to.countIn++;
-            to.balance += movementData.amountIn;
-            to.valueIn += movementData.amountIn;
+            addressFromCache.countIn++;
+            addressFromCache.balance += movementData.amountIn;
+            addressFromCache.valueIn += movementData.amountIn;
             addressesOut++;
-
           }
 
           addressFromCache.sequence = sequence;
+          const lastMovement = addressFromCache.lastMovement;
           addressFromCache.lastMovement = newCarverMovementId;
 
           // Do we need to insert or update this address? (if _id is null then add to batch insert otherwise batch updates)
@@ -181,18 +168,22 @@ async function syncBlocks(start, stop, sequence) {
             carverAddressesToUpdate.push(addressFromCache);
           }
 
-          updatedAddresses.set(addressFromCache.label, addressFromCache);
-
           let newCarverAddressMovement = new CarverAddressMovement({
             _id: new mongoose.Types.ObjectId(),
+            blockHeight: parsedMovement.blockHeight,
+
             carverAddress: addressFromCache._id,
             carverMovement: newCarverMovementId,
             amountIn: movementData.amountIn,
             amountOut: movementData.amountOut,
             balance: addressFromCache.balance - movementData.amount,
-            sequence
+            sequence,
+            previousAddressMovement: lastMovement
           });
+          addressFromCache.lastMovement = newCarverAddressMovement._id;
           newCarverAddressMovements.push(newCarverAddressMovement);
+
+          updatedAddresses.set(addressFromCache.label, addressFromCache);
         });
 
         await UTXO.insertMany(parsedMovement.newUtxos);
@@ -211,6 +202,10 @@ async function syncBlocks(start, stop, sequence) {
           addressesOut,
           isReward
         });
+
+        if (isReward) {
+          //newCarverMovement.blockRewardDetails = await carver2d.getBlockRewardDetails(rpcblock, rpctx, parsedMovement); //@todo
+        }
         await newCarverMovement.save();
 
         // Insert any new addresses that were used in this tx
@@ -240,14 +235,24 @@ async function syncBlocks(start, stop, sequence) {
 
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
-    /*
-        if (Math.floor((Math.random() * 100) + 1) < 5) {
-          var dropNumBlocks = Math.floor((Math.random() * 10) + 1);
-          console.log(`Dropping ${dropNumBlocks} blocks`)
-          await undoCarverBlockMovements(height - dropNumBlocks + 1);
-          height -= dropNumBlocks;
-          commonAddressCache.clear(); // Clear cache because the addresses could now be invalid
-        }*/
+    if (Math.floor((Math.random() * 100) + 1) < 5) {    //if (height % 3 == 0) {
+      let dropNumBlocks = Math.floor((Math.random() * 10) + 1);
+      console.log(`Dropping ${dropNumBlocks} blocks`)
+      await undoCarverBlockMovements(height - dropNumBlocks + 1);
+      height -= dropNumBlocks;
+
+      // Clear caches because the addresses could now be invalid
+      commonAddressCache.clear();
+      normalAddressCache.clear(); // Clear cache because the addresses could now be invalid
+
+      // Restore sequence to proper number
+      const block = await Block.findOne().sort({ height: -1 });
+      if (block) {
+        sequence = block.sequenceEnd;
+      } else {
+        sequence = 0;
+      }
+    }
 
   }
 }
@@ -255,9 +260,9 @@ async function syncBlocks(start, stop, sequence) {
  * Unwind all movements in a block and delete the block & all movements / addresses created in this block (or after this block)
  */
 async function undoCarverBlockMovements(height) {
-  console.dateLog(`Undoing block ${height}`);
+  console.dateLog(`Undoing block > ${height}`);
   await Block.remove({ height: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
-  await UTXO.remove({ blockHeight: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
+  await UTXO.remove({ blockHeight: { $gte: height } });
 
   let sequence = 0;
 
@@ -267,14 +272,17 @@ async function undoCarverBlockMovements(height) {
 
     let updatedAddresses = new Map();
 
-    const parsedMovements = await CarverMovement
+    const parsedMovements = await CarverAddressMovement
       .find({ blockHeight: { $gte: height } })
       .sort({ sequence: -1 })
       .limit(1000)
-      .populate('from')
-      .populate('to')
-      .populate('lastFromMovement', { date: 1, sequence: 1 })
-      .populate('lastToMovement', { date: 1, sequence: 1 });
+      .populate('carverAddress')
+      .populate('previousAddressMovement', { sequence: 1 });
+
+    /*.populate('from')
+    .populate('to')
+    .populate('lastFromMovement', { date: 1, sequence: 1 })
+    .populate('lastToMovement', { date: 1, sequence: 1 })*/
     //.hint({ blockHeight: 1 }); // give indexing hint (otherwise blockHeight index might be picked instead and it's much slower as sorting is required)
 
     if (parsedMovements.length === 0) {
@@ -286,71 +294,29 @@ async function undoCarverBlockMovements(height) {
     parsedMovements.forEach(parsedMovement => {
       sequence = parsedMovement.sequence;
 
-      let canFlowSameAddress = false; // If addresses are same on same sequence continue. This way we can unwind movements and handle hard errors
-      let from = null;
-
-      // Notice that we check if .from and .to exist. It is possible to insert a new movement, update one address and the other one fails to save (ex: new address)
-      // We can still undo the partial movement that was performed
-      if (parsedMovement.from) {
-        from = updatedAddresses.has(parsedMovement.from.label) ? updatedAddresses.get(parsedMovement.from.label) : parsedMovement.from;
-        if (sequence === from.sequence) {
-          from.countOut--;
-          from.balance += parsedMovement.amount;
-          from.valueOut -= parsedMovement.amount;
-          canFlowSameAddress = true;
-
-          if (parsedMovement.lastFromMovement) {
-            from.lastMovement = parsedMovement.lastFromMovement._id;
-            from.sequence = parsedMovement.lastFromMovement.sequence;
-          } else {
-            from.lastMovement = null;
-            from.sequence = 0;
-          }
-
-          updatedAddresses.set(from.label, from);
-        } else if (from.sequence > sequence) {
-          throw `UNRECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
+      const carverAddress = updatedAddresses.has(parsedMovement.carverAddress.label) ? updatedAddresses.get(parsedMovement.carverAddress.label) : parsedMovement.carverAddress;
+      if (sequence === carverAddress.sequence) {
+        if (parsedMovement.amountIn > 0) {
+          carverAddress.countIn--;
+          carverAddress.balance -= parsedMovement.amountIn;
+          carverAddress.valueIn -= parsedMovement.amountIn;
         }
-      }
-
-      if (parsedMovement.to) {
-        const to = updatedAddresses.has(parsedMovement.to.label) ? updatedAddresses.get(parsedMovement.to.label) : parsedMovement.to;
-        if (sequence === to.sequence || canFlowSameAddress && from === to) {
-          to.countIn--;
-          to.balance -= parsedMovement.amount;
-          to.valueIn -= parsedMovement.amount;
-
-          switch (parsedMovement.carverMovementType) {
-            case CarverMovementType.PowAddressReward:
-              to.powCountIn--;
-              to.powValueIn -= parsedMovement.amount;
-              break;
-            case CarverMovementType.TxToPosAddress:
-              // One of the POS movements to POS reward address will have this property
-              if (parsedMovement.posRewardAmount) {
-                to.posCountIn--;
-                to.posValueIn -= parsedMovement.posRewardAmount;
-              }
-              break;
-            case CarverMovementType.TxToMnAddress:
-              to.mnCountIn--;
-              to.mnValueIn -= parsedMovement.amount;
-              break;
-          }
-
-
-          if (parsedMovement.lastToMovement) {
-            to.lastMovement = parsedMovement.lastToMovement._id;
-            to.sequence = parsedMovement.lastToMovement.sequence;
-          } else {
-            to.lastMovement = null;
-            to.sequence = 0;
-          }
-
-          updatedAddresses.set(to.label, to);
-        } else if (to.sequence > sequence) {
-          throw `UNRECONCILIATION ERROR: Out-of-sequence from movement: ${to.sequence}>${sequence}`;
+        if (parsedMovement.amountOut > 0) {
+          carverAddress.countOut--;
+          carverAddress.balance += parsedMovement.amountOut;
+          carverAddress.valueOut -= parsedMovement.amountOut;
         }
+        if (parsedMovement.previousAddressMovement) {
+          carverAddress.lastMovement = parsedMovement.previousAddressMovement._id;
+          carverAddress.sequence = parsedMovement.previousAddressMovement.sequence;
+        } else {
+          carverAddress.lastMovement = null;
+          carverAddress.sequence = 0;
+        }
+
+        updatedAddresses.set(carverAddress.label, carverAddress);
+      } else if (carverAddress.sequence > sequence) {
+        throw `UNRECONCILIATION ERROR: Out-of-sequence carverAddress movement: ${carverAddress.sequence}>${sequence}`;
       }
 
     });
@@ -364,12 +330,13 @@ async function undoCarverBlockMovements(height) {
         await updatedAddress.save();
       }));
 
-    // Remove the movements carefully in order of sequence
+
     if (sequence > 0) {
-      await CarverMovement.deleteMany({ sequence: { $gte: sequence } });
+      await CarverAddressMovement.deleteMany({ sequence: { $gte: sequence } });
     }
   }
 
+  await CarverMovement.deleteMany({ blockHeight: { $gte: height } });
   // Finally after unwinding we can remove all addresses that were created in/after this block
   await CarverAddress.remove({ blockHeight: { $gte: height } });
 }
@@ -464,7 +431,9 @@ async function update() {
     if (block) {
       const lastCarverMovement = await CarverMovement.findOne().sort({ sequence: -1 });
       const lastCarverAddress = await CarverAddress.findOne().sort({ sequence: -1 });
-      if (lastCarverMovement && lastCarverMovement.sequence > block.sequenceEnd || lastCarverAddress && lastCarverAddress.sequence > block.sequenceEnd) {
+
+      if (lastCarverMovement && lastCarverMovement.sequence > block.sequenceEnd ||
+        lastCarverAddress && lastCarverAddress.sequence > block.sequenceEnd) {
         console.dateLog("[CLEANUP] Partial block entry found, removing corrupt sync data");
         await undoCarverBlockMovements(block.height + 1);
       }

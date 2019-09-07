@@ -14,45 +14,57 @@ const mongoose = require('mongoose');
  * Structure for detailed breakdown of the staking reward
  */
 const BlockRewardDetailsStakeInput = new mongoose.Schema({
-  txId: { index: true, required: true, type: String },
-  value: { index: true, required: true, type: Number },
-  confirmations: { index: true, required: true, type: Number },
-  date: { index: true, required: true, type: Date },
-  age: { index: true, required: true, type: Number },
-  isRestake: { index: false, required: true, type: Boolean },
-  vinCount: { index: true, required: true, type: Number },
-  voutCount: { index: true, required: true, type: Number },
+  txId: { required: true, type: String },
+  value: { required: true, type: Number },
+  confirmations: { required: true, type: Number },
+  date: { required: true, type: Date },
+  age: { required: true, type: Number },
+  isRestake: { required: true, type: Boolean },
+  restakeCount: { required: true, type: Number },
+  vinCount: { required: true, type: Number },
+  voutCount: { required: true, type: Number },
 }, { _id: false, versionKey: false });
 
 /**
  * Structure for detailed breakdown of the stake
  */
 const BlockRewardDetailsStake = new mongoose.Schema({
-  address: { index: true, required: true, type: String },
-  reward: { index: false, required: true, type: Number },
-  input: { index: false, required: true, type: BlockRewardDetailsStakeInput },
+  address: { required: true, type: String },
+  reward: { required: true, type: Number },
+  input: { required: true, type: BlockRewardDetailsStakeInput },
+  roi: { required: true, type: Number },
 }, { _id: false, versionKey: false });
 
 /**
- * Structure for detailed breakdown of the stake
+ * Structure for detailed breakdown of the masternode
  */
 const BlockRewardDetailsMasternode = new mongoose.Schema({
-  address: { index: true, required: true, type: String },
-  reward: { index: false, required: true, type: Number },
+  address: { required: true, type: String },
+  reward: { required: true, type: Number },
+  roi: { required: true, type: Number },
 }, { _id: false, versionKey: false });
+
+/**
+ * Structure for detailed breakdown of pow
+ */
+const BlockRewardDetailsProofOfWork = new mongoose.Schema({
+  address: { required: true, type: String },
+  reward: { required: true, type: Number },
+}, { _id: false, versionKey: false });
+
 
 /**
  * Structure for detailed breakdown of the reward
  */
 const BlockRewardDetails = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  //blockHash: { required: true, type: String },
-  blockHeight: { index: true, required: true, type: Number },
-  date: { index: true, required: true, type: Date },
-  txId: { index: true, required: true, type: String },
+  blockHeight: { required: true, type: Number },
+  date: { required: true, type: Date },
+  txId: { required: true, type: String },
 
-  stake: { index: false, required: true, type: BlockRewardDetailsStake },
-  masternode: { index: false, required: true, type: BlockRewardDetailsMasternode },
+  stake: { type: BlockRewardDetailsStake },
+  masternode: { type: BlockRewardDetailsMasternode },
+  pow: { type: BlockRewardDetailsProofOfWork },
 }, { versionKey: false });
 
 /**
@@ -62,4 +74,4 @@ const BlockRewardDetails = new mongoose.Schema({
  */
 const BlockRewardDetailsSchema = mongoose.model('BlockRewardDetails', BlockRewardDetails, 'blockRewardDetails');
 
-module.exports =  BlockRewardDetailsSchema;
+module.exports = BlockRewardDetailsSchema;

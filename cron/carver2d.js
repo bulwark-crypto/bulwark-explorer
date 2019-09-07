@@ -383,11 +383,57 @@ const getRequiredMovement = async (params) => {
     // Store the temporary movements here. We'll fill the from/to CarverAddressMovements outside of this method
     consolidatedAddressMovements: consolidatedAddressAmounts,
     newUtxos
-  };
+  }
+}
+
+const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement) => {
+  console.log(rpctx, parsedMovement);
+  const blockDate = new Date(rpcblock.time * 1000);
+
+  let blockRewardDetails = new BlockRewardDetails(
+    {
+      blockHeight: rpcblock.height,
+      date: blockDate,
+      txId: rpctx.txid,
+    }
+  );
+
+  switch (parsedMovement.txType) {
+    case CarverTxType.ProofOfWork:
+
+      break;
+    case CarverTxType.ProofOfStake:
+      const isRestake = false; //@todo
+
+      blockRewardDetails.stake = {
+        address: stakeRewardAddress,
+        input: {
+          txId: stakeInputTxId,
+          value: stakeInputValue,
+          confirmations: stakedInputConfirmations,
+          date: new Date(stakedInputTime * 1000),
+          age: currentTxTime - stakedInputTime,
+          isRestake: isRestake,
+          restakeCount: 1, //@todo
+          vinCount: rpctx.vin.length,
+          voutCount: rpctx.vout.length
+        },
+        reward: stakeRewardAmount
+      }
+      break;
+  }
+
+  blockRewardDetails.masternode = {
+    address: masternodeRewardAddress,
+    reward: masternodeRewardAmount
+  }
+
+  return new BlockRewardDetails(blockRewardDetails);
 }
 
 module.exports = {
   getRequiredMovement,
   getVinUtxos,
   fillAddressCache,
-};
+  getBlockRewardDetails
+}

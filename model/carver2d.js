@@ -19,7 +19,7 @@ const carverAddressSchema = new mongoose.Schema({
   date: { required: true, type: Date },
   carverAddressType: { required: true, type: Number }, //@todo refactor to remove "carverAddress" prefix(too verbose)
 
-  lastMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
+  lastMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' },//@todo rename to lastAddressMovement
   valueOut: { required: true, type: Number /*, index: true Possible Analytics Examples: Sort by wallets with most/least funds out)*/ },
   valueIn: { required: true, type: Number/*, index: true*/ },
   countIn: { required: true, type: Number/*, index: true*/ },
@@ -85,7 +85,7 @@ const carverMovementsSchema = new mongoose.Schema({
   //contextAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // What address does this movement belong to? (ex: when looking at movements for specific address)
   //contextTx: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }, // What tx does this movement belong to?
 
-  sequence: { unique: true, required: true, type: Number },
+  sequence: { index: true, unique: true, required: true, type: Number },
 
   // These two fields are required for unreconciliation. When we undo a carver movement we set the from/to address sequences back to what they were before the movement happened.
   //lastFromMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
@@ -116,6 +116,8 @@ const carverAddressMovementSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
   //date: { required: true, type: Date },
+  blockHeight: { index: true, required: true, type: Number }, //  We use this for unreconciliation
+  previousAddressMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' },
   carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   carverMovement: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
 
@@ -126,6 +128,7 @@ const carverAddressMovementSchema = new mongoose.Schema({
   sequence: { index: true, required: true, type: Number }, // Not unique because two addresses can have same sequence
 }, { _id: false, versionKey: false });
 carverAddressMovementSchema.index({ carverAddress: 1, sequence: 1 }, { unique: true });
+carverAddressMovementSchema.index({ blockHeight: 1, sequence: -1 });
 
 const CarverAddressMovement = mongoose.model('CarverAddressMovement', carverAddressMovementSchema, 'carverAddressMovements');
 
