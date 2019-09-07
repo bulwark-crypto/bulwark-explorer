@@ -57,6 +57,7 @@ const getVinUtxos = async (rpctx) => {
   return utxos;
 }
 
+
 /**
  * Get or Initialize a new carver address
  * usedAddresses = Map<addressLabel,CarverAddressType>
@@ -79,7 +80,7 @@ const fillAddressCache = async (params, usedAddresses) => {
       countIn: 0,
       countOut: 0,
 
-      sequence: 0
+      sequence: 0,
     });
 
     return newCarverAddress;
@@ -388,5 +389,5 @@ const getRequiredMovement = async (params) => {
 module.exports = {
   getRequiredMovement,
   getVinUtxos,
-  fillAddressCache
+  fillAddressCache,
 };

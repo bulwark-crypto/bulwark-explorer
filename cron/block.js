@@ -141,11 +141,12 @@ async function syncBlocks(start, stop, sequence) {
             throw `Could not find address: ${movementData.label}`
           }
 
-          //carver2d.fillAddressFriends(addressFromCache, parsedMovement.consolidatedAddressMovements); //@todo friend addresses
 
+          //@todo sequence
           /*if (from.sequence > sequence) {
             throw `RECONCILIATION ERROR: Out-of-sequence from movement: ${from.sequence}>${sequence}`;
           }*/
+
 
           if (movementData.amountOut > 0) {
             const from = addressFromCache;
@@ -155,6 +156,7 @@ async function syncBlocks(start, stop, sequence) {
             from.valueOut += movementData.amountOut;
             from.lastMovement = newCarverMovementId;
             addressesIn++;
+
           }
 
           if (movementData.amountIn > 0) {
@@ -164,6 +166,7 @@ async function syncBlocks(start, stop, sequence) {
             to.balance += movementData.amountIn;
             to.valueIn += movementData.amountIn;
             addressesOut++;
+
           }
 
           addressFromCache.sequence = sequence;
@@ -207,7 +210,6 @@ async function syncBlocks(start, stop, sequence) {
           addressesIn,
           addressesOut,
           isReward
-          //@todo friends
         });
         await newCarverMovement.save();
 

@@ -7,39 +7,61 @@ const fetch = require('../lib/fetch');
 const { forEach } = require('p-iteration');
 const locker = require('../lib/locker');
 const moment = require('moment');
+const { CarverAddress } = require('../model/carver2d')
 // Models.
 const Masternode = require('../model/masternode');
 
 /**
- * Get a list of the mns and request IP information
- * from freegeopip.net.
+ * Get a list of the mns 
  */
 async function syncMasternode() {
   // Increase the timeout for masternode.
   //@todo remove this and properly sync nodes instead
-  rpc.timeout(10000); // 10 secs
+  // Commented this out for now to see what effect it would have. Theoretically there shouldn't be any issues 
+  //rpc.timeout(10000); // 10 secs
 
   const date = moment().utc().startOf('minute').toDate();
 
   const mns = await rpc.call('masternode', ['list']);
   const newMasternodes = [];
-  for (let mn of mns) {
-    const masternode = new Masternode({
-      active: mn.activetime,
-      addr: mn.addr,
-      createdAt: date,
-      lastAt: new Date(mn.lastseen * 1000),
-      lastPaidAt: new Date(mn.lastpaid * 1000),
-      network: mn.network,
+  const addressesToFetch = [];
+  for (const mn of mns) {
+    const masternode = {
       rank: mn.rank,
-      status: mn.status,
+      network: mn.network,
       txHash: mn.txhash,
-      txOutIdx: mn.outidx,
-      ver: mn.version
-    });
+      txOutIdx: mn.outidx, // @todo rename to outidx
+      status: mn.status,
+      addr: mn.addr,
+      ver: mn.version, //@todo rename to version
+      lastAt: new Date(mn.lastseen * 1000), // @todo rename to lastseen
+      active: mn.activetime, // @todo rename to activetime
+      lastPaidAt: new Date(mn.lastpaid * 1000), // @todo rename to lastpaidat
 
-    newMasternodes.push(masternode);
+      createdAt: date,
+    };
+
+    newMasternodes.push(new Masternode(masternode));
+
+    addressesToFetch.push(masternode.addr);
+    addressesToFetch.push(`${masternode.addr}:MN`);
   }
+
+
+  const carverAddresses = await CarverAddress.find({ label: { $in: addressesToFetch } });
+  newMasternodes.forEach(newMasternode => {
+    const carverAddress = carverAddresses.find(carverAddress => carverAddress.label === newMasternode.addr);
+    const carverAddressMn = carverAddresses.find(carverAddress => carverAddress.label === `${newMasternode.addr}:MN`);
+
+    if (carverAddress) {
+      newMasternode.carverAddress = carverAddress._id;
+    }
+
+    if (carverAddressMn) {
+      newMasternode.carverAddressMn = carverAddressMn._id;
+    }
+  });
+
 
   if (newMasternodes.length) {
     await Masternode.remove({});

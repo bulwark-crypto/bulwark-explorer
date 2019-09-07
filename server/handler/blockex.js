@@ -321,9 +321,15 @@ const getMasternodes = async (req, res) => {
     }
 
     const total = await Masternode.count(query);
-    const mns = await Masternode.find(query).skip(skip).limit(limit).sort({ lastPaidAt: -1, status: 1 });
+    const mns = await Masternode
+      .find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ lastPaidAt: -1, status: 1 })
+      .populate('carverAddress')
+      .populate({ path: 'carverAddressMn', populate: { path: 'lastMovement' } });
 
-    res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+    res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
