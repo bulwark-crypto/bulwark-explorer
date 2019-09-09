@@ -9,14 +9,14 @@ import config from '../../../config'
 const PosRestakeIndicator = ({ reward, includeShortName = false, showStakeRewardAmount = false }) => {
 
   const getRestakeIcon = (reward) => {
-    if (reward.stake.input.isRestake) {
+    if (!reward.stake.input.isRestake) {
       return null;
     }
     return <Icon name="recycle" className="fas pl-1 text-primary align-middle" />;
   }
 
   const getTitle = (reward) => {
-    if (reward.stake.input.isRestake) {
+    if (!reward.stake.input.isRestake) {
       return null;
     }
     return "Restake (Stake of Previously Staked Output)";
