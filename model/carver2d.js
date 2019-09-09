@@ -56,7 +56,8 @@ const carverMovementsSchema = new mongoose.Schema({
   txType: { required: true, type: Number },
   //relationshipType: { required: true, type: Number }, // what are the from/to arrays filled with? ex: ManyToMany or Parallel Address Relationship (These can be figured out based on txType)
 
-  amount: { required: true, type: Number/*, index: true*/ },
+  amountIn: { required: true, type: Number/*, index: true*/ },
+  amountOut: { required: true, type: Number/*, index: true*/ },
 
   blockHeight: { index: true, required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
   date: { required: true, type: Date/*, index: true*/ },
@@ -64,6 +65,7 @@ const carverMovementsSchema = new mongoose.Schema({
   addressesIn: { required: true, type: Number/*, index: true*/ },
   addressesOut: { required: true, type: Number/*, index: true*/ },
   isReward: { required: true, type: Boolean },
+  blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' },
 
   //fromBalance: { required: true, type: Number },
   //toBalance: { required: true, type: Number },
@@ -116,7 +118,7 @@ const carverAddressMovementSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
   //date: { required: true, type: Date },
-  blockHeight: { index: true, required: true, type: Number }, //  We use this for unreconciliation
+  blockHeight: { index: true, required: true, type: Number }, // @todo remove. This is only used for unreconciliation, but we can just use sequence
   previousAddressMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' },
   carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   carverMovement: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
@@ -128,7 +130,7 @@ const carverAddressMovementSchema = new mongoose.Schema({
   sequence: { index: true, required: true, type: Number }, // Not unique because two addresses can have same sequence
 }, { _id: false, versionKey: false });
 carverAddressMovementSchema.index({ carverAddress: 1, sequence: 1 }, { unique: true });
-carverAddressMovementSchema.index({ blockHeight: 1, sequence: -1 });
+carverAddressMovementSchema.index({ blockHeight: 1, sequence: -1 }); //@todo remove after removing blockHeight
 
 const CarverAddressMovement = mongoose.model('CarverAddressMovement', carverAddressMovementSchema, 'carverAddressMovements');
 

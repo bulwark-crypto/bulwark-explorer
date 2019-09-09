@@ -23,12 +23,12 @@ class Overview extends Component {
 
     this.state = {
       cols: [
-        {title: 'Height', key: 'blockHeight'},
-        {title: 'Transaction Hash', key: 'label'},
-        {title: 'Value', key: 'valueOut'},
-        {title: 'Inputs', key: 'countIn'},
-        {title: 'Outputs', key: 'countOut'},
-        {title: 'Created', key: 'date'},
+        { title: 'Height', key: 'blockHeight' },
+        { title: 'Transaction Hash', key: 'label' },
+        { title: 'Value', key: 'valueOut' },
+        { title: 'Sources', key: 'countIn' },
+        { title: 'Recepients', key: 'countOut' },
+        { title: 'Created', key: 'date' },
       ]
     };
   };
@@ -47,27 +47,27 @@ class Overview extends Component {
           </Link>
         ),
         label: (
-          <Link to={`/tx/${tx.label}`}>
-            {tx.label}
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.txId}
           </Link>
         ),
         valueOut: (
-          <Link to={`/tx/${tx.label}`}>
-            {TransactionValue(tx, tx.valueOut)}
+          <Link to={`/tx/${tx.txId}`}>
+            {TransactionValue(tx, tx.amountOut)}
           </Link>
         ),
         countIn: (
-          <Link to={`/tx/${tx.label}`}>
-            {tx.countIn}
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.addressesIn}
           </Link>
         ),
         countOut: (
-          <Link to={`/tx/${tx.label}`}>
-            {tx.countOut}
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.addressesOut}
           </Link>
         ),
         date: (
-          <Link to={`/tx/${tx.label}`} className="text-nowrap">
+          <Link to={`/tx/${tx.txId}`} className="text-nowrap">
             {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
           </Link>
         ),
@@ -78,8 +78,8 @@ class Overview extends Component {
       <div>
         <HorizontalRule title="Latest Blocks" />
         <Table
-          cols={ this.state.cols }
-          data={ txs } />
+          cols={this.state.cols}
+          data={txs} />
       </div>
     );
   };

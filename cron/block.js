@@ -14,7 +14,7 @@ const { UTXO } = require('../model/utxo');
 
 // Models.
 const Block = require('../model/block');
-const BlockRewardDetails = require('../model/blockRewardDetails');
+const { BlockRewardDetails } = require('../model/blockRewardDetails');
 
 /**
  * console.log but with date prepended to it
@@ -97,7 +97,6 @@ async function syncBlocks(start, stop, sequence) {
       const txhash = rpcblock.tx[txIndex];
       const rpctx = await util.getTX(txhash, false);
 
-      sequence++;
 
       let updatedAddresses = new Map(); // @todo this could be a Set<CarverAddress> instead of Map<addressLabel,CarverAddress>
 
@@ -136,6 +135,8 @@ async function syncBlocks(start, stop, sequence) {
         const newCarverMovementId = new mongoose.Types.ObjectId();
 
         parsedMovement.consolidatedAddressMovements.forEach(movementData => {
+          sequence++;
+
           const addressFromCache = getCarverAddressFromCache(movementData.label);
           if (!addressFromCache) {
             throw `Could not find address: ${movementData.label}`
@@ -194,7 +195,8 @@ async function syncBlocks(start, stop, sequence) {
           _id: newCarverMovementId,
           txId: parsedMovement.txId,
           txType: parsedMovement.txType,
-          amount: parsedMovement.amount,
+          amountIn: parsedMovement.amountIn,
+          amountOut: parsedMovement.amountOut,
           blockHeight: parsedMovement.blockHeight,
           date: parsedMovement.date,
           sequence,
@@ -204,9 +206,14 @@ async function syncBlocks(start, stop, sequence) {
         });
 
         if (isReward) {
-          //newCarverMovement.blockRewardDetails = await carver2d.getBlockRewardDetails(rpcblock, rpctx, parsedMovement); //@todo
+          const newBlockRewardDetails = await carver2d.getBlockRewardDetails(rpcblock, rpctx, parsedMovement, newCarverMovement, updatedAddresses);
+          await newBlockRewardDetails.save();
+          newCarverMovement.blockRewardDetails = newBlockRewardDetails._id;
         }
         await newCarverMovement.save();
+
+        // Insert ledger movements for address
+        await CarverAddressMovement.insertMany(newCarverAddressMovements);
 
         // Insert any new addresses that were used in this tx
         await CarverAddress.insertMany(carverAddressesToInsert);
@@ -216,9 +223,6 @@ async function syncBlocks(start, stop, sequence) {
           async (updatedAddress) => {
             await updatedAddress.save();
           }));
-
-        // Insert ledger movements for address
-        await CarverAddressMovement.insertMany(newCarverAddressMovements);
       }
     }
 
@@ -233,6 +237,7 @@ async function syncBlocks(start, stop, sequence) {
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${rpcblock.tx.length} Vins: ${vinsCount} Vouts: ${voutsCount} Caches: ${normalAddressCache.size} (addresses)/${commonAddressCache.size} (common)`);
 
+    /*
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
     if (Math.floor((Math.random() * 100) + 1) < 5) {    //if (height % 3 == 0) {
@@ -253,6 +258,7 @@ async function syncBlocks(start, stop, sequence) {
         sequence = 0;
       }
     }
+*/
 
   }
 }
@@ -263,6 +269,7 @@ async function undoCarverBlockMovements(height) {
   console.dateLog(`Undoing block > ${height}`);
   await Block.remove({ height: { $gte: height } }); // Start with removing all the blocks (that way we'll get stuck in dirty state in case this crashses requiring to undo carver movements again)
   await UTXO.remove({ blockHeight: { $gte: height } });
+  await BlockRewardDetails.remove({ blockHeight: { $gte: height } });
 
   let sequence = 0;
 
@@ -431,9 +438,12 @@ async function update() {
     if (block) {
       const lastCarverMovement = await CarverMovement.findOne().sort({ sequence: -1 });
       const lastCarverAddress = await CarverAddress.findOne().sort({ sequence: -1 });
+      const lastUtxo = await UTXO.findOne().sort({ blockHeight: -1 });
 
       if (lastCarverMovement && lastCarverMovement.sequence > block.sequenceEnd ||
-        lastCarverAddress && lastCarverAddress.sequence > block.sequenceEnd) {
+        lastCarverAddress && lastCarverAddress.sequence > block.sequenceEnd ||
+        lastUtxo && lastUtxo.blockHeight > block.height
+      ) {
         console.dateLog("[CLEANUP] Partial block entry found, removing corrupt sync data");
         await undoCarverBlockMovements(block.height + 1);
       }

@@ -15,7 +15,7 @@ const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
-const BlockRewardDetails = require('../../model/blockRewardDetails');
+const { BlockRewardDetails } = require('../../model/blockRewardDetails');
 const TX = require('../../model/tx');
 const config = require('../../config')
 
@@ -443,7 +443,7 @@ const getTop100 = async (req, res) => {
  */
 const getTXLatest = async (req, res) => {
   try {
-    const latestMovements = await CarverAddress.find({ carverAddressType: CarverAddressType.Tx }, { balance: 0, carverAddressType: 0, lastMovement: 0, valueIn: 0 }).sort({ sequence: -1 }).limit(10);
+    const latestMovements = await CarverMovement.find({ isReward: 0 }).sort({ sequence: -1 }).limit(10);
 
     res.json(latestMovements);
   } catch (err) {
@@ -551,13 +551,13 @@ const getRewards = async (req, res) => {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const query = { carverMovementType: CarverMovementType.PosRewardToTx };
+    const query = {};
 
-    const total = await CarverMovement.count(query);
-    const rewards = await CarverMovement.find(query, { label: 0, carverMovementType: 0, fromBalance: 0, toBalance: 0 }).skip(skip).limit(limit).sort({ sequence: -1 }).populate('from', { carverAddressType: 1 }).populate('to', { label: 1 }).populate('destinationAddress');
+    const total = await BlockRewardDetails.count(query);
+    const rewards = await BlockRewardDetails.find(query).skip(skip).limit(limit).sort({ blockHeight: -1 });
 
 
-    res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+    res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);

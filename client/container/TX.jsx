@@ -144,7 +144,7 @@ class TX extends Component {
     return (
       <div>
         {this.getTransactionInfo()}
-        {this.getBlockRewardDetails()}
+        {/*this.getBlockRewardDetails()*/}
         {this.getTransactionDetails()}
       </div>
     );

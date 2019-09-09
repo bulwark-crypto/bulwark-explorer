@@ -136,8 +136,8 @@ class Movement extends Component {
     return (
       <div>
         <HorizontalRule
-          dateSelect={getDateDropdown()}
-          select={getPaginationDropdown()}
+          //dateSelect={getDateDropdown()} //@todo date-by-date range
+          //select={getPaginationDropdown()}
           filterSelect={getFilterDropdown()}
           title={`Transactions (${this.state.pages})`} />
         <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />

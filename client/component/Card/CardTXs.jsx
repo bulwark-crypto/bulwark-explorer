@@ -28,8 +28,8 @@ export default class CardTXs extends Component {
         { key: 'blockHeight', title: 'Height' },
         { key: 'txId', title: 'Transaction Hash' },
         { key: 'amount', title: 'Amount' },
-        { key: 'addressesIn', title: 'Addresses In' },
-        { key: 'addressesOut', title: 'Addresses Out' },
+        { key: 'addressesIn', title: 'Sources' },
+        { key: 'addressesOut', title: 'Recepients' },
         { key: 'date', title: 'Date' },
       ]
     };

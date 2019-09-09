@@ -4,6 +4,8 @@ require('babel-polyfill');
 const mongoose = require('mongoose');
 const { CarverAddressType, CarverMovementType, CarverTxType } = require('../lib/carver2d');
 const { CarverAddress, CarverMovement, CarverAddressMovement } = require('../model/carver2d');
+const { BlockRewardDetails } = require('../model/blockRewardDetails');
+
 const { UTXO } = require('../model/utxo');
 
 //@todo Move this file to lib/carver2d
@@ -371,11 +373,13 @@ const getRequiredMovement = async (params) => {
   const consolidatedAddresses = Array.from(consolidatedAddressAmounts.values());
 
   // Finally create our new movement
-  const totalAmountOut = consolidatedAddresses.filter(consolidatedAddressAmount => consolidatedAddressAmount.amount > 0).reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amount, 0);
+  const totalAmountIn = consolidatedAddresses.reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amountIn, 0);
+  const totalAmountOut = consolidatedAddresses.reduce((total, consolidatedAddressAmount) => total + consolidatedAddressAmount.amountOut, 0);
   return {
     txId: params.rpctx.txid,
     txType: carverTxType,
-    amount: totalAmountOut,
+    amountIn: totalAmountIn,
+    amountOut: totalAmountOut,
     blockHeight: params.rpcblock.height,
     date: blockDate,
     carverAddressMovements: [],
@@ -386,46 +390,107 @@ const getRequiredMovement = async (params) => {
   }
 }
 
-const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement) => {
-  console.log(rpctx, parsedMovement);
+/**
+ * Perform deep analysis of rewards
+ */
+const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverMovement, updatedAddresses) => {
+  //console.log(rpctx, parsedMovement);
   const blockDate = new Date(rpcblock.time * 1000);
 
   let blockRewardDetails = new BlockRewardDetails(
     {
+      _id: new mongoose.Types.ObjectId(),
       blockHeight: rpcblock.height,
       date: blockDate,
       txId: rpctx.txid,
     }
   );
+  const consolidatedAddressMovements = Array.from(parsedMovement.consolidatedAddressMovements);
 
-  switch (parsedMovement.txType) {
-    case CarverTxType.ProofOfWork:
+  for (let i = 0; i < consolidatedAddressMovements.length; i++) {
+    consolidatedAddressMovement = consolidatedAddressMovements[i][1];
 
-      break;
-    case CarverTxType.ProofOfStake:
-      const isRestake = false; //@todo
+    const rewardAddressLabel = consolidatedAddressMovement.label.split(':')[0]; // Example of reward address: "bMqimpYgqG8irhWojUpHnAWtBaHDdVvr3v:POS"
 
-      blockRewardDetails.stake = {
-        address: stakeRewardAddress,
-        input: {
-          txId: stakeInputTxId,
-          value: stakeInputValue,
-          confirmations: stakedInputConfirmations,
-          date: new Date(stakedInputTime * 1000),
-          age: currentTxTime - stakedInputTime,
-          isRestake: isRestake,
-          restakeCount: 1, //@todo
-          vinCount: rpctx.vin.length,
-          voutCount: rpctx.vout.length
-        },
-        reward: stakeRewardAmount
-      }
-      break;
-  }
+    switch (consolidatedAddressMovement.addressType) {
+      case CarverAddressType.ProofOfWork:
+        //@todo We can't do a ROI% but we can at least caclulate ageBlocks/ageTime to calculate estimated next reward & rewards per day/year
+        const proofOfWorkAddress = updatedAddresses.get(rewardAddressLabel);
 
-  blockRewardDetails.masternode = {
-    address: masternodeRewardAddress,
-    reward: masternodeRewardAmount
+        blockRewardDetails.proofOfWork = {
+          addressLabel: rewardAddressLabel,
+          carverAddress: proofOfWorkAddress._id,
+          reward: consolidatedAddressMovement.amount * -1
+        }
+        break;
+      case CarverAddressType.ProofOfStake:
+        const inputTxId = rpctx.vin[0].txid;
+
+        const stakeInputUtxoLabel = `${inputTxId}:${rpctx.vin[0].vout}`;
+        const stakeUtxo = await UTXO.findOne({ label: stakeInputUtxoLabel });
+
+        const stakeInputTxCarverMovement = await CarverMovement.findOne({ txId: inputTxId });
+
+        const stakeAddress = updatedAddresses.get(rewardAddressLabel);
+
+        const stakeInputValue = stakeUtxo.amount;
+        const stakeInputBlockHeight = stakeUtxo.blockHeight;
+        const stakeInputDate = stakeInputTxCarverMovement.date;
+        const stakeRewardAmount = consolidatedAddressMovement.amount;
+
+        const isRestake = stakeInputTxCarverMovement.isReward && stakeInputTxCarverMovement.txType === CarverTxType.ProofOfStake;
+        const stakeInputAgeTime = newCarverMovement.date.getTime() - stakeInputTxCarverMovement.date.getTime();
+
+        // Calculate ROI% for stake
+        const stakesPerYear = (365 * 24 * 60 * 60) / (stakeInputAgeTime / 1000);
+        const stakeRoi = ((stakesPerYear * stakeRewardAmount) / stakeInputValue) * -100;
+
+        blockRewardDetails.stake = {
+          addressLabel: rewardAddressLabel,
+          carverAddress: stakeAddress._id,
+          input: {
+            carverMovement: stakeInputTxCarverMovement._id,
+            value: stakeInputValue,
+            blockHeight: stakeInputBlockHeight,
+            date: stakeInputDate,
+            isRestake,
+            //restakeCount: 1, //@todo
+            vinCount: rpctx.vin.length,
+            voutCount: rpctx.vout.length
+          },
+          reward: stakeRewardAmount * -1,
+          roi: stakeRoi,
+          ageBlocks: newCarverMovement.blockHeight - stakeInputBlockHeight,
+          ageTime: stakeInputAgeTime,
+        };
+
+        break;
+      case CarverAddressType.Masternode:
+        const masternodeRewardAddress = updatedAddresses.get(rewardAddressLabel);
+        const masternodeRewardAmount = consolidatedAddressMovement.amount;
+        let mnRoi = 0;
+        let mnAgeBlocks = 0;
+        let mnAgeTime = 0;
+
+        // Calculate ROI% for masternode reward (Only after 1st reward)
+        const lastMnRewardAddress = await BlockRewardDetails.findOne({ 'masternode.carverAddress': masternodeRewardAddress._id }, { date: 1, blockHeight: 1 }); // Find last time this address received a masternode reward
+        if (lastMnRewardAddress) {
+          mnAgeBlocks = newCarverMovement.blockHeight - lastMnRewardAddress.blockHeight;
+          mnAgeTime = newCarverMovement.date.getTime() - lastMnRewardAddress.date.getTime();
+          const mnRewardsPerYear = (365 * 24 * 60 * 60) / (mnAgeTime / 1000);
+          mnRoi = ((mnRewardsPerYear * masternodeRewardAmount) / config.coinDetails.masternodeCollateral) * -100;
+        }
+
+        blockRewardDetails.masternode = {
+          addressLabel: rewardAddressLabel,
+          carverAddress: masternodeRewardAddress._id,
+          reward: masternodeRewardAmount * -1,
+          roi: mnRoi,
+          ageBlocks: mnAgeBlocks,
+          ageTime: mnAgeTime
+        }
+        break;
+    }
   }
 
   return new BlockRewardDetails(blockRewardDetails);

@@ -32,7 +32,7 @@ export default class CardRewards extends Component {
         { key: 'blockHeight', title: 'Block #' },
         { key: 'posInputAmount', title: 'Input Size' },
         { key: 'posInputConfirmations', title: 'Confirmations' },
-        { key: 'computedProfitabilityScore', title: 'POS Profitability Score' },
+        { key: 'computedProfitabilityScore', title: 'POS Stake ROI%' },
         { key: 'date', title: 'Created' },
 
         // Optional columns we could enable:
@@ -45,15 +45,19 @@ export default class CardRewards extends Component {
 
   getRewardLink(reward) {
     // By default go to the tx that was stake's input
-    let txId = reward.to.label;
-
-    return `/tx/${txId}`;
+    return `/tx/${reward.txId}`;
   }
 
   getTableData() {
     return this.props.rewards.map(reward => {
       const date = moment(reward.date).utc();
       const diffSeconds = moment().utc().diff(date, 'seconds');
+      const getPosInputConfirmations = () => {
+        if (!reward.stake) {
+          return null;
+        }
+        return reward.stake.ageBlocks;
+      }
 
       return ({
         ...reward,
@@ -69,7 +73,7 @@ export default class CardRewards extends Component {
         ),
         posInputConfirmations: (
           <Link to={this.getRewardLink(reward)}>
-            {reward.posInputBlockHeightDiff}
+            {getPosInputConfirmations()}
           </Link>
         ),
         computedProfitabilityScore: (

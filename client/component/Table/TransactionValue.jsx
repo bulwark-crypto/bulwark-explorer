@@ -14,7 +14,7 @@ const TransactionValue = (tx, blockValue) => {
     let blockRewardTitle = 'Block Reward for POS & Masternode';
 
     // Check that tx has blockRewardDetails for backwards compatability
-    if (tx.blockRewardDetails) {
+    if (tx.blockRewardDetails && tx.blockRewardDetails.stake) {
       const inputAgeHours = (tx.blockRewardDetails.stake.input.age / 60 / 60).toFixed(2);
       const inputConfirmations = tx.blockRewardDetails.stake.input.confirmations;
 
