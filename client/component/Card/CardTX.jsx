@@ -15,7 +15,7 @@ export default class CardTX extends Component {
   };
 
   render() {
-    const blockValue = this.props.tx.amount;
+    const blockValue = this.props.tx.amountOut;
     const confirmValue = this.props.height - this.props.tx.blockHeight;
     const confirmBadgeClass = (confirmValue > 0)
       ? (confirmValue < 6) ? 'warning' : 'success'
