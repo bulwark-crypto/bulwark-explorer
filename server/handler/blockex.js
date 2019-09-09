@@ -589,7 +589,7 @@ const getMovements = async (req, res) => {
       .sort({ sequence: -1 })
       .populate('carverMovement', { sequence: 0 });
 
-    res.json({ movements, pages: total <= limit ? 1 : Math.ceil(total / limit) });
+    res.json({ movements, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);

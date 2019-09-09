@@ -42,7 +42,7 @@ export default class CardTXs extends Component {
         data={this.props.txs.map(tx => {
           const date = moment(tx.date).utc();
           const diffSeconds = moment().utc().diff(date, 'seconds');
-          let amount = tx.amount;
+          let amount = tx.amountOut;
 
           let spanClassName = ``;
           if (this.props.addBadgeClassToValue) {

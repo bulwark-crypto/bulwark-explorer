@@ -27,6 +27,7 @@ class Movement extends Component {
       error: null,
       loading: true,
       pages: 0,
+      total: 0,
       page: 1,
       size: 10,
       txs: [],
@@ -44,8 +45,8 @@ class Movement extends Component {
           sort: this.state.sort,
           date: this.state.date
         })
-        .then(({ pages, txs }) => {
-          this.setState({ pages, txs, loading: false }, () => {
+        .then(({ pages, txs, total }) => {
+          this.setState({ pages, total, txs, loading: false }, () => {
             this.props.setTXs(txs); // Add this set of new txs to store
           });
         })
@@ -139,7 +140,7 @@ class Movement extends Component {
           //dateSelect={getDateDropdown()} //@todo date-by-date range
           //select={getPaginationDropdown()}
           filterSelect={getFilterDropdown()}
-          title={`Transactions (${this.state.pages})`} />
+          title={`Non-Reward Transactions (${this.state.total})`} />
         <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
         <Pagination
           current={this.state.page}
