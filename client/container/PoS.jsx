@@ -186,13 +186,6 @@ class PoS extends Component {
           <div className="col-sm-8">
             {numeral(this.state.results.roi.max).format('0,0.00')}% / year
           </div>
-          <div className="col-sm-4">
-            <b>Sample Size:</b>
-          </div>
-          <div className="col-sm-8">
-            {numeral(this.state.results.count).format('0,0')} stakes
-          </div>
-
 
           <div class="col-sm-12 mt-2 mb-2">
             <hr />

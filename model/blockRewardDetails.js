@@ -16,7 +16,7 @@ const mongoose = require('mongoose');
 const BlockRewardDetailsStakeInput = new mongoose.Schema({
   //txId: { required: true, type: String },
   carverMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
-  value: { required: true, type: Number },
+  value: { index: true, required: true, type: Number },
   blockHeight: { required: true, type: Number },
   date: { required: true, type: Date },
   isRestake: { required: true, type: Boolean },
@@ -29,7 +29,7 @@ const BlockRewardDetailsStakeInput = new mongoose.Schema({
  * Structure for detailed breakdown of the stake
  */
 const BlockRewardDetailsStake = new mongoose.Schema({
-  addressLabel: { required: true, type: String },
+  addressLabel: { index: true, required: true, type: String },
   reward: { required: true, type: Number },
   input: { required: true, type: BlockRewardDetailsStakeInput },
   carverAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
@@ -42,7 +42,7 @@ const BlockRewardDetailsStake = new mongoose.Schema({
  * Structure for detailed breakdown of the masternode
  */
 const BlockRewardDetailsMasternode = new mongoose.Schema({
-  addressLabel: { required: true, type: String },
+  addressLabel: { index: true, required: true, type: String },
   carverAddress: { index: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   reward: { required: true, type: Number },
   roi: { required: true, type: Number },

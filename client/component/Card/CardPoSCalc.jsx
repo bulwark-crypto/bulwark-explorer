@@ -66,17 +66,17 @@ export default class CardPoSCalc extends React.Component {
       const sortOptions = [
         //{ label: 'Since Genesis', value: '0' },
 
-        { label: 'Last Hour', value: (60 * 60).toString() },
-        { label: 'Last 2 Hours', value: (60 * 60 * 2).toString() },
-        { label: 'Last 4 Hours', value: (60 * 60 * 4).toString() },
-        { label: 'Last 8 Hours', value: (60 * 60 * 8).toString() },
-        { label: 'Last 24 Hours', value: (60 * 60 * 24).toString() },
-        { label: 'Last 48 Hours', value: (60 * 60 * 24 * 2).toString() },
-        { label: 'Last Week', value: (60 * 60 * 24 * 7).toString() },
-        { label: 'Last Month', value: (60 * 60 * 24 * 31).toString() },
-        { label: 'Last 3 Months', value: (60 * 60 * 24 * 31 * 3).toString() },
-        { label: 'Last 6 Months', value: (60 * 60 * 24 * 31 * 6).toString() },
-        { label: 'Last Year', value: (60 * 60 * 24 * 365).toString() },
+        { label: 'Past Hour', value: (60 * 60).toString() },
+        { label: 'Past 2 Hours', value: (60 * 60 * 2).toString() },
+        { label: 'Past 4 Hours', value: (60 * 60 * 4).toString() },
+        { label: 'Past 8 Hours', value: (60 * 60 * 8).toString() },
+        { label: 'Past 24 Hours', value: (60 * 60 * 24).toString() },
+        { label: 'Past 48 Hours', value: (60 * 60 * 24 * 2).toString() },
+        { label: 'Past Week', value: (60 * 60 * 24 * 7).toString() },
+        { label: 'Past Month', value: (60 * 60 * 24 * 31).toString() },
+        { label: 'Past 3 Months', value: (60 * 60 * 24 * 31 * 3).toString() },
+        { label: 'Past 6 Months', value: (60 * 60 * 24 * 31 * 6).toString() },
+        { label: 'Past Year', value: (60 * 60 * 24 * 365).toString() },
         //{ label: 'Last 2 Years', value: (60 * 60 * 24 * 365 * 2).toString() },
       ];
       return <label class="mb-0 d-block">
