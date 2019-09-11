@@ -5,12 +5,14 @@ import { connect } from 'react-redux';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
+import moment from 'moment';
+import Actions from '../core/Actions';
 
 import HorizontalRule from '../component/HorizontalRule';
-import Select from '../component/Select';
 
 class PoS extends Component {
   static propTypes = {
+    getPos: PropTypes.func.isRequired,
     coin: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired
   };
@@ -18,48 +20,39 @@ class PoS extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: null,
+      loading: true,
+      stateHash: null,
       amount: 0.0,
       mn: 0.0,
       mns: 'None',
-      pos: 0.0
+      pos: 0.0,
+      results: null
     };
   };
 
   componentDidMount() {
-    this.getAmount();
+    this.calculatePos();
   };
 
   componentDidUpdate(prevProps) {
-    if (this.props.match.params.amount !== prevProps.match.params.amount) {
-      this.setState({
-        mn: 0.0,
-        mns: 'None',
-        pos: 0.0
-      }, this.getAmount);
-    }
+    // match.params: :fromInputAmount/:toInputAmount/:date/:restakeOnly
+
+    // If any parameter in url changes re-compute the stake ROI%
+    this.calculatePos();
   };
 
-  getAmount() {
-    const { params: { amount } } = this.props.match;
-    if (!!amount && !isNaN(amount) && amount > 0) {
-      const { mn, pos } = this.getRewardSplit(amount);
-      this.setState({ amount, mn, pos });
-    } else {
-      this.setState({ error: 'Please provide an amount for staking calculations.' });
+  calculatePos() {
+    var newStateHash = JSON.stringify(this.props.match.params); // Create hash from url params
+
+    if (!this.stateHash || this.stateHash != newStateHash) {
+      this.stateHash = newStateHash;
+      this.setState({ loading: true })
+      this.props.getPos(this.props.match.params).then((results) => {
+        this.setState({ results, loading: false })
+      }).catch(error => this.setState({ error, loading: false }));
     }
-  };
-
-  getRewardSplit = (amount) => {
-    let mn = 0;
-    let pos = amount;
-
-    if (this.state.mns !== 'None') {
-      mn = this.state.mns * blockchain.mncoins;
-      pos = amount - mn;
-    }
-
-    return { mn, pos };
-  };
+  }
 
   getRewardHours = (pos) => {
     if (!pos || pos < 0) {
@@ -69,26 +62,6 @@ class PoS extends Component {
     return (blockchain.mncoins / pos) * this.props.coin.avgMNTime;
   };
 
-  renderMasternodeCount = () => {
-    const mns = Math.floor(this.state.amount / blockchain.mncoins);
-    const options = [];
-    for (let i = 0; i <= mns; i++) {
-      options.push({ label: !i ? 'None' : i, value: !i ? 'None' : i });
-    }
-
-    return (
-      <div
-        style={ this.state.mns < 1
-          ? { marginBottom: 5, marginTop: -7 }
-          : { marginBottom: 5, marginTop: -9 }
-        }>
-        <Select
-          onChange={ v => this.setState({ mns: parseInt(v, 10) || 'None' }, this.getAmount) }
-          selectedValue={ this.state.mns }
-          options={ options } />
-      </div>
-    );
-  };
 
   getX = () => {
     const subsidy = blockchain.getSubsidy(this.props.coin.blocks + 1);
@@ -161,6 +134,9 @@ class PoS extends Component {
     if (!!this.state.error) {
       return this.renderError(this.state.error);
     }
+    if (this.state.loading) {
+      return this.renderLoading();
+    }
 
     const vX = this.getX();
     const vDay = this.getDay();
@@ -171,185 +147,83 @@ class PoS extends Component {
     if (this.state.mns !== 'None') {
       mns = this.state.mns;
     }
-
+    console.log(this.state.results);
     return (
       <div>
         <HorizontalRule title="PoS Calculations" />
-        <p>
-          Please note the following estimations are based on current block height,
-          average block time, average masternode reward time, and current block reward schedule.
-        </p>
-        <br />
-        <div className="row">
-          <div className="col-sm-4">
-            <b>Block Subsidy:</b>
-          </div>
-          <div className="col-sm-8">
-            { numeral(vX.subsidy).format('0,0.0000') } BWK
-          </div>
-          <div className="col-sm-4">
-            <b>PoS:</b>
-          </div>
-          <div className="col-sm-8">
-            { numeral(vX.posSubsidy).format('0,0.0000') } BWK
-          </div>
-          <div className="col-sm-4">
-            <b>Masternode:</b>
-          </div>
-          <div className="col-sm-8">
-            { numeral(vX.mnSubsidy).format('0,0.0000') } BWK
-          </div>
-          <div className="col-sm-4">
-            <b>Calculation Amount:</b>
-          </div>
-          <div className="col-sm-8">
-            { numeral(this.state.amount).format('0,0.0000') } BWK
-          </div>
-        </div>
-        <hr />
-        <br />
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Masternode(s):
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { this.renderMasternodeCount() }
-          </div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4"></div>
-          <div className="col-sm-12 col-md-2">
-            <small className="text-gray">X</small>
-          </div>
-          <div className="col-sm-12 col-md-2">
-            <small className="text-gray">Day</small>
-          </div>
-          <div className="col-sm-12 col-md-2">
-            <small className="text-gray">Week</small>
-          </div>
-          <div className="col-sm-12 col-md-2">
-            <small className="text-gray">Month</small>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Masternode Amount (BWK):
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.mn).format('0,0.0000') }
-          </div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Masternode Reward Interval (Hours):
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.mnHours).format('0,0.00') }
-          </div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Masternode Reward (BWK):
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.mnSubsidy * mns).format('0,0.0000') }
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vDay.mnSubsidy * mns).format('0,0.0000') }
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vWeek.mnSubsidy * mns).format('0,0.0000') }
-          </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vMonth.mnSubsidy * mns).format('0,0.0000') }
-          </div>
+        <div class="alert alert-warning">
+          Please note that these estimates are based on real, per-block data from blockchain. Proof Of Stake attacks like "stake grinding" will effect overall ROI% of the coin.
+          Please check our block reward reduction schedule as these figures are based on real staking data and should be used for <strong>analytics only</strong>.
         </div>
         <br />
         <div className="row">
-          <div className="col-sm-12 col-md-4">
-            PoS Amount (BWK):
+          <div className="col-sm-4">
+            <b>Average ROI%:</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.pos).format('0,0.0000') }
+          <div className="col-sm-8">
+            <strong>{numeral(this.state.results.roi.avg).format('0,0.00')}% / year</strong>
           </div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            PoS Reward Interval (Hours):
+          <div className="col-sm-4">
+            <b>Sample Size:</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.posHours).format('0,0.00') }
+          <div className="col-sm-8">
+            {numeral(this.state.results.count).format('0,0')} stakes
           </div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-          <div className="col-sm-12 col-md-2"></div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            PoS Reward (BWK):
+
+          <div class="col-sm-12 mt-2 mb-2">
+            <hr />
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.posSubsidy).format('0,0.0000') }
+
+          <div className="col-sm-4">
+            <b>Min Stake ROI%:</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vDay.posSubsidy).format('0,0.0000') }
+          <div className="col-sm-8">
+            {numeral(this.state.results.roi.min).format('0,0.00')}% / year
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vWeek.posSubsidy).format('0,0.0000') }
+          <div className="col-sm-4">
+            <b>Max Stake ROI%:</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vMonth.posSubsidy).format('0,0.0000') }
+          <div className="col-sm-8">
+            {numeral(this.state.results.roi.max).format('0,0.00')}% / year
           </div>
-        </div>
-        <hr />
-        <br />
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Total Amount (BWK):
+          <div className="col-sm-4">
+            <b>Sample Size:</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vX.mnSubsidy * mns + vX.posSubsidy).format('0,0.0000') }
+          <div className="col-sm-8">
+            {numeral(this.state.results.count).format('0,0')} stakes
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vDay.mnSubsidy * mns + vDay.posSubsidy).format('0,0.0000') }
+
+
+          <div class="col-sm-12 mt-2 mb-2">
+            <hr />
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vWeek.mnSubsidy * mns + vWeek.posSubsidy).format('0,0.0000') }
+
+          <div className="col-sm-4">
+            <b>Input Size (From):</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral(vMonth.mnSubsidy * mns + vMonth.posSubsidy).format('0,0.0000') }
+          <div className="col-sm-8">
+            {numeral(this.state.results.fromInputAmount).format('0,0')} BWK
           </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12 col-md-4">
-            Total Amount (USD):
+          <div className="col-sm-4">
+            <b>Input Size (To):</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral((vX.mnSubsidy * mns + vX.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          <div className="col-sm-8">
+            {numeral(this.state.results.toInputAmount).format('0,0')} BWK
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral((vDay.mnSubsidy * mns + vDay.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          <div className="col-sm-4">
+            <b>Start Date:</b>
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral((vWeek.mnSubsidy * mns + vWeek.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          <div className="col-sm-8">
+            {moment(this.state.results.minDate).utc().format('MM-DD-YYYY')}
           </div>
-          <div className="col-sm-12 col-md-2">
-            { numeral((vMonth.mnSubsidy * mns + vMonth.posSubsidy) * this.props.coin.usd).format('$0,0.00') }
+          <div className="col-sm-4">
+            <b>Options:</b>
+          </div>
+          <div className="col-sm-8">
+            {this.state.results.isRestake ? 'Include only re-staked inputs into sample size' : 'Include new inputs into sample size'}
           </div>
         </div>
-      </div>
+      </div >
     );
   };
 }
@@ -359,6 +233,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
+  getPos: query => Actions.getPos(null, query),
   coin: state.coins && state.coins.length
     ? state.coins[0]
     : { avgMNTime: 0.0, usd: 0.0 }

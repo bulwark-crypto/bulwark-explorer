@@ -70,6 +70,7 @@ class CoinSummary extends Component {
                   status={coin.status}
                   countCarverAddresses={coin.countCarverAddresses}
                   countCarverMovements={coin.countCarverMovements}
+                  coin={coin}
                 />
               </div>
               <div className="col-md-12 col-lg-6">

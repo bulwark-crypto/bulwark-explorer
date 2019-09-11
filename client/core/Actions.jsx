@@ -7,7 +7,8 @@ import {
   ERROR,
   TXS,
   WATCH_ADD,
-  WATCH_REMOVE
+  WATCH_REMOVE,
+  POS
 } from '../constants';
 
 const promises = new Map();
@@ -167,6 +168,30 @@ export const getTXs = (dispatch, query) => {
   });
 };
 
+export const getPos = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'pos',
+      (payload) => {
+        // If dispatch is provided we can store in global store via redux.
+        // If there is no dispatch we'll resolve via callback (allowing us to consume it right away without global store)
+        if (dispatch) {
+          dispatch({ payload, type: POS });
+        }
+
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
 export const getMovements = (dispatch, query) => {
   return new promise((resolve, reject) => {
     return getFromWorker(
@@ -245,6 +270,7 @@ export default {
   getTXLatest,
   getTXs,
   getTXsWeek,
+  getPos,
   setTXs,
   setWatch,
   removeWatch,

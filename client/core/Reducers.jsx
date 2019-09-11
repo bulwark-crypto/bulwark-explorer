@@ -5,6 +5,7 @@ import {
   COINS,
   ERROR,
   TXS,
+  POS,
   WATCH_ADD,
   WATCH_REMOVE
 } from '../constants';
@@ -72,9 +73,23 @@ const txs = (state = [], action) => {
   return state;
 };
 
+/**
+ * Will handle the updating of the pos calculator state.
+ * @param {Array} state The current or default list of transactions.
+ * @param {Object} action The flux compatible action.
+ */
+const pos = (state = {}, action) => {
+  console.log('payload:', action);
+  if (action.type === POS && action.payload) {
+    console.log('payload:', action.payload);
+  }
+  return state;
+};
+
 // Export and combine our reducers.
 export default combineReducers({
   coin,
   coins,
-  txs
+  txs,
+  pos
 });

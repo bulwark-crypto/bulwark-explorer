@@ -76,7 +76,7 @@ class Overview extends Component {
 
     return (
       <div>
-        <HorizontalRule title="Latest Blocks" />
+        <HorizontalRule title="Latest Non-Reward Transactions" />
         <Table
           cols={this.state.cols}
           data={txs} />

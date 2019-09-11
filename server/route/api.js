@@ -20,6 +20,7 @@ router.get('/peer', blockex.getPeer);
 router.get('/supply', blockex.getSupply);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
+router.get('/pos', blockex.getPos);
 router.get('/rewards', blockex.getRewards);
 router.get('/movements', blockex.getMovements);
 router.get('/tx/latest', blockex.getTXLatest);

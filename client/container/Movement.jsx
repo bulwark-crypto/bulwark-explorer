@@ -138,8 +138,8 @@ class Movement extends Component {
       <div>
         <HorizontalRule
           //dateSelect={getDateDropdown()} //@todo date-by-date range
-          //select={getPaginationDropdown()}
-          filterSelect={getFilterDropdown()}
+          select={getPaginationDropdown()}
+          //filterSelect={getFilterDropdown()}
           title={`Non-Reward Transactions (${this.state.total})`} />
         <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
         <Pagination

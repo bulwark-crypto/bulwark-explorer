@@ -540,6 +540,72 @@ const getTXs = async (req, res) => {
     res.status(500).send(err.message || err);
   }
 };
+/**
+ * Return pos roi% calculations
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getPos = async (req, res) => {
+  try {
+    //fromInputAmount=1500&toInputAmount=3000&date=2678400&restakeOnly=1
+    const fromInputAmount = Math.max(Math.min(req.query.fromInputAmount ? parseInt(req.query.fromInputAmount, 10) : 10, 1000000), 100);
+    const toInputAmount = Math.max(Math.min(req.query.toInputAmount ? parseInt(req.query.toInputAmount, 10) : 10, 1000000), 100);
+
+    if (fromInputAmount > toInputAmount) {
+      res.status(404).send('Input Size (From) must be <= Input Size (To)');
+      return;
+    }
+
+    const ticksDifference = Math.min(Number.parseInt(req.query.date), 60 * 60 * 24 * 365); // Limit to max of 1 year
+    const minDate = moment().subtract(ticksDifference, 'seconds').toDate();
+    const isRestake = req.query.restakeOnly === '1';
+
+    let query = {
+      'stake.input.value': { $gte: fromInputAmount, $lte: toInputAmount },
+      'date': { $gte: minDate }
+    };
+    if (isRestake) {
+      query['stake.input.isRestake'] = true;
+    }
+
+    const posAggregationResults = await BlockRewardDetails.aggregate([
+      {
+        $match: query
+      },
+      {
+        $group: {
+          _id: 'stakeRoiPercent',
+          avg: { $avg: '$stake.roi' },
+          min: { $min: '$stake.roi' },
+          max: { $max: '$stake.roi' }
+        }
+      }])
+
+    if (!posAggregationResults || posAggregationResults.length === 0) {
+      res.status(404).send('No rewards matching criteria!');
+      return;
+    }
+
+    const count = await BlockRewardDetails.find(query).count();
+
+    const roi = posAggregationResults.find(group => group._id === 'stakeRoiPercent')
+
+    const results = {
+      fromInputAmount,
+      toInputAmount,
+      minDate,
+      roi,
+      count,
+      isRestake
+    }
+
+
+    res.json(results);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
 
 /**
  * Return a paginated list of rewards.
@@ -555,6 +621,7 @@ const getRewards = async (req, res) => {
 
     const total = await BlockRewardDetails.count(query);
     const rewards = await BlockRewardDetails.find(query).skip(skip).limit(limit).sort({ blockHeight: -1 });
+    //.sort({ 'stake.roi': -1 }); //@todo add optional sort
 
 
     res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
@@ -669,6 +736,7 @@ module.exports = {
   getTXLatest,
   getTX,
   getTXs,
+  getPos,
   getRewards,
   getTXsWeek,
   getMovements
