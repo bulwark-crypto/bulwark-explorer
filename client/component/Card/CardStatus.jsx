@@ -75,12 +75,12 @@ export default class CardStatus extends Component {
             <span className="card__result">{(this.props.avgMNTime || 0).toFixed(2)} hours</span>
           </div>
           <div class="card__row justify-content-between mt-1 pt-1 border-top">
-            <span class="card__label">Carver2D Addresses:</span>
+            <span class="card__label">Unique Addresses:</span>
             <span class="card__result">
               {numeral(this.props.countCarverAddresses).format('0,0')}</span>
           </div>
           <div class="card__row justify-content-between">
-            <span class="card__label">Network Transactions:</span>
+            <span class="card__label">Non-Reward Transactions:</span>
             <span className="card__result">{numeral(this.props.countCarverMovements).format('0,0')}</span>
           </div>
           <div class="card__row justify-content-between border-top">
@@ -88,7 +88,7 @@ export default class CardStatus extends Component {
             <span className="card__result">{numeral(this.props.coin.uniqueMasternodeAddresses24h).format('0,0')}</span>
           </div>
           <div class="card__row justify-content-between">
-            <span class="card__label">24h Unique Stakers:</span>
+            <span class="card__label">24h Staking Addresses:</span>
             <span className="card__result"><Link to="/rewards">{numeral(this.props.coin.uniquePosAddresses24h).format('0,0')}</Link></span>
           </div>
           <div className="card__row justify-content-between">

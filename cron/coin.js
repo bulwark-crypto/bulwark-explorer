@@ -8,6 +8,7 @@ const moment = require('moment');
 // Models.
 const Coin = require('../model/coin');
 const { CarverAddress, CarverMovement } = require('../model/carver2d');
+const { CarverAddressType } = require('../lib/carver2d');
 const { BlockRewardDetails } = require('../model/blockRewardDetails');
 
 
@@ -33,8 +34,8 @@ async function syncCoin() {
     market = market.length ? market[0] : {};
   }
 
-  const countCarverAddresses = await CarverAddress.count();
-  const countCarverMovements = await CarverMovement.count();
+  const countCarverAddresses = await CarverAddress.find({ carverAddressType: CarverAddressType.Address }).count();
+  const countCarverMovements = await CarverMovement.find({ isReward: false }).count();
 
 
   const coin = new Coin({
