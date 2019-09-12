@@ -26,7 +26,7 @@ const config = require('../../config')
  */
 const getAddress = async (req, res) => {
   try {
-    const carverAddress = await CarverAddress.findOne({ label: req.params.hash }).populate("lastMovement", { date: 1 });
+    const carverAddress = await CarverAddress.findOne({ label: req.params.hash }).populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } });
     if (!carverAddress) {
       throw 'Address Not Found';
     }
@@ -426,7 +426,7 @@ const getTop100 = async (req, res) => {
     const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
       return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { sequence: 0 })
         .limit(100)
-        .sort({ balance: -1 }).populate("lastMovement", { date: 1 });
+        .sort({ balance: -1 }).populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } });
     });
 
     res.json(docs);

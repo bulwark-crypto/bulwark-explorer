@@ -56,7 +56,7 @@ class Top100 extends Component {
               <Link to={`/address/${carverAddress.label}`}><CarverAddressLabelWidget carverAddress={carverAddress} /></Link>
             ),
             date: moment(carverAddress.date).utc().fromNow(true),
-            lastMovementAgo: moment(carverAddress.lastMovement.date).utc().fromNow(),
+            lastMovementAgo: carverAddress.lastMovement ? moment(carverAddress.lastMovement.carverMovement.date).utc().fromNow() : "N/A",
             inputs: carverAddress.countIn - carverAddress.posCountIn,
             posRewards: numeral(carverAddress.posValueIn + carverAddress.powValueIn).format('0,0.00'),
             index: idx + 1,

@@ -158,7 +158,7 @@ async function syncBlocks(start, stop, sequence) {
 
           addressFromCache.sequence = sequence;
           const lastMovement = addressFromCache.lastMovement;
-          addressFromCache.lastMovement = newCarverMovementId;
+          //addressFromCache.lastMovement = newCarverMovementId;
 
           // Do we need to insert or update this address? (if _id is null then add to batch insert otherwise batch updates)
           if (!addressFromCache._id) {
