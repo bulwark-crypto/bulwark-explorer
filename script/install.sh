@@ -395,7 +395,7 @@ if [ ! -d "/home/explorer/blockex" ]
 then
     installNginx
     installMongo
-    installBulwark
+    #installBulwark
     installNodeAndYarn
     installBlockEx
     echo "Finished installation!"
