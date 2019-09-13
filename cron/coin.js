@@ -66,7 +66,7 @@ async function syncCoin() {
       { $group: { _id: '$stake.addressLabel' } },
       { $count: 'count' }
     ]);
-    coin.uniquePosAddresses24h = aggregationResults[0].count;
+    coin.uniquePosAddresses24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
   }
 
   // Unique masternode addresses in last 24 hours
@@ -76,7 +76,7 @@ async function syncCoin() {
       { $group: { _id: '$masternode.addressLabel' } },
       { $count: 'count' }
     ]);
-    coin.uniqueMasternodeAddresses24h = aggregationResults[0].count;
+    coin.uniqueMasternodeAddresses24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
   }
 
   // POS ROI% average over past 24 hours
@@ -85,7 +85,7 @@ async function syncCoin() {
       { $match: { 'date': { $gte: date24hAgo } } },
       { $group: { _id: null, count: { $avg: '$stake.roi' } } },
     ]);
-    coin.posRoi24h = aggregationResults[0].count;
+    coin.posRoi24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
   }
 
   await coin.save();
