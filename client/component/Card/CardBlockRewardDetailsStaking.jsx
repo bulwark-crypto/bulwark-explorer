@@ -16,7 +16,8 @@ export default class CardBlockRewardDetailsStaking extends Component {
     const posRestakeIndicator = <PosRestakeIndicator reward={reward} includeShortName={true} showStakeRewardAmount={true} />;
 
     // Link to the previous stake if this is a restake
-    if (reward.stake.input.isRestake) {
+    //@todo re-enable once we store the txid of input
+    if (false && reward.stake.input.isRestake) {
       return (
         <Link to={`/tx/${reward.stake.input.txId}`}>
           {posRestakeIndicator}
