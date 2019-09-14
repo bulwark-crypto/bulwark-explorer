@@ -154,20 +154,6 @@ const config = {
   // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
   ///////////////////////////////
   profitabilityScore: {
-    /**
-     * Figure out how profitable you are staking. Each output is multiplied by the number below, you can configure it for your blockchain
-     * 
-     * The formula is: (reward.stake.input.confirmations / ((reward.stake.reward / reward.stake.input.value) * 100)) * config.profitabilityScore.weightMultiplier
-     */
-    weightMultiplier: 0.1,
-
-    /**
-     * In order to get the color below (from scoreStyles) we'll use an exponential formula
-     * 
-     * The formula is: profitabilityScore < weightColorScale * Math.pow(2, i + 1) 
-     */
-    weightColorScale: 30,
-
     scoreStyles: [
       // Best case
       {

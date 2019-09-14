@@ -32,7 +32,7 @@ export default class CardRewards extends Component {
         { key: 'blockHeight', title: 'Block #' },
         { key: 'posInputAmount', title: 'Input Size' },
         { key: 'posInputConfirmations', title: 'Confirmations' },
-        { key: 'computedProfitabilityScore', title: 'POS Stake ROI%' },
+        { key: 'posRestakeRoi', title: 'POS Stake ROI%' },
         { key: 'date', title: 'Created' },
 
         // Optional columns we could enable:
@@ -76,7 +76,7 @@ export default class CardRewards extends Component {
             {getPosInputConfirmations()}
           </Link>
         ),
-        computedProfitabilityScore: (
+        posRestakeRoi: (
           <Link to={this.getRewardLink(reward)}>
             <PosProfitabilityScore reward={reward} />
           </Link>

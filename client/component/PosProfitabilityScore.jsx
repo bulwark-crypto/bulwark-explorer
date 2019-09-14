@@ -1,30 +1,26 @@
 import React from 'react';
 import config from '../../config'
+import { connect } from 'react-redux';
 import numeral from 'numeral';
 
 /**
  * Take reward and format it into a profitability score
  * @todo move to FormattedValues folder
  */
-const PosProfitabilityScore = ({ reward, includeTitle = true }) => {
-  const getStyledProfitabilityScore = (profitabilityWeight) => {
-    const weightColorScale = config.profitabilityScore.weightColorScale;
-    const scores = config.profitabilityScore.scoreStyles;
+const PosProfitabilityScore = ({ reward, coin, includeTitle = true }) => {
 
-    let profitabilityStyle = scores[0]; // Best case by default
+  const getStyledProfitabilityScore = (stakeRoi) => {
+    const scoreStyles = config.profitabilityScore.scoreStyles;
 
-    for (let i = 0; i < scores.length; i++) {
-      if (profitabilityWeight < weightColorScale * Math.pow(2, i + 1)) {
-        profitabilityStyle = scores[scores.length - i - 1];
-        break;
-      }
-    }
+    const styleIndex = Math.min(Math.round(((stakeRoi / (coin.posRoi24h * 2))) * (scoreStyles.length - 1)), scoreStyles.length - 1); // We'll use avg as 24h 50% mark for style
+    let profitabilityStyle = scoreStyles[scoreStyles.length - 1 - styleIndex];
 
-    const profitabilityTitle = (includeTitle ? profitabilityStyle.title : null);
-
+    const rankTitle = (includeTitle ? profitabilityStyle.title : null);
+    const avgRoiTitle = `24h ROI Avg: ${coin.posRoi24h.toFixed(0)}%`
+    const profitabilityTitle = `${rankTitle} (${avgRoiTitle})`;
     return (
       <span className="badge" style={{ backgroundColor: profitabilityStyle.color }} title={profitabilityTitle}>
-        {numeral(profitabilityWeight.toFixed(0)).format('0,0')}%
+        {numeral(stakeRoi.toFixed(0)).format('0,0')}%
       </span>
     );
   }
@@ -34,39 +30,13 @@ const PosProfitabilityScore = ({ reward, includeTitle = true }) => {
   }
 
   return getStyledProfitabilityScore(reward.stake.roi);
-  /*
-    const getStyledProfitabilityScore = (profitabilityWeight) => {
-      const weightColorScale = config.profitabilityScore.weightColorScale;
-      const scores = config.profitabilityScore.scoreStyles;
-  
-      let profitabilityStyle = scores[scores.length - 1]; // Worst case by default
-  
-      for (let i = 0; i < scores.length; i++) {
-        if (profitabilityWeight < weightColorScale * Math.pow(2, i + 1)) {
-          profitabilityStyle = scores[i];
-          break;
-        }
-      }
-  
-      const profitabilityTitle = includeTitle ? profitabilityStyle.title : null;
-  
-      return (
-        <span className="badge" style={{ backgroundColor: profitabilityStyle.color }} title={profitabilityTitle}>
-          {profitabilityWeight.toFixed(0)}
-        </span>
-      );
-    }
-  
-    const getProfitabilityWeight = (reward) => {
-      const profitPercent = (reward.amount / reward.posInputAmount) * 100;
-      const timeCostOfStake = (reward.posInputBlockHeightDiff / profitPercent);
-      const profitabilityWeight = (timeCostOfStake * config.profitabilityScore.weightMultiplier);
-  
-      return profitabilityWeight;
-    }
-  
-    const profitabilityWeight = getProfitabilityWeight(reward);
-    return getStyledProfitabilityScore(profitabilityWeight);*/
 }
 
-export default PosProfitabilityScore;
+const mapDispatch = dispatch => ({
+});
+
+const mapState = state => ({
+  coin: state.coins.length ? state.coins[0] : {},
+});
+
+export default connect(mapState, mapDispatch)(PosProfitabilityScore);

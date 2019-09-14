@@ -43,14 +43,22 @@ export default class CardBlockRewardDetailsStaking extends Component {
       <div className="animated fadeIn">
         <div className="card--block">
           <div className="card__row">
-            <span className="card__label">Stake Input Amount:</span>
-            <span className="card__result">{numeral(blockRewardDetails.stake.input.value).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</span>
+            <span className="card__label">POS Stake ROI%:</span>
+            <span className="card__result">
+              <Link to={"/rewards"}>
+                <PosProfitabilityScore reward={this.props.tx.blockRewardDetails} />
+              </Link>
+            </span>
           </div>
           <div className="card__row">
             <span className="card__label">Stake Reward:</span>
             <span className="card__result">
               {this.getBlockRewardLink(blockRewardDetails)}
             </span>
+          </div>
+          <div className="card__row mt-3">
+            <span className="card__label">Stake Input Amount:</span>
+            <span className="card__result">{numeral(blockRewardDetails.stake.input.value).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</span>
           </div>
           <div className="card__row">
             <span className="card__label">Stake Input Age:</span>
@@ -59,14 +67,6 @@ export default class CardBlockRewardDetailsStaking extends Component {
           <div className="card__row">
             <span className="card__label">Stake Input Confirmations:</span>
             <span className="card__result">{inputConfirmations}</span>
-          </div>
-          <div className="card__row">
-            <span className="card__label">POS Stake ROI%:</span>
-            <span className="card__result">
-              <Link to={"/rewards"}>
-                <PosProfitabilityScore reward={this.props.tx.blockRewardDetails} />
-              </Link>
-            </span>
           </div>
 
           <div className="card__row mt-3">
