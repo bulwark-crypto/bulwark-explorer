@@ -9,7 +9,7 @@ const cache = require('../lib/cache');
 // System models for query and etc.
 const Block = require('../../model/block');
 
-const { CarverAddressType, CarverMovementType } = require('../../lib/carver2d');
+const { CarverAddressType, CarverMovementType, CarverTxType } = require('../../lib/carver2d');
 const { CarverAddress, CarverMovement, CarverAddressMovement } = require('../../model/carver2d');
 const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
@@ -461,7 +461,10 @@ const getTX = async (req, res) => {
   try {
     const hash = req.params.hash;
 
-    const carverMovement = await CarverMovement.findOne({ txId: hash }, { sequence: 0 });
+    const carverMovement = await CarverMovement
+      .findOne({ txId: hash }, { sequence: 0 })
+      .populate({ path: 'blockRewardDetails' });
+
     if (!carverMovement) {
       res.status(404).send('Unable to find the transaction!');
       return;
@@ -469,18 +472,28 @@ const getTX = async (req, res) => {
     const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: carverMovement._id }, { sequence: 0 }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
 
 
-    //.populate('to', { label: 1, carverAddressType: 1 })
-    //.populate('from', { label: 1, carverAddressType: 1 })
-    //.sort({ sequence: -1 })
-    //.hint({ contextTx: 1, sequence: 1 }); // Index hinting
 
-
-    res.json({
+    let txDetails = {
       ...carverMovement.toObject(),
-      carverAddressMovements
-      //carverAddress: carverAddress.toObject(),
-      //movements: carverMovements.map(carverMovement => carverMovement.toObject())
-    });
+      carverAddressMovements,
+    };
+
+    if (carverMovement.isReward) {
+      const blockRewardDetails = carverMovement.blockRewardDetails;
+
+      const masternodeAddress = await CarverAddress.findOne({ label: `${blockRewardDetails.masternode.addressLabel}:MN` }, { countOut: 1, valueOut: 1 });
+      txDetails.blockRewardDetails.masternode.rewardsCarverAddress = masternodeAddress;
+
+      switch (carverMovement.txType) {
+        case CarverTxType.ProofOfStake:
+          const proofOfStakeAddress = await CarverAddress.findOne({ label: `${blockRewardDetails.stake.addressLabel}:POS` }, { countOut: 1, valueOut: 1 });
+          txDetails.blockRewardDetails.stake.rewardsCarverAddress = proofOfStakeAddress;
+          break;
+      }
+    }
+
+
+    res.json(txDetails);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
