@@ -79,10 +79,7 @@ const txs = (state = [], action) => {
  * @param {Object} action The flux compatible action.
  */
 const pos = (state = {}, action) => {
-  console.log('payload:', action);
-  if (action.type === POS && action.payload) {
-    console.log('payload:', action.payload);
-  }
+  //@todo add pos global state
   return state;
 };
 
