@@ -158,44 +158,44 @@ const config = {
       // Best case
       {
         color: '#72f87b',
-        title: 'Rank 1/10 - Excellent!!!'
+        title: 'Excellent!!!'
       },
       {
         color: '#84f771',
-        title: 'Rank 2/10 - Excellent!'
+        title: 'Excellent!'
       },
       {
         color: '#a0f771',
-        title: 'Rank 3/10 - Excellent'
+        title: 'Excellent'
       },
       {
         color: '#bcf671',
-        title: 'Rank 4/10 - Very Good'
+        title: 'Very Good'
       },
       {
         color: '#d8f671',
-        title: 'Rank 5/10 - Above Average'
+        title: 'Above Average'
       },
       {
         color: '#f3f671',
-        title: 'Rank 6/10 - Average'
+        title: 'Average'
       },
       {
         color: '#f5dc71',
-        title: 'Rank 7/10 - Below Average'
+        title: 'Below Average'
       },
       {
         color: '#f5c071',
-        title: 'Rank 8/10 - Not Optimal'
+        title: 'Not Optimal'
       },
       {
         color: '#f4a471',
-        title: 'Rank 9/10 - Not Optimal!'
+        title: 'Not Optimal!'
       },
       // Worst case (default)
       {
         color: '#f48871',
-        title: 'Rank 10/10 - Not Optimal!!!'
+        title: 'Not Optimal!!!'
       }
     ]
   },
