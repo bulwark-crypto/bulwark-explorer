@@ -118,7 +118,7 @@ export default class CardAddress extends Component {
     }
 
     const getReceived = () => {
-      const received = (carverAddress.valueIn - powValueIn - posValueIn);
+      const received = (carverAddress.valueIn - powValueIn - posValueIn - mnValueIn);
       if (!received) {
         return null;
       }
@@ -176,7 +176,7 @@ export default class CardAddress extends Component {
       return <div className="card__row">
         <span className="card__label">Sent:</span>
         <span className="card__result">
-          -{numeral((carverAddress.valueOut).toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+          -{numeral((rverAddress.valueOut).toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
       </div>
     }
