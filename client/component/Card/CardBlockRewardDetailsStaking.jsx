@@ -35,6 +35,9 @@ export default class CardBlockRewardDetailsStaking extends Component {
     }
 
     const blockRewardDetails = this.props.tx.blockRewardDetails;
+    if (!blockRewardDetails.stake) {
+      return null;
+    }
 
     const inputAgeDays = (blockRewardDetails.stake.ageTime / 1000 / 60 / 60 / 24).toFixed(2);
     const inputConfirmations = blockRewardDetails.stake.ageBlocks;
