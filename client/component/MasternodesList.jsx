@@ -164,7 +164,7 @@ class MasternodesList extends Component {
               active: moment().subtract(mn.active, 'seconds').utc().fromNow(true),
               addr: (
                 <Link to={`/address/${mnAddress}`}>
-                  {`${mnAddress.substr(0, 20)}...`}
+                  {mnAddress}
                 </Link>
               ),
               created: (
