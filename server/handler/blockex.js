@@ -303,7 +303,9 @@ const getMasternodes = async (req, res) => {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 100, 1000);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    var query = {};
+    var query = {
+      carverAddressType: CarverAddressType.Masternode
+    };
 
     // Optionally it's possible to filter masternodes running on a specific address
     if (req.query.hash) {
@@ -313,21 +315,41 @@ const getMasternodes = async (req, res) => {
     // Optionally it's possible to filter masternodes running on a specific range of addresses. Pass in addresses as comma-seprated list
     // In redux we pass in an array and it automatically converts into a comma-seperated list of addresses
     if (req.query.addresses) {
-      const addressList = req.query.addresses.split(',');
+      const addressList = req.query.addresses.split(',').map(address => `${address}:MN`); // Carver masternode addresses have :MN suffix
       // At the moment the limit of addresses in a single query is 25 but this number will be increased later, perhaps with some form of caching
       if (addressList.length < 25) {
-        query.addr = { "$in": addressList };
+        query.label = { '$in': addressList };
       }
     }
 
-    const total = await Masternode.count(query);
-    const mns = await Masternode
+
+    const total = await CarverAddress.count(query);
+    const carverAddresses = await CarverAddress
       .find(query)
       .skip(skip)
-      .limit(limit)
-      .sort({ lastPaidAt: -1, status: 1 })
-      .populate('carverAddress')
-      .populate({ path: 'carverAddressMn', populate: { path: 'lastMovement' } });
+      .limit(limit).sort({ balance: 1 })
+      .populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } });
+
+    const mnCarverAddressIds = carverAddresses.map(mn => mn._id);
+
+    const masternodesByIds = await Masternode
+      .find({ carverAddressMn: { $in: mnCarverAddressIds } })
+      .populate('carverAddress');
+
+
+    const mns = carverAddresses.map(carverAddress => {
+      const masternodesForAddress = masternodesByIds.filter(mn => {
+        return mn.carverAddressMn.toString() === carverAddress._id.toString();
+      });
+
+      return {
+        ...carverAddress.toObject(),
+        masternodesForAddress
+      }
+    });
+
+
+    //       .populate({ path: 'carverAddressMn', populate: { path: 'lastMovement' } });*/
 
     res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
   } catch (err) {

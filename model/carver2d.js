@@ -43,7 +43,7 @@ const carverAddressSchema = new mongoose.Schema({
 carverAddressSchema.index({ carverAddressType: 1, sequence: 1 }); // Important compound index as we're doing a lot of find()+sort by carverAddresType/sequence
 carverAddressSchema.index({ carverAddressType: 1, valueOut: 1 }); // Since we have new Sort By "Value"
 
-carverAddressSchema.index({ carverAddressType: 1, balance: 1 }); // For rich list (@todo, add condition for address)
+carverAddressSchema.index({ carverAddressType: 1, balance: 1 }); // For rich list and masternode list (it's sorted by balance)
 
 const CarverAddress = mongoose.model('CarverAddress', carverAddressSchema, 'carverAddresses');
 

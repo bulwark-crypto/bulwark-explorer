@@ -1,5 +1,7 @@
 import Component from '../core/Component';
 import throttle from '../../lib/throttle';
+import numeral from 'numeral';
+import config from '../../config'
 import { dateFormat } from '../../lib/date';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -26,14 +28,18 @@ class MasternodesList extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      title: props.title,
       cols: [
         { key: 'addr', title: 'Address' },
-        { key: 'active', title: 'Active' },
+        { key: 'created', title: 'Created' },
         { key: 'lastPaidAt', title: 'Last Paid' },
-        { key: 'txHash', title: 'Collateral TX' },
-        { key: 'txOutIdx', title: 'Index' },
-        { key: 'ver', title: 'Version' },
-        { key: 'status', title: 'Status' },
+        //{ key: 'txHash', title: 'Collateral TX' },
+        //{ key: 'txOutIdx', title: 'Index' },
+        //{ key: 'ver', title: 'Version' },
+        //{ key: 'status', title: 'Status' },
+        { key: 'activeMns', title: 'Active MNs' },
+        { key: 'rewardsCount', title: 'Rewards Count' },
+        { key: 'totalRewards', title: 'Total Rewards' },
       ],
       error: null,
       loading: true,
@@ -56,8 +62,13 @@ class MasternodesList extends Component {
           limit: this.state.size,
           skip: (this.state.page - 1) * this.state.size
         })
-        .then(({ mns, pages }) => {
-          this.setState({ mns, pages, loading: false });
+        .then(({ mns, pages, total }) => {
+          this.setState({
+            mns,
+            pages,
+            loading: false,
+            title: `Masternodes (${total} Since Genesis)`
+          });
         })
         .catch(error => this.setState({ error, loading: false }));
     }, 800);
@@ -137,36 +148,50 @@ class MasternodesList extends Component {
       <div>
         <HorizontalRule
           select={getPaginationDropdown()}
-          title={this.props.title} />
+          title={this.state.title} />
         <Table
           cols={this.state.cols}
           data={sortBy(this.state.mns.map((mn) => {
-            const lastPaidAt = moment(mn.lastPaidAt).utc();
+            const lastPaidAt = moment(mn.lastMovement.carverMovement.date).utc();
             const isEpoch = lastPaidAt.unix() === 0;
+
+            const ageDays = moment(mn.lastMovement.carverMovement.date).utc().unix() - moment(mn.date).utc().unix();
+
+            const mnAddress = mn.label.replace(':MN', ''); //Remove the :MN suffix from carver address
 
             return {
               ...mn,
               active: moment().subtract(mn.active, 'seconds').utc().fromNow(true),
               addr: (
-                <Link to={`/address/${mn.addr}`}>
-                  {`${mn.addr.substr(0, 20)}...`}
+                <Link to={`/address/${mnAddress}`}>
+                  {`${mnAddress.substr(0, 20)}...`}
+                </Link>
+              ),
+              created: (
+                <Link to={`/address/${mnAddress}`} className="text-nowrap">
+                  {moment(mn.date).utc().fromNow()}
                 </Link>
               ),
               lastPaidAt: (
-                <span className="text-nowrap">
+                <Link to={`/address/${mnAddress}`} className="text-nowrap">
                   {isEpoch ? 'N/A' : lastPaidAt.fromNow()}
-                </span>
-              ),
-              txHash: (
-                <Link to={`/tx/${mn.txHash}`}>
-                  {`${mn.txHash.substr(0, 20)}...`}
                 </Link>
               ),
-              status: (
-                <span className="text-nowrap">
-                  {getIcon(mn)}
-                  {mn.status}
-                </span>
+              activeMns: (
+                <Link to={`/address/${mnAddress}`}>
+                  {`${mn.masternodesForAddress.length}`}
+                </Link>
+              ),
+
+              rewardsCount: (
+                <Link to={`/address/${mnAddress}`}>
+                  {`${mn.countOut}`}
+                </Link>
+              ),
+              totalRewards: (
+                <Link to={`/address/${mnAddress}`}>
+                  {`${numeral(mn.balance * -1).format(config.coinDetails.coinNumberFormat)} BWK`}
+                </Link>
               )
             };
           }), ['status'])} />
