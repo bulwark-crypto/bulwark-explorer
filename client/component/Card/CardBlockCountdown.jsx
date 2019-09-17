@@ -28,7 +28,7 @@ const CardBlockCountdown = ({ height, avgBlockTime, blockCountdown }) => {
   }
 
   const getSuperblockIcon = () => {
-    if (blockCountdown.block - height < 0) {
+    if (blockCountdown.block - height > 0) {
       return null;
     }
 
