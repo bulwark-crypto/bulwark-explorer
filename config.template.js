@@ -34,6 +34,16 @@ const config = {
     masternodeCollateral: 5000 // MN ROI% gets based on this number. If your coin has multi-tiered masternodes then set this to lowest tier (ROI% will simply be higher for bigger tiers)
   },
 
+  // Add any important block counting down in this array
+  blockCountdowns: [
+    {
+      block: 604800 - 1920,
+      visibleBlockRange: [601759, 602659],
+      beforeTitle: 'Next Superblock',
+      afterTitle: 'Superblock Active For'
+    }
+  ],
+
   ///////////////////////////////
   // API & Social configurations
   ///////////////////////////////
@@ -206,7 +216,6 @@ const config = {
   blockConfirmations: 10,           // We will re-check block "merkleroot" this many blocks back. If they differ we will then start unwinding carver movements one block at a time until correct block is found. (This is like min confirmations)
   verboseCron: true,                // If set to true there are extra logging details in cron scripts
   verboseCronTx: false,             // If set to true there are extra tx logging details in cron scripts (Not recommended)
-  splitRewardsData: true,           // Set to true to extract POS & MN data
   blockSyncAddressCacheLimit: 50000 // How many addresses to keep in memory during block syncing (When this number is reached the entire cache is flushed and filled again from beginning)
 };
 

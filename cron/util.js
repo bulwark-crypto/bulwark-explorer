@@ -182,65 +182,62 @@ async function performDeepTxAnalysis(block, rpctx, txDetails) {
   //@todo add POW Rewards (Before POS switchover)
   //@todo add POS with stake split (three outputs)
 
-  // If our config allows us to extract additional reward data
-  if (!!config.splitRewardsData) {
-    // If this is a rewards transaction fetch the pos & masternode reward details
-    if (txDetails.isReward) {
+  // If this is a rewards transaction fetch the pos & masternode reward details
+  if (txDetails.isReward) {
 
-      const currentTxTime = rpctx.time;
+    const currentTxTime = rpctx.time;
 
-      const stakeInputTxId = rpctx.vin[0].txid;
-      const stakedTxVoutIndex = rpctx.vin[0].vout;
+    const stakeInputTxId = rpctx.vin[0].txid;
+    const stakedTxVoutIndex = rpctx.vin[0].vout;
 
-      // Find details of the staked input
-      const stakedInputRawTx = await getTX(stakeInputTxId, true); // true for verbose output so we can get time & confirmations
+    // Find details of the staked input
+    const stakedInputRawTx = await getTX(stakeInputTxId, true); // true for verbose output so we can get time & confirmations
 
-      const stakedInputRawTxVout = stakedInputRawTx.vout[stakedTxVoutIndex];
+    const stakedInputRawTxVout = stakedInputRawTx.vout[stakedTxVoutIndex];
 
-      const stakeInputValue = stakedInputRawTxVout.value;
-      const stakedInputConfirmations = stakedInputRawTx.confirmations - rpctx.confirmations; // How many confirmations did we get on staked input before the stake occured (subtract the new tx confirmations)
-      const stakedInputTime = stakedInputRawTx.time;
+    const stakeInputValue = stakedInputRawTxVout.value;
+    const stakedInputConfirmations = stakedInputRawTx.confirmations - rpctx.confirmations; // How many confirmations did we get on staked input before the stake occured (subtract the new tx confirmations)
+    const stakedInputTime = stakedInputRawTx.time;
 
-      const stakeRewardAddress = rpctx.vout[1].scriptPubKey.addresses[0];
-      const stakeRewardAmount = rpctx.vout[1].value - stakeInputValue;
-      const masternodeRewardAmount = rpctx.vout[2].value;
-      const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
+    const stakeRewardAddress = rpctx.vout[1].scriptPubKey.addresses[0];
+    const stakeRewardAmount = rpctx.vout[1].value - stakeInputValue;
+    const masternodeRewardAmount = rpctx.vout[2].value;
+    const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
 
-      // Allows us to tell if we've staked on an output of a stake reward (staking a stake)
-      const isRestake = blockchain.isRewardRawTransaction(stakedInputRawTx);
+    // Allows us to tell if we've staked on an output of a stake reward (staking a stake)
+    const isRestake = blockchain.isRewardRawTransaction(stakedInputRawTx);
 
-      // Store all the block rewards in it's own indexed collection
-      let blockRewardDetails = new BlockRewardDetails(
-        {
-          _id: new mongoose.Types.ObjectId(),
-          //blockHash: block.hash,
-          blockHeight: block.height,
-          date: block.createdAt,
-          txId: rpctx.txid,
-          stake: {
-            address: stakeRewardAddress,
-            input: {
-              txId: stakeInputTxId,
-              value: stakeInputValue,
-              confirmations: stakedInputConfirmations,
-              date: new Date(stakedInputTime * 1000),
-              age: currentTxTime - stakedInputTime,
-              isRestake: isRestake,
-              vinCount: rpctx.vin.length,
-              voutCount: rpctx.vout.length
-            },
-            reward: stakeRewardAmount
+    // Store all the block rewards in it's own indexed collection
+    let blockRewardDetails = new BlockRewardDetails(
+      {
+        _id: new mongoose.Types.ObjectId(),
+        //blockHash: block.hash,
+        blockHeight: block.height,
+        date: block.createdAt,
+        txId: rpctx.txid,
+        stake: {
+          address: stakeRewardAddress,
+          input: {
+            txId: stakeInputTxId,
+            value: stakeInputValue,
+            confirmations: stakedInputConfirmations,
+            date: new Date(stakedInputTime * 1000),
+            age: currentTxTime - stakedInputTime,
+            isRestake: isRestake,
+            vinCount: rpctx.vin.length,
+            voutCount: rpctx.vout.length
           },
-          masternode: {
-            address: masternodeRewardAddress,
-            reward: masternodeRewardAmount
-          }
+          reward: stakeRewardAmount
+        },
+        masternode: {
+          address: masternodeRewardAddress,
+          reward: masternodeRewardAmount
         }
-      );
+      }
+    );
 
-      txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
-      await blockRewardDetails.save();
-    }
+    txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
+    await blockRewardDetails.save();
   }
   return txDetails;
 
