@@ -7,6 +7,7 @@ import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 import config from '../../../config'
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabelWidget'
 
 export default class CardTX extends Component {
   static propTypes = {
@@ -26,7 +27,9 @@ export default class CardTX extends Component {
         <div className="card--block">
           <div className="card__row">
             <span className="card__label">TXID:</span>
-            <span className="card__result">{this.props.tx.txId}</span>
+            <span className="card__result">
+              <CarverAddressLabelWidget carverAddress={{ label: this.props.tx.txId }} showBadge={false} />
+            </span>
           </div>
           <div className="card__row">
             <span className="card__label">Confirmations:</span>

@@ -6,6 +6,7 @@ import CarverAddressBadgeWidget from './CarverAddressBadgeWidget'
 
 /**
  * All carver addreses displayed on website are wrapped around this component. Allows us to add metadata icons/text/badges, etc to addresses.
+ * @todo redo to only accept label
  */
 const CarverAddressLabelWidget = ({ carverAddress, showBadge = true }) => {
   let addressLabel = carverAddress.label;
