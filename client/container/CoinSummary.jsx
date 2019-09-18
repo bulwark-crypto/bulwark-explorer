@@ -59,7 +59,7 @@ class CoinSummary extends Component {
       var blockCountdownElements = [];
       blockCountdowns.forEach((blockCountdown, index) => {
         blockCountdownElements.push(<CardBlockCountdown
-          id={index}
+          key={index}
           height={height}
           avgBlockTime={coin.avgBlockTime}
           blockCountdown={blockCountdown} />);

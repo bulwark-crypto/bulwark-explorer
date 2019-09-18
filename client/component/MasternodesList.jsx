@@ -107,10 +107,13 @@ class MasternodesList extends Component {
         return null;
       }
       return (
-        <Select
-          onChange={value => this.handleSize(value)}
-          selectedValue={this.state.size}
-          options={selectOptions} />
+        <label>
+          Per Page
+          <Select
+            onChange={value => this.handleSize(value)}
+            selectedValue={this.state.size}
+            options={selectOptions} />
+        </label>
       );
     };
 
@@ -147,7 +150,7 @@ class MasternodesList extends Component {
     return (
       <div>
         <HorizontalRule
-          select={getPaginationDropdown()}
+          selects={[getPaginationDropdown()]}
           title={this.state.title} />
         <Table
           cols={this.state.cols}

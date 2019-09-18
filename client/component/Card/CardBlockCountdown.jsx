@@ -11,7 +11,6 @@ const CardBlockCountdown = ({ height, avgBlockTime, blockCountdown }) => {
   const cardTitle = height >= targetHeight ? blockCountdown.afterTitle : blockCountdown.beforeTitle;
 
   const actualAvgBlockTime = avgBlockTime > 0 ? avgBlockTime : blockchain.avgBlockTime;
-  console.log('x:', blockCountdown.block, height);
 
   let label = 'minutes';
   let blocksLeft = Math.abs(blockCountdown.block - height);
