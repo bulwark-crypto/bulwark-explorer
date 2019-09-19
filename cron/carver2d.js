@@ -473,7 +473,7 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
         let mnAgeTime = 0;
 
         // Calculate ROI% for masternode reward (Only after 1st reward)
-        const lastMnRewardAddress = await BlockRewardDetails.findOne({ 'masternode.carverAddress': masternodeRewardAddress._id }, { date: 1, blockHeight: 1 }); // Find last time this address received a masternode reward
+        const lastMnRewardAddress = await BlockRewardDetails.findOne({ 'masternode.carverAddress': masternodeRewardAddress._id }, { date: 1, blockHeight: 1 }).sort({ blockHeight: -1 }); // Find last time this address received a masternode reward
         if (lastMnRewardAddress) {
           mnAgeBlocks = newCarverMovement.blockHeight - lastMnRewardAddress.blockHeight;
           mnAgeTime = newCarverMovement.date.getTime() - lastMnRewardAddress.date.getTime();

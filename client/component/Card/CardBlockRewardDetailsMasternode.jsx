@@ -23,6 +23,10 @@ export default class CardBlockRewardDetailsMasternode extends Component {
       <div className="animated fadeIn">
         <div className="card--block">
           <div className="card__row">
+            <span className="card__label">Masternode ROI%:</span>
+            <span className="card__result">{numeral(blockRewardDetails.masternode.roi).format(config.coinDetails.coinNumberFormat)}% / year</span>
+          </div>
+          <div className="card__row">
             <span className="card__label">Masternode Reward:</span>
             <span className="card__result">{numeral(blockRewardDetails.masternode.reward).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</span>
           </div>

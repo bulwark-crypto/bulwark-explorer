@@ -32,7 +32,8 @@ export default class CardRewards extends Component {
         { key: 'blockHeight', title: 'Block #' },
         { key: 'posInputAmount', title: 'Input Size' },
         { key: 'posInputConfirmations', title: 'Confirmations' },
-        { key: 'posRestakeRoi', title: 'POS Stake ROI%' },
+        { key: 'posStakeRoi', title: 'POS Stake ROI%' },
+        { key: 'masternodeRoi', title: 'MN ROI%' },
         { key: 'date', title: 'Created' },
 
         // Optional columns we could enable:
@@ -76,9 +77,14 @@ export default class CardRewards extends Component {
             {getPosInputConfirmations()}
           </Link>
         ),
-        posRestakeRoi: (
+        posStakeRoi: (
           <Link to={this.getRewardLink(reward)}>
             <PosProfitabilityScore reward={reward} />
+          </Link>
+        ),
+        masternodeRoi: (
+          <Link to={this.getRewardLink(reward)}>
+            {reward.masternode ? `${reward.masternode.roi.toFixed(2)}%` : ''}
           </Link>
         ),
         date: (
