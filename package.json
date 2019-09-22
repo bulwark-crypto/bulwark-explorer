@@ -34,6 +34,7 @@
     "express": "^4.16.2",
     "express-rate-limit": "^2.11.0",
     "isomorphic-fetch": "^2.2.1",
+    "lightweight-charts": "^1.1.0",
     "lodash": "^4.17.5",
     "moment": "^2.20.1",
     "mongoose": "^5.0.6",
