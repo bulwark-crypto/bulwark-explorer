@@ -213,7 +213,7 @@ export const getMovements = (dispatch, query) => {
   });
 };
 
-export const getTimeIntervals = (dispatch, query) => {
+export const getTimeIntervals = (query) => {
   return new promise((resolve, reject) => {
     return getFromWorker(
       'timeIntervals',

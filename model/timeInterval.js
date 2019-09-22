@@ -1,11 +1,6 @@
 
 const mongoose = require('mongoose');
 
-const TimeIntervalType = {
-  DailyAvgPosRoi: 0,
-  BlockNumberOfTransactions: 1
-}
-
 /**
  * Timed Interval Statistics
  *
@@ -33,7 +28,6 @@ const TimeInterval = mongoose.model('TimeIntervals', timeIntervalsSchema, 'timeI
 
 
 module.exports = {
-  TimeIntervalType,
   TimeInterval,
   //TimeIntervalSync
 }

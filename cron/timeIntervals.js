@@ -9,8 +9,9 @@ const moment = require('moment');
 const Coin = require('../model/coin');
 const { CarverAddress, CarverMovement } = require('../model/carver2d');
 const { CarverAddressType } = require('../lib/carver2d');
-const { TimeIntervalType, TimeInterval } = require('../model/timeInterval');
+const { TimeInterval } = require('../model/timeInterval');
 const { BlockRewardDetails } = require('../model/blockRewardDetails');
+const { TimeIntervalType } = require('../lib/timeInterval');
 
 
 /**
@@ -56,21 +57,33 @@ const syncTimeIntervals = async () => {
     })
   }
 
+  /*
+    await syncTimeIntervalSettings({
+      type: TimeIntervalType.DailyAvgPosRoi,
+  
+      model: BlockRewardDetails,
+      aggregationPipeline: [
+        { $match: { 'stake.roi': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool?
+        { $project: { 'stake.roi': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
+        { $group: { _id: '$value', value: { $avg: '$stake.roi' } } },
+        { $sort: { _id: -1 } },
+      ]
+    });*/
 
+  await syncTimeIntervalSettings({
+    type: TimeIntervalType.DailyNonRewardTransactionsCount,
 
-  const stakeDailyRoiSettings = {
-    type: TimeIntervalType.DailyAvgPosRoi,
-
-    model: BlockRewardDetails,
+    model: CarverMovement,
     aggregationPipeline: [
-      { $match: { 'stake.roi': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool?
-      { $project: { 'stake.roi': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
-      { $group: { _id: '$value', value: { $avg: '$stake.roi' } } },
-      { $sort: { _id: -1 } },
+      { $project: { yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } } },
+      { $group: { _id: '$yearMonthDay', value: { $sum: 1 } } },
+      { $sort: { _id: -1 } }
     ]
-  };
+  });
 
-  await syncTimeIntervalSettings(stakeDailyRoiSettings);
+
+  //db.carverMovements.aggregate([ {$project:{'isReward':1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',count:{$sum:1}}} ,{$sort:{_id:-1}}])
+
 
   console.log('Syncing complete');
 }

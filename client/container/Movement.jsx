@@ -11,7 +11,9 @@ import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Select from '../component/Select';
 import { CarverMovementType } from '../../lib/carver2d'
+import { TimeIntervalType } from '../../lib/timeInterval'
 
+import ChartComponent from '../component/ChartComponent'
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
 class Movement extends Component {
@@ -134,8 +136,14 @@ class Movement extends Component {
       </label>
     }
 
+
+
     return (
       <div>
+
+        <HorizontalRule
+          title="Daily Non-Reward Transactions Count" />
+        <ChartComponent type={TimeIntervalType.DailyNonRewardTransactionsCount} />
         <HorizontalRule
           //dateSelect={getDateDropdown()} //@todo date-by-date range
           select={getPaginationDropdown()}

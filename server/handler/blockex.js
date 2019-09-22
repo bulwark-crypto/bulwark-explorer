@@ -16,7 +16,8 @@ const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
 const { BlockRewardDetails } = require('../../model/blockRewardDetails');
-const { TimeInterval, TimeIntervalType } = require('../../model/timeInterval');
+const { TimeInterval } = require('../../model/timeInterval');
+const { TimeIntervalType } = require('../../lib/timeInterval');
 const TX = require('../../model/tx');
 const config = require('../../config')
 
@@ -708,9 +709,10 @@ const getTimeIntervals = async (req, res) => {
   try {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    const type = req.query.type ? parseInt(req.query.type, 10) : 0;
 
-    let query = {
-      type: TimeIntervalType.DailyAvgPosRoi //@todo filtering via request
+    const query = {
+      type
     };
 
     const total = await TimeInterval.count(query);

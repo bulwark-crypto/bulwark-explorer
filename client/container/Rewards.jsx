@@ -10,6 +10,7 @@ import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Select from '../component/Select';
 import ChartComponent from '../component/ChartComponent'
+import { TimeIntervalType } from '../../lib/timeInterval'
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
@@ -88,7 +89,7 @@ class Rewards extends Component {
       <div>
         <HorizontalRule
           title="Average Daily POS ROI%" />
-        <ChartComponent />
+        <ChartComponent type={TimeIntervalType.DailyAvgPosRoi} />
         <HorizontalRule
           select={select}
           title="Block Rewards" />
