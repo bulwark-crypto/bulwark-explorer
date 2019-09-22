@@ -16,6 +16,7 @@ const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
 const { BlockRewardDetails } = require('../../model/blockRewardDetails');
+const { TimeInterval, TimeIntervalType } = require('../../model/timeInterval');
 const TX = require('../../model/tx');
 const config = require('../../config')
 
@@ -699,6 +700,30 @@ const getMovements = async (req, res) => {
 };
 
 /**
+ * Return a paginated list of Time-Based Intevals
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getTimeIntervals = async (req, res) => {
+  try {
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+
+    let query = {
+      type: TimeIntervalType.DailyAvgPosRoi //@todo filtering via request
+    };
+
+    const total = await TimeInterval.count(query);
+    const timeIntervals = await TimeInterval.find(query, { _id: 0, intervalNumber: 0, type: 0 }).sort({ intervalNumber: 1 });
+
+    res.json({ timeIntervals, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Return all the transactions for an entire week.
  * Method uses a closure for caching.
  * @param {Object} req The request object.
@@ -774,5 +799,6 @@ module.exports = {
   getPos,
   getRewards,
   getTXsWeek,
-  getMovements
+  getMovements,
+  getTimeIntervals
 };

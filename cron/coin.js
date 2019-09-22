@@ -92,6 +92,10 @@ async function syncCoin() {
 
   //@todo add queries from below (These are raw analytics dumps)
 
+  // daily avg roi2: db.blockRewardDetails.aggregate([ {$project:{'stake.roi':-1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',roiAverage:{$avg:'$stake.roi'}}} ,{$sort:{_id:1}}])
+
+  // daily avg roi: db.blockRewardDetails.aggregate([ {$sort:{date:1}}, {$project:{'stake.roi':1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',roiAverage:{$avg:'$stake.roi'}}}])
+
   //db.blockRewardDetails.aggregate([{$match:{'stake.input.isRestake':true,'stake.input.value':{$gte:100,$lte:110},'blockHeight':{$gte:587209}}},{$group:{_id:null,total:{$avg:'$stake.roi'}}}])
 
   //db.blockRewardDetails.aggregate([{ $match: { 'stake.input.isRestake': true, 'stake.input.value': { $gte: 2000 }, 'blockHeight': { $gte: 587209 } } }, { $group: { _id: null, total: { $max: '$stake.roi' } } }]);
@@ -143,8 +147,17 @@ async function syncCoin() {
   > db.blockRewardDetails.aggregate([{$match:{'blockHeight':{$gte:587209}}},{$group:{_id:null,total:{$avg:'$stake.input.value'}}}])
   */
 
+
+
+
   console.log('Syncing complete');
+
+  //db.carverMovements.aggregate([ {$match:{isReward:false}},{$sort:{sequence:1}}, {$project:{addressesIn:1,amountIn:1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',total:{$sum:'$amountIn'}}}])
+
+  // Daily POS Rewards
+  // db.blockRewardDetails.aggregate([ {$project:{'stake.reward':-1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',roiAverage:{$sum:'$stake.reward'}}} ,{$sort:{_id:-1}}])
 }
+
 
 /**
  * Handle locking.

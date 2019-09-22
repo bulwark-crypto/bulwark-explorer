@@ -23,6 +23,7 @@ router.get('/tx', blockex.getTXs);
 router.get('/pos', blockex.getPos);
 router.get('/rewards', blockex.getRewards);
 router.get('/movements', blockex.getMovements);
+router.get('/timeIntervals', blockex.getTimeIntervals);
 router.get('/tx/latest', blockex.getTXLatest);
 router.get('/tx/week', blockex.getTXsWeek());
 router.get('/tx/:hash', blockex.getTX);

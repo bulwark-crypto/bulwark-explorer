@@ -9,6 +9,7 @@ import CardRewards from '../component/Card/CardRewards';
 import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Select from '../component/Select';
+import ChartComponent from '../component/ChartComponent'
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
@@ -42,7 +43,10 @@ class Rewards extends Component {
         })
         .catch(error => this.setState({ error, loading: false }));
     }, 800);
+
   };
+
+
 
   componentDidMount() {
     this.getRewards();
@@ -79,8 +83,12 @@ class Rewards extends Component {
         options={selectOptions} />
     );
 
+
     return (
       <div>
+        <HorizontalRule
+          title="Average Daily POS ROI%" />
+        <ChartComponent />
         <HorizontalRule
           select={select}
           title="Block Rewards" />

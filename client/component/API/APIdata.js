@@ -108,6 +108,12 @@ const APIdata = [
         info: 'Returns Carver2D movements.',
         path: '/api/movements'
       },
+      {
+        name: 'getTimeIntervals',
+        info: 'Returns Time-Based Intervals. Used for advanced charting such as daily POS ROI%.',
+        path: '/api/timeIntervals'
+      },
+
     ]
   },
   {
