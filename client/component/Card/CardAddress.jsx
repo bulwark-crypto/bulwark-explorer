@@ -181,6 +181,35 @@ export default class CardAddress extends Component {
       </div>
     }
 
+    const getPosAverages = () => {
+
+      if (!carverAddress.posAverages) {
+        return null;
+      }
+
+      const posAgeTime = (carverAddress.posAverages.ageTime / 1000 / 60 / 60 / 24).toFixed(2);
+      return (<div class="mb-3">
+        <div className="card__row">
+          <span className="card__label">💎 POS Input Avg. Age:</span>
+          <span className="card__result">
+            {posAgeTime} Days
+        </span>
+        </div>
+        <div className="card__row">
+          <span className="card__label">💎 POS Input Avg. Value:</span>
+          <span className="card__result">
+            {carverAddress.posAverages.avgInputValue.toFixed(config.coinDetails.displayDecimals)} {config.coinDetails.shortName}
+          </span>
+        </div>
+        <div className="card__row">
+          <span className="card__label">💎 POS Avg. ROI%:</span>
+          <span className="card__result">
+            {carverAddress.posAverages.avgRoi.toFixed(2)}%
+          </span>
+        </div>
+      </div>)
+    }
+
     return (
       <div className="animated fadeIn">
         <div className="row">
@@ -201,6 +230,7 @@ export default class CardAddress extends Component {
                 </span>
               </div>
               {getLastMovement()}
+              {getPosAverages()}
               <div class="mt-du-4">
                 {getReceived()}
                 {getPowRewards()}

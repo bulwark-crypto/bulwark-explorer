@@ -32,17 +32,35 @@ const getAddress = async (req, res) => {
     if (!carverAddress) {
       throw 'Address Not Found';
     }
-    const carverRewardAddresses = await CarverAddress.find({ label: { $in: [`${req.params.hash}:POW`, `${req.params.hash}:POS`, `${req.params.hash}:MN`] } }).populate("lastMovement", { date: 1 });
-
+    const posAddressLabel = `${req.params.hash}:POS`;
+    const carverRewardAddresses = await CarverAddress.find({ label: { $in: [`${req.params.hash}:POW`, posAddressLabel, `${req.params.hash}:MN`] } }).populate("lastMovement", { date: 1 });//@todo use the new lastMovementDate in CarverAddress
 
     const masternodeForAddress = await Masternode.findOne({ addr: req.params.hash });
     const isMasternode = !!masternodeForAddress;
 
-    res.json({
+    let address = {
       ...carverAddress.toObject(),
       isMasternode,
       carverRewardAddresses
-    });
+    };
+
+
+    // Adds POS averages for an address (if address ever staked)
+    const posAddress = carverRewardAddresses.find(carverRewardAddress => carverRewardAddress.label === posAddressLabel);
+    if (posAddress) {
+      const posAverages = await BlockRewardDetails.aggregate([
+        { $match: { 'stake.carverAddress': carverAddress._id } },
+        { $project: { 'stake.ageTime': 1, 'stake.input.value': 1, 'stake.roi': 1 } },
+        { $group: { _id: null, avgRoi: { $avg: '$stake.roi' }, ageTime: { $avg: '$stake.ageTime' }, 'avgInputValue': { $avg: '$stake.input.value' } } },
+        { $project: { _id: 0 } }
+      ]);
+
+      if (posAverages.length === 1) {
+        address.posAverages = posAverages[0];
+      }
+    }
+
+    res.json(address);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);

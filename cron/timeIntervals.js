@@ -95,6 +95,8 @@ const syncTimeIntervals = async () => {
     ]
   });
 
+  //@todo abg stake.ageTime
+
   //@todo avg tx input (non-reward)
   //db.carverMovements.aggregate([ {$match:{isReward:false}}, {$project:{amountIn:1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',value:{$avg:'$amountIn'}}} ,{$sort:{_id:-1}}])
 
