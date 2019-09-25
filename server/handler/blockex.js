@@ -632,7 +632,10 @@ const getPos = async (req, res) => {
           _id: 'stakeRoiPercent',
           avg: { $avg: '$stake.roi' },
           min: { $min: '$stake.roi' },
-          max: { $max: '$stake.roi' }
+          max: { $max: '$stake.roi' },
+          avgTime: { $avg: '$stake.ageTime' },
+          avgInputValue: { $avg: '$stake.input.value' },
+          sum: { $sum: '$stake.reward' }
         }
       }])
 

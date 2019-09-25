@@ -147,7 +147,8 @@ class PoS extends Component {
     if (this.state.mns !== 'None') {
       mns = this.state.mns;
     }
-    console.log(this.state.results);
+
+    const avgAgeDays = (this.state.results.roi.avgTime / 1000 / 60 / 60 / 24).toFixed(2);
     return (
       <div>
         <HorizontalRule title="PoS Calculations" />
@@ -157,10 +158,10 @@ class PoS extends Component {
         </div>
         <br />
         <div className="row">
-          <div className="col-sm-4">
+          <div className="col-sm-4 mb-2">
             <b>Average ROI%:</b>
           </div>
-          <div className="col-sm-8">
+          <div className="col-sm-8 mb-2">
             <strong>{numeral(this.state.results.roi.avg).format('0,0.00')}% / year</strong>
           </div>
           <div className="col-sm-4">
@@ -168,6 +169,24 @@ class PoS extends Component {
           </div>
           <div className="col-sm-8">
             {numeral(this.state.results.count).format('0,0')} stakes
+          </div>
+          <div className="col-sm-4 mb-2">
+            <b>Sample Rewards:</b>
+          </div>
+          <div className="col-sm-8 mb-2">
+            {numeral(this.state.results.roi.sum).format('0,0')} BWK
+          </div>
+          <div className="col-sm-4">
+            <b>Avg. Input Age:</b>
+          </div>
+          <div className="col-sm-8">
+            {avgAgeDays} Days
+          </div>
+          <div className="col-sm-4">
+            <b>Avg. Input Value:</b>
+          </div>
+          <div className="col-sm-8">
+            {numeral(this.state.results.roi.avgInputValue).format('0,0')} BWK
           </div>
 
           <div class="col-sm-12 mt-2 mb-2">
