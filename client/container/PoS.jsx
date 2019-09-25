@@ -165,21 +165,27 @@ class PoS extends Component {
             <strong>{numeral(this.state.results.roi.avg).format('0,0.00')}% / year</strong>
           </div>
           <div className="col-sm-4">
+            <b>Sample Addresses:</b>
+          </div>
+          <div className="col-sm-8">
+            {this.state.results.uniqueAddresses}
+          </div>
+          <div className="col-sm-4">
             <b>Sample Size:</b>
           </div>
           <div className="col-sm-8">
-            {numeral(this.state.results.count).format('0,0')} stakes
-          </div>
-          <div className="col-sm-4 mb-2">
-            <b>Sample Rewards:</b>
-          </div>
-          <div className="col-sm-8 mb-2">
-            {numeral(this.state.results.roi.sum).format('0,0')} BWK
+            {numeral(this.state.results.count).format('0,0')} stakes (~{numeral(this.state.results.count / this.state.results.uniqueAddresses).format('0,0.00')} / address)
           </div>
           <div className="col-sm-4">
-            <b>Avg. Input Age:</b>
+            <b>Sample Rewards:</b>
           </div>
           <div className="col-sm-8">
+            {numeral(this.state.results.roi.sum).format('0,0')} BWK
+          </div>
+          <div className="col-sm-4 mt-2">
+            <b>Avg. Input Age:</b>
+          </div>
+          <div className="col-sm-8 mt-2">
             {avgAgeDays} Days
           </div>
           <div className="col-sm-4">

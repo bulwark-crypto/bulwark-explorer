@@ -636,17 +636,30 @@ const getPos = async (req, res) => {
           avgTime: { $avg: '$stake.ageTime' },
           avgInputValue: { $avg: '$stake.input.value' },
           sum: { $sum: '$stake.reward' }
-        }
-      }])
+        },
+      }]);
+
 
     if (!posAggregationResults || posAggregationResults.length === 0) {
       res.status(404).send('No rewards matching criteria!');
       return;
     }
+    const stakersAggregationResults = await BlockRewardDetails.aggregate([
+      {
+        $match: query
+      },
+      { $group: { _id: '$stake.carverAddress' } },
+      {
+        $group: {
+          _id: 'uniqueAddresses', count: { $sum: 1 }
+        },
+      }
+    ]);
 
     const count = await BlockRewardDetails.find(query).count();
 
-    const roi = posAggregationResults.find(group => group._id === 'stakeRoiPercent')
+    const roi = posAggregationResults.find(group => group._id === 'stakeRoiPercent');
+    const uniqueAddresses = stakersAggregationResults.find(group => group._id === 'uniqueAddresses');
 
     const results = {
       fromInputAmount,
@@ -654,7 +667,8 @@ const getPos = async (req, res) => {
       minDate,
       roi,
       count,
-      isRestake
+      isRestake,
+      uniqueAddresses: uniqueAddresses.count
     }
 
 
