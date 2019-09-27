@@ -615,15 +615,23 @@ const getPos = async (req, res) => {
     const minDate = moment().subtract(ticksDifference, 'seconds').toDate();
     const isRestake = req.query.restakeOnly === '1';
 
+    const addressLabel = req.query.address;
     let query = {
       'stake.input.value': { $gte: fromInputAmount, $lte: toInputAmount },
       'date': { $gte: minDate }
     };
+    // If we are filtering on address prepend address match (so we can utilize index first)
+    if (addressLabel) {
+      query = {
+        'stake.addressLabel': addressLabel,
+        'date': { $gte: minDate }
+      };
+    }
     if (isRestake) {
       query['stake.input.isRestake'] = true;
     }
 
-    const posAggregationResults = await BlockRewardDetails.aggregate([
+    let aggregationPipeline = [
       {
         $match: query
       },
@@ -637,7 +645,9 @@ const getPos = async (req, res) => {
           avgInputValue: { $avg: '$stake.input.value' },
           sum: { $sum: '$stake.reward' }
         },
-      }]);
+      }];
+
+    const posAggregationResults = await BlockRewardDetails.aggregate(aggregationPipeline);
 
 
     if (!posAggregationResults || posAggregationResults.length === 0) {

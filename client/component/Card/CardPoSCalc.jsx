@@ -28,9 +28,9 @@ export default class CardPoSCalc extends React.Component {
     const isInputToValid = !!inputTo && !isNaN(inputTo) && inputTo > 0;
 
     if (!isInputFromValid) {
-      this.inputFrom.focus();
+      this.fromInputField.focus();
     } else if (!isInputToValid) {
-      this.inputTo.focus();
+      this.toInputField.focus();
     } else {
       document.location.href = `/#/pos/${inputFrom}/${inputTo}/${this.state.date}/${this.state.restakeOnly ? '1' : '0'}`;
     }
