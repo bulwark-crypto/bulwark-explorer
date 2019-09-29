@@ -4,6 +4,11 @@ const APIdata = [
     subHeading: 'Return data from coind',
     calls: [
       {
+        name: 'sendrawtransaction [rawtx]',
+        info: 'Broadcasts a raw transaction on the network. POST a "rawtx" body parameter to get one of three possible results: { raw, decoded, error } Use the optional "?decrypt=1" in GET to get decoded result.',
+        path: 'POST /api/sendrawtransaction'
+      },
+      {
         name: 'getAddress [hash]',
         info: 'Returns information for given address.',
         path: '/api/address/bFY9cyZqZTYHGfduXo7CVNTMiCDeJ1q4gA'

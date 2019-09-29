@@ -27,6 +27,7 @@ router.get('/timeIntervals', blockex.getTimeIntervals);
 router.get('/tx/latest', blockex.getTXLatest);
 router.get('/tx/week', blockex.getTXsWeek());
 router.get('/tx/:hash', blockex.getTX);
+router.post('/sendrawtransaction', blockex.sendrawtransaction);
 
 // Iquidus Explorer routes.
 router.get('/getdifficulty', iquidus.getdifficulty);

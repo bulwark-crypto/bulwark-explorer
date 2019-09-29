@@ -826,6 +826,26 @@ const getTXsWeek = () => {
   };
 };
 
+
+const sendrawtransaction = async (req, res) => {
+  try {
+    if (!req.body.rawtx) {
+      throw new Error('You must POST with "rawtx" body parameter.');
+    }
+
+    let raw = await rpc.call('sendrawtransaction', [req.body.rawtx]);
+    if (!req.query.decrypt) {
+      res.json({ raw });
+      return;
+    }
+
+    const decoded = await rpc.call('decoderawtransaction', [raw]);
+    res.json({ decoded });
+  } catch (err) {
+    res.status(500).json({ error: err.message || err });
+  }
+};
+
 module.exports = {
   getAddress,
   getAvgBlockTime,
@@ -848,5 +868,6 @@ module.exports = {
   getRewards,
   getTXsWeek,
   getMovements,
-  getTimeIntervals
+  getTimeIntervals,
+  sendrawtransaction
 };
