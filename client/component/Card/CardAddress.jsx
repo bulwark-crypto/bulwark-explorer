@@ -118,13 +118,13 @@ export default class CardAddress extends Component {
     }
 
     const getReceived = () => {
-      const received = (carverAddress.valueIn - powValueIn - posValueIn - mnValueIn);
+      const received = (carverAddress.valueIn);
       if (!received) {
         return null;
       }
 
       return <div className="card__row">
-        <span className="card__label">Received:</span>
+        <span className="card__label">Received ({carverAddress.countIn} TXs):</span>
         <span className="card__result">
           +{numeral(received.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
@@ -174,7 +174,7 @@ export default class CardAddress extends Component {
         return null;
       }
       return <div className="card__row">
-        <span className="card__label">Sent:</span>
+        <span className="card__label">Sent ({carverAddress.countOut} TXs):</span>
         <span className="card__result">
           -{numeral((carverAddress.valueOut).toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
@@ -190,6 +190,18 @@ export default class CardAddress extends Component {
       const posAgeTime = (carverAddress.posAverages.ageTime / 1000 / 60 / 60 / 24).toFixed(2);
       return (<div class="mb-3">
         <div className="card__row">
+          <span className="card__label">💎 POS Avg. ROI%:</span>
+          <span className="card__result">
+            {carverAddress.posAverages.avgRoi.toFixed(2)}%
+          </span>
+        </div>
+        <div className="card__row">
+          <span className="card__label">💎 POS Total Rewards:</span>
+          <span className="card__result">
+            {numeral(posValueIn.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName} ({posCountIn} Stakes)
+          </span>
+        </div>
+        <div className="card__row">
           <span className="card__label">💎 POS Input Avg. Age:</span>
           <span className="card__result">
             {posAgeTime} Days
@@ -199,12 +211,6 @@ export default class CardAddress extends Component {
           <span className="card__label">💎 POS Input Avg. Value:</span>
           <span className="card__result">
             {carverAddress.posAverages.avgInputValue.toFixed(config.coinDetails.displayDecimals)} {config.coinDetails.shortName}
-          </span>
-        </div>
-        <div className="card__row">
-          <span className="card__label">💎 POS Avg. ROI%:</span>
-          <span className="card__result">
-            {carverAddress.posAverages.avgRoi.toFixed(2)}%
           </span>
         </div>
       </div>)
@@ -223,7 +229,7 @@ export default class CardAddress extends Component {
               </div>
               {getAddressTitle()}
               {getBadge()}
-              <div className="card__row mt-4">
+              <div className="card__row">
                 <span className="card__label">Address Created:</span>
                 <span className="card__result">
                   {moment(carverAddress.date).utc().format('YYYY-MM-DD HH:mm')} ({moment(carverAddress.date).utc().fromNow()})
@@ -231,7 +237,7 @@ export default class CardAddress extends Component {
               </div>
               {getLastMovement()}
               {getPosAverages()}
-              <div class="mt-du-4">
+              <div class="mt-4">
                 {getReceived()}
                 {getPowRewards()}
                 {getPosRewards()}

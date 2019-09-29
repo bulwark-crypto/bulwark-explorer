@@ -37,6 +37,7 @@ class PoS extends Component {
     this.calculatePos();
   };
 
+  //@todo use componentWillReceiveProps instead
   componentDidUpdate(prevProps) {
     // match.params: :fromInputAmount/:toInputAmount/:date/:restakeOnly
 
@@ -49,7 +50,7 @@ class PoS extends Component {
     if (!this.stateHash || this.stateHash != newStateHash) {
       this.stateHash = newStateHash;
 
-      this.setState({ loading: true })
+      this.setState({ loading: true, error: null })
 
       this.props.getPos(this.props.match.params).then((results) => {
         this.setState({ results, loading: false })
@@ -81,7 +82,7 @@ class PoS extends Component {
       this.handleFormSubmit();
     } else {
       this.setState({
-        inputFrom: ev.target.value
+        inputFrom: ev.target.value.trim()
       });
     }
   };
@@ -238,7 +239,7 @@ class PoS extends Component {
 
 
     const avgAgeDays = (this.state.results.roi.avgTime / 1000 / 60 / 60 / 24).toFixed(2)
-    const avgAgeDaysAddress = (this.state.results.roi.avgTime / 1000 / 60 / 60 / 24).toFixed(2);
+    const avgAgeDaysAddress = this.state.resultsAddress ? (this.state.resultsAddress.roi.avgTime / 1000 / 60 / 60 / 24).toFixed(2) : 0;
     return (
       <div>
         <HorizontalRule title="PoS Calculations" />
@@ -253,7 +254,7 @@ class PoS extends Component {
               <input
                 className="px-2"
                 onKeyPress={this.handleKeyPressFrom}
-                onChange={ev => this.setState({ inputFrom: ev.target.value })}
+                onChange={ev => this.setState({ inputFrom: ev.target.value.trim() })}
                 ref={input => this.fromInputField = input}
                 style={{ width: '100%' }}
                 type="text"

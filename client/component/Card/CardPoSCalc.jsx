@@ -42,7 +42,7 @@ export default class CardPoSCalc extends React.Component {
       this.handleClick();
     } else {
       this.setState({
-        inputFrom: ev.target.value
+        inputFrom: ev.target.value.trim()
       });
     }
   };
@@ -52,7 +52,7 @@ export default class CardPoSCalc extends React.Component {
       this.handleClick();
     } else {
       this.setState({
-        inputTo: ev.target.value
+        inputTo: ev.target.value.trim()
       });
     }
   };
@@ -100,7 +100,7 @@ export default class CardPoSCalc extends React.Component {
               <input
                 className="px-2"
                 onKeyPress={this.handleKeyPressFrom}
-                onChange={ev => this.setState({ inputFrom: ev.target.value })}
+                onChange={ev => this.setState({ inputFrom: ev.target.value.trim() })}
                 ref={input => this.fromInputField = input}
                 style={{ width: '100%' }}
                 type="text"
@@ -113,7 +113,7 @@ export default class CardPoSCalc extends React.Component {
               <input
                 className="px-2"
                 onKeyPress={this.handleKeyPressTo}
-                onChange={ev => this.setState({ inputTo: ev.target.value })}
+                onChange={ev => this.setState({ inputTo: ev.target.value.trim() })}
                 ref={input => this.toInputField = input}
                 style={{ width: '100%' }}
                 type="text"

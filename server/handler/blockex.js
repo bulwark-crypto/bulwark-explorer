@@ -343,12 +343,13 @@ const getMasternodes = async (req, res) => {
     }
 
 
+    //@todo we can add sorting by balance filter
     const total = await CarverAddress.count(query);
     const carverAddresses = await CarverAddress
       .find(query)
       .skip(skip)
-      .limit(limit).sort({ balance: 1 })
-      .populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } });
+      .limit(limit).sort({ lastMovementBlockHeight: -1 })
+      .populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } }); //@todo remove lastMovement
 
     const mnCarverAddressIds = carverAddresses.map(mn => mn._id);
 
@@ -468,7 +469,7 @@ const getTop100 = async (req, res) => {
     const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
       return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { sequence: 0 })
         .limit(100)
-        .sort({ balance: -1 }).populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } });
+        .sort({ balance: -1 }).populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } }); //@todo remove lastMovement
     });
 
     res.json(docs);

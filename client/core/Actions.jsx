@@ -31,12 +31,13 @@ worker.onmessage = (ev) => {
   }
 
   if (ev.data.error) {
-    p.reject(ev.data.error);
+    promises[promiseIndex].reject(ev.data.error);
     promises.splice(promiseIndex, 1);
     return false;
   }
 
   promises[promiseIndex].resolve(ev.data.data);
+  promises.splice(promiseIndex, 1);
   return true;
 };
 

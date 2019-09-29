@@ -91,7 +91,7 @@ class AddressTxs extends Component {
       <div>
         <HorizontalRule
           select={select}
-          title={`Address Transactions (${this.props.txCount})`} />
+          title={`Non-Reward Address Transactions (${this.props.txCount})`} />
         <CardAddressTXs movements={this.state.movements} addressId={this.props.addressId} />
         <Pagination
           current={this.state.page}

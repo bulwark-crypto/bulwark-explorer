@@ -403,6 +403,11 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
       blockHeight: rpcblock.height,
       date: blockDate,
       txId: rpctx.txid,
+
+      // Filled in below
+      hasStakeReward: false,
+      hasMasternodeReward: false,
+      hasPoofOfWorkReward: false,
     }
   );
   const consolidatedAddressMovements = Array.from(parsedMovement.consolidatedAddressMovements);
@@ -414,6 +419,8 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
 
     switch (consolidatedAddressMovement.addressType) {
       case CarverAddressType.ProofOfWork:
+        blockRewardDetails.hasStakeReward = true;
+
         //@todo We can't do a ROI% but we can at least caclulate ageBlocks/ageTime to calculate estimated next reward & rewards per day/year
         const proofOfWorkAddress = updatedAddresses.get(rewardAddressLabel);
 
@@ -424,6 +431,8 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
         }
         break;
       case CarverAddressType.ProofOfStake:
+        blockRewardDetails.hasPoofOfWorkReward = true;
+
         const inputTxId = rpctx.vin[0].txid;
 
         const stakeInputUtxoLabel = `${inputTxId}:${rpctx.vin[0].vout}`;
@@ -466,17 +475,20 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
 
         break;
       case CarverAddressType.Masternode:
+        blockRewardDetails.hasMasternodeReward = true;
+
         const masternodeRewardAddress = updatedAddresses.get(rewardAddressLabel);
         const masternodeRewardAmount = consolidatedAddressMovement.amount;
         let mnRoi = 0;
         let mnAgeBlocks = 0;
         let mnAgeTime = 0;
 
+        const lastMnRewardAddress = await CarverAddress.findOne({ label: `${rewardAddressLabel}:MN` });
+
         // Calculate ROI% for masternode reward (Only after 1st reward)
-        const lastMnRewardAddress = await BlockRewardDetails.findOne({ 'masternode.carverAddress': masternodeRewardAddress._id }, { date: 1, blockHeight: 1 }).sort({ blockHeight: -1 }); // Find last time this address received a masternode reward
         if (lastMnRewardAddress) {
-          mnAgeBlocks = newCarverMovement.blockHeight - lastMnRewardAddress.blockHeight;
-          mnAgeTime = newCarverMovement.date.getTime() - lastMnRewardAddress.date.getTime();
+          mnAgeBlocks = newCarverMovement.blockHeight - (lastMnRewardAddress.lastMovement ? lastMnRewardAddress.lastMovementBlockHeight : masternodeRewardAddress.blockHeight); // Use last reward for calculation or first reward
+          mnAgeTime = newCarverMovement.date.getTime() - (lastMnRewardAddress.lastMovement ? lastMnRewardAddress.lastMovementDate.getTime() : masternodeRewardAddress.date.getTime()); // Use last reward for calculation or first reward
           const mnRewardsPerYear = (365 * 24 * 60 * 60) / (mnAgeTime / 1000);
           mnRoi = ((mnRewardsPerYear * masternodeRewardAmount) / config.coinDetails.masternodeCollateral) * -100;
         }

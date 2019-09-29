@@ -63,7 +63,7 @@ const BlockRewardDetailsProofOfWork = new mongoose.Schema({
 /**
  * Structure for detailed breakdown of the reward
  */
-const BlockRewardDetailsSchema = new mongoose.Schema({
+const blockRewardDetailsSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
   blockHeight: { index: true, required: true, unique: true, type: Number },
@@ -73,14 +73,22 @@ const BlockRewardDetailsSchema = new mongoose.Schema({
   stake: { type: BlockRewardDetailsStake },
   masternode: { type: BlockRewardDetailsMasternode },
   proofOfWork: { type: BlockRewardDetailsProofOfWork },
+
+  hasStakeReward: { required: true, type: Boolean },
+  hasMasternodeReward: { required: true, type: Boolean },
+  hasPoofOfWorkReward: { required: true, type: Boolean },
 }, { versionKey: false });
+
+blockRewardDetailsSchema.index({ hasStakeReward: 1, blockHeight: 1 }, { partialFilterExpression: { hasStakeReward: true } });
+blockRewardDetailsSchema.index({ hasMasternodeReward: 1, blockHeight: 1 }, { partialFilterExpression: { hasMasternodeReward: true } });
+blockRewardDetailsSchema.index({ hasPoofOfWorkReward: 1, blockHeight: 1 }, { partialFilterExpression: { hasPoofOfWorkReward: true } });
 
 /**
  * Block Reward Details
  *
  * 
  */
-const BlockRewardDetails = mongoose.model('BlockRewardDetails', BlockRewardDetailsSchema, 'blockRewardDetails');
+const BlockRewardDetails = mongoose.model('BlockRewardDetails', blockRewardDetailsSchema, 'blockRewardDetails');
 
 module.exports = {
   BlockRewardDetails

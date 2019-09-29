@@ -30,14 +30,14 @@ class MasternodesList extends Component {
     this.state = {
       title: props.title,
       cols: [
-        { key: 'addr', title: 'Address' },
-        { key: 'created', title: 'Created' },
         { key: 'lastPaidAt', title: 'Last Paid' },
+        { key: 'addr', title: 'Address' },
+        { key: 'activeMns', title: 'Masternodes' },
+        { key: 'created', title: 'Created' },
         //{ key: 'txHash', title: 'Collateral TX' },
         //{ key: 'txOutIdx', title: 'Index' },
         //{ key: 'ver', title: 'Version' },
         //{ key: 'status', title: 'Status' },
-        { key: 'activeMns', title: 'Active MNs' },
         { key: 'rewardsCount', title: 'Rewards Count' },
         { key: 'totalRewards', title: 'Total Rewards' },
       ],

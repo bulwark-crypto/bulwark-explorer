@@ -64,7 +64,7 @@ async function syncMasternode() {
 
 
   if (newMasternodes.length) {
-    await Masternode.remove({});
+    await Masternode.remove({}); //@ We need to rework this 
     await Masternode.insertMany(newMasternodes);
   }
 }

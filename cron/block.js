@@ -122,6 +122,7 @@ async function syncBlocks(start, stop, sequence) {
 
         // Convert tx into new pending CarverMovement object
         const parsedMovement = await carver2d.getRequiredMovement(params);
+        const isReward = parsedMovement.txType === CarverTxType.ProofOfWork || parsedMovement.txType === CarverTxType.ProofOfStake;
 
         // Go through all used addresses in this tx and make sure they're loaded in cache (we will access the cache outside and we want all addresses to be there)
         await carver2d.fillAddressCache(params, parsedMovement.consolidatedAddressMovements);
@@ -142,17 +143,24 @@ async function syncBlocks(start, stop, sequence) {
             throw `Could not find address: ${movementData.label}`
           }
 
+          // We don't want to count movements to address of the rewards. That way the received/sent balance on address is only for non-reward transactions
+          const shouldCountTowardsMovement = !isReward || isReward && addressFromCache.carverAddressType !== CarverAddressType.Address;
+
           if (movementData.amountOut > 0) {
-            addressFromCache.countOut++;
+            if (shouldCountTowardsMovement) {
+              addressFromCache.countOut++;
+              addressFromCache.valueOut += movementData.amountOut;
+            }
             addressFromCache.balance -= movementData.amountOut;
-            addressFromCache.valueOut += movementData.amountOut;
             addressesIn++;
           }
 
           if (movementData.amountIn > 0) {
-            addressFromCache.countIn++;
+            if (shouldCountTowardsMovement) {
+              addressFromCache.countIn++;
+              addressFromCache.valueIn += movementData.amountIn;
+            }
             addressFromCache.balance += movementData.amountIn;
-            addressFromCache.valueIn += movementData.amountIn;
             addressesOut++;
           }
 
@@ -171,6 +179,7 @@ async function syncBlocks(start, stop, sequence) {
 
           let newCarverAddressMovement = new CarverAddressMovement({
             _id: new mongoose.Types.ObjectId(),
+            date: parsedMovement.date,
             blockHeight: parsedMovement.blockHeight,
 
             carverAddress: addressFromCache._id,
@@ -179,9 +188,12 @@ async function syncBlocks(start, stop, sequence) {
             amountOut: movementData.amountOut,
             balance: addressFromCache.balance - movementData.amount,
             sequence,
-            previousAddressMovement: lastMovement
+            previousAddressMovement: lastMovement,
+            isReward
           });
           addressFromCache.lastMovement = newCarverAddressMovement._id;
+          addressFromCache.lastMovementDate = newCarverAddressMovement.date;
+          addressFromCache.lastMovementBlockHeight = newCarverAddressMovement.blockHeight;
           newCarverAddressMovements.push(newCarverAddressMovement);
 
           updatedAddresses.set(addressFromCache.label, addressFromCache);
@@ -189,7 +201,6 @@ async function syncBlocks(start, stop, sequence) {
 
         await UTXO.insertMany(parsedMovement.newUtxos);
 
-        const isReward = parsedMovement.txType === CarverTxType.ProofOfWork || parsedMovement.txType === CarverTxType.ProofOfStake;
 
         const newCarverMovement = new CarverMovement({
           _id: newCarverMovementId,
@@ -237,10 +248,10 @@ async function syncBlocks(start, stop, sequence) {
     const syncPercent = ((block.height / stop) * 100).toFixed(2);
     console.dateLog(`(${syncPercent}%) Height: ${block.height}/${stop} Hash: ${block.hash} Txs: ${rpcblock.tx.length} Vins: ${vinsCount} Vouts: ${voutsCount} Caches: ${normalAddressCache.size} (addresses)/${commonAddressCache.size} (common)`);
 
-    /*
+
 
     // Uncomment to test unreconciliation (5% chance to unreconcile last 1-10 blocks)
-    if (Math.floor((Math.random() * 100) + 1) < 5) {    //if (height % 3 == 0) {
+    /*if (Math.floor((Math.random() * 100) + 1) < 5) {    //if (height % 3 == 0) {
       let dropNumBlocks = Math.floor((Math.random() * 10) + 1);
       console.log(`Dropping ${dropNumBlocks} blocks`)
       await undoCarverBlockMovements(height - dropNumBlocks + 1);
@@ -257,8 +268,8 @@ async function syncBlocks(start, stop, sequence) {
       } else {
         sequence = 0;
       }
-    }
-*/
+    }*/
+
 
   }
 }
@@ -284,13 +295,7 @@ async function undoCarverBlockMovements(height) {
       .sort({ sequence: -1 })
       .limit(1000)
       .populate('carverAddress')
-      .populate('previousAddressMovement', { sequence: 1 });
-
-    /*.populate('from')
-    .populate('to')
-    .populate('lastFromMovement', { date: 1, sequence: 1 })
-    .populate('lastToMovement', { date: 1, sequence: 1 })*/
-    //.hint({ blockHeight: 1 }); // give indexing hint (otherwise blockHeight index might be picked instead and it's much slower as sorting is required)
+      .populate('previousAddressMovement', { sequence: 1, date: 1, blockHeight: 1 });
 
     if (parsedMovements.length === 0) {
       console.log(`No more movements for block: ${height}`)
@@ -302,19 +307,32 @@ async function undoCarverBlockMovements(height) {
       sequence = parsedMovement.sequence;
 
       const carverAddress = updatedAddresses.has(parsedMovement.carverAddress.label) ? updatedAddresses.get(parsedMovement.carverAddress.label) : parsedMovement.carverAddress;
+
+
+      const isReward = parsedMovement.isReward;
+
+      // We don't want to count movements to address of the rewards. That way the received/sent balance on address is only for non-reward transactions
+      const shouldCountTowardsMovement = !isReward || isReward && carverAddress.carverAddressType !== CarverAddressType.Address;
+
       if (sequence === carverAddress.sequence) {
         if (parsedMovement.amountIn > 0) {
-          carverAddress.countIn--;
+          if (shouldCountTowardsMovement) {
+            carverAddress.countIn--;
+            carverAddress.valueIn -= parsedMovement.amountIn;
+          }
           carverAddress.balance -= parsedMovement.amountIn;
-          carverAddress.valueIn -= parsedMovement.amountIn;
         }
         if (parsedMovement.amountOut > 0) {
-          carverAddress.countOut--;
+          if (shouldCountTowardsMovement) {
+            carverAddress.countOut--;
+            carverAddress.valueOut -= parsedMovement.amountOut;
+          }
           carverAddress.balance += parsedMovement.amountOut;
-          carverAddress.valueOut -= parsedMovement.amountOut;
         }
         if (parsedMovement.previousAddressMovement) {
           carverAddress.lastMovement = parsedMovement.previousAddressMovement._id;
+          carverAddress.lastMovementDate = parsedMovement.previousAddressMovement.date;
+          carverAddress.lastMovementBlockHeight = parsedMovement.previousAddressMovement.blockHeight;
           carverAddress.sequence = parsedMovement.previousAddressMovement.sequence;
         } else {
           carverAddress.lastMovement = null;

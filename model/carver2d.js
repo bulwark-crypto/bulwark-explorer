@@ -20,6 +20,8 @@ const carverAddressSchema = new mongoose.Schema({
   carverAddressType: { required: true, type: Number }, //@todo refactor to remove "carverAddress" prefix(too verbose)
 
   lastMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' },//@todo rename to lastAddressMovement
+  lastMovementDate: { type: Date }, // This is a denormalized property of lastMovement for quick access without having to do a relationship join
+  lastMovementBlockHeight: { type: Number }, // This is a denormalized property of lastMovement for quick access without having to do a relationship join
   valueOut: { required: true, type: Number /*, index: true Possible Analytics Examples: Sort by wallets with most/least funds out)*/ },
   valueIn: { required: true, type: Number/*, index: true*/ },
   countIn: { required: true, type: Number/*, index: true*/ },
@@ -42,6 +44,7 @@ const carverAddressSchema = new mongoose.Schema({
 
 carverAddressSchema.index({ carverAddressType: 1, sequence: 1 }); // Important compound index as we're doing a lot of find()+sort by carverAddresType/sequence
 carverAddressSchema.index({ carverAddressType: 1, valueOut: 1 }); // Since we have new Sort By "Value"
+carverAddressSchema.index({ carverAddressType: 1, lastMovementBlockHeight: 1 }); // For use in sorting by last action done (ex: most recent movement of address, last mn reward, last pos reward)
 
 carverAddressSchema.index({ carverAddressType: 1, balance: 1 }); // For rich list and masternode list (it's sorted by balance)
 
@@ -117,8 +120,9 @@ const CarverMovement = mongoose.model('CarverMovement', carverMovementsSchema, '
 const carverAddressMovementSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
 
-  //date: { required: true, type: Date },
-  blockHeight: { index: true, required: true, type: Number }, // @todo remove. This is only used for unreconciliation, but we can just use sequence
+  date: { required: true, type: Date },
+  blockHeight: { index: true, required: true, type: Number },
+
   previousAddressMovement: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddressMovement' },
   carverAddress: { required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
   carverMovement: { index: true, required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverMovement' },
@@ -126,6 +130,7 @@ const carverAddressMovementSchema = new mongoose.Schema({
   amountIn: { required: true, type: Number },
   amountOut: { required: true, type: Number },
   balance: { required: true, type: Number },
+  isReward: { required: true, type: Boolean },
 
   sequence: { index: true, required: true, type: Number }, // Not unique because two addresses can have same sequence
 }, { _id: false, versionKey: false });
