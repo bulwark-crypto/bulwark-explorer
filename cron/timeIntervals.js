@@ -11,57 +11,77 @@ const { CarverAddress, CarverMovement } = require('../model/carver2d');
 const { CarverAddressType } = require('../lib/carver2d');
 const { TimeInterval } = require('../model/timeInterval');
 const { BlockRewardDetails } = require('../model/blockRewardDetails');
-const { TimeIntervalType } = require('../lib/timeInterval');
+const { TimeIntervalType, TimeIntervalColumn } = require('../lib/timeInterval');
 
+const syncTimeIntervalSettings = async (timeIntervalSettings) => {
+
+  // Fetch the most recent interval number from last sync for type/query
+  const getLastSyncedIntervalNumber = async () => {
+    const firstTimeIntervalForType = await TimeInterval.findOne({ type: timeIntervalSettings.type }).sort({ intervalNumber: -1 });
+    if (firstTimeIntervalForType) {
+      return firstTimeIntervalForType.intervalNumber;
+    }
+
+    return 0;
+  }
+  const lastSyncedIntervalNumber = await getLastSyncedIntervalNumber();
+
+  // Get the required aggregation columns for use in aggregation pipeline
+  const getMinIntervalMatchAggregation = (intervalNumber) => {
+    switch (timeIntervalSettings.timeIntervalColumn) {
+      case TimeIntervalColumn.Date:
+        return {
+          $match: {
+            date: { $gt: moment.unix(intervalNumber).utc().toDate() }
+          }
+        };
+    }
+    return null;
+  }
+  const minIntervalNumberAggregation = lastSyncedIntervalNumber > 0 ? [getMinIntervalMatchAggregation(lastSyncedIntervalNumber)] : [];
+
+  const getMaxIntervalNumber = () => {
+    switch (timeIntervalSettings.timeIntervalColumn) {
+      case TimeIntervalColumn.Date:
+        return moment.utc().hour(0).minutes(0).seconds(0).milliseconds(0).utc().unix();
+    }
+  }
+  const maxIntervalNumber = getMaxIntervalNumber();
+
+  const aggregationPipeline = [
+    ...minIntervalNumberAggregation,
+    ...timeIntervalSettings.aggregationPipeline,
+    //@todo limit ?
+  ]
+
+  const blockRewardDetailsCursor = timeIntervalSettings.model.aggregate(aggregationPipeline).cursor().exec();
+  await blockRewardDetailsCursor.eachAsync(async (item) => {
+    const intervalNumber = moment(item._id, 'YYYY-MM-DD').utc().unix();
+
+    // No addition required if it's the same date as the last inserted or possible max
+    if (intervalNumber === lastSyncedIntervalNumber || intervalNumber >= maxIntervalNumber) {
+      return;
+    }
+
+    const newTimeIntervalItem = new TimeInterval({
+      type: timeIntervalSettings.type,
+      label: item._id,
+      intervalNumber,
+      value: item.value
+    });
+    await newTimeIntervalItem.save();
+  })
+}
 
 /**
- * 
+ * Add new time-based intervals below.
  */
 const syncTimeIntervals = async () => {
   console.log('Syncing time intervals');
 
-  const getTopAggregationItem = async (model, aggregationPipeline) => {
-    return await model.aggregate([
-      ...aggregationPipeline,
-      { $limit: 1 }
-    ]);
-  }
-
-  const syncTimeIntervalSettings = async (timeIntervalSettings) => {
-
-    //@todo resuming
-    const firstTimeIntervalForType = await TimeInterval.findOne({ type: timeIntervalSettings.type }).sort({ intervalNumber: -1 });
-    if (firstTimeIntervalForType) {
-      const topItem = await getTopAggregationItem(timeIntervalSettings.model, timeIntervalSettings.aggregationPipeline);
-      //if (topItem._id === firstTimeIntervalForType.)
-    }
-
-
-    const aggregationPipeline = [
-      ...timeIntervalSettings.aggregationPipeline,
-      //@todo limit
-    ]
-
-    var blockRewardDetailsCursor = timeIntervalSettings.model.aggregate(aggregationPipeline).cursor().exec();
-
-
-    await blockRewardDetailsCursor.eachAsync(async (item) => {
-      const intervalNumber = moment(item._id, 'YYYY-MM-DD').utc().unix();
-
-      const newTimeIntervalItem = new TimeInterval({
-        type: timeIntervalSettings.type,
-        label: item._id,
-        intervalNumber,
-        value: item.value
-      });
-      await newTimeIntervalItem.save();
-    })
-  }
-
-
-
   await syncTimeIntervalSettings({
     type: TimeIntervalType.DailyAvgPosRoi,
+    timeIntervalColumn: TimeIntervalColumn.Date,
 
     model: BlockRewardDetails,
     aggregationPipeline: [
@@ -72,9 +92,9 @@ const syncTimeIntervals = async () => {
     ]
   });
 
-
   await syncTimeIntervalSettings({
     type: TimeIntervalType.DailyNonRewardTransactionsCount,
+    timeIntervalColumn: TimeIntervalColumn.Date,
 
     model: CarverMovement,
     aggregationPipeline: [
@@ -85,9 +105,9 @@ const syncTimeIntervals = async () => {
     ]
   });
 
-  /*
   await syncTimeIntervalSettings({
     type: TimeIntervalType.DailyAvgPosInputValue,
+    timeIntervalColumn: TimeIntervalColumn.Date,
 
     model: BlockRewardDetails,
     aggregationPipeline: [
@@ -96,14 +116,12 @@ const syncTimeIntervals = async () => {
       { $group: { _id: '$value', value: { $avg: '$stake.input.value' } } },
       { $sort: { _id: -1 } },
     ]
-  });*/
+  });
 
   //@todo abg stake.ageTime
 
   //@todo avg tx input (non-reward)
   //db.carverMovements.aggregate([ {$match:{isReward:false}}, {$project:{amountIn:1,yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } }}, {$group:{_id:'$yearMonthDay',value:{$avg:'$amountIn'}}} ,{$sort:{_id:-1}}])
-
-
 
   console.log('Syncing complete');
 }
