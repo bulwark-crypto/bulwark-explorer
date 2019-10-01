@@ -57,7 +57,6 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
   const blockRewardDetailsCursor = timeIntervalSettings.model.aggregate(aggregationPipeline).cursor().exec();
   await blockRewardDetailsCursor.eachAsync(async (item) => {
     const intervalNumber = moment(item._id, 'YYYY-MM-DD').utc().unix();
-
     // No addition required if it's the same date as the last inserted or possible max
     if (intervalNumber === lastSyncedIntervalNumber || intervalNumber >= maxIntervalNumber) {
       return;
@@ -88,7 +87,7 @@ const syncTimeIntervals = async () => {
       { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool?
       { $project: { 'stake.roi': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
       { $group: { _id: '$value', value: { $avg: '$stake.roi' } } },
-      { $sort: { _id: -1 } },
+      { $sort: { _id: 1 } },
     ]
   });
 
@@ -101,7 +100,7 @@ const syncTimeIntervals = async () => {
       { $match: { isReward: false } },
       { $project: { yearMonthDay: { $dateToString: { format: "%Y-%m-%d", date: "$date" } } } },
       { $group: { _id: '$yearMonthDay', value: { $sum: 1 } } },
-      { $sort: { _id: -1 } }
+      { $sort: { _id: 1 } }
     ]
   });
 
@@ -114,7 +113,7 @@ const syncTimeIntervals = async () => {
       { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool?
       { $project: { 'stake.input.value': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
       { $group: { _id: '$value', value: { $avg: '$stake.input.value' } } },
-      { $sort: { _id: -1 } },
+      { $sort: { _id: 1 } },
     ]
   });
 
