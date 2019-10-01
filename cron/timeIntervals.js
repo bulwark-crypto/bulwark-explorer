@@ -30,6 +30,7 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
   const getMinIntervalMatchAggregation = (intervalNumber) => {
     switch (timeIntervalSettings.timeIntervalColumn) {
       case TimeIntervalColumn.Date:
+        console.log('date:', intervalNumber, moment.unix(intervalNumber).utc().toDate());
         return {
           $match: {
             date: { $gt: moment.unix(intervalNumber).utc().toDate() }
@@ -39,7 +40,7 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
     return null;
   }
   const minIntervalNumberAggregation = lastSyncedIntervalNumber > 0 ? [getMinIntervalMatchAggregation(lastSyncedIntervalNumber)] : [];
-  console.log(minIntervalNumberAggregation, minIntervalNumberAggregation);
+  console.log('minIntervalNumberAggregation:', minIntervalNumberAggregation);
 
   const getMaxIntervalNumber = () => {
     switch (timeIntervalSettings.timeIntervalColumn) {
@@ -48,7 +49,6 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
     }
   }
   const maxIntervalNumber = getMaxIntervalNumber();
-  console.log('maxIntervalNumber:', maxIntervalNumber);
 
   const aggregationPipeline = [
     ...minIntervalNumberAggregation,
