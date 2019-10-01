@@ -39,6 +39,7 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
     return null;
   }
   const minIntervalNumberAggregation = lastSyncedIntervalNumber > 0 ? [getMinIntervalMatchAggregation(lastSyncedIntervalNumber)] : [];
+  console.log(minIntervalNumberAggregation, minIntervalNumberAggregation);
 
   const getMaxIntervalNumber = () => {
     switch (timeIntervalSettings.timeIntervalColumn) {
@@ -58,6 +59,7 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
   const blockRewardDetailsCursor = timeIntervalSettings.model.aggregate(aggregationPipeline).cursor().exec();
   await blockRewardDetailsCursor.eachAsync(async (item) => {
     const intervalNumber = moment(item._id, 'YYYY-MM-DD').utc().unix();
+
     // No addition required if it's the same date as the last inserted or possible max
     if (intervalNumber === lastSyncedIntervalNumber || intervalNumber >= maxIntervalNumber) {
       return;
