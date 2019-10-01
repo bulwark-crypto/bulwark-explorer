@@ -43,10 +43,11 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
   const getMaxIntervalNumber = () => {
     switch (timeIntervalSettings.timeIntervalColumn) {
       case TimeIntervalColumn.Date:
-        return moment.utc().hour(0).minutes(0).seconds(0).milliseconds(0).utc().unix();
+        return moment().utc().hour(0).minutes(0).seconds(0).milliseconds(0).unix();
     }
   }
   const maxIntervalNumber = getMaxIntervalNumber();
+  console.log('maxIntervalNumber:', maxIntervalNumber);
 
   const aggregationPipeline = [
     ...minIntervalNumberAggregation,
