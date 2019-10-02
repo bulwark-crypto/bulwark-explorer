@@ -86,6 +86,15 @@ async function syncCoin() {
       { $group: { _id: null, count: { $avg: '$stake.roi' } } },
     ]);
     coin.posRoi24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
+
+    // MN ROI% average over past 24 hours
+    {
+      const aggregationResults = await BlockRewardDetails.aggregate([
+        { $match: { 'date': { $gte: date24hAgo } } },
+        { $group: { _id: null, count: { $avg: '$masternode.ageTime' } } },
+      ]);
+      coin.mnRoi24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
+    }
   }
 
   await coin.save();

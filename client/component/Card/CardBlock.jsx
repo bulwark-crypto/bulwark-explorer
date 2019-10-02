@@ -18,15 +18,24 @@ export default class CardBlock extends Component {
   render() {
     return (
       <div className="animated fadeIn">
+        <div className="card__row">
+          <span className="card__label">Confirmations:</span>
+          <span className="card__result">
+            <span className="badge badge-success">
+              {this.props.height - this.props.block.height}
+            </span>
+          </span>
+        </div>
+        <div className="card__row">
+          <span className="card__label">Height:</span>
+          <span className="card__result">{this.props.block.height}</span>
+        </div>
         <div className="card--block">
           <div className="card__row">
             <span className="card__label">Hash:</span>
             <span className="card__result">{this.props.block.hash}</span>
           </div>
-          <div className="card__row">
-            <span className="card__label">Height:</span>
-            <span className="card__result">{this.props.block.height}</span>
-          </div>
+          <hr class="my-3" />
           <div className="card__row">
             <span className="card__label">Difficulty:</span>
             <span className="card__result">{this.props.block.diff}</span>
@@ -40,16 +49,8 @@ export default class CardBlock extends Component {
             <span className="card__result">{this.props.block.voutsCount}</span>
           </div>
           <div className="card__row">
-            <span className="card__label">Confirmations:</span>
-            <span className="card__result">
-              <span className="badge badge-success">
-                {this.props.height - this.props.block.height}
-              </span>
-            </span>
-          </div>
-          <div className="card__row">
             <span className="card__label">Size (kB):</span>
-            <span className="card__result">{this.props.block.size / 1024}</span>
+            <span className="card__result">{(this.props.block.size / 1024).toFixed(2)}</span>
           </div>
           <div className="card__row">
             <span className="card__label">Bits:</span>

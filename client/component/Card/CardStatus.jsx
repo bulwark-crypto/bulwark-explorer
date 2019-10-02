@@ -17,7 +17,7 @@ export default class CardStatus extends Component {
     countCarverAddresses: 0,
     countCarverMovements: 0,
     status: 'Offline',
-    coin: { uniqueMasternodeAddresses24h: 0, uniquePosAddresses24h: 0, posRoi24h: 0 }
+    coin: { uniqueMasternodeAddresses24h: 0, uniquePosAddresses24h: 0, posRoi24h: 0, mnRoi24h: 0 }
   };
 
   static propTypes = {
@@ -61,12 +61,6 @@ export default class CardStatus extends Component {
             </span>
           </div>
           <div className="card__row justify-content-between">
-            <span className="card__label">Peers:</span>
-            <span className="card__result">
-              <Link to="/peer">{this.props.peers}</Link>
-            </span>
-          </div>
-          <div className="card__row justify-content-between">
             <span className="card__label">Avg. Block Time:</span>
             <span className="card__result">{(this.props.avgBlockTime || 0).toFixed(2)} seconds</span>
           </div>
@@ -74,7 +68,7 @@ export default class CardStatus extends Component {
             <span className="card__label">Avg. MN Payment:</span>
             <span className="card__result">{(this.props.avgMNTime || 0).toFixed(2)} hours</span>
           </div>
-          <div className="card__row justify-content-between mt-1 pt-1 border-top">
+          <div className="card__row justify-content-between">
             <span className="card__label">Unique Addresses:</span>
             <span className="card__result">
               {numeral(this.props.countCarverAddresses).format('0,0')}</span>
@@ -83,10 +77,16 @@ export default class CardStatus extends Component {
             <span className="card__label">Non-Reward Transactions:</span>
             <span className="card__result">{numeral(this.props.countCarverMovements).format('0,0')}</span>
           </div>
-          <div className="card__row justify-content-between border-top">
+          <hr class="my-1" />
+          <div className="card__row justify-content-between">
             <span className="card__label">24h MN Addresses:</span>
             <span className="card__result">{numeral(this.props.coin.uniqueMasternodeAddresses24h).format('0,0')}</span>
           </div>
+          <div className="card__row justify-content-between">
+            <span className="card__label">Avg. 24h MN ROI%:</span>
+            <span className="card__result"><Link to="/rewards">?% / year</Link></span>
+          </div>
+          <hr class="my-1" />
           <div className="card__row justify-content-between">
             <span className="card__label">24h Staking Addresses:</span>
             <span className="card__result"><Link to="/rewards">{numeral(this.props.coin.uniquePosAddresses24h).format('0,0')}</Link></span>

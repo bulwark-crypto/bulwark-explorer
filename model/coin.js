@@ -27,6 +27,7 @@ const Coin = mongoose.model('Coin', new mongoose.Schema({
   uniqueMasternodeAddresses24h: { required: true, type: Number },
   uniquePosAddresses24h: { required: true, type: Number },
   posRoi24h: { required: true, type: Number },
+  mnRoi24h: { required: true, type: Number },
 
 }, { versionKey: false }), 'coins');
 

@@ -190,9 +190,7 @@ const getBlock = async (req, res) => {
       return;
     }
 
-    const txs = await CarverAddress.find({
-      $and: [{ blockHeight: block.height }, { carverAddressType: CarverAddressType.Tx }]
-    }, { countIn: 1, countOut: 1, label: 1, valueOut: 1 });
+    const txs = await CarverMovement.find({ blockHeight: block.height });
 
     res.json({
       ...block.toObject(),

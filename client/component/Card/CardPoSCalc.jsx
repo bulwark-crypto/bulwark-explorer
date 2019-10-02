@@ -136,7 +136,7 @@ export default class CardPoSCalc extends React.Component {
                 Estimate Stake ROI%
             </button>
             </div>
-            <div className="mt-1 text-left">
+            <div className="mt-2 text-left">
               {getCarverIcon()} Based on realtime, per-block blockchain rewards data
             </div>
           </div>

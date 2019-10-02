@@ -23,28 +23,28 @@ export default class CardBlockTXs extends Component {
     this.state = {
       cols: [
         { key: 'txId', title: 'Transaction ID' },
-        { key: 'inputs', title: 'Inputs' },
-        { key: 'outputs', title: 'Outputs' },
+        { key: 'addressesIn', title: 'Sources' },
+        { key: 'addressesOut', title: 'Recipients' },
         { key: 'value', title: 'Value' },
       ]
     };
   };
 
   render() {
+    const getTxIcon = (tx) => {
+      return tx.isReward && (<span title="Reward Transaction">💎</span>)
+    }
+
     return (
       <div className="animated fadeIn">
         <Table
           cols={this.state.cols}
           data={this.props.txs.map(tx => ({
             ...tx,
-            inputs: (tx.countIn),
-            outputs: (tx.countOut),
-            txId: (
-              <Link to={`/tx/${tx.label}`}>{tx.label}</Link>
-            ),
-            value: (
-              <span>{numeral(tx.valueOut).format(config.coinDetails.coinNumberFormat)}</span>
-            )
+            inputs: <Link to={`/tx/${tx.txId}`}>{tx.countIn}</Link>,
+            outputs: <Link to={`/tx/${tx.txId}`}>{tx.countOut}</Link>,
+            txId: <Link to={`/tx/${tx.txId}`}>{tx.txId}{getTxIcon(tx)}</Link>,
+            value: <Link to={`/tx/${tx.txId}`}>{numeral(tx.amountOut).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}</Link>
           }))} />
       </div>
     );

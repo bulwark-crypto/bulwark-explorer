@@ -59,7 +59,7 @@ class Block extends Component {
       <div>
         <HorizontalRule title="Block Info" />
         <CardBlock block={this.state.block} height={this.props.tx.blockHeight} />
-        <HorizontalRule title="Block Transactions" />
+        <HorizontalRule title={`Block Transactions (${this.state.block.txs.length})`} />
         <CardBlockTXs txs={this.state.block.txs} />
       </div>
     );

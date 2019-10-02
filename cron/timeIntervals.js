@@ -85,7 +85,7 @@ const syncTimeIntervals = async () => {
 
     model: BlockRewardDetails,
     aggregationPipeline: [
-      { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool?
+      { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool? (@todo we now have a bool, redo the query)
       { $project: { 'stake.roi': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
       { $group: { _id: '$value', value: { $avg: '$stake.roi' } } },
       { $sort: { _id: 1 } },
@@ -111,7 +111,7 @@ const syncTimeIntervals = async () => {
 
     model: BlockRewardDetails,
     aggregationPipeline: [
-      { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool?
+      { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool? (@todo we now have a bool, redo the query)
       { $project: { 'stake.input.value': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
       { $group: { _id: '$value', value: { $avg: '$stake.input.value' } } },
       { $sort: { _id: 1 } },
