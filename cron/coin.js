@@ -91,9 +91,18 @@ async function syncCoin() {
     {
       const aggregationResults = await BlockRewardDetails.aggregate([
         { $match: { 'date': { $gte: date24hAgo } } },
-        { $group: { _id: null, count: { $avg: '$masternode.ageTime' } } },
+        { $group: { _id: null, avgAge: { $avg: '$masternode.ageTime' }, avgRewards: { $avg: '$masternode.reward' } } }
       ]);
-      coin.mnRoi24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
+      if (aggregationResults.length > 0) {
+
+        // Calculate ROI% for masternode
+        const mnRewardsPerYear = (365 * 24 * 60 * 60) / (aggregationResults[0].avgAge / 1000);
+        const mnRoi = ((mnRewardsPerYear * aggregationResults[0].avgRewards) / config.coinDetails.masternodeCollateral) * 100;
+
+        coin.mnRoi24h = mnRoi;
+      } else {
+        coin.mnRoi24h = aggregationResults.length > 0 ? aggregationResults[0].count : 0;
+      }
     }
   }
 

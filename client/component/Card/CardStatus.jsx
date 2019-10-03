@@ -84,7 +84,7 @@ export default class CardStatus extends Component {
           </div>
           <div className="card__row justify-content-between">
             <span className="card__label">Avg. 24h MN ROI%:</span>
-            <span className="card__result"><Link to="/rewards">?% / year</Link></span>
+            <span className="card__result"><Link to="/rewards">{(this.props.coin.mnRoi24h || 0).toFixed(2)}% / year</Link></span>
           </div>
           <hr class="my-1" />
           <div className="card__row justify-content-between">
