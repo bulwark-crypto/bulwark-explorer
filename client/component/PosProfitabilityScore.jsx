@@ -1,44 +1,49 @@
 import React from 'react';
 import config from '../../config'
+import { connect } from 'react-redux';
+import numeral from 'numeral';
 
 /**
  * Take reward and format it into a profitability score
  * @todo move to FormattedValues folder
  */
-const PosProfitabilityScore = ({ reward, includeTitle = true }) => {
+const PosProfitabilityScore = ({ reward, coin, includeTitle = true }) => {
 
-  const getStyledProfitabilityScore = (profitabilityWeight) => {
-    const weightColorScale = config.profitabilityScore.weightColorScale;
-    const scores = config.profitabilityScore.scoreStyles;
+  const getStyledProfitabilityScore = (stakeRoi) => {
+    const scoreStyles = config.profitabilityScore.scoreStyles;
 
-    let profitabilityStyle = scores[scores.length - 1]; // Worst case by default
+    const posRoi24h = coin.posRoi24h ? coin.posRoi24h : stakeRoi;
 
-    for (let i = 0; i < scores.length; i++) {
-      if (profitabilityWeight < weightColorScale * Math.pow(2, i + 1)) {
-        profitabilityStyle = scores[i];
-        break;
-      }
-    }
+    const percentile = ((stakeRoi / (posRoi24h * 2)));
+    const styleIndex = Math.min(Math.round(percentile * (scoreStyles.length - 1)), scoreStyles.length - 1); // We'll use avg as 24h 50% mark for style
+    const profitabilityStyle = scoreStyles[scoreStyles.length - 1 - styleIndex];
 
-    const profitabilityTitle = includeTitle ? profitabilityStyle.title : null;
+    const rankTitle = (includeTitle ? profitabilityStyle.title : null);
+    const avgRoiTitle = `24h Avg ${posRoi24h.toFixed(0)}%`;
 
+    const rankPercentile = stakeRoi > posRoi24h ? `${(stakeRoi / posRoi24h).toFixed(2)}x faster` : `${(posRoi24h / stakeRoi).toFixed(2)}x slower`;
+
+
+    const profitabilityTitle = coin.posRoi24h ? `${rankPercentile} vs ${avgRoiTitle} (${rankTitle})` : null; // If we can't figure out 24h pos ROI don't show any tooltip
     return (
       <span className="badge" style={{ backgroundColor: profitabilityStyle.color }} title={profitabilityTitle}>
-        {profitabilityWeight.toFixed(0)}
+        {numeral(stakeRoi.toFixed(0)).format('0,0')}%
       </span>
     );
   }
 
-  const getProfitabilityWeight = (reward) => {
-    const profitPercent = (reward.stake.reward / reward.stake.input.value) * 100;
-    const timeCostOfStake = (reward.stake.input.confirmations / profitPercent);
-    const profitabilityWeight = (timeCostOfStake * config.profitabilityScore.weightMultiplier);
-  
-    return profitabilityWeight;
+  if (!reward.stake) {
+    return null;
   }
 
-  const profitabilityWeight = getProfitabilityWeight(reward);
-  return getStyledProfitabilityScore(profitabilityWeight);
+  return getStyledProfitabilityScore(reward.stake.roi);
 }
 
-export default PosProfitabilityScore;
+const mapDispatch = dispatch => ({
+});
+
+const mapState = state => ({
+  coin: state.coins.length ? state.coins[0] : {},
+});
+
+export default connect(mapState, mapDispatch)(PosProfitabilityScore);

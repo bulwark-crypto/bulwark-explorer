@@ -1,24 +1,14 @@
 
 const mongoose = require('mongoose');
 
-/**
- * UTXO
- *
- * Unspent transactions in the blockchain.
- */
-const utxoSchema = new mongoose.Schema({
-  __v: { select: false, type: Number },
-  _id: { required: true, select: false, type: String },
-  address: { index: true, required: true, type: String },
-  blockHeight: { index: true, required: true, type: Number },
-  n: { required: true, type: Number },
-  txId: { required: true, type: String },
-  value: { required: true, type: Number }
-}, { versionKey: false });
+const UTXOSchema = new mongoose.Schema({
+  label: { required: true, unique: true, index: true, type: String },
+  blockHeight: { index: true, required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
+  amount: { required: true, type: Number }, // By storing block height we know how many blocks ago/confirmations we have
+  addressLabel: { required: true, type: String },
+}, { _id: false, versionKey: false });
 
-// Add coumpound index: address_blockHeight
-utxoSchema.index({ address: 1, blockHeight: 1  });
-
-const UTXO = mongoose.model('UTXO', utxoSchema, 'utxo');
-
-module.exports =  UTXO;
+const UTXO = mongoose.model('UTXO', UTXOSchema, 'utxos');
+module.exports = {
+  UTXO
+}

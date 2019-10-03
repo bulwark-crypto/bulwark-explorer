@@ -30,9 +30,10 @@ export default class CardRewards extends Component {
     this.state = {
       cols: [
         { key: 'blockHeight', title: 'Block #' },
-        { key: 'posInputSize', title: 'Input Size' },
+        { key: 'posInputAmount', title: 'Input Size' },
         { key: 'posInputConfirmations', title: 'Confirmations' },
-        { key: 'computedProfitabilityScore', title: 'POS Profitability Score' },
+        { key: 'posStakeRoi', title: 'POS Stake ROI%' },
+        { key: 'masternodeRoi', title: 'MN ROI%' },
         { key: 'date', title: 'Created' },
 
         // Optional columns we could enable:
@@ -45,19 +46,19 @@ export default class CardRewards extends Component {
 
   getRewardLink(reward) {
     // By default go to the tx that was stake's input
-    let txId = reward.stake.input.txId;
-    // In update, we now can go directly to reward tx
-    if (reward.txId) {
-      txId = reward.txId;
-    }
-
-    return `/tx/${txId}`;
+    return `/tx/${reward.txId}`;
   }
 
   getTableData() {
     return this.props.rewards.map(reward => {
       const date = moment(reward.date).utc();
       const diffSeconds = moment().utc().diff(date, 'seconds');
+      const getPosInputConfirmations = () => {
+        if (!reward.stake) {
+          return null;
+        }
+        return reward.stake.ageBlocks;
+      }
 
       return ({
         ...reward,
@@ -66,19 +67,24 @@ export default class CardRewards extends Component {
             {reward.blockHeight}
           </Link>
         ),
-        posInputSize: (
+        posInputAmount: (
           <Link to={this.getRewardLink(reward)}>
             <PosRestakeIndicator reward={reward} />
           </Link>
         ),
         posInputConfirmations: (
           <Link to={this.getRewardLink(reward)}>
-            {reward.stake.input.confirmations}
+            {getPosInputConfirmations()}
           </Link>
         ),
-        computedProfitabilityScore: (
+        posStakeRoi: (
           <Link to={this.getRewardLink(reward)}>
             <PosProfitabilityScore reward={reward} />
+          </Link>
+        ),
+        masternodeRoi: (
+          <Link to={this.getRewardLink(reward)}>
+            {reward.masternode ? `${reward.masternode.roi.toFixed(2)}%` : ''}
           </Link>
         ),
         date: (

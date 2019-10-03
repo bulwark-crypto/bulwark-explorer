@@ -4,13 +4,14 @@ const mongoose = require('mongoose');
 /**
  * When a vin is spent, we'll have extra data of what was spent
  */
+/*
 const RelatedVout = new mongoose.Schema({
   address: { index: false, required: true, type: String },
   value: { required: true, type: Number },
   confirmations: { required: true, type: Number },
   date: { index: true, required: true, type: Date },
   age: { index: true, required: true, type: Number },
-}, { _id: false, versionKey: false });
+}, { _id: false, versionKey: false });*/
 
 /**
  * Sometimes we can store the asm instruction of the script sig (ex: to identify ZEROCOIN transactions)
@@ -27,7 +28,7 @@ const TXIn = new mongoose.Schema({
   //sequence: { type: Number },
   txId: { type: String },
   vout: { type: Number },
-  relatedVout: { required: false, type: RelatedVout },
+  //relatedVout: { required: false, type: RelatedVout },
   scriptSig: { required: false, type: ScriptSig }
 }, { _id: false, versionKey: false });
 
@@ -54,8 +55,7 @@ const txSchema = new mongoose.Schema({
   vin: { required: true, type: [TXIn] },
   vout: { required: true, type: [TXOut] },
   isReward: { required: false, type: Boolean },
-  blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' },
-  involvedAddresses: { required: true, type: [String], index: true }
+  blockRewardDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BlockRewardDetails' }
 }, { versionKey: false });
 
 /**

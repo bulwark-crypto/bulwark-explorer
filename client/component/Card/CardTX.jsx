@@ -7,6 +7,7 @@ import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 import config from '../../../config'
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabelWidget'
 
 export default class CardTX extends Component {
   static propTypes = {
@@ -15,21 +16,20 @@ export default class CardTX extends Component {
   };
 
   render() {
-    let blockValue = 0.0;
+    const blockValue = this.props.tx.amountOut;
     const confirmValue = this.props.height - this.props.tx.blockHeight;
     const confirmBadgeClass = (confirmValue > 0)
       ? (confirmValue < 6) ? 'warning' : 'success'
       : 'danger';
-    if (this.props.tx.vout && this.props.tx.vout.length) {
-      this.props.tx.vout.forEach(vout => blockValue += vout.value);
-    }
 
     return (
       <div className="animated fadeIn">
         <div className="card--block">
           <div className="card__row">
             <span className="card__label">TXID:</span>
-            <span className="card__result">{this.props.tx.txId}</span>
+            <span className="card__result">
+              <CarverAddressLabelWidget carverAddress={{ label: this.props.tx.txId }} showBadge={false} />
+            </span>
           </div>
           <div className="card__row">
             <span className="card__label">Confirmations:</span>
@@ -57,7 +57,7 @@ export default class CardTX extends Component {
           <div className="card__row">
             <span className="card__label">Timestamp:</span>
             <span className="card__result">
-              {dateFormat(this.props.tx.createdAt)}
+              {dateFormat(this.props.tx.date)}
             </span>
           </div>
         </div>

@@ -19,7 +19,16 @@ const Coin = mongoose.model('Coin', new mongoose.Schema({
   peers: { required: true, type: Number },
   status: { required: true, type: String },
   supply: { required: true, type: Number },
-  usd: { required: true, type: Number }
+  usd: { required: true, type: Number },
+  countCarverAddresses: { required: true, type: Number },
+  countCarverMovements: { required: true, type: Number },
+
+  // Advanced analytics
+  uniqueMasternodeAddresses24h: { required: true, type: Number },
+  uniquePosAddresses24h: { required: true, type: Number },
+  posRoi24h: { required: true, type: Number },
+  mnRoi24h: { required: true, type: Number },
+
 }, { versionKey: false }), 'coins');
 
-module.exports =  Coin;
+module.exports = Coin;

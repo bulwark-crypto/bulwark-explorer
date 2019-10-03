@@ -8,7 +8,8 @@ const mongoose = require('mongoose');
  * that closely reflects that used on the network.
  */
 const Block = mongoose.model('Block', new mongoose.Schema({
-  __v: { select: false, type: Number },
+  _id: mongoose.Schema.Types.ObjectId,
+
   bits: { required: true, type: String },
   confirmations: { required: true, type: Number },
   createdAt: { index: true, required: true, type: Date },
@@ -19,10 +20,17 @@ const Block = mongoose.model('Block', new mongoose.Schema({
   nonce: { required: true, type: Number },
   prev: { required: true, type: String },
   size: { type: Number },
-  txs: { default: [], required: true, type: [String] },
+  //txs: { default: [], required: true, type: [String] }, // New txs from Carver2D Below.
   ver: { required: true, type: Number },
   vinsCount: { required: true, type: Number },
   voutsCount: { required: true, type: Number },
-}, { versionKey: false }), 'blocks');
 
-module.exports =  Block;
+  isConfirmed: { required: true, type: Boolean }, // Block was confirmed after config.blockConfirmations
+
+  // Carver2D 
+  sequenceStart: { type: Number },
+  sequenceEnd: { type: Number },
+  txs: [{ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' }],
+}, { _id: false, versionKey: false }), 'blocks');
+
+module.exports = Block;

@@ -22,7 +22,7 @@ class Block extends Component {
       block: {},
       loading: true,
       error: null,
-      txs: []
+      //txs: []
     };
   };
 
@@ -41,8 +41,8 @@ class Block extends Component {
     this.setState({ loading: true }, () => {
       this.props
         .getBlock(this.props.match.params.hash)
-        .then(({ block, txs }) => {
-          this.setState({ block, txs, loading: false });
+        .then((block) => {
+          this.setState({ block, loading: false });
         })
         .catch(error => this.setState({ error, loading: false }));
     });
@@ -58,9 +58,9 @@ class Block extends Component {
     return (
       <div>
         <HorizontalRule title="Block Info" />
-        <CardBlock block={ this.state.block } height={ this.props.tx.blockHeight } />
-        <HorizontalRule title="Block Transactions" />
-        <CardBlockTXs txs={ this.state.txs } />
+        <CardBlock block={this.state.block} height={this.props.tx.blockHeight} />
+        <HorizontalRule title={`Block Transactions (${this.state.block.txs.length})`} />
+        <CardBlockTXs txs={this.state.block.txs} />
       </div>
     );
   };

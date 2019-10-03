@@ -27,10 +27,10 @@ export default class CardTXs extends Component {
       cols: [
         { key: 'blockHeight', title: 'Height' },
         { key: 'txId', title: 'Transaction Hash' },
-        { key: 'vout', title: 'Value' },
-        { key: 'inputs', title: 'Inputs' },
-        { key: 'outputs', title: 'Outputs' },
-        { key: 'createdAt', title: 'Created' },
+        { key: 'amount', title: 'Amount' },
+        { key: 'addressesIn', title: 'Sources' },
+        { key: 'addressesOut', title: 'Recepients' },
+        { key: 'date', title: 'Date' },
       ]
     };
   };
@@ -40,15 +40,13 @@ export default class CardTXs extends Component {
       <Table
         cols={this.state.cols}
         data={this.props.txs.map(tx => {
-          const createdAt = moment(tx.createdAt).utc();
-          const diffSeconds = moment().utc().diff(createdAt, 'seconds');
-          let blockValue = 0.0;
-          if (tx.vout && tx.vout.length) {
-            tx.vout.forEach(vout => blockValue += vout.value);
-          }
+          const date = moment(tx.date).utc();
+          const diffSeconds = moment().utc().diff(date, 'seconds');
+          let amount = tx.amountOut;
+
           let spanClassName = ``;
           if (this.props.addBadgeClassToValue) {
-            spanClassName = `badge badge-${blockValue < 0 ? 'danger' : 'success'}`;
+            spanClassName = `badge badge-${amount < 0 ? 'danger' : 'success'}`;
           }
 
           return ({
@@ -63,26 +61,26 @@ export default class CardTXs extends Component {
                 {tx.txId}
               </Link>
             ),
-            vout: (
+            amount: (
               <span className={spanClassName}>
                 <Link to={`/tx/${tx.txId}`}>
-                  {TransactionValue(tx, blockValue)}
+                  {TransactionValue(tx, amount)}
                 </Link>
               </span>
             ),
-            inputs: (
+            addressesIn: (
               <Link to={`/tx/${tx.txId}`}>
-                {tx.vin.length}
+                {tx.addressesIn}
               </Link>
             ),
-            outputs: (
+            addressesOut: (
               <Link to={`/tx/${tx.txId}`}>
-                {tx.vout.length}
+                {tx.addressesOut}
               </Link>
             ),
-            createdAt: (
+            date: (
               <Link to={`/tx/${tx.txId}`} className="text-nowrap">
-                {dateFormat(tx.createdAt)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true)})
+                {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
               </Link>
             ),
           });

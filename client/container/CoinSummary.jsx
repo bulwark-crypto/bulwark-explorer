@@ -12,11 +12,10 @@ import Icon from '../component/Icon';
 import CardMarket from '../component/Card/CardMarket';
 import CardMasternodeSummary from '../component/Card/CardMasternodeSummary';
 import CardHighlightedAddresses from '../component/Card/CardHighlightedAddresses';
-import CardPoS from '../component/Card/CardPoS';
+import CardBlockCountdown from '../component/Card/CardBlockCountdown';
 import CardPoSCalc from '../component/Card/CardPoSCalc';
 import CardStatus from '../component/Card/CardStatus';
 import WatchList from '../component/WatchList';
-import CardSeeSaw from '../component/Card/CardSeeSaw';
 
 class CoinSummary extends Component {
   static propTypes = {
@@ -45,14 +44,30 @@ class CoinSummary extends Component {
       if (!config.community) {
         return null;
       }
+
+      const featuredAddresses = config.community.highlightedAddresses;
       return (
         <CardHighlightedAddresses
           title="Community Addresses"
-          addresses={config.community.highlightedAddresses}
+          addresses={featuredAddresses}
           onSearch={this.props.onSearch}
         />
       );
     };
+
+    const getCardBlockCountdowns = (blockCountdowns) => {
+      var blockCountdownElements = [];
+      blockCountdowns.forEach((blockCountdown, index) => {
+        blockCountdownElements.push(<CardBlockCountdown
+          key={index}
+          height={height}
+          avgBlockTime={coin.avgBlockTime}
+          blockCountdown={blockCountdown} />);
+      });
+
+      return blockCountdownElements;
+    }
+
 
     return (
       <div>
@@ -65,7 +80,11 @@ class CoinSummary extends Component {
                   avgMNTime={coin.avgMNTime}
                   blocks={height}
                   peers={coin.peers}
-                  status={coin.status} />
+                  status={coin.status}
+                  countCarverAddresses={coin.countCarverAddresses}
+                  countCarverMovements={coin.countCarverMovements}
+                  coin={coin}
+                />
               </div>
               <div className="col-md-12 col-lg-6">
                 <CardPoSCalc />
@@ -89,14 +108,8 @@ class CoinSummary extends Component {
             </div>
           </div>
           <div className="col-md-12 col-lg-3">
-            <CardPoS
-              average={coin.avgBlockTime}
-              height={height}
-              posHeight={blockchain.params.LAST_POW_BLOCK} />
-            <CardSeeSaw
-              average={coin.avgBlockTime}
-              height={height}
-              ssHeight={blockchain.params.LAST_SEESAW_BLOCK} />
+            {getCardBlockCountdowns(config.blockCountdowns)}
+
             {getCardHighlightedAddresses()}
 
             <WatchList

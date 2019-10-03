@@ -6,6 +6,9 @@ import { Link } from 'react-router-dom';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
+import config from './../../config'
+import moment from 'moment';
+import CarverAddressLabelWidget from '../component/AddressWidgets/CarverAddressLabelWidget'
 
 import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
@@ -26,32 +29,40 @@ class Top100 extends Component {
       cols: [
         { key: 'index', title: '#' },
         { key: 'address', title: 'Address' },
-        { key: 'value', title: 'Total' },
+        { key: 'value', title: 'Balance' },
+        { key: 'rewardsSumValue', title: 'Rewards' },
+        { key: 'date', title: 'Age' },
+        { key: 'lastMovementAgo', title: 'Active' },
         { key: 'percent', title: '%' },
       ],
-      wallets: []
+      carverAddresses: []
     };
   };
 
   componentDidMount() {
-    this.props.getTop100().then(wallets => this.setState({ wallets }));
+    this.props.getTop100().then(carverAddresses => this.setState({ carverAddresses }));
   };
+
 
   render() {
     return (
       <div>
         <HorizontalRule title="Top 100" />
         <Table
-          cols={ this.state.cols }
-          data={ this.state.wallets.map((wallet, idx) => ({
-            ...wallet,
+          cols={this.state.cols}
+          data={this.state.carverAddresses.map((carverAddress, idx) => ({
+            ...carverAddress,
             address: (
-              <Link to={ `/address/${ wallet.address }` }>{ wallet.address }</Link>
+              <Link to={`/address/${carverAddress.label}`}><CarverAddressLabelWidget carverAddress={carverAddress} /></Link>
             ),
+            date: moment(carverAddress.date).utc().fromNow(true),
+            lastMovementAgo: carverAddress.lastMovement ? moment(carverAddress.lastMovement.carverMovement.date).utc().fromNow() : "N/A",
+            inputs: carverAddress.countIn - carverAddress.posCountIn,
+            rewardsSumValue: numeral(carverAddress.rewardsSumValue).format('0,0.00'),
             index: idx + 1,
-            percent: numeral((wallet.value / this.props.coin.supply) * 100.0).format('0,0.00'),
-            value: numeral(wallet.value).format('0,0.0000')
-          })) } />
+            percent: numeral((carverAddress.balance / this.props.coin.supply) * 100.0).format('0,0.00'),
+            value: numeral(carverAddress.balance).format('0,0.00')
+          }))} />
       </div>
     );
   };

@@ -7,11 +7,17 @@ import {
   ERROR,
   TXS,
   WATCH_ADD,
-  WATCH_REMOVE
+  WATCH_REMOVE,
+  POS
 } from '../constants';
 
-const promises = new Map();
+const promises = [];
 const worker = new fetchWorker();
+
+/**
+ * A message sent to worker will have a unique identifier
+ */
+let messageId = 0;
 
 worker.onerror = (err) => {
   console.log(err);
@@ -19,24 +25,27 @@ worker.onerror = (err) => {
 };
 
 worker.onmessage = (ev) => {
-  const p = promises.get(ev.data.type);
-  if (!p) {
+  const promiseIndex = promises.findIndex(promise => promise.messageId === ev.data.id);
+  if (promiseIndex === -1) {
     return false;
   }
 
   if (ev.data.error) {
-    p.reject(ev.data.error);
-    promises.delete(ev.data.type);
+    promises[promiseIndex].reject(ev.data.error);
+    promises.splice(promiseIndex, 1);
     return false;
   }
 
-  p.resolve(ev.data.data);
+  promises[promiseIndex].resolve(ev.data.data);
+  promises.splice(promiseIndex, 1);
   return true;
 };
 
 const getFromWorker = (type, resolve, reject, query = null) => {
-  promises.set(type, { resolve, reject });
-  worker.postMessage({ query, type });
+  messageId++; // For each message to worker, increment the message id (that way we can identify what promise is resolved from worker by the id instead of by type)
+
+  promises.push({ resolve, reject, type, messageId });
+  worker.postMessage({ query, type, id: messageId });
   return true;
 };
 
@@ -167,6 +176,68 @@ export const getTXs = (dispatch, query) => {
   });
 };
 
+export const getPos = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'pos',
+      (payload) => {
+        // If dispatch is provided we can store in global store via redux.
+        // If there is no dispatch we'll resolve via callback (allowing us to consume it right away without global store)
+        if (dispatch) {
+          dispatch({ payload, type: POS });
+        }
+
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
+export const getMovements = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'movements',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: MOVEMENTS });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
+export const getTimeIntervals = (query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'timeIntervals',
+      (payload) => {
+        //@todo global state?
+        resolve(payload);
+      },
+      (payload) => {
+        //@todo global state?
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
 export const getRewards = (dispatch, query) => {
   return new promise((resolve, reject) => {
     return getFromWorker(
@@ -224,8 +295,11 @@ export default {
   getTXLatest,
   getTXs,
   getTXsWeek,
+  getPos,
   setTXs,
   setWatch,
   removeWatch,
-  getRewards
+  getRewards,
+  getMovements,
+  getTimeIntervals
 };

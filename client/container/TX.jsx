@@ -15,11 +15,11 @@ import HorizontalRule from '../component/HorizontalRule';
 class TX extends Component {
   static propTypes = {
     getTX: PropTypes.func.isRequired,
-    setTXs: PropTypes.func.isRequired,
+    //setTXs: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
 
     // Props from mapState() below (only if available)
-    txFromStore: PropTypes.object,
+    //txFromStore: PropTypes.object,
     latestTx: PropTypes.object
   };
 
@@ -39,13 +39,13 @@ class TX extends Component {
   componentDidUpdate() {
     const { params: { hash } } = this.props.match;
     // Try to get this TX from redux store, if it doesn't exist
-    if ((!this.props.txFromStore && !this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
+    if ((!this.state.tx || !!this.state.tx.txId && hash !== this.state.tx.txId) && !this.state.loading) {
       this.getTX();
     }
   }
 
   getTransactionInfo() {
-    const blockHeight = this.props.latestTx ? this.props.latestTx.blockHeight : 0; // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending);
+    const blockHeight = this.props.latestTx ? this.props.latestTx.blockHeight : this.state.tx.blockHeight; // Take first TX from store (this will have latest blockHeight as they're ordred by blockHeight descending);
     return (
       <div>
         <HorizontalRule title="Transaction Info" />
@@ -102,22 +102,33 @@ class TX extends Component {
         .getTX(txId)
         .then(tx => {
           this.setState({ tx, loading: false });
-          this.props.setTXs([tx]); // Add this new tx to store so we don't have to reload it later on
+          //this.props.setTXs([tx]); // Add this new tx to store so we don't have to reload it later on
         })
         .catch(error => this.setState({ error, tx: { txId }, loading: false })); // Notice how we set tx.txId so we know current url already tried to getTx() and won't retry on failure
     });
   }
 
   getTransactionDetails() {
+
+    const inMovements = this.state.tx.carverAddressMovements
+      .filter(carverAddressMovement => carverAddressMovement.amountOut > 0)
+      .sort((b, a) => (a.amountOut > b.amountOut) ? 1 : ((b.amountOut > a.amountOut) ? -1 : 0))
+      .map(carverAddressMovement => ({ ...carverAddressMovement, amount: -carverAddressMovement.amountOut }));
+
+    const outMovements = this.state.tx.carverAddressMovements
+      .filter(carverAddressMovement => carverAddressMovement.amountIn > 0)
+      .sort((b, a) => (a.amountIn > b.amountIn) ? 1 : ((b.amountIn > a.amountIn) ? -1 : 0))
+      .map(carverAddressMovement => ({ ...carverAddressMovement, amount: carverAddressMovement.amountIn }));
+
     return (
       <div className="row">
         <div className="col">
-          <HorizontalRule title={`Inputs (${this.state.tx.vin.length})`} />
-          <CardTXIn txs={this.state.tx.vin} />
+          <HorizontalRule title={`Source Addresses (${inMovements.length})`} />
+          <CardTXIn txs={inMovements} />
         </div>
         <div className="col">
-          <HorizontalRule title={`Outputs (${this.state.tx.vout.length})`} />
-          <CardTXOut txs={this.state.tx.vout} />
+          <HorizontalRule title={`Recepients (${outMovements.length})`} />
+          <CardTXOut txs={outMovements} />
         </div>
       </div>
     );
@@ -142,16 +153,17 @@ class TX extends Component {
 
 const mapDispatch = dispatch => ({
   getTX: query => Actions.getTX(query),
-  setTXs: txs => Actions.setTXs(dispatch, txs)
+  //setTXs: txs => Actions.setTXs(dispatch, txs)
 });
 
 const mapState = (state, ownProps) => {
   // Try to fetch transaction from store, if it exists we don't need to reload it
-  const txForHashFromStore = state.txs.find(tx => tx.txId == ownProps.match.params.hash);
+  //const txForHashFromStore = state.txs.find(tx => tx.txId == ownProps.match.params.hash);
+  //const txForHashFromStore = null
   const latestTx = state.txs.length > 0 ? state.txs[0] : null; // fetch most recent block from store (if there is one)
 
   return {
-    txFromStore: txForHashFromStore,
+    //txFromStore: txForHashFromStore,
     latestTx: latestTx
   };
 };

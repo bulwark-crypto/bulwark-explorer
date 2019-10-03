@@ -5,7 +5,6 @@ const config = require('../config');
 const { rpc } = require('../lib/cron');
 const blockchain = require('../lib/blockchain');
 const TX = require('../model/tx');
-const UTXO = require('../model/utxo');
 const BlockRewardDetails = require('../model/blockRewardDetails');
 
 /**
@@ -28,7 +27,7 @@ async function vin(rpctx, blockHeight) {
       }
     });
 
-    const usedTxs = await TX.find({ txId: { $in: Array.from(usedTxIdsInVins) } }, { txId: 1, vout: 1, blockHeight: 1, createdAt: 1 }); // Only include vout, blockHeight & createdAt fields that we need
+    //const usedTxs = await TX.find({ txId: { $in: Array.from(usedTxIdsInVins) } }, { txId: 1, vout: 1, blockHeight: 1, createdAt: 1 }); // Only include vout, blockHeight & createdAt fields that we need
 
     const failTx = async (vin, rpctx) => {
       const vinTxIdBlock = await rpc.call('getblock', [vin.txid]);
@@ -61,6 +60,7 @@ async function vin(rpctx, blockHeight) {
         vout: vin.vout
       };
 
+      /*
       // Find the matching vout for vin and store extra metadata for vout
       if (vin.txid) {
         let shouldStoreRelatedVout = true;
@@ -87,16 +87,12 @@ async function vin(rpctx, blockHeight) {
           }
         }
       }
+      */
 
       txin.push(vinDetails);
 
       txIds.add(`${vin.txid}:${vin.vout}`);
     });
-
-    // Remove unspent transactions.
-    if (txIds.size) {
-      await UTXO.remove({ _id: { $in: Array.from(txIds) } });
-    }
   }
   return txin;
 }
@@ -110,7 +106,6 @@ async function vout(rpctx, blockHeight) {
   // Setup the outputs for the transaction.
   const txout = [];
   if (rpctx.vout) {
-    const utxo = [];
     rpctx.vout.forEach((vout) => {
       if (vout.value <= 0 || vout.scriptPubKey.type === 'nulldata') {
         return;
@@ -138,28 +133,10 @@ async function vout(rpctx, blockHeight) {
         value: vout.value
       };
 
-      // Always add UTXO since we'll be aggregating it in richlist
-      utxo.push({
-        ...to,
-        _id: `${rpctx.txid}:${vout.n}`,
-        txId: rpctx.txid
-      });
-
       if (toAddress != 'NON_STANDARD') {
         txout.push(to);
       }
     });
-
-    // Insert unspent transactions.
-    if (utxo.length) {
-      try {
-        await UTXO.insertMany(utxo);
-      } catch (ex) {
-        console.log(`Failed to insert UTXO on block ${blockHeight}`);
-        console.log(utxo);
-        throw ex;
-      }
-    }
   }
   return txout;
 }
@@ -194,7 +171,7 @@ async function addPoS(block, rpctx) {
   };
 
   // Save tx first then we'll scan it later (as the same )
-  return await TX.create(txDetails);
+  return txDetails; //await TX.create(txDetails);
 }
 
 /**
@@ -202,71 +179,69 @@ async function addPoS(block, rpctx) {
  */
 async function performDeepTxAnalysis(block, rpctx, txDetails) {
 
-  // @Todo add POW Rewards (Before POS switchover)
-  // If our config allows us to extract additional reward data
-  if (!!config.splitRewardsData) {
-    // If this is a rewards transaction fetch the pos & masternode reward details
-    if (txDetails.isReward) {
+  //@todo add POW Rewards (Before POS switchover)
+  //@todo add POS with stake split (three outputs)
 
-      const currentTxTime = rpctx.time;
+  // If this is a rewards transaction fetch the pos & masternode reward details
+  if (txDetails.isReward) {
 
-      const stakeInputTxId = rpctx.vin[0].txid;
-      const stakedTxVoutIndex = rpctx.vin[0].vout;
+    const currentTxTime = rpctx.time;
 
-      // Find details of the staked input
-      const stakedInputRawTx = await getTX(stakeInputTxId, true); // true for verbose output so we can get time & confirmations
+    const stakeInputTxId = rpctx.vin[0].txid;
+    const stakedTxVoutIndex = rpctx.vin[0].vout;
 
-      const stakedInputRawTxVout = stakedInputRawTx.vout[stakedTxVoutIndex];
+    // Find details of the staked input
+    const stakedInputRawTx = await getTX(stakeInputTxId, true); // true for verbose output so we can get time & confirmations
 
-      const stakeInputValue = stakedInputRawTxVout.value;
-      const stakedInputConfirmations = stakedInputRawTx.confirmations - rpctx.confirmations; // How many confirmations did we get on staked input before the stake occured (subtract the new tx confirmations)
-      const stakedInputTime = stakedInputRawTx.time;
+    const stakedInputRawTxVout = stakedInputRawTx.vout[stakedTxVoutIndex];
 
-      const stakeRewardAddress = rpctx.vout[1].scriptPubKey.addresses[0];
-      const stakeRewardAmount = rpctx.vout[1].value - stakeInputValue;
-      const masternodeRewardAmount = rpctx.vout[2].value;
-      const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
+    const stakeInputValue = stakedInputRawTxVout.value;
+    const stakedInputConfirmations = stakedInputRawTx.confirmations - rpctx.confirmations; // How many confirmations did we get on staked input before the stake occured (subtract the new tx confirmations)
+    const stakedInputTime = stakedInputRawTx.time;
 
-      // Allows us to tell if we've staked on an output of a stake reward (staking a stake)
-      const isRestake = blockchain.isRewardRawTransaction(stakedInputRawTx);
+    const stakeRewardAddress = rpctx.vout[1].scriptPubKey.addresses[0];
+    const stakeRewardAmount = rpctx.vout[1].value - stakeInputValue;
+    const masternodeRewardAmount = rpctx.vout[2].value;
+    const masternodeRewardAddress = rpctx.vout[2].scriptPubKey.addresses[0];
 
-      // Store all the block rewards in it's own indexed collection
-      let blockRewardDetails = new BlockRewardDetails(
-        {
-          _id: new mongoose.Types.ObjectId(),
-          //blockHash: block.hash,
-          blockHeight: block.height,
-          date: block.createdAt,
-          txId: rpctx.txid,
-          stake: {
-            address: stakeRewardAddress,
-            input: {
-              txId: stakeInputTxId,
-              value: stakeInputValue,
-              confirmations: stakedInputConfirmations,
-              date: new Date(stakedInputTime * 1000),
-              age: currentTxTime - stakedInputTime,
-              isRestake: isRestake,
-              vinCount: rpctx.vin.length,
-              voutCount: rpctx.vout.length
-            },
-            reward: stakeRewardAmount
+    // Allows us to tell if we've staked on an output of a stake reward (staking a stake)
+    const isRestake = blockchain.isRewardRawTransaction(stakedInputRawTx);
+
+    // Store all the block rewards in it's own indexed collection
+    let blockRewardDetails = new BlockRewardDetails(
+      {
+        _id: new mongoose.Types.ObjectId(),
+        //blockHash: block.hash,
+        blockHeight: block.height,
+        date: block.createdAt,
+        txId: rpctx.txid,
+        stake: {
+          address: stakeRewardAddress,
+          input: {
+            txId: stakeInputTxId,
+            value: stakeInputValue,
+            confirmations: stakedInputConfirmations,
+            date: new Date(stakedInputTime * 1000),
+            age: currentTxTime - stakedInputTime,
+            isRestake: isRestake,
+            vinCount: rpctx.vin.length,
+            voutCount: rpctx.vout.length
           },
-          masternode: {
-            address: masternodeRewardAddress,
-            reward: masternodeRewardAmount
-          }
+          reward: stakeRewardAmount
+        },
+        masternode: {
+          address: masternodeRewardAddress,
+          reward: masternodeRewardAmount
         }
-      );
+      }
+    );
 
-      txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
-      await blockRewardDetails.save();
-    }
+    txDetails.blockRewardDetails = blockRewardDetails._id; // Store the relationship to block reward details (so we don't have to copy data)
+    await blockRewardDetails.save();
   }
+  return txDetails;
 
-  addInvolvedAddresses(txDetails);
-
-  await txDetails.save();
+  //await txDetails.save();
 }
 
 /**
@@ -290,30 +265,8 @@ async function addPoW(block, rpctx) {
     vout: txout
   };
 
-  addInvolvedAddresses(txDetails);
-
-  await TX.create(txDetails);
-}
-
-/**
- * Store addresses involved in any vin or vouts, We'll use this as the basis for new "perfect ledger system" 
- * @param {String} tx Mongodb TX doc
- */
-function addInvolvedAddresses(tx) {
-  let involvedAddresses = new Set(); // Will store distinct addresses used in this transaction
-
-  tx.vout.forEach(vout => {
-    if (vout.address) {
-      involvedAddresses.add(vout.address);
-    }
-  });
-  tx.vin.forEach(vin => {
-    if (vin.relatedVout) {
-      involvedAddresses.add(vin.relatedVout.address);
-    }
-  });
-
-  tx.involvedAddresses = Array.from(involvedAddresses);
+  return txDetails;
+  //await TX.create(txDetails);
 }
 
 /**
@@ -338,11 +291,27 @@ async function getTX(txhash, verbose = false) {
   return await rpc.call('decoderawtransaction', [hex]);
 }
 
+/**
+ * Is this a 0 coin transaction from coinbase into nonstandard output? (0 POS txs)
+ */
+function isEmptyNonstandardTx(rpctx) {
+  return rpctx.vin.length === 1 &&
+    rpctx.vin[0].coinbase &&
+    rpctx.vout.length === 1 &&
+    rpctx.vout[0].value === 0 &&
+    rpctx.vout[0].n === 0 &&
+    rpctx.vout[0].scriptPubKey &&
+    rpctx.vout[0].scriptPubKey.type === 'nonstandard';
+}
+
+
+
 module.exports = {
   addPoS,
   addPoW,
   getTX,
   vin,
   vout,
-  performDeepTxAnalysis
+  performDeepTxAnalysis,
+  isEmptyNonstandardTx,
 };

@@ -5,7 +5,6 @@ const { rpc } = require('../../lib/cron');
 const Block = require('../../model/block');
 const Coin = require('../../model/coin');
 const Rich = require('../../model/rich');
-const UTXO = require('../../model/utxo');
 
 // Get latest coin info helper method.
 const getCoin = async () => Coin.findOne().sort({ createdAt: -1 });
@@ -14,7 +13,7 @@ const getdifficulty = async (req, res) => {
   try {
     const coin = await getCoin();
     res.json(coin.diff);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -24,7 +23,7 @@ const getconnectioncount = async (req, res) => {
   try {
     const coin = await getCoin();
     res.json(coin.peers);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -32,9 +31,9 @@ const getconnectioncount = async (req, res) => {
 
 const getblockcount = async (req, res) => {
   try {
-    const block = await Block.findOne({}).sort({'height': -1});
+    const block = await Block.findOne({}).sort({ 'height': -1 });
     res.json(block.height);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -48,7 +47,7 @@ const getblockhash = async (req, res) => {
 
     const block = await Block.findOne({ height: req.query.index });
     res.json(block.hash);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -62,7 +61,7 @@ const getblock = async (req, res) => {
 
     const block = await Block.findOne({ height: req.query.index });
     res.json(block);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -82,7 +81,7 @@ const getrawtransaction = async (req, res) => {
 
     const tx = await rpc.call('decoderawtransaction', [raw]);
     res.send(tx);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -92,7 +91,7 @@ const getnetworkhashps = async (req, res) => {
   try {
     const coin = await getCoin();
     res.json(coin.netHash);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -100,11 +99,10 @@ const getnetworkhashps = async (req, res) => {
 
 const getmoneysupply = async (req, res) => {
   try {
-    const results = await UTXO.aggregate([
-      { $group: { _id: 'supply', total: { $sum: '$value' } } }
-    ]);
-    res.json(results.length ? results[0].total : 0);
-  } catch(err) {
+    //@todo
+    const moneySupply = 0;//results.length ? results[0].total : 0'
+    res.json(moneySupply);
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -113,7 +111,7 @@ const getmoneysupply = async (req, res) => {
 const getdistribution = async (req, res) => {
   try {
     res.json([]); // TODO: update route.
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -123,11 +121,11 @@ const getaddress = blockex.getAddress;
 
 const getbalance = async (req, res) => {
   try {
-    const utxo = await UTXO.find({ address: req.params.hash });
+
+    //@todo
     let bal = 0.0;
-    utxo.forEach(tx => bal += tx.value);
     res.json(bal);
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -135,7 +133,7 @@ const getbalance = async (req, res) => {
 
 const getlasttxs = blockex.getTXLatest;
 
-module.exports =  {
+module.exports = {
   // /api
   getdifficulty,
   getconnectioncount,

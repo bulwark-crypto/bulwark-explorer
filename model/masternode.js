@@ -18,7 +18,10 @@ const Masternode = mongoose.model('Masternode', new mongoose.Schema({
   status: { required: true, type: String },
   txHash: { index: true, required: true, type: String },
   txOutIdx: { required: true, type: Number },
-  ver: { required: true, type: Number }
+  ver: { required: true, type: Number },
+
+  carverAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
+  carverAddressMn: { type: mongoose.Schema.Types.ObjectId, ref: 'CarverAddress' },
 }, { versionKey: false }), 'masternodes');
 
-module.exports =  Masternode;
+module.exports = Masternode;

@@ -5,6 +5,7 @@ import {
   COINS,
   ERROR,
   TXS,
+  POS,
   WATCH_ADD,
   WATCH_REMOVE
 } from '../constants';
@@ -58,7 +59,7 @@ const txs = (state = [], action) => {
       let matchingTx = state.find(stateTx => stateTx.txId == tx.txId);
       if (matchingTx) {
         Object.assign(matchingTx, tx); // Copy new payload data to exisiting object
-        
+
         return;
       }
       state.push(tx); // Add new tx to store
@@ -66,9 +67,19 @@ const txs = (state = [], action) => {
 
     // Ensure the transactions are ordered with most recent blocks first
     state.sort((tx1, tx2) => {
-      return tx2.blockHeight - tx1.blockHeight;
+      return tx2.sequence - tx1.sequence;
     });
   }
+  return state;
+};
+
+/**
+ * Will handle the updating of the pos calculator state.
+ * @param {Array} state The current or default list of transactions.
+ * @param {Object} action The flux compatible action.
+ */
+const pos = (state = {}, action) => {
+  //@todo add pos global state
   return state;
 };
 
@@ -76,5 +87,6 @@ const txs = (state = [], action) => {
 export default combineReducers({
   coin,
   coins,
-  txs
+  txs,
+  pos
 });

@@ -5,9 +5,8 @@ import config from '../../../config'
 
 /**
  * Adds ability to format a transaction value
- * @todo move to FormattedValues folder
  */
-const PosRestakeIndicator = ({ reward, includeShortName = false }) => {
+const PosRestakeIndicator = ({ reward, includeShortName = false, showStakeRewardAmount = false }) => {
 
   const getRestakeIcon = (reward) => {
     if (!reward.stake.input.isRestake) {
@@ -15,6 +14,7 @@ const PosRestakeIndicator = ({ reward, includeShortName = false }) => {
     }
     return <Icon name="recycle" className="fas pl-1 text-primary align-middle" />;
   }
+
   const getTitle = (reward) => {
     if (!reward.stake.input.isRestake) {
       return null;
@@ -31,10 +31,18 @@ const PosRestakeIndicator = ({ reward, includeShortName = false }) => {
 
     return amountFormatted;
   }
+  if (!reward.stake) {
+    return null;
+  }
+
+  let amount = reward.stake.input.value;
+  if (showStakeRewardAmount) {
+    amount = reward.stake.reward;
+  }
 
   return (
     <span title={getTitle(reward)}>
-      {formatAmount(reward.stake.input.value)}{getRestakeIcon(reward)}
+      {formatAmount(amount)}{getRestakeIcon(reward)}
     </span>
   );
 }

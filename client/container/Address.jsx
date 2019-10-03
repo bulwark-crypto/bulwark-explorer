@@ -6,16 +6,17 @@ import Component from '../core/Component';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+import numeral from 'numeral';
 
 
 import CardAddress from '../component/Card/CardAddress';
-import CardAddressTXs from '../component/Card/CardAddressTXs';
 import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Select from '../component/Select';
 import MasternodesList from '../component/MasternodesList';
-
+import config from './../../config'
 import { PAGINATION_PAGE_SIZE } from '../constants';
+import AddressTxs from './AddressTxs'
 
 class Address extends Component {
   static propTypes = {
@@ -26,17 +27,18 @@ class Address extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: true,
+
       address: '',
       balance: 0.0,
       received: 0.0,
       error: null,
-      loading: true,
       pages: 0,
       page: 1,
       size: 10,
       txs: [],
-      utxo: [],
-      isMasternode: false
+      isMasternode: false,
+      carverAddress: null
     };
   };
 
@@ -56,16 +58,15 @@ class Address extends Component {
       const address = this.props.match.params.hash;
       this.props
         .getAddress({ address })
-        .then(({ balance, received, txs, utxo, isMasternode }) => {
+        .then((carverAddress) => {
           this.setState({
-            address,
-            balance,
-            received,
-            txs,
-            utxo,
+            ...this.state,
+            address: carverAddress.label,
             loading: false,
-            pages: Math.ceil(txs.length / this.state.size),
-            isMasternode
+            carverAddress,
+            pages: (carverAddress.countIn + carverAddress.countOut) / this.state.size,
+            balance: carverAddress.balance,
+            received: carverAddress.valueIn - (carverAddress.posValueIn || 0),
           });
         })
         .catch(error => this.setState({ error, loading: false }));
@@ -105,38 +106,13 @@ class Address extends Component {
     } else if (this.state.loading) {
       return this.renderLoading();
     }
-    const selectOptions = PAGINATION_PAGE_SIZE;
-
-    const select = (
-      <Select
-        onChange={value => this.handleSize(value)}
-        selectedValue={this.state.size}
-        options={selectOptions} />
-    );
-
-    // Setup internal pagination.
-    let start = (this.state.page - 1) * this.state.size;
-    let end = start + this.state.size;
 
     return (
       <div>
         <HorizontalRule title="Wallet Info" />
         <CardAddress
-          address={this.state.address}
-          balance={this.state.balance}
-          received={this.state.received}
-          txs={this.state.txs}
-          utxo={this.state.utxo} />
-        <HorizontalRule select={select} title="Wallet Transactions" />
-        <CardAddressTXs
-          address={this.state.address}
-          txs={this.state.txs.slice(start, end)}
-          utxo={this.state.utxo} />
-        <Pagination
-          current={this.state.page}
-          className="float-right"
-          onPage={this.handlePage}
-          total={this.state.pages} />
+          carverAddress={this.state.carverAddress} />
+        <AddressTxs addressId={this.state.carverAddress._id} txCount={this.state.carverAddress.countIn + this.state.carverAddress.countOut} />
         <div className="clearfix" />
         {this.getMasternodeDetails()}
         {this.getMasternodesAddressWidget()}
