@@ -465,9 +465,35 @@ const getSupply = async (req, res) => {
 const getTop100 = async (req, res) => {
   try {
     const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
-      return await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { sequence: 0 })
+      const top100Addresses = await CarverAddress.find({ carverAddressType: CarverAddressType.Address }, { sequence: 0 })
         .limit(100)
-        .sort({ balance: -1 }).populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } }); //@todo remove lastMovement
+        .sort({ balance: -1 }).populate({ path: "lastMovement", select: { carverMovement: 1 }, populate: { path: 'carverMovement', select: { date: 1 } } }); //@todo remove lastMovement;
+
+      // For each address split them into 3 address (MN,POS,POW). Add each address to an array.
+      const addressesToFetch = top100Addresses.reduce((addressesToFetch, address) => {
+        return [
+          ...addressesToFetch,
+          `${address.label}:MN`,
+          `${address.label}:POS`,
+          `${address.label}:POW`
+        ]
+      }, []);
+      const rewardAddressBalances = await CarverAddress.find({ label: { $in: addressesToFetch } }, { _id: 0, label: 1, valueOut: 1 })
+
+      // For each top 100 address find any matching rewards addresses and calculate the total rewards for that address
+      const addressesWithBalances = top100Addresses.map((address) => {
+        // Calculate the total rewards sum for a specific address
+        const rewardsSumValue = rewardAddressBalances.reduce((sum, rewardAddress) => {
+          return sum + ([`${address.label}:MN`, `${address.label}:POS`, `${address.label}:POW`].includes(rewardAddress.label) ? rewardAddress.valueOut : 0);
+        }, 0);
+
+        return {
+          ...address.toObject(),
+          rewardsSumValue
+        }
+      });
+
+      return addressesWithBalances;
     });
 
     res.json(docs);
