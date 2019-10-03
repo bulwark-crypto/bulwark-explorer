@@ -66,7 +66,7 @@ export default class CardAddressTXs extends Component {
       return <span>
         <span
           className={`badge badge-${isOut ? 'danger' : 'success'}`} title={getMovementTitle(movement)}>
-          {isOut ? '-' : '+'} {numeral(amount * (isOut ? -1 : 1)).format(config.coinDetails.coinNumberFormat)} BWK
+          {isOut ? '-' : '+'} {numeral(amount * (isOut ? -1 : 1)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
         </span>
         {getMovementIcon(movement)}
       </span>
@@ -91,8 +91,8 @@ export default class CardAddressTXs extends Component {
               ),
               balance: (
                 <span>
-                  {numeral(balance.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} BWK
-              </span>
+                  {numeral(balance.toFixed(config.coinDetails.displayDecimals)).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+                </span>
               ),
               createdAt: (
                 <span className="text-nowrap">

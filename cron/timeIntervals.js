@@ -15,6 +15,7 @@ const { TimeIntervalType, TimeIntervalColumn } = require('../lib/timeInterval');
 
 const syncTimeIntervalSettings = async (timeIntervalSettings) => {
 
+
   // Fetch the most recent interval number from last sync for type/query
   const getLastSyncedIntervalNumber = async () => {
     const firstTimeIntervalForType = await TimeInterval.findOne({ type: timeIntervalSettings.type }).sort({ intervalNumber: -1 });
@@ -61,6 +62,15 @@ const syncTimeIntervalSettings = async (timeIntervalSettings) => {
     // No addition required if it's the same date as the last inserted or possible max
     if (intervalNumber === lastSyncedIntervalNumber || intervalNumber >= maxIntervalNumber) {
       return;
+    }
+
+    switch (timeIntervalSettings.type) {
+      case TimeIntervalType.DailyAvgMasternodeRoi:
+        // Calculate ROI% for masternode
+        const mnRewardsPerYear = (365 * 24 * 60 * 60) / (item.avgAge / 1000);
+        const mnRoi = ((mnRewardsPerYear * item.avgRewards) / config.coinDetails.masternodeCollateral) * 100;
+        item.value = mnRoi;
+        break;
     }
 
     const newTimeIntervalItem = new TimeInterval({
@@ -114,6 +124,32 @@ const syncTimeIntervals = async () => {
       { $match: { 'stake': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool? (@todo we now have a bool, redo the query)
       { $project: { 'stake.input.value': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
       { $group: { _id: '$value', value: { $avg: '$stake.input.value' } } },
+      { $sort: { _id: 1 } },
+    ]
+  });
+
+  await syncTimeIntervalSettings({
+    type: TimeIntervalType.DailyAvgMasternodeAge,
+    timeIntervalColumn: TimeIntervalColumn.Date,
+
+    model: BlockRewardDetails,
+    aggregationPipeline: [
+      { $match: { 'masternode': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool? (@todo we now have a bool, redo the query)
+      { $project: { 'masternode.ageTime': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
+      { $group: { _id: '$value', value: { $avg: '$masternode.ageTime' } } },
+      { $sort: { _id: 1 } },
+    ]
+  });
+
+  await syncTimeIntervalSettings({
+    type: TimeIntervalType.DailyAvgMasternodeRoi,
+    timeIntervalColumn: TimeIntervalColumn.Date,
+
+    model: BlockRewardDetails,
+    aggregationPipeline: [
+      { $match: { 'masternode': { $exists: true } } }, //@todo would be really cool if we could identify if stake exists on block reward Model via a bool? (@todo we now have a bool, redo the query)
+      { $project: { 'masternode.ageTime': 1, 'masternode.reward': 1, value: { $dateToString: { format: '%Y-%m-%d', date: '$date' } } } },
+      { $group: { _id: '$value', avgAge: { $avg: '$masternode.ageTime' }, avgRewards: { $avg: '$masternode.reward' } } },
       { $sort: { _id: 1 } },
     ]
   });

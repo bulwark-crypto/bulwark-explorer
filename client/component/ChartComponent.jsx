@@ -5,6 +5,7 @@ import Actions from '../core/Actions';
 import PropTypes from 'prop-types';
 import { createChart } from 'lightweight-charts';
 import { TimeIntervalType } from '../../lib/timeInterval'
+import config from '../../config'
 
 export default class ChartComponent extends Component {
   static propTypes = {
@@ -59,11 +60,12 @@ export default class ChartComponent extends Component {
     let priceFormat = {
       type: 'custom',
       precision: 0,
-      formatter: (transactions) => `${transactions.toFixed(0)} BWK`
+      formatter: (transactions) => `${transactions.toFixed(0)} ${config.coinDetails.shortName}`
     }
 
     switch (this.state.type) {
       case TimeIntervalType.DailyAvgPosRoi:
+      case TimeIntervalType.DailyAvgMasternodeRoi:
         priceFormat = {
           type: 'custom',
           precision: 2,
@@ -75,6 +77,13 @@ export default class ChartComponent extends Component {
           type: 'custom',
           precision: 0,
           formatter: (transactions) => `${transactions.toFixed(0)} TXs`
+        }
+        break;
+      case TimeIntervalType.DailyAvgMasternodeAge:
+        priceFormat = {
+          type: 'custom',
+          precision: 0,
+          formatter: (miliseconds) => `${(miliseconds / (1000 * 60 * 60)).toFixed(0)} Hours`
         }
         break;
     }

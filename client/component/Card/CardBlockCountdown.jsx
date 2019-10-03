@@ -23,7 +23,17 @@ const CardBlockCountdown = ({ height, avgBlockTime, blockCountdown }) => {
   // Convert to hours.
   else if (dur > 60) {
     label = 'hours';
-    dur /= 60.0;
+    dur = (dur / 60.0).toFixed(2);
+  }
+
+  // If more than 48 hours convert to days
+  if (dur > 48) {
+    label = 'days';
+    dur = (dur / 24.0).toFixed(0);
+  }
+
+  if (blockCountdown.block - height < 0) {
+    label = `${label} ago`;
   }
 
   const getSuperblockIcon = () => {
@@ -50,7 +60,7 @@ const CardBlockCountdown = ({ height, avgBlockTime, blockCountdown }) => {
                 height: '22px',
                 lineHeight: '20px'
               }}>
-              {dur.toFixed(2)} {label}
+              {dur} {label}
             </h4>
           </div>
         </div>

@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import moment from 'moment';
 import Actions from '../core/Actions';
+import config from '../../config'
 
 import HorizontalRule from '../component/HorizontalRule';
 
@@ -105,14 +106,14 @@ class PoS extends Component {
           <b>Input Size (From):</b>
         </div>
         <div className="col-8">
-          {numeral(score.fromInputAmount).format('0,0')} BWK
-          </div>
+          {numeral(score.fromInputAmount).format('0,0')} {config.coinDetails.shortName}
+        </div>
         <div className="col-4">
           <b>Input Size (To):</b>
         </div>
         <div className="col-8">
-          {numeral(score.toInputAmount).format('0,0')} BWK
-          </div>
+          {numeral(score.toInputAmount).format('0,0')} {config.coinDetails.shortName}
+        </div>
         <div className="col-4">
           <b>Start Date:</b>
         </div>
@@ -168,11 +169,11 @@ class PoS extends Component {
           <b>Sample Rewards:</b>
         </div>
         <div className={`col-${columnSize}`}>
-          {numeral(score.roi.sum).format('0,0')} BWK
-          </div>
+          {numeral(score.roi.sum).format('0,0')} {config.coinDetails.shortName}
+        </div>
         {scoreAddress && <div className={`col-${columnSize}`}>
-          {numeral(scoreAddress.roi.sum).format('0,0')} BWK
-          </div>}
+          {numeral(scoreAddress.roi.sum).format('0,0')} {config.coinDetails.shortName}
+        </div>}
 
         <div className="col-4 mt-2">
           <b>Avg. Input Age:</b>
@@ -188,11 +189,11 @@ class PoS extends Component {
           <b>Avg. Input Value:</b>
         </div>
         <div className={`col-${columnSize}`}>
-          {numeral(score.roi.avgInputValue).format('0,0')} BWK
+          {numeral(score.roi.avgInputValue).format('0,0')} {config.coinDetails.shortName}
         </div>
         {scoreAddress && <div className={`col-${columnSize}`}>
-          {numeral(scoreAddress.roi.avgInputValue).format('0,0')} BWK
-          </div>}
+          {numeral(scoreAddress.roi.avgInputValue).format('0,0')} {config.coinDetails.shortName}
+        </div>}
 
         <div class="col-12 mt-2 mb-2">
           <hr />

@@ -724,7 +724,7 @@ const getRewards = async (req, res) => {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
 
-    const query = {};
+    const query = { hasPoofOfWorkReward: true };
 
     const total = await BlockRewardDetails.count(query);
     const rewards = await BlockRewardDetails.find(query).skip(skip).limit(limit).sort({ blockHeight: -1 });

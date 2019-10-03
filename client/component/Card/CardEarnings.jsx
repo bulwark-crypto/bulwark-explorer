@@ -3,6 +3,7 @@ import blockchain from '../../../lib/blockchain';
 import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
+import config from '../../../config'
 
 import Card from './Card';
 
@@ -23,7 +24,7 @@ const CardEarnings = ({ coin }) => {
           DAILY
         </div>
         <div className="col-sm-12 col-md-9">
-          { nbtc(day) } BWK / { nbtc(day * coin.btc) } BTC / { nusd(day * coin.usd) } USD
+          {nbtc(day)} {config.coinDetails.shortName} / {nbtc(day * coin.btc)} BTC / {nusd(day * coin.usd)} USD
         </div>
       </div>
       <div className="row">
@@ -31,7 +32,7 @@ const CardEarnings = ({ coin }) => {
           WEEKLY
         </div>
         <div className="col-sm-12 col-md-9">
-          { nbtc(week) } BWK / { nbtc(week * coin.btc) } BTC / { nusd(week * coin.usd) } USD
+          {nbtc(week)} {config.coinDetails.shortName} / {nbtc(week * coin.btc)} BTC / {nusd(week * coin.usd)} USD
         </div>
       </div>
       <div className="row">
@@ -39,7 +40,7 @@ const CardEarnings = ({ coin }) => {
           MONTHLY
         </div>
         <div className="col-sm-12 col-md-9">
-          { nbtc(month) } BWK / { nbtc(month * coin.btc) } BTC / { nusd(month * coin.usd) } USD
+          {nbtc(month)} {config.coinDetails.shortName} / {nbtc(month * coin.btc)} BTC / {nusd(month * coin.usd)} USD
         </div>
       </div>
       <div className="row">
@@ -47,7 +48,7 @@ const CardEarnings = ({ coin }) => {
           YEARLY
         </div>
         <div className="col-sm-12 col-md-9">
-          { nbtc(year) } BWK / { nbtc(year * coin.btc) } BTC / { nusd(year * coin.usd) } USD
+          {nbtc(year)} {config.coinDetails.shortName} / {nbtc(year * coin.btc)} BTC / {nusd(year * coin.usd)} USD
         </div>
       </div>
       <div className="row">
