@@ -419,7 +419,7 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
 
     switch (consolidatedAddressMovement.addressType) {
       case CarverAddressType.ProofOfWork:
-        blockRewardDetails.hasStakeReward = true;
+        blockRewardDetails.hasStakeReward = true; //@todo swap with the below bool (wrong name)
 
         //@todo We can't do a ROI% but we can at least caclulate ageBlocks/ageTime to calculate estimated next reward & rewards per day/year
         const proofOfWorkAddress = updatedAddresses.get(rewardAddressLabel);
@@ -431,7 +431,7 @@ const getBlockRewardDetails = async (rpcblock, rpctx, parsedMovement, newCarverM
         }
         break;
       case CarverAddressType.ProofOfStake:
-        blockRewardDetails.hasPoofOfWorkReward = true;
+        blockRewardDetails.hasPoofOfWorkReward = true; //@todo swap with the above bool (wrong name)
 
         const inputTxId = rpctx.vin[0].txid;
 

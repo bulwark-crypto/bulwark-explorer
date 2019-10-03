@@ -65,6 +65,7 @@ export default class ChartComponent extends Component {
 
     switch (this.state.type) {
       case TimeIntervalType.DailyAvgPosRoi:
+      case TimeIntervalType.DailyAvgMasternodeRoi:
         priceFormat = {
           type: 'custom',
           precision: 2,
@@ -76,6 +77,13 @@ export default class ChartComponent extends Component {
           type: 'custom',
           precision: 0,
           formatter: (transactions) => `${transactions.toFixed(0)} TXs`
+        }
+        break;
+      case TimeIntervalType.DailyAvgMasternodeAge:
+        priceFormat = {
+          type: 'custom',
+          precision: 0,
+          formatter: (miliseconds) => `${(miliseconds / (1000 * 60 * 60)).toFixed(0)} Hours`
         }
         break;
     }

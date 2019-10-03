@@ -193,7 +193,7 @@ class MasternodesList extends Component {
               ),
               totalRewards: (
                 <Link to={`/address/${mnAddress}`}>
-                  {numeral(mn.balance * -1).format(config.coinDetails.coinNumberFormat)}
+                  {numeral(mn.balance * -1).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
                 </Link>
               )
             };

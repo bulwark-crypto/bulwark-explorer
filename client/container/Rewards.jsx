@@ -102,7 +102,7 @@ class Rewards extends Component {
 
         <HorizontalRule
           select={select}
-          title="Block Rewards" />
+          title="Proof Of Stake Rewards" />
         <CardRewards rewards={this.state.rewards} addBadgeClassToValue={false} />
         <Pagination
           current={this.state.page}

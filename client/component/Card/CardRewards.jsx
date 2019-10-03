@@ -33,7 +33,6 @@ export default class CardRewards extends Component {
         { key: 'posInputAmount', title: 'Input Size' },
         { key: 'posInputConfirmations', title: 'Confirmations' },
         { key: 'posStakeRoi', title: 'POS Stake ROI%' },
-        { key: 'masternodeRoi', title: 'MN ROI%' },
         { key: 'date', title: 'Created' },
 
         // Optional columns we could enable:
