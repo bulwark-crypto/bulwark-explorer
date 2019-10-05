@@ -330,6 +330,10 @@ const getMasternodes = async (req, res) => {
       query.addr = req.query.hash;
     }
 
+    if (req.query.tag) {
+      query.tag = req.query.tag;
+    }
+
     // Optionally it's possible to filter masternodes running on a specific range of addresses. Pass in addresses as comma-seprated list
     // In redux we pass in an array and it automatically converts into a comma-seperated list of addresses
     if (req.query.addresses) {

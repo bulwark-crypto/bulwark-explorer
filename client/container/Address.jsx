@@ -89,13 +89,14 @@ class Address extends Component {
   }
   getMasternodesAddressWidget = () => {
     const address = this.props.match.params.hash;
+
     const masternodesAddressWidget = configUtils.getCommunityAddressWidgetConfig(address, "masternodesAddressWidget");
     if (!masternodesAddressWidget) {
       return null;
     }
 
     return (
-      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={masternodesAddressWidget.isPaginationEnabled} getMNs={this.props.getMasternodesAddressWidget} />
+      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={masternodesAddressWidget.isPaginationEnabled} getMNs={this.props.getMasternodesAddressWidget} tag={masternodesAddressWidget.tag} />
     );
   }
 
@@ -114,8 +115,8 @@ class Address extends Component {
           carverAddress={this.state.carverAddress} />
         <AddressTxs addressId={this.state.carverAddress._id} txCount={this.state.carverAddress.countIn + this.state.carverAddress.countOut} />
         <div className="clearfix" />
-        {this.getMasternodeDetails()}
         {this.getMasternodesAddressWidget()}
+        {this.getMasternodeDetails()}
       </div>
     );
   };
@@ -134,7 +135,9 @@ const mapDispatch = (dispatch, ownProps) => ({
     if (!masternodesAddressWidget) {
       return null;
     }
-    query.addresses = masternodesAddressWidget.addresses; // Add array of wallet addresses to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
+    if (masternodesAddressWidget.addresses) {
+      query.addresses = masternodesAddressWidget.addresses; // Add array of wallet addresses to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
+    }
     return Actions.getMNs(query);
   }
 });

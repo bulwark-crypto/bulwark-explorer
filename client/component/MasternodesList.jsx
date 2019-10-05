@@ -60,14 +60,15 @@ class MasternodesList extends Component {
       this.props
         .getMNs({
           limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
+          skip: (this.state.page - 1) * this.state.size,
+          ...(this.props.tag ? { tag: this.props.tag } : null)
         })
         .then(({ mns, pages, total }) => {
           this.setState({
             mns,
             pages,
             loading: false,
-            title: `Masternodes (${total} Since Genesis)`
+            title: `${props.title} (${total} Since Genesis)`
           });
         })
         .catch(error => this.setState({ error, loading: false }));
