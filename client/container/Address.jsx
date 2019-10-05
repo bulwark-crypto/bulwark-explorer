@@ -115,8 +115,8 @@ class Address extends Component {
           carverAddress={this.state.carverAddress} />
         <AddressTxs addressId={this.state.carverAddress._id} txCount={this.state.carverAddress.countIn + this.state.carverAddress.countOut} />
         <div className="clearfix" />
-        {this.getMasternodeDetails()}
         {this.getMasternodesAddressWidget()}
+        {this.getMasternodeDetails()}
       </div>
     );
   };
