@@ -135,7 +135,9 @@ const mapDispatch = (dispatch, ownProps) => ({
     if (!masternodesAddressWidget) {
       return null;
     }
-    query.addresses = masternodesAddressWidget.addresses; // Add array of wallet addresses to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
+    if (masternodesAddressWidget.addresses) {
+      query.addresses = masternodesAddressWidget.addresses; // Add array of wallet addresses to the filtering of getMNs(). Look at server/handler/blockex.js getMasternodes()
+    }
     return Actions.getMNs(query);
   }
 });
