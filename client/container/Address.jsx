@@ -113,9 +113,10 @@ class Address extends Component {
         <HorizontalRule title="Wallet Info" />
         <CardAddress
           carverAddress={this.state.carverAddress} />
+        {this.getMasternodesAddressWidget()}
+        <div className="clearfix" />
         <AddressTxs addressId={this.state.carverAddress._id} txCount={this.state.carverAddress.countIn + this.state.carverAddress.countOut} />
         <div className="clearfix" />
-        {this.getMasternodesAddressWidget()}
         {this.getMasternodeDetails()}
       </div>
     );
