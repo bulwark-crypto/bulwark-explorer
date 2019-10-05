@@ -68,7 +68,7 @@ class MasternodesList extends Component {
             mns,
             pages,
             loading: false,
-            title: `Masternodes (${total} Since Genesis)`
+            title: `${props.title} (${total} Since Genesis)`
           });
         })
         .catch(error => this.setState({ error, loading: false }));
