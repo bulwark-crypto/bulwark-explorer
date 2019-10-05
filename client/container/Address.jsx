@@ -89,13 +89,14 @@ class Address extends Component {
   }
   getMasternodesAddressWidget = () => {
     const address = this.props.match.params.hash;
+
     const masternodesAddressWidget = configUtils.getCommunityAddressWidgetConfig(address, "masternodesAddressWidget");
     if (!masternodesAddressWidget) {
       return null;
     }
 
     return (
-      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={masternodesAddressWidget.isPaginationEnabled} getMNs={this.props.getMasternodesAddressWidget} />
+      <MasternodesList title={masternodesAddressWidget.title} isPaginationEnabled={masternodesAddressWidget.isPaginationEnabled} getMNs={this.props.getMasternodesAddressWidget} tag={masternodesAddressWidget.tag} />
     );
   }
 

@@ -83,7 +83,7 @@ export default class CardStatus extends Component {
             <span className="card__result">{numeral(this.props.coin.uniqueMasternodeAddresses24h).format('0,0')}</span>
           </div>
           <div className="card__row justify-content-between">
-            <span className="card__label">Avg. 24h MN ROI%:</span>
+            <span className="card__label">24h Avg. MN ROI%:</span>
             <span className="card__result"><Link to="/rewards">{(this.props.coin.mnRoi24h || 0).toFixed(2)}% / year</Link></span>
           </div>
           <hr class="my-1" />
@@ -92,7 +92,7 @@ export default class CardStatus extends Component {
             <span className="card__result"><Link to="/rewards">{numeral(this.props.coin.uniquePosAddresses24h).format('0,0')}</Link></span>
           </div>
           <div className="card__row justify-content-between">
-            <span className="card__label">Avg. 24h POS ROI%:</span>
+            <span className="card__label">24h Avg. POS ROI%:</span>
             <span className="card__result"><Link to="/rewards">{(this.props.coin.posRoi24h || 0).toFixed(2)}% / year</Link></span>
           </div>
         </Card>

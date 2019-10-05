@@ -26,6 +26,7 @@ const carverAddressSchema = new mongoose.Schema({
   valueIn: { required: true, type: Number/*, index: true*/ },
   countIn: { required: true, type: Number/*, index: true*/ },
   countOut: { required: true, type: Number/*, index: true*/ },
+  tag: { type: String },  // You can tag certain addresses for batch actions (this field is indexed sparsely)
 
   //tags: [{ type, count }], //@todo add daily address-based tags (ex: most pos rewards in day, biggest movement of day, most movements in day)
 
@@ -42,6 +43,8 @@ const carverAddressSchema = new mongoose.Schema({
   sequence: { index: true, required: true, type: Number } // Not unique because two addresses can have same sequence
 }, { _id: false, versionKey: false });
 
+
+carverAddressSchema.index({ tag: 1 }, { sparse: true }); // Important compound index as we're doing a lot of find()+sort by carverAddresType/sequence
 carverAddressSchema.index({ carverAddressType: 1, sequence: 1 }); // Important compound index as we're doing a lot of find()+sort by carverAddresType/sequence
 carverAddressSchema.index({ carverAddressType: 1, valueOut: 1 }); // Since we have new Sort By "Value"
 carverAddressSchema.index({ carverAddressType: 1, lastMovementBlockHeight: 1 }); // For use in sorting by last action done (ex: most recent movement of address, last mn reward, last pos reward)

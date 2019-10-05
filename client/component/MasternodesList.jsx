@@ -60,7 +60,8 @@ class MasternodesList extends Component {
       this.props
         .getMNs({
           limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
+          skip: (this.state.page - 1) * this.state.size,
+          tag: this.props.tag
         })
         .then(({ mns, pages, total }) => {
           this.setState({
