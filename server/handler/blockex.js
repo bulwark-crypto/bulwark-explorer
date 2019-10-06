@@ -753,10 +753,16 @@ const getMovements = async (req, res) => {
     const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const addressId = req.query.addressId || null;
+    const addressFilter = req.query.filter;
 
     let query = {};
     if (addressId) {
       query = { carverAddress: addressId };
+    }
+    switch (addressFilter) {
+      case 'excludeRewards':
+        query.isReward = false;
+        break;
     }
 
     const total = await CarverAddressMovement.count(query);
