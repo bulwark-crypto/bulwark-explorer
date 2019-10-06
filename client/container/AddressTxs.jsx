@@ -31,7 +31,8 @@ class AddressTxs extends Component {
       pages: 0,
       page: 1,
       size: 10,
-      movements: []
+      movements: [],
+      filter: localStorage.getItem('addressFilter') || null
     };
 
     //This is a new, better implementation of debouncing. The problem with old approach is that the initial request will be delayed by 800ms. 
@@ -41,7 +42,8 @@ class AddressTxs extends Component {
         .getTXs({
           addressId: this.props.addressId,
           limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
+          skip: (this.state.page - 1) * this.state.size,
+          ...(this.state.filter ? { filter: this.state.filter } : null)
         })
         .then(({ pages, movements }) => {
           this.setState({ pages, movements, loading: false }, () => {
@@ -72,6 +74,7 @@ class AddressTxs extends Component {
 
   handleSize = size => this.setState({ size, page: 1 }, this.getTXs);
 
+
   render() {
     if (!!this.state.error) {
       return this.renderError(this.state.error);
@@ -80,17 +83,39 @@ class AddressTxs extends Component {
     }
     const selectOptions = PAGINATION_PAGE_SIZE;
 
-    const select = (
-      <Select
-        onChange={value => this.handleSize(value)}
-        selectedValue={this.state.size}
-        options={selectOptions} />
+    const paginationSelect = (
+      <label>
+        Per Page
+        <Select
+          onChange={value => this.handleSize(value)}
+          selectedValue={this.state.size}
+          options={selectOptions} />
+      </label>
     );
+    const getFilterSelect = () => {
+      const addressFilters = [
+        { value: 'all', label: 'All Transactions' },
+        { value: 'excludeRewards', label: 'Exclude Rewards' }
+      ];
+      const handleAddressFilter = filter => {
+        this.setState({ filter, page: 1 }, this.getTXs);
+        localStorage.setItem('addressFilter', filter);
+      };
+
+      return (
+        <label>
+          Transactions Filter
+        <Select
+            onChange={value => handleAddressFilter(value)}
+            selectedValue={this.state.filter}
+            options={addressFilters} />
+        </label>)
+    };
 
     return (
       <div>
         <HorizontalRule
-          select={select}
+          selects={[getFilterSelect(), paginationSelect]}
           title={`Non-Reward Address Transactions (${this.props.txCount})`} />
         <CardAddressTXs movements={this.state.movements} addressId={this.props.addressId} />
         <Pagination
