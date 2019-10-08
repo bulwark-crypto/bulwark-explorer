@@ -2,7 +2,6 @@
 const compressionPlugin = require('compression-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const uglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
 const config = require('./config')
 
@@ -22,7 +21,7 @@ const basePlugins = [
   }),
   new webpack.DefinePlugin({
     'process.env': {
-      'config.api':JSON.stringify(config.api),
+      'config.api': JSON.stringify(config.api),
     }
   }),
   new webpack.HotModuleReplacementPlugin(),
@@ -37,12 +36,12 @@ const prodPlugins = [
     algorithm: 'gzip',
     asset: '[path].gz[query]'
   }),
-  new webpack.optimize.UglifyJsPlugin({
-    compress: { warnings: false },
-    comments: false,
-    sourceMap: true,
-    minimize: false
-  })
+  /* new webpack.optimize.UglifyJsPlugin({
+     compress: { warnings: false },
+     comments: false,
+     sourceMap: true,
+     minimize: false
+   })*/
 ];
 
 const envPlugins = process.env.NODE_ENV === 'production'
