@@ -52,7 +52,8 @@
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^4.0.8",
     "reactstrap": "next",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "snoowrap": "^1.20.0"
   },
   "devDependencies": {
     "animate-sass": "^0.8.2",
