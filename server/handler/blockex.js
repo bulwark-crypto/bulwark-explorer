@@ -582,7 +582,7 @@ const getTXs = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const sort = 'sequence';//req.query.sort === 'sequence' ? 'sequence' : 'valueOut';
 
-    let query = { isReward: false /*carverAddressType: CarverAddressType.Tx*/ };
+    let query = { isReward: false };
 
     // Optional date range
     if (req.query.date) {
@@ -596,25 +596,10 @@ const getTXs = async (req, res) => {
     const total = await CarverMovement.find(query).count();
     const txs = await CarverMovement.find(query).skip(skip).limit(limit).sort({ [sort]: -1 });
 
-    let carverMovementIdsToFetch = [];
-    txs.forEach(tx => {
-      const totalAddresses = tx.addressesIn + tx.addressesOut;
-
-      if (totalAddresses <= config.maxMovementsAddressesToFetch) {
-        carverMovementIdsToFetch.push(tx._id);
-      }
-    });
-
-    //@todo new movements layout can have more details
-    //const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: { $in: carverMovementIdsToFetch } }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
 
     const txsWithMovements = txs.map(tx => {
-      //const txCarverAddressMovements = carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.carverMovement.toString() === tx._id.toString()); // Find all matching movements for this tx. Notice .toString() because we're comparing mongoose.Schema.Types.ObjectId
-
       return {
         ...tx.toObject(),
-        //from: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount < 0),
-        //to: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount >= 0)
       }
     });
 

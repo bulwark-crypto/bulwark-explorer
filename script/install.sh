@@ -191,7 +191,6 @@ const config = {
   /// Explorer Customization
   ///////////////////////////////
   desktopMenuExpanded: true,        // If set to true the website will have opened navigation bar on load
-  maxMovementsAddressesToFetch: 10, // Total unique addresses per tx that will be preloaded on movements page. Ex: 3 addresses -> 1 address = 4 total addresses. If number of addresses exceeds this 
 
   ///////////////////////////////
   /// Community & Address Related
