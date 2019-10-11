@@ -19,6 +19,7 @@ const { BlockRewardDetails } = require('../../model/blockRewardDetails');
 const { TimeInterval } = require('../../model/timeInterval');
 const { TimeIntervalType } = require('../../lib/timeInterval');
 const TX = require('../../model/tx');
+const { SocialSubmission } = require('../../features/social/model');
 const config = require('../../config')
 
 /**
@@ -791,6 +792,31 @@ const getTimeIntervals = async (req, res) => {
 };
 
 /**
+ * Return a paginated list of Social Aggregation
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getSocial = async (req, res) => {
+  try {
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    //const type = req.query.type ? parseInt(req.query.type, 10) : 0; //@todo
+
+    const query = {
+      //type
+    };
+
+    const total = await SocialSubmission.count(query);
+    const social = await SocialSubmission.find(query).sort({ intervalNumber: -1 });
+
+    res.json({ social, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Return all the transactions for an entire week.
  * Method uses a closure for caching.
  * @param {Object} req The request object.
@@ -888,5 +914,6 @@ module.exports = {
   getTXsWeek,
   getMovements,
   getTimeIntervals,
-  sendrawtransaction
+  sendrawtransaction,
+  getSocial
 };
