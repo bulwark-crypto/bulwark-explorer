@@ -1,6 +1,7 @@
 
 const compressionPlugin = require('compression-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const config = require('./config')
@@ -100,6 +101,21 @@ module.exports = {
     publicPath: '/'
   },
   plugins: envPlugins,
+  optimization: {
+    minimizer: [
+      // we specify a custom UglifyJsPlugin here to get source maps in production
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        uglifyOptions: {
+          compress: true,
+          ecma: 6,
+          mangle: true
+        },
+        sourceMap: false
+      })
+    ]
+  },
   resolve: {
     extensions: ['.js', '.jsx'],
     modules: [
