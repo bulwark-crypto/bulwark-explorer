@@ -237,6 +237,22 @@ export const getTimeIntervals = (query) => {
     );
   });
 };
+export const getSocial = (query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'social',
+      (payload) => {
+        //@todo global state?
+        resolve(payload);
+      },
+      (payload) => {
+        //@todo global state?
+        reject(payload);
+      },
+      query
+    );
+  });
+};
 
 export const getRewards = (dispatch, query) => {
   return new promise((resolve, reject) => {
@@ -301,5 +317,6 @@ export default {
   removeWatch,
   getRewards,
   getMovements,
-  getTimeIntervals
+  getTimeIntervals,
+  getSocial
 };
