@@ -13,6 +13,16 @@ import CardAddressTXs from '../../component/Card/CardAddressTXs';
 
 import { PAGINATION_PAGE_SIZE } from '../../constants';
 
+const ReactMarkdown = require('react-markdown')
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import RedditIcon from '@material-ui/icons/Reddit'
+import Typography from '@material-ui/core/Typography';
+
 //@todo rename to AddressMovements
 class SocialFeed extends Component {
   static propTypes = {
@@ -28,7 +38,8 @@ class SocialFeed extends Component {
       pages: 0,
       page: 1,
       size: 10,
-      movements: [],
+      social: [],
+      total: 0,
       filter: localStorage.getItem('socialFilter') || null
     };
 
@@ -45,8 +56,8 @@ class SocialFeed extends Component {
       skip: (this.state.page - 1) * this.state.size,
       ...(this.state.filter ? { filter: this.state.filter } : null)
     })
-      .then(({ pages, movements }) => {
-        this.setState({ pages, movements, loading: false }, () => {
+      .then(({ pages, social, total }) => {
+        this.setState({ pages, social, total, loading: false }, () => {
           // this.props.setTXs(movements); // Add this set of new txs to store
         });
       })
@@ -94,12 +105,53 @@ class SocialFeed extends Component {
         </label>)
     };
 
+    const getSocialList = (social) => {
+      console.log(social);
+
+      const getSocialItems = () => {
+        const socialItems = [];
+
+        const getDescription = (item) => {
+          return (
+            <React.Fragment>
+              <Typography
+                variant="body2"
+              >
+                January 10, 2019
+              </Typography>
+              <Typography color="textPrimary" variant="body2">
+                <ReactMarkdown source={item.description} />
+              </Typography>
+            </React.Fragment>)
+        }
+
+        social.forEach(item => {
+          socialItems.push(<ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar>
+                <RedditIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={item.title} secondary={getDescription(item)} />
+          </ListItem>);
+        });
+
+
+        return socialItems;
+      }
+
+      return <List>
+        {getSocialItems()}
+      </List>
+    }
+
     return (
       <div>
         <HorizontalRule
           selects={[getFilterSelect(), paginationSelect]}
-          title={`${this.props.title} (${this.props.txCount})`} />
-        <CardAddressTXs movements={this.state.movements} addressId={this.props.addressId} />
+          title={`${this.props.title} (${this.state.total})`} />
+        {getSocialList(this.state.social)}
         <Pagination
           current={this.state.page}
           className="float-right"
