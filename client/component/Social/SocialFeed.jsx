@@ -4,6 +4,7 @@ import Component from '../../core/Component';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+import moment from 'moment';
 
 import CardTXs from '../../component/Card/CardTXs';
 import HorizontalRule from '../../component/HorizontalRule';
@@ -15,13 +16,8 @@ import { PAGINATION_PAGE_SIZE } from '../../constants';
 
 const ReactMarkdown = require('react-markdown')
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
+import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography, Divider, Box, Link, Paper } from '@material-ui/core';
 import RedditIcon from '@material-ui/icons/Reddit'
-import Typography from '@material-ui/core/Typography';
 
 //@todo rename to AddressMovements
 class SocialFeed extends Component {
@@ -111,30 +107,39 @@ class SocialFeed extends Component {
       const getSocialItems = () => {
         const socialItems = [];
 
+        const getTitle = (item) => {
+          return <Link href={item.url} target="_blank" rel="noreferrer">{item.title}</Link>
+        }
+
         const getDescription = (item) => {
           return (
             <React.Fragment>
               <Typography
                 variant="body2"
               >
-                January 10, 2019
+                {moment.unix(item.intervalNumber).format("MM/DD/YYYY")} - {moment.unix(item.intervalNumber).fromNow()}
               </Typography>
               <Typography color="textPrimary" variant="body2">
-                <ReactMarkdown source={item.description} />
+                <Box mt={1}>
+                  <ReactMarkdown source={item.description} linkTarget="_blank" />
+                </Box>
               </Typography>
             </React.Fragment>)
         }
 
-        social.forEach(item => {
-          socialItems.push(<ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar>
-                <RedditIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={item.title} secondary={getDescription(item)} />
-          </ListItem>);
+        social.forEach((item, index) => {
+          socialItems.push(<Box key={item._id}>
+            <ListItem alignItems="flex-start">
+              <ListItemAvatar>
+                <Avatar>
+                  <Link href={item.url} target="_blank" rel="noreferrer"><RedditIcon /></Link>
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={getTitle(item)} secondary={getDescription(item)} />
+            </ListItem>
+            {index !== social.length - 1 && <Divider />}
+          </Box>);
         });
 
 
@@ -151,13 +156,19 @@ class SocialFeed extends Component {
         <HorizontalRule
           selects={[getFilterSelect(), paginationSelect]}
           title={`${this.props.title} (${this.state.total})`} />
-        {getSocialList(this.state.social)}
-        <Pagination
-          current={this.state.page}
-          className="float-right"
-          onPage={this.handlePage}
-          total={this.state.pages} />
-        <div className="clearfix" />
+        <Paper>
+          <Box p={2}>
+            {getSocialList(this.state.social)}
+          </Box>
+        </Paper>
+        <Box mt={3}>
+          <Pagination
+            current={this.state.page}
+            className="float-right"
+            onPage={this.handlePage}
+            total={this.state.pages} />
+          <div className="clearfix" />
+        </Box>
       </div>
     );
   };
