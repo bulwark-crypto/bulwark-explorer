@@ -19,6 +19,7 @@ const { BlockRewardDetails } = require('../../model/blockRewardDetails');
 const { TimeInterval } = require('../../model/timeInterval');
 const { TimeIntervalType } = require('../../lib/timeInterval');
 const TX = require('../../model/tx');
+const { SocialSubmission } = require('../../features/social/model');
 const config = require('../../config')
 
 /**
@@ -582,7 +583,7 @@ const getTXs = async (req, res) => {
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     const sort = 'sequence';//req.query.sort === 'sequence' ? 'sequence' : 'valueOut';
 
-    let query = { isReward: false /*carverAddressType: CarverAddressType.Tx*/ };
+    let query = { isReward: false };
 
     // Optional date range
     if (req.query.date) {
@@ -596,25 +597,10 @@ const getTXs = async (req, res) => {
     const total = await CarverMovement.find(query).count();
     const txs = await CarverMovement.find(query).skip(skip).limit(limit).sort({ [sort]: -1 });
 
-    let carverMovementIdsToFetch = [];
-    txs.forEach(tx => {
-      const totalAddresses = tx.addressesIn + tx.addressesOut;
-
-      if (totalAddresses <= config.maxMovementsAddressesToFetch) {
-        carverMovementIdsToFetch.push(tx._id);
-      }
-    });
-
-    //@todo new movements layout can have more details
-    //const carverAddressMovements = await CarverAddressMovement.find({ carverMovement: { $in: carverMovementIdsToFetch } }).populate('carverAddress', { carverAddressType: 1, label: 1, carverMovement: 1 });
 
     const txsWithMovements = txs.map(tx => {
-      //const txCarverAddressMovements = carverAddressMovements.filter(carverAddressMovement => carverAddressMovement.carverMovement.toString() === tx._id.toString()); // Find all matching movements for this tx. Notice .toString() because we're comparing mongoose.Schema.Types.ObjectId
-
       return {
         ...tx.toObject(),
-        //from: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount < 0),
-        //to: txCarverAddressMovements.filter(txCarverAddressMovement => txCarverAddressMovement.amount >= 0)
       }
     });
 
@@ -806,6 +792,31 @@ const getTimeIntervals = async (req, res) => {
 };
 
 /**
+ * Return a paginated list of Social Aggregation
+ * @param {Object} req The request object.
+ * @param {Object} res The response object.
+ */
+const getSocial = async (req, res) => {
+  try {
+    const limit = Math.min(req.query.limit ? parseInt(req.query.limit, 10) : 10, 100);
+    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
+    //const type = req.query.type ? parseInt(req.query.type, 10) : 0; //@todo
+
+    const query = {
+      //type
+    };
+
+    const total = await SocialSubmission.count(query);
+    const social = await SocialSubmission.find(query).sort({ intervalNumber: -1 });
+
+    res.json({ social, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || err);
+  }
+};
+
+/**
  * Return all the transactions for an entire week.
  * Method uses a closure for caching.
  * @param {Object} req The request object.
@@ -903,5 +914,6 @@ module.exports = {
   getTXsWeek,
   getMovements,
   getTimeIntervals,
-  sendrawtransaction
+  sendrawtransaction,
+  getSocial
 };

@@ -24,6 +24,8 @@
     "test:web": "mocha --compilers js:babel-core/register ./test/client"
   },
   "dependencies": {
+    "@material-ui/core": "^4.5.1",
+    "@material-ui/icons": "^4.5.1",
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
@@ -44,9 +46,10 @@
     "p-iteration": "^1.1.5",
     "prop-types": "^15.6.0",
     "qrcode": "^1.2.0",
-    "react": "^16.2.0",
+    "react": "^16.10.2",
     "react-countup": "^3.0.3",
-    "react-dom": "^16.2.0",
+    "react-dom": "^16.10.2",
+    "react-markdown": "^4.2.2",
     "react-opium-select": "^0.4.4",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",

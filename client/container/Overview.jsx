@@ -13,6 +13,8 @@ import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
 import TransactionValue from '../component/Table/TransactionValue';
 
+import SocialFeed from '../component/Social/SocialFeed'
+
 class Overview extends Component {
   static propTypes = {
     txs: PropTypes.array.isRequired
@@ -74,12 +76,23 @@ class Overview extends Component {
       });
     });
 
-    return (
-      <div>
-        <HorizontalRule title="Latest Non-Reward Transactions" />
+    const getLatestTxs = () => {
+      return (<div><HorizontalRule title="Latest Non-Reward Transactions" />
         <Table
           cols={this.state.cols}
-          data={txs} />
+          data={txs} /></div>)
+    }
+
+    const getSocialFeed = () => {
+      return (<div>
+        <SocialFeed title="Latest Development Updates" />
+      </div>)
+    }
+
+    return (
+      <div>
+        {getSocialFeed()}
+        {/*getLatestTxs()*/}
       </div>
     );
   };

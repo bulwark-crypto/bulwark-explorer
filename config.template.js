@@ -1,3 +1,5 @@
+const { SocialType } = require('./features/social/data');
+
 /**
  * Global configuration object.
  */
@@ -23,16 +25,31 @@ const config = {
   // Add any important block counting down in this array
   blockCountdowns: [
     {
-      block: 604800 - 1920,
-      visibleBlockRange: [601759, 602659],
-      beforeTitle: 'Next Superblock',
-      afterTitle: 'Superblock Active For'
+      block: 602880, // What block are we counting down to?
+      beforeTitle: 'Next Superblock', // What do we show before the block number is hit?
+      afterTitle: 'Superblock Active For' // What do we show after the block number is hit?
     }
   ],
 
-  ///////////////////////////////
-  // API & Social configurations
-  ///////////////////////////////
+  /**
+   * API & Social configurations
+   */
+
+  /**
+   * Social integrations are all aggregated into a single table & common format. For example, you can have mulitple reddit integrations with different flairs.
+   */
+  social: [
+    {
+      name: 'developmentUpdates', // Unique name of the social widget
+      type: SocialType.Reddit, // What type of social widget is it?
+      group: 'community', // Multiple social widget feeds can be combined into a single cross-app group feed
+      options: {
+        subreddit: 'MyAwesomeCoin', // BulwarkCoin as an example
+        query: 'flair:"Community"' // Show only posts with Community flair (the little tag next to post) (You can empty this to show all posts or specify your own filter based on https://www.reddit.com/wiki/search)
+      }
+    }
+  ],
+
   freegeoip: {
     api: 'https://extreme-ip-lookup.com/json/' //@todo need to find new geoip service as the limits are too small now (hitting limits) 
   },
@@ -41,15 +58,14 @@ const config = {
     ticker: 'bulwark'
   },
 
-  ///////////////////////////////
-  /// Explorer Customization
-  ///////////////////////////////
+  /**
+   * Explorer Customization
+   */
   desktopMenuExpanded: true,        // If set to true the website will have opened navigation bar on load
-  maxMovementsAddressesToFetch: 10, // Total unique addresses per tx that will be preloaded on movements page. Ex: 3 addresses -> 1 address = 4 total addresses. If number of addresses exceeds this 
 
-  ///////////////////////////////
-  /// Community & Address Related
-  ///////////////////////////////
+  /**
+   * Community & Address Related
+   */
   community: {
     // If you comment out all of these addresses the 'Community Addresses' section will not show up on the homepage. You can add as many addresses to highlight as you wish.
     highlightedAddresses: [
@@ -146,9 +162,9 @@ const config = {
     },
   },
 
-  ///////////////////////////////
-  // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
-  ///////////////////////////////
+  /**
+   * Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
+   */
   profitabilityScore: {
     scoreStyles: [
       // Best case
@@ -196,9 +212,9 @@ const config = {
     ]
   },
 
-  ///////////////////////////////
-  /// Cron & Syncing
-  ///////////////////////////////
+  /**
+   * Cron & Syncing
+   */
   blockConfirmations: 10,           // We will re-check block "merkleroot" this many blocks back. If they differ we will then start unwinding carver movements one block at a time until correct block is found. (This is like min confirmations)
   verboseCron: true,                // If set to true there are extra logging details in cron scripts
   verboseCronTx: false,             // If set to true there are extra tx logging details in cron scripts (Not recommended)
