@@ -7,7 +7,8 @@ import {
   TXS,
   POS,
   WATCH_ADD,
-  WATCH_REMOVE
+  WATCH_REMOVE,
+  LOGIN
 } from '../constants';
 
 // The initial state of the coin object.
@@ -83,10 +84,43 @@ const pos = (state = {}, action) => {
   return state;
 };
 
+const initialUserState = {
+  addresses: [
+
+  ]
+}
+/**
+ * Will handle the updating of the login state.
+ */
+const user = (state = initialUserState, action) => {
+  const { type, payload } = action;
+
+  if (type === LOGIN && payload) {
+
+    if (payload && payload.success) {
+      // Do not insert same address if one was already verified
+      if (state.addresses.some(address => address.address === payload.address)) {
+        return state;
+      }
+
+      return {
+        ...state,
+        addresses: [
+          ...state.addresses,
+          payload
+        ]
+      }
+    }
+  }
+  return state;
+};
+
+
 // Export and combine our reducers.
 export default combineReducers({
   coin,
   coins,
   txs,
-  pos
+  pos,
+  user
 });

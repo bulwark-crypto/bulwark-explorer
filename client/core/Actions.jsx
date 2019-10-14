@@ -8,7 +8,8 @@ import {
   TXS,
   WATCH_ADD,
   WATCH_REMOVE,
-  POS
+  POS,
+  LOGIN
 } from '../constants';
 
 const promises = [];
@@ -52,6 +53,28 @@ const getFromWorker = (type, resolve, reject, query = null) => {
 export const getAddress = (query) => {
   return new promise((resolve, reject) => {
     return getFromWorker('address', resolve, reject, query);
+  });
+};
+
+export const login = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'login',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: LOGIN });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        const errorPayload = JSON.parse(payload);
+        if (dispatch) {
+          dispatch({ payload: errorPayload, type: LOGIN });
+        }
+        reject(errorPayload);
+      },
+      query
+    );
   });
 };
 
@@ -318,5 +341,6 @@ export default {
   getRewards,
   getMovements,
   getTimeIntervals,
-  getSocial
+  getSocial,
+  login
 };

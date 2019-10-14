@@ -17,6 +17,7 @@ import MasternodesList from '../component/MasternodesList';
 import config from './../../config'
 import { PAGINATION_PAGE_SIZE } from '../constants';
 import AddressTxs from './AddressTxs'
+import ProofOfOwnershipButton from '../component/ProofOfOwnership/ProofOfOwnershipButton'
 
 class Address extends Component {
   static propTypes = {
@@ -108,9 +109,13 @@ class Address extends Component {
       return this.renderLoading();
     }
 
+    const getUnlockAddressButton = () => {
+      return <ProofOfOwnershipButton lockedTitle="Unlock Address" unlockedTitle="Address Unlocked" address={this.state.carverAddress.label} payload={this.state.carverAddress.label} />
+    }
+
     return (
       <div>
-        <HorizontalRule title="Wallet Info" />
+        <HorizontalRule title="Wallet Info" selects={[getUnlockAddressButton()]} />
         <CardAddress
           carverAddress={this.state.carverAddress} />
         {this.getMasternodesAddressWidget()}

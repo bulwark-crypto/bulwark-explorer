@@ -68,7 +68,7 @@ const ProofOfOwnershipButton = ({ lockedTitle, unlockedTitle, address, payload, 
 
   return (
     <Box>
-      <Button variant="contained" color="secondary" size="small" onClick={() => { setOpen(true); }}>
+      <Button variant="contained" color={isAddressLoggedIn ? 'secondary' : 'primary'} size="small" onClick={() => { setOpen(true); }}>
         {isAddressLoggedIn ? <AddressUnlockedIcon /> : <AddressLockedIcon />}
         {isAddressLoggedIn ? unlockedTitle : lockedTitle}
       </Button>
