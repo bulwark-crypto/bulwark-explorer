@@ -236,3 +236,10 @@ h1, h2, h3, h4, h5, h6 {
 .mb-3 {
 	margin-bottom: 3px;
 }
+
+// Since we are using material UI on top of Bootstrap there are a few styles being overriden. When Bootstrap is removed we can remove this whole file.
+.reactMarkdown {
+	p {
+		margin: 12px 0;
+	}
+}
