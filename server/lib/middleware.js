@@ -23,6 +23,13 @@ const middleware = (app) => {
     //delayMs: 500
   }));
 
+  // Rate-limit single sign on to 1 login per second
+  app.use('/api/login', new rateLimit({
+    windowMs: 1000, // 1 second
+    max: 1,
+    //delayMs: 500
+  }));
+
   app.use('/ext/getbalance', new rateLimit({
     windowMs: 1200,
     max: 1,
@@ -31,4 +38,4 @@ const middleware = (app) => {
 
 };
 
-module.exports =  middleware;
+module.exports = middleware;

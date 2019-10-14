@@ -807,7 +807,11 @@ const getSocial = async (req, res) => {
     };
 
     const total = await SocialSubmission.count(query);
-    const social = await SocialSubmission.find(query).sort({ intervalNumber: -1 });
+    const social = await SocialSubmission
+      .find(query)
+      .sort({ intervalNumber: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.json({ social, pages: total <= limit ? 1 : Math.ceil(total / limit), total });
   } catch (err) {
@@ -891,6 +895,33 @@ const sendrawtransaction = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  try {
+    if (!config.offChainSignOn.enabled) {
+      throw new Error(`Off-Chain Sign On is not enabled. Please enable it in your config file.`);
+    }
+
+    ['address', 'signature', 'message'].forEach(param => {
+      if (!req.body[param]) {
+        throw new Error(`You must POST with "${param}" body parameter.`);
+      }
+
+      if (req.body[param].length > 64) {
+        throw new Error(`"${param}" must be under 64 characters in length.`);
+      }
+    });
+
+    const { address, signature, message } = req.body;
+
+    const success = await rpc.call('verifymessage', [address, signature, message]);
+
+    res.json({ address, signature, message, success });
+  } catch (err) {
+    res.status(500).json({ error: (!!err.message ? JSON.parse(err.message) : err) });
+  }
+};
+
+
 module.exports = {
   getAddress,
   getAvgBlockTime,
@@ -915,5 +946,6 @@ module.exports = {
   getMovements,
   getTimeIntervals,
   sendrawtransaction,
+  login,
   getSocial
 };

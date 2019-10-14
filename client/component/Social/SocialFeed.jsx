@@ -33,7 +33,7 @@ class SocialFeed extends Component {
       loading: true,
       pages: 0,
       page: 1,
-      size: 10,
+      size: 3,
       social: [],
       total: 0,
       filter: localStorage.getItem('socialFilter') || null
@@ -71,7 +71,11 @@ class SocialFeed extends Component {
     } else if (this.state.loading) {
       return this.renderLoading();
     }
-    const selectOptions = PAGINATION_PAGE_SIZE;
+    const selectOptions = [
+      { label: '3', value: 3 },
+      { label: '10', value: 10 },
+      { label: '25', value: 25 }
+    ];
 
     const paginationSelect = (
       <label>
@@ -102,7 +106,6 @@ class SocialFeed extends Component {
     };
 
     const getSocialList = (social) => {
-      console.log(social);
 
       const getSocialItems = () => {
         const socialItems = [];
@@ -121,7 +124,7 @@ class SocialFeed extends Component {
               </Typography>
               <Typography color="textPrimary" variant="body2">
                 <Box mt={1}>
-                  <ReactMarkdown source={item.description} linkTarget="_blank" />
+                  <ReactMarkdown source={item.description} linkTarget="_blank" className="reactMarkdown" />
                 </Box>
               </Typography>
             </React.Fragment>)

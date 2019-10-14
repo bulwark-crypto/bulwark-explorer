@@ -8,6 +8,13 @@ const APIdata = [
         info: 'Broadcasts a raw transaction on the network. POST a "rawtx" body parameter to get one of three possible results: { raw, decoded, error } Use the optional "?decrypt=1" in GET to get decoded result.',
         path: 'POST /api/sendrawtransaction'
       },
+
+      {
+        name: 'login [address] [signature] [message]',
+        info: 'Performs Off-Chain verification of the message. POST a "rawtx" body parameter to get one of three possible results: { raw, decoded, error } Use the optional "?decrypt=1" in GET to get decoded result.',
+        path: 'POST /api/login'
+      },
+
       {
         name: 'getAddress [hash]',
         info: 'Returns information for given address.',

@@ -8,6 +8,7 @@ export const WATCH_ADD = 'WATCH_ADD';
 export const WATCH_REMOVE = 'WATCH_REMOVE';
 export const REWARDS = 'REWARDS';
 export const MOVEMENTS = 'MOVEMENTS';
+export const LOGIN = 'LOGIN';
 
 export const API_BASE = location.origin;
 export const PAGINATION_PAGE_SIZE = [
@@ -28,5 +29,6 @@ export default {
 
   API_BASE,
   REWARDS,
-  MOVEMENTS
+  MOVEMENTS,
+  LOGIN
 };
