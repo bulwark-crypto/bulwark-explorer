@@ -906,8 +906,8 @@ const login = async (req, res) => {
         throw new Error(`You must POST with "${param}" body parameter.`);
       }
 
-      if (req.body[param].length > 64) {
-        throw new Error(`"${param}" must be under 64 characters in length.`);
+      if (req.body[param].length > 256) {
+        throw new Error(`"${param}" must be under 256 characters in length.`);
       }
     });
 
