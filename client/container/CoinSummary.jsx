@@ -56,6 +56,9 @@ class CoinSummary extends Component {
     };
 
     const getCardBlockCountdowns = (blockCountdowns) => {
+      if (!blockCountdowns) {
+        return;
+      }
       var blockCountdownElements = [];
       blockCountdowns.forEach((blockCountdown, index) => {
         blockCountdownElements.push(<CardBlockCountdown

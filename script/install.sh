@@ -175,10 +175,40 @@ const config = {
     websiteUrl: 'https://bulwarkcrypto.com/',
     masternodeCollateral: 5000 // MN ROI% gets based on this number. If your coin has multi-tiered masternodes then set this to lowest tier (ROI% will simply be higher for bigger tiers)
   },
+  offChainSignOn: {
+    enabled: true,
+    signMessagePrefix: 'MYCOINSIGN-' // Unique prefix in "Message To Sign" for Off-Chain Sign On
+  },
 
-  ///////////////////////////////
-  // API & Social configurations
-  ///////////////////////////////
+  // Add any important block counting down in this array
+  blockCountdowns: [
+    {
+      block: 602880, // What block are we counting down to?
+      beforeTitle: 'Next Superblock', // What do we show before the block number is hit?
+      afterTitle: 'Superblock Active For' // What do we show after the block number is hit?
+    }
+  ],
+
+
+  /**
+   * API & Social configurations
+   */
+
+  /**
+   * Social integrations are all aggregated into a single table & common format. For example, you can have mulitple reddit integrations with different flairs.
+   */
+  social: [
+    {
+      name: 'developmentUpdates', // Unique name of the social widget
+      type: SocialType.Reddit, // What type of social widget is it?
+      group: 'community', // Multiple social widget feeds can be combined into a single cross-app group feed
+      options: {
+        subreddit: 'MyAwesomeCoin', // BulwarkCoin as an example
+        query: 'flair:"Community"' // Show only posts with Community flair (the little tag next to post) (You can empty this to show all posts or specify your own filter based on https://www.reddit.com/wiki/search)
+      }
+    }
+  ],
+  
   freegeoip: {
     api: 'https://extreme-ip-lookup.com/json/' //@todo need to find new geoip service as the limits are too small now (hitting limits) 
   },
@@ -187,14 +217,14 @@ const config = {
     ticker: 'bulwark'
   },
 
-  ///////////////////////////////
-  /// Explorer Customization
-  ///////////////////////////////
+  /**
+   * Explorer Customization
+   */
   desktopMenuExpanded: true,        // If set to true the website will have opened navigation bar on load
 
-  ///////////////////////////////
-  /// Community & Address Related
-  ///////////////////////////////
+  /**
+   * Community & Address Related
+   */
   community: {
     // If you comment out all of these addresses the 'Community Addresses' section will not show up on the homepage. You can add as many addresses to highlight as you wish.
     highlightedAddresses: [
@@ -289,20 +319,6 @@ const config = {
   // Adjustable POS Profitability Score - How profitable is your staking, tailored for your blockchain
   ///////////////////////////////
   profitabilityScore: {
-    /**
-     * Figure out how profitable you are staking. Each output is multiplied by the number below, you can configure it for your blockchain
-     * 
-     * The formula is: (reward.stake.input.confirmations / ((reward.stake.reward / reward.stake.input.value) * 100)) * config.profitabilityScore.weightMultiplier
-     */
-    weightMultiplier: 0.1,
-
-    /**
-     * In order to get the color below (from scoreStyles) we'll use an exponential formula
-     * 
-     * The formula is: profitabilityScore < weightColorScale * Math.pow(2, i + 1) 
-     */
-    weightColorScale: 30,
-
     scoreStyles: [
       // Best case
       {
