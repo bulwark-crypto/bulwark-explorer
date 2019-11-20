@@ -12,9 +12,9 @@ const { SocialType } = require('./features/social/data');
  */
 const config = {
   api: {
-    host: 'https://explorer.bulwarkcrypto.com', // 'http://localhost' for localhost
-    port: '3000', // Port 3000 on prod and localhost
-    portWorker: '443', // Port 443 on prod and 3000 on localhost
+    host: 'http://localhost', // ex: 'https://explorer.bulwarkcrypto.com' for nginx (SSL), 'http://IP_ADDRESS' 
+    port: '3000', // ex: Port 3000 on prod and localhost
+    portWorker: '3000', // ex: Port 443 for production(ngingx) if you have SSL (we use certbot), 3000 on localhost or ip
     prefix: '/api',
     timeout: '5s'
   },
