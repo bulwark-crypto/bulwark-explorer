@@ -2,12 +2,19 @@ const { SocialType } = require('./features/social/data');
 
 /**
  * Global configuration object.
+ * 
+ * Running:
+ * yarn run start:api
+ * yarn run start:web (Access project via http://localhost:8081/) (port comes from webpack.config.js)
+ * 
+ * For nginx server installation and production read /script/install.sh `installNginx ()`. Note that we use Certbot to grant SSL certificate.
+ * 
  */
 const config = {
   api: {
-    host: 'https://explorer.bulwarkcrypto.com',
-    port: '3000',
-    portWorker: '443',
+    host: 'https://explorer.bulwarkcrypto.com', // 'http://localhost' for localhost
+    port: '3000', // Port 3000 on prod and localhost
+    portWorker: '443', // Port 443 on prod and 3000 on localhost
     prefix: '/api',
     timeout: '5s'
   },
