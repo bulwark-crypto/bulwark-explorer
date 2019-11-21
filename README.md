@@ -111,7 +111,11 @@ To setup the crontab please see run `crontab -e` to edit the crontab and paste t
 */1 * * * * cd /path/to/blockex && /path/to/node ./cron/peer.js >> ./tmp/peer.log 2>&1
 */1 * * * * cd /path/to/blockex && /path/to/node ./cron/rich.js >> ./tmp/rich.log 2>&1
 */5 * * * * cd /path/to/blockex && /path/to/node ./cron/coin.js >> ./tmp/coin.log 2>&1
+0 0 * * * cd /path/to/blockex && /path/to/node ./cron/timeIntervals.js >> ./tmp/timeIntervals.log 2>&1
 ```
+For crontab config:
+- `/path/to/blockex` example is `/home/explorer/blockex`
+- `/path/to/node` example is `/usr/bin/nodejs`
 
 ## Build
 At this time only the client web interface needs to be built using webpack and this can be done by running `yarn run build:web`.  This will bundle the application and put it in the `/public` folder for delivery.
