@@ -6,7 +6,7 @@ import Card from './Card';
 const CardLinks = () => (
   <Card title="Links">
     <a href="https://bulwarkcrypto.com/" target="_blank" rel="nofollow noopener">Website</a><br />
-    <a href="https://bitcointalk.org/index.php?topic=2499481.0" target="_blank" rel="nofollow noopener">Bitcointalk</a><br />
+    <a href="https://bitcointalk.org/index.php?topic=5220465" target="_blank" rel="nofollow noopener">Bitcointalk</a><br />
     <a href="https://github.com/bulwark-crypto" target="_blank" rel="nofollow noopener">Github</a><br />
     <a href="https://www.reddit.com/r/BulwarkCoin/" target="_blank" rel="nofollow noopener">Reddit</a><br />
     <a href="https://discord.gg/a7vhegP" target="_blank" rel="nofollow noopener">Discord</a><br />
