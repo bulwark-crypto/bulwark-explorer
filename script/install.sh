@@ -154,6 +154,7 @@ const secretsConfig = {
 module.exports = { secretsConfig }; // This is returned as an object on purpose so you have to be explicit at stating that you are accessing a secrets config
 EOL
     cat > /home/explorer/blockex/config.js << EOL
+const { SocialType } = require('./features/social/data');
 
 /**
  * Global configuration object.
