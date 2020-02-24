@@ -30,9 +30,9 @@ class CoinSummary extends Component {
   render() {
     const coin = this.props.coins && this.props.coins.length
       ? this.props.coins[0]
-      : { diff: 0, netHash: 0 };
+      : { diff: 0, netHash: 0, blocks: 0 };
 
-    const height = this.props.txs.length
+    const height = this.props.txs.length && this.props.txs[0].blockHeight > coin.blocks
       ? this.props.txs[0].blockHeight
       : coin.blocks;
 
