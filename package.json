@@ -33,7 +33,7 @@
     "chart.js": "^2.7.1",
     "connect-timeout": "^1.9.0",
     "cors": "^2.8.4",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "express-rate-limit": "^2.11.0",
     "isomorphic-fetch": "^2.2.1",
     "lightweight-charts": "^1.1.0",
